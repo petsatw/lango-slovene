@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0b6e4f" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/icon.png" />
+  <title>Govori — Slovenian tutor</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Govori 🇸🇮</h1>
+    <p id="scenario">…</p>
+    <div id="objectives" class="objectives"></div>
+  </header>
+
+  <main>
+    <div id="transcript" class="transcript" aria-live="polite"></div>
+    <div id="takeaway" class="takeaway" hidden></div>
+
+    <button id="talk" class="talk" disabled>
+      <span id="talk-label">Hold to speak</span>
+    </button>
+    <p class="hint">Hold the button, speak (English + Slovenian is fine), then release.</p>
+
+    <!-- Fallback if the browser blocks autoplay of the tutor's reply -->
+    <button id="play-fallback" class="play-fallback" hidden>▶ Tap to hear the tutor</button>
+  </main>
+
+  <!-- Observability overlay — shows each stage live so failures are visible, not mysterious. -->
+  <section id="obs" class="obs">
+    <div class="obs-row"><span>state</span><b id="obs-state">idle</b></div>
+    <div class="obs-row"><span>providers</span><b id="obs-providers">—</b></div>
+    <div class="obs-row"><span>heard</span><b id="obs-heard">—</b></div>
+    <div class="obs-row"><span>tutor</span><b id="obs-tutor">—</b></div>
+    <div class="obs-row"><span>correction</span><b id="obs-correction">—</b></div>
+    <div class="obs-row"><span>timings</span><b id="obs-timings">—</b></div>
+    <div class="obs-row error"><span>error</span><b id="obs-error">—</b></div>
+  </section>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

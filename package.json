@@ -1,0 +1,25 @@
+{
+  "name": "lango-slovenian",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AI Slovenian conversation tutor for expats — MVP voice demo",
+  "scripts": {
+    "dev": "tsx watch server/server.ts",
+    "start": "tsx server/server.ts",
+    "probe:e2": "tsx server/probes/e2-probe.ts",
+    "probe:e3": "tsx server/probes/e3-probe.ts",
+    "replay": "tsx server/probes/replay.ts",
+    "test:mastery": "tsx server/probes/mastery-test.ts"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.9.3",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}

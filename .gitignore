@@ -1,0 +1,19 @@
+# Secrets — never commit. See docs/SECRETS.md
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Build / runtime
+dist/
+*.log
+.DS_Store
+
+# Recorded audio fixtures may contain real voices — keep local unless cleared
+fixtures/audio/*.webm
+fixtures/audio/*.mp4
+fixtures/audio/*.m4a
+fixtures/audio/*.wav
+fixtures/audio/*.ogg

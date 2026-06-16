@@ -1,0 +1,24 @@
+# Copy this file to .env and fill in real values IN A TEXT EDITOR (not the shell).
+# See docs/SECRETS.md. Never commit .env.
+
+# --- Which provider fills each swappable role (E2 = understand+tutor, E3 = Slovenian voice) ---
+E2_PROVIDER=gemini
+E3_PROVIDER=elevenlabs
+
+# --- E2: Google Gemini (audio-in understanding + in-character tutoring) ---
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-3.5-flash
+
+# --- E3: ElevenLabs (native-quality Slovenian TTS) ---
+# NOTE: only eleven_v3 supports Slovenian; multilingual_v2 / flash_v2_5 do not. v3 may be
+# higher-latency / access-gated — the e3 probe will confirm access when you add the key.
+ELEVENLABS_API_KEY=
+ELEVENLABS_VOICE_ID=
+ELEVENLABS_MODEL_ID=eleven_v3
+
+# --- Optional alternates for the blind A/B (leave blank until needed) ---
+# GROK_API_KEY=
+# OPENAI_API_KEY=
+
+# --- Server ---
+PORT=8787
