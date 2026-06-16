@@ -12,7 +12,7 @@ Each needs an API key. Here is exactly how to handle them.
 ---
 
 ## TL;DR
-1. Copy `.env.example` → `.env`.
+1. Copy `example-vars` → `.env`.
 2. Paste your keys into `.env` **using a text editor, not the terminal**.
 3. Confirm `.env` is git-ignored (it already is — see below).
 4. Run the app / probes. The Node server reads keys from `.env`; the browser never sees them.
@@ -27,9 +27,9 @@ All keys go in a single local file, `.env`, at the project root. It is **never c
 ```
 .env
 .env.*
-!.env.example
+!example-vars
 ```
-So `.env` (and any `.env.local` etc.) are ignored, while the safe template `.env.example` is tracked.
+So `.env` (and any `.env.local` etc.) are ignored, while the safe template `example-vars` is tracked.
 
 > ⚠️ **Order matters if this isn't a git repo yet.** Create/verify `.gitignore` *before* you run `git init` and before your first `git add`. If you ever `git add` before ignoring `.env`, the key is in your git history even if you delete the file later — and must be rotated.
 
@@ -79,7 +79,7 @@ Browser (PWA)  ──HTTP──▶  Node server (reads .env)  ──HTTPS──�
 
 - **Refer to keys by name, never value**, in this chat or any AI coding tool. Say "the Gemini key," never the string.
 - The assistant (Claude) will **not** echo, cat, or pass key values in Bash, and will not request the values. If you ever see a tool about to print `.env`, stop it.
-- Don't paste `.env` contents into a chat to "show the config" — paste `.env.example` instead.
+- Don't paste `.env` contents into a chat to "show the config" — paste `example-vars` instead.
 - Keep `.env` out of screen-shares and recordings.
 
 ## 5. If a key is ever exposed (shell history, chat, commit, screenshot)
