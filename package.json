@@ -10,7 +10,8 @@
     "probe:e2": "tsx server/probes/e2-probe.ts",
     "probe:e3": "tsx server/probes/e3-probe.ts",
     "replay": "tsx server/probes/replay.ts",
-    "test:mastery": "tsx server/probes/mastery-test.ts"
+    "test:mastery": "tsx server/probes/mastery-test.ts",
+    "build:assets": "tsx server/scripts/build-assets.ts"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
