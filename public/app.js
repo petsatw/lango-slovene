@@ -20,6 +20,15 @@ let recMime = "audio/webm";
 let lastE2Ms = 0;
 let session = null;          // SessionState — objective progress, held client-side
 let objectivesMeta = [];     // [{ id, label, targetSL }] from /api/config
+let runId = null;            // unique id for THIS run — groups turns into one captured SessionRecord
+
+// A readable, filesystem-safe run id: <scenario>-<timestamp>-<rand>. One run per page load, so a
+// redo (reload) is a new record — that's the versioning (UC3).
+function newRunId(scenarioId) {
+  const ts = new Date().toISOString().replace(/[:.]/g, "-");
+  const rand = Math.random().toString(36).slice(2, 8);
+  return `${scenarioId || "session"}-${ts}-${rand}`;
+}
 
 function pickMimeType() {
   const candidates = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/aac"];
@@ -225,7 +234,7 @@ async function stopRecordingAndSend() {
     const res = await fetch("/api/turn", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ audioBase64, mimeType: "audio/wav", history, session }),
+      body: JSON.stringify({ audioBase64, mimeType: "audio/wav", history, session, runId }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
@@ -263,6 +272,7 @@ async function init() {
     obs.providers(`${cfg.providers.e2} + ${cfg.providers.e3}`);
     objectivesMeta = cfg.scenario.objectives || [];
     session = cfg.session || null;
+    runId = newRunId(session?.scenarioId || cfg.scenario.id);
     renderObjectives();
     if (cfg.scenario.opening) addBubble("tutor", cfg.scenario.opening);
   } catch (err) {

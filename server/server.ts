@@ -11,7 +11,8 @@ import path from "node:path";
 import { understand } from "./orchestrator";
 import { getE2, getE3 } from "./adapters/index";
 import * as store from "./assets/store";
-import { CAFE, SCENARIOS, freshSession } from "./scenarios";
+import * as sessions from "./assets/sessions";
+import { CAFE, SCENARIOS, freshSession, getScenario } from "./scenarios";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -56,7 +57,7 @@ app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
 // One conversational turn — E2 only. Returns text fast; audio is fetched from /api/speak.
 app.post("/api/turn", async (req, res) => {
-  const { audioBase64, mimeType, history, session } = req.body ?? {};
+  const { audioBase64, mimeType, history, session, runId } = req.body ?? {};
   if (!audioBase64 || !mimeType) {
     return res.status(400).json({ error: "audioBase64 and mimeType are required" });
   }
@@ -67,6 +68,34 @@ app.post("/api/turn", async (req, res) => {
       history: Array.isArray(history) ? history : [],
       session,
     });
+
+    // M6 capture (best-effort — never fail a turn because the record couldn't be written).
+    // The tutor audioKey is computed from the reply text, so it matches the clip /api/speak will
+    // create when the client plays it. On the first turn we seed the record with the opening line.
+    if (runId) {
+      try {
+        const e3 = getE3();
+        const scenario = getScenario(result.session.scenarioId);
+        const tutorKey = (text: string) => store.audioKey(e3.name, e3.voiceTag, text);
+        const seedTurns = sessions.load(runId)
+          ? undefined
+          : [{ role: "tutor" as const, text: scenario.opening, audioKey: tutorKey(scenario.opening) }];
+        sessions.appendTurns({
+          id: runId,
+          scenarioId: result.session.scenarioId,
+          seedTurns,
+          turns: [
+            { role: "student", text: result.userSaid, userVerbatim: result.userVerbatim },
+            { role: "tutor", text: result.tutorReply, audioKey: tutorKey(result.tutorReply) },
+          ],
+          finalObjectives: result.session.objectives,
+          complete: result.session.complete,
+        });
+      } catch (capErr: any) {
+        console.error("[capture] failed:", capErr?.message);
+      }
+    }
+
     res.json(result);
   } catch (err: any) {
     console.error("[turn] failed:", err?.message);
@@ -132,6 +161,41 @@ app.get("/api/speak", async (req, res) => {
     console.error("[speak] failed:", err?.message);
     if (!res.headersSent) res.status(502).json({ error: err?.message || "speak failed" });
     else res.end();
+  }
+});
+
+// M6 — captured session records (replay + versioning). All read from assets/sessions/.
+
+// List runs (newest first) with a lightweight summary for a "my runs" view.
+app.get("/api/sessions", (_req, res) => {
+  const summary = sessions.list().map((r) => ({
+    id: r.id,
+    scenarioId: r.scenarioId,
+    createdAt: r.createdAt,
+    status: r.status,
+    turns: r.turns.length,
+    label: r.label,
+    favorite: !!r.favorite,
+    completed: r.finalObjectives.filter((o) => o.status === "completed").length,
+    objectives: r.finalObjectives.length,
+  }));
+  res.json({ sessions: summary });
+});
+
+// Full record for one run — the ordered turns the replay UI steps through.
+app.get("/api/sessions/:id", (req, res) => {
+  const rec = sessions.load(req.params.id);
+  if (!rec) return res.status(404).json({ error: "no such session" });
+  res.json(rec);
+});
+
+// Promote a run: set a human label and/or mark it favorite (UC3).
+app.post("/api/sessions/:id/meta", (req, res) => {
+  const { label, favorite } = req.body ?? {};
+  try {
+    res.json(sessions.setMeta(req.params.id, { label, favorite }));
+  } catch (err: any) {
+    res.status(404).json({ error: err?.message || "no such session" });
   }
 });
 
