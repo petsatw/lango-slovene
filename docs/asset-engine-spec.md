@@ -108,13 +108,13 @@ M1 makes generated **asset bytes** durable. It does **not** persist **session st
 
 ---
 
-## M2 — Pluggable image-generation adapter (architected now, built after M1)
-Mirror the E2/E3 swap pattern.
-- **Interface** (`server/types.ts`): `ImageAdapter { name; model; generate({prompt, params}) → {bytes, mimeType} }`.
-- **Registry + env** (`server/adapters/index.ts` pattern): `IMAGE_PROVIDER` selects the impl.
-- **Stored** in the same asset store (image keys), so re-generating an identical frame/scene is free.
-- **Style consistency:** a shared style preamble (a `styleId` + prompt prefix) so all scenarios look cohesive; the `styleId` is part of the image key.
-- **Verify-first:** whatever image provider is chosen, fetch its official API docs and confirm the latest SDK/model id before coding (see memory: verify-apis-and-versions-before-building). Keys handled exactly per docs/SECRETS.md (server-side `.env`, never client/committed).
+## M2 — Pluggable image-generation adapter (BUILT) — provider: xAI Grok (E4)
+Mirrors the E2/E3 swap pattern; the image slot is **E4**.
+- **Interface** (`server/types.ts`): `ImageAdapter { name; model; generate({prompt, referenceImages?, params?}) → {bytes, mimeType} }`.
+- **Registry + env** (`server/adapters/index.ts`): `E4_REGISTRY` + `getE4()`, selected by **`E4_PROVIDER`** (default `grok`).
+- **Provider — xAI Grok** (`server/adapters/grok-image.ts`): `POST https://api.x.ai/v1/images/generations`, Bearer `GROK_API_KEY`, model `GROK_IMAGE_MODEL` (default `grok-imagine-image-quality`), `response_format: b64_json` → **JPEG**. Verified against xAI docs 2026-06.
+- **Stored** in the same asset store via `server/assets/images.ts` (`getOrCreateImage`); image key = `sha256(provider|model|styleId|prompt)`, so regenerating an identical frame/scene is free. Store extension for images is `.jpg` (matches Grok); the manifest records the actual `mimeType`.
+- **Style consistency:** shared style in `server/adapters/image-style.ts` — `id` `v1-flat-warm` + prompt prefix; the `styleId` is part of the image key. Incidental Slovenian text in images is **embraced** (user decision). **Character/landmark consistency across frames is the known open gap** → to be addressed with Grok's **reference images** (≤3): `referenceText` + `referenceImages` are STUBBED in the style module and threaded through `generate(referenceImages)`, but the multi-image-editing call is **not wired yet**.
 
 ---
 
@@ -148,7 +148,8 @@ Covers what M1–M5 do not.
 - `SessionState` / mastery loop — supplies per-objective completion status that the scenario/library view reads.
 
 ## Open decisions / verify-first
-- **Image provider** — to be chosen (M2); architect the adapter provider-agnostic; verify its docs before coding.
+- **Image provider** — RESOLVED: **xAI Grok** (E4), model `grok-imagine-image-quality`, JPEG. Adapter is provider-agnostic; a second provider is an A/B away.
+- **Character/landmark consistency (next image task)** — frames currently share the *style* but drift on specifics (café name, barista). Wire Grok multi-image editing (≤3 reference images) behind the existing `IMAGE_STYLE.referenceImages` stub; bump `styleId` when it changes output.
 - **Manifest format** — JSONL for MVP; **sqlite** is the scaling path if queries/concurrency grow.
 - **Library promotion** — `assets/` is gitignored now; design so it can later be synced to a server/CDN or committed as shippable content without restructuring.
 - **Per-text determinism** — TTS is not byte-deterministic; the store keys on *input* (text+voice), so the *first* generation is canonical and reused thereafter. That's intended (one canonical clip per phrase).
