@@ -42,9 +42,20 @@ export function audioKey(provider: string, voiceTag: string, text: string): stri
   return createHash("sha256").update(`${provider}|${voiceTag}|${text}`).digest("hex");
 }
 
-// Image key (M2) — includes styleId so a style change is a distinct asset, never a stale hit.
-export function imageKey(provider: string, model: string, styleId: string, prompt: string): string {
-  return createHash("sha256").update(`${provider}|${model}|${styleId}|${prompt}`).digest("hex");
+// Image key (M2) — every input that changes the pixels is in the key: styleId (the visual system,
+// incl. the reference sheet — bump it when that changes), aspectRatio and resolution (explicit API
+// args, not prose), and the prompt. Omitting any of these would risk serving a stale image.
+export function imageKey(
+  provider: string,
+  model: string,
+  styleId: string,
+  aspectRatio: string,
+  resolution: string,
+  prompt: string,
+): string {
+  return createHash("sha256")
+    .update(`${provider}|${model}|${styleId}|${aspectRatio}|${resolution}|${prompt}`)
+    .digest("hex");
 }
 
 export function getPath(key: string, type: AssetType): string {

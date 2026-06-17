@@ -14,7 +14,8 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { getE3 } from "../adapters/index";
 import * as store from "../assets/store";
-import { getOrCreateImage } from "../assets/images";
+import { getOrCreateImage, asDataUri } from "../assets/images";
+import { IMAGE_FORMAT, referenceSheetPrompt } from "../adapters/image-style";
 import { SCENARIOS } from "../scenarios";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -38,15 +39,16 @@ const audioItems: { label: string; text: string; objectiveId?: string }[] = [
   ...(story?.sentences ?? []).map((s, i) => ({ label: `audio:story[${i}]`, text: s })),
 ];
 
-// IMAGES: one frame per objective + the final all-objectives scene.
-const imageItems: { label: string; prompt: string; objectiveId?: string }[] = [
-  ...(story?.frames ?? []).map((f) => ({ label: `image:frame:${f.objectiveId}`, prompt: f.imagePrompt, objectiveId: f.objectiveId })),
-  ...(story?.sceneImagePrompt ? [{ label: "image:scene", prompt: story.sceneImagePrompt, objectiveId: "scene" }] : []),
-];
+// IMAGES (M2/M4): reference sheet FIRST (the consistency anchor), then every frame + the scene
+// generated ANCHORED to it — one representative moment per frame, all objects present in the scene.
+const assets = scenario.scene?.assets ?? [];
+const frames = story?.frames ?? [];
+const sceneImagePrompt = story?.sceneImagePrompt;
+const imageCount = (assets.length ? 1 : 0) + frames.length + (sceneImagePrompt ? 1 : 0);
 
 const e3 = getE3();
 console.log(
-  `▶ build:assets  scenario=${scenario.id}  e3=${e3.name}  audio=${audioItems.length}  images=${imageItems.length}\n`,
+  `▶ build:assets  scenario=${scenario.id}  e3=${e3.name}  audio=${audioItems.length}  images=${imageCount}\n`,
 );
 
 let hits = 0;
@@ -77,14 +79,56 @@ for (const item of audioItems) {
   }
 }
 
-for (const item of imageItems) {
+// 1) Reference sheet — the anchor. Generated once, no reference, verbatim prompt (styled: false).
+let refImages: string[] | undefined;
+if (assets.length) {
   try {
-    const { hit, key } = await getOrCreateImage(item.prompt, { scenarioId: scenario.id, objectiveId: item.objectiveId });
+    const { hit, key, bytes } = await getOrCreateImage(referenceSheetPrompt(assets), {
+      ...IMAGE_FORMAT.sheet,
+      scenarioId: scenario.id,
+      objectiveId: "reference-sheet",
+      styled: false,
+    });
     hit ? hits++ : made++;
-    console.log(`   ${hit ? "hit " : "gen "} ${item.label}  ${key.slice(0, 12)}…`);
+    refImages = [asDataUri(bytes)];
+    console.log(`   ${hit ? "hit " : "gen "} image:reference-sheet  ${key.slice(0, 12)}…`);
   } catch (err: any) {
     failures++;
-    console.log(`   ❌  ${item.label}: ${err?.message}`);
+    console.log(`   ❌  image:reference-sheet: ${err?.message}`);
+  }
+}
+
+// 2) Frames — each anchored to the reference sheet (background suppressed, 4:3).
+for (const f of frames) {
+  try {
+    const { hit, key } = await getOrCreateImage(f.imagePrompt, {
+      ...IMAGE_FORMAT.frame,
+      scenarioId: scenario.id,
+      objectiveId: f.objectiveId,
+      referenceImages: refImages,
+    });
+    hit ? hits++ : made++;
+    console.log(`   ${hit ? "hit " : "gen "} image:frame:${f.objectiveId}  ${key.slice(0, 12)}…`);
+  } catch (err: any) {
+    failures++;
+    console.log(`   ❌  image:frame:${f.objectiveId}: ${err?.message}`);
+  }
+}
+
+// 3) Scene — establishing tableau, anchored to the reference sheet (16:9).
+if (sceneImagePrompt) {
+  try {
+    const { hit, key } = await getOrCreateImage(sceneImagePrompt, {
+      ...IMAGE_FORMAT.scene,
+      scenarioId: scenario.id,
+      objectiveId: "scene",
+      referenceImages: refImages,
+    });
+    hit ? hits++ : made++;
+    console.log(`   ${hit ? "hit " : "gen "} image:scene  ${key.slice(0, 12)}…`);
+  } catch (err: any) {
+    failures++;
+    console.log(`   ❌  image:scene: ${err?.message}`);
   }
 }
 

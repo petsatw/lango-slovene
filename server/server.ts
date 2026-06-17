@@ -12,7 +12,7 @@ import { understand } from "./orchestrator";
 import { getE2, getE3, getE4 } from "./adapters/index";
 import * as store from "./assets/store";
 import * as sessions from "./assets/sessions";
-import { IMAGE_STYLE } from "./adapters/image-style";
+import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { CAFE, SCENARIOS, freshSession, getScenario } from "./scenarios";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -181,14 +181,16 @@ app.get("/api/image", (req, res) => {
   if (!story) return res.status(404).json({ error: "no story for scenario" });
 
   const objectiveId = String(req.query.objectiveId || "");
-  const prompt =
-    objectiveId === "scene"
-      ? story.sceneImagePrompt
-      : story.frames.find((f) => f.objectiveId === objectiveId)?.imagePrompt;
+  const isScene = objectiveId === "scene";
+  const prompt = isScene
+    ? story.sceneImagePrompt
+    : story.frames.find((f) => f.objectiveId === objectiveId)?.imagePrompt;
   if (!prompt) return res.status(404).json({ error: "no frame for that objective" });
 
+  // Recompute the key with the SAME per-type format used at build time (frames 4:3, scene 16:9).
+  const fmt = isScene ? IMAGE_FORMAT.scene : IMAGE_FORMAT.frame;
   const e4 = getE4();
-  const key = store.imageKey(e4.name, e4.model, IMAGE_STYLE.id, prompt);
+  const key = store.imageKey(e4.name, e4.model, IMAGE_STYLE.id, fmt.aspectRatio, fmt.resolution, prompt);
   const buf = store.read(key, "image");
   if (!buf) return res.status(404).json({ error: "image not built — run: npm run build:assets -- " + scenario.id });
 

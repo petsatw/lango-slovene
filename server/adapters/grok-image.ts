@@ -1,10 +1,9 @@
-// E4 adapter — xAI Grok image generation (text-to-image). The endpoint is OpenAI-compatible:
-// POST https://api.x.ai/v1/images/generations, key as a Bearer header (server-side only, never logged).
+// E4 adapter — xAI Grok image generation. Key as a Bearer header (server-side only, never logged).
 // Verified against xAI docs (2026-06): model grok-imagine-image-quality, response_format b64_json -> JPEG.
-//
-// Reference images (xAI multi-image editing supports up to 3 source images, on a SEPARATE endpoint)
-// are intentionally STUBBED here — the seam exists (generate accepts referenceImages) so style-
-// consistency can be wired in later without touching callers. See docs/asset-engine-spec.md §M2.
+//   - text-to-image:  POST https://api.x.ai/v1/images/generations  { model, prompt, aspect_ratio, resolution }
+//   - with reference: POST https://api.x.ai/v1/images/edits        { ..., image: {url, type:"image_url"} }
+// The edits endpoint anchors output to ≤3 source images (URL / base64 data URI / file_id) — that's
+// how we pin character/setting consistency to the scenario's reference sheet.
 
 import type { ImageAdapter, ImageResult } from "../types";
 
@@ -24,34 +23,38 @@ export class GrokImageE4 implements ImageAdapter {
 
   async generate(input: {
     prompt: string;
+    aspectRatio?: string;
+    resolution?: string;
     referenceImages?: string[];
     params?: Record<string, unknown>;
   }): Promise<ImageResult> {
     const key = requireKey();
+    const refs = (input.referenceImages ?? []).filter(Boolean).slice(0, 3);
 
-    // STUB: reference images go through xAI's multi-image-editing endpoint (≤3). Not wired yet —
-    // warn rather than silently drop, so filling the stub in later is an obvious next step.
-    if (input.referenceImages?.length) {
-      console.warn(
-        `[grok-image] ${input.referenceImages.length} reference image(s) ignored — multi-image editing not wired yet (stub).`,
-      );
-    }
+    const common: Record<string, unknown> = {
+      model: this.model,
+      prompt: input.prompt,
+      response_format: "b64_json",
+      ...(input.aspectRatio ? { aspect_ratio: input.aspectRatio } : {}),
+      ...(input.resolution ? { resolution: input.resolution } : {}),
+      ...(input.params ?? {}),
+    };
 
-    const res = await fetch(`${BASE}/images/generations`, {
+    // Reference path (edits) anchors to the source image(s); else plain text-to-image.
+    const url = refs.length ? `${BASE}/images/edits` : `${BASE}/images/generations`;
+    const body = refs.length
+      ? { ...common, image: refs.length === 1 ? { url: refs[0], type: "image_url" } : refs.map((r) => ({ url: r, type: "image_url" })) }
+      : { ...common, n: 1 };
+
+    const res = await fetch(url, {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: this.model,
-        prompt: input.prompt,
-        n: 1,
-        response_format: "b64_json",
-        ...(input.params ?? {}),
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!res.ok) {
-      const body = await res.text();
-      throw new Error(`Grok image HTTP ${res.status}: ${body.slice(0, 300)}`);
+      const errBody = await res.text();
+      throw new Error(`Grok image HTTP ${res.status}: ${errBody.slice(0, 300)}`);
     }
 
     const data: any = await res.json();

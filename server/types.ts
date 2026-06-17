@@ -94,11 +94,13 @@ export interface ImageAdapter {
   readonly name: string;
   /** Stable model identifier — part of the image cache key, so a model change is a distinct asset. */
   readonly model: string;
-  /** Generate one image from a (style-prefixed) prompt. `referenceImages` (style refs, up to a
-   *  provider limit) is a forward stub for visual-consistency support; `params` carries
-   *  provider-specific knobs (aspect_ratio, resolution, …). */
+  /** Generate one image. `aspectRatio`/`resolution` are explicit typed args (not prose — the model
+   *  can ignore prose, not an API field). `referenceImages` are ≤3 anchors (URL / base64 data URI /
+   *  file_id) that pin character/setting consistency. `params` carries any extra provider knobs. */
   generate(input: {
     prompt: string;
+    aspectRatio?: string;
+    resolution?: string;
     referenceImages?: string[];
     params?: Record<string, unknown>;
   }): Promise<ImageResult>;

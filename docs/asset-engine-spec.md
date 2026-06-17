@@ -113,8 +113,14 @@ Mirrors the E2/E3 swap pattern; the image slot is **E4**.
 - **Interface** (`server/types.ts`): `ImageAdapter { name; model; generate({prompt, referenceImages?, params?}) → {bytes, mimeType} }`.
 - **Registry + env** (`server/adapters/index.ts`): `E4_REGISTRY` + `getE4()`, selected by **`E4_PROVIDER`** (default `grok`).
 - **Provider — xAI Grok** (`server/adapters/grok-image.ts`): `POST https://api.x.ai/v1/images/generations`, Bearer `GROK_API_KEY`, model `GROK_IMAGE_MODEL` (default `grok-imagine-image-quality`), `response_format: b64_json` → **JPEG**. Verified against xAI docs 2026-06.
-- **Stored** in the same asset store via `server/assets/images.ts` (`getOrCreateImage`); image key = `sha256(provider|model|styleId|prompt)`, so regenerating an identical frame/scene is free. Store extension for images is `.jpg` (matches Grok); the manifest records the actual `mimeType`.
-- **Style consistency:** shared style in `server/adapters/image-style.ts` — `id` `v1-flat-warm` + prompt prefix; the `styleId` is part of the image key. Incidental Slovenian text in images is **embraced** (user decision). **Character/landmark consistency across frames is the known open gap** → to be addressed with Grok's **reference images** (≤3): `referenceText` + `referenceImages` are STUBBED in the style module and threaded through `generate(referenceImages)`, but the multi-image-editing call is **not wired yet**.
+- **Explicit format args:** `aspectRatio` + `resolution` are typed `generate()` args (not prose) → Grok `aspect_ratio`/`resolution`. They live in `IMAGE_FORMAT` per asset type (`sheet` 16:9, `frame` 4:3, `scene` 16:9; all `2k`) and are **part of the image key** (`sha256(provider|model|styleId|aspectRatio|resolution|prompt)`). Store extension `.jpg`; manifest records `mimeType`.
+
+### Consistency engine — reference sheet (BUILT, proven on the bakery)
+Character/landmark drift is solved by anchoring every image to a per-scenario **reference sheet**, not by text alone:
+1. **Asset bible** — `scene.assets: AssetDef[]` (`{label, descriptor}`): the minimal labeled set (each `CHARACTER`, the `SETTING`, each `OBJECT`). Labels are ALL-CAPS tokens reused verbatim in every prompt.
+2. **Reference sheet** — `referenceSheetPrompt(assets)` builds a *model sheet*: each asset drawn once on a neutral background with its label printed. Generated first (text-to-image, 16:9), `styled:false` (prompt is complete).
+3. **Anchored frames + scene** — each is generated via the **edits endpoint** `POST /v1/images/edits` with the reference sheet passed as `image:{url:<base64 data URI>, type:"image_url"}` (≤3 refs). The edits path **composes a fresh scene anchored to the sheet** (verified — not an edit *of* the sheet). Frame prompts are objective-first, name only labels, and suppress the background; the scene is an establishing tableau (one moment, all objects, full setting).
+- The reference sheet is folded into `styleId` for cache purposes (bump `styleId` when a sheet changes). Adding aspect/resolution to the key **orphaned the café's pre-engine images** — café story frames 404 until the café is re-run through this engine with its own asset bible.
 
 ---
 
