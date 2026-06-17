@@ -1,9 +1,11 @@
 # Copy this file to .env and fill in real values IN A TEXT EDITOR (not the shell).
 # See docs/SECRETS.md. Never commit .env.
 
-# --- Which provider fills each swappable role (E2 = understand+tutor, E3 = Slovenian voice) ---
+# --- Which provider fills each swappable role (E2 = understand+tutor, E3 = Slovenian voice,
+#     E4 = image generation for scenario story frames / scene images) ---
 E2_PROVIDER=gemini
 E3_PROVIDER=elevenlabs
+E4_PROVIDER=grok
 
 # --- E2: Google Gemini (audio-in understanding + in-character tutoring) ---
 GEMINI_API_KEY=
@@ -16,8 +18,13 @@ ELEVENLABS_API_KEY=
 ELEVENLABS_VOICE_ID=
 ELEVENLABS_MODEL_ID=eleven_v3
 
+# --- E4: xAI Grok image generation (scenario story-frame + scene images) ---
+# Endpoint is OpenAI-compatible (https://api.x.ai/v1/images/generations). grok-imagine-image-quality
+# is the current recommended model (grok-imagine-image-pro was deprecated 2026-05-15).
+GROK_API_KEY=
+GROK_IMAGE_MODEL=grok-imagine-image-quality
+
 # --- Optional alternates for the blind A/B (leave blank until needed) ---
-# GROK_API_KEY=
 # OPENAI_API_KEY=
 
 # --- Server ---

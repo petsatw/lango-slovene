@@ -94,8 +94,14 @@ export interface ImageAdapter {
   readonly name: string;
   /** Stable model identifier — part of the image cache key, so a model change is a distinct asset. */
   readonly model: string;
-  /** Generate one image from a (style-prefixed) prompt. params carries provider-specific knobs. */
-  generate(input: { prompt: string; params?: Record<string, unknown> }): Promise<ImageResult>;
+  /** Generate one image from a (style-prefixed) prompt. `referenceImages` (style refs, up to a
+   *  provider limit) is a forward stub for visual-consistency support; `params` carries
+   *  provider-specific knobs (aspect_ratio, resolution, …). */
+  generate(input: {
+    prompt: string;
+    referenceImages?: string[];
+    params?: Record<string, unknown>;
+  }): Promise<ImageResult>;
 }
 
 /** E2-only result — what /api/turn returns now that audio streams separately via /api/speak. */

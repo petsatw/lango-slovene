@@ -4,6 +4,7 @@
 import type { E2Adapter, E3Adapter, ImageAdapter } from "../types";
 import { GeminiE2 } from "./gemini";
 import { ElevenLabsE3 } from "./elevenlabs";
+import { GrokImageE4 } from "./grok-image";
 
 const E2_REGISTRY: Record<string, () => E2Adapter> = {
   gemini: () => new GeminiE2(),
@@ -31,20 +32,17 @@ export function getE3(): E3Adapter {
   return make();
 }
 
-// M2 image providers. Empty until a provider is chosen at the M2 gate (verify-first: fetch the
-// provider's official docs + confirm the latest model id before adding a class here). Add an impl
-// and set IMAGE_PROVIDER to go live — no other code changes (same swap philosophy as E2/E3).
-const IMAGE_REGISTRY: Record<string, () => ImageAdapter> = {
-  // gemini: () => new GeminiImage(),   // e.g. Imagen / Gemini image — add at the gate
-  // openai: () => new OpenAIImage(),   // e.g. gpt-image — add at the gate
+// E4 — the image slot (M2), same swap philosophy as E2/E3: implement ImageAdapter, register here,
+// select with E4_PROVIDER. Verify-first before adding a provider: fetch its official docs + confirm
+// the latest model id (memory: verify-apis-and-versions-before-building).
+const E4_REGISTRY: Record<string, () => ImageAdapter> = {
+  grok: () => new GrokImageE4(),
+  // gemini: () => new GeminiImageE4(),  // add for an A/B
 };
 
-export function getImage(): ImageAdapter {
-  const name = (process.env.IMAGE_PROVIDER || "").toLowerCase();
-  const make = IMAGE_REGISTRY[name];
-  if (!make) {
-    const known = Object.keys(IMAGE_REGISTRY).join(", ") || "(none registered yet — see docs/asset-engine-spec.md §M2)";
-    throw new Error(`Unknown/unset IMAGE_PROVIDER "${name}". Known: ${known}`);
-  }
+export function getE4(): ImageAdapter {
+  const name = (process.env.E4_PROVIDER || "grok").toLowerCase();
+  const make = E4_REGISTRY[name];
+  if (!make) throw new Error(`Unknown E4_PROVIDER "${name}". Known: ${Object.keys(E4_REGISTRY).join(", ")}`);
   return make();
 }
