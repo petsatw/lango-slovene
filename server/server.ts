@@ -9,9 +9,10 @@ import express from "express";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { understand } from "./orchestrator";
-import { getE2, getE3 } from "./adapters/index";
+import { getE2, getE3, getE4 } from "./adapters/index";
 import * as store from "./assets/store";
 import * as sessions from "./assets/sessions";
+import { IMAGE_STYLE } from "./adapters/image-style";
 import { CAFE, SCENARIOS, freshSession, getScenario } from "./scenarios";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -46,6 +47,14 @@ app.get("/api/config", (_req, res) => {
       title: CAFE.title,
       opening: CAFE.opening,
       objectives: CAFE.objectives.map((o) => ({ id: o.id, label: o.label, targetSL: o.targetSL })),
+      // Story layer (M4): frame order + SL lines for playback; image bytes come from /api/image.
+      story: CAFE.scene?.story
+        ? {
+            sentences: CAFE.scene.story.sentences,
+            frames: CAFE.scene.story.frames.map((f) => ({ objectiveId: f.objectiveId, lineSL: f.lineSL })),
+            hasScene: !!CAFE.scene.story.sceneImagePrompt,
+          }
+        : null,
     },
     session: freshSession(CAFE),
     scenarios: SCENARIOS.map((s) => ({ id: s.id, title: s.title, status: s.status })), // PLANNED selector
@@ -162,6 +171,31 @@ app.get("/api/speak", async (req, res) => {
     if (!res.headersSent) res.status(502).json({ error: err?.message || "speak failed" });
     else res.end();
   }
+});
+
+// M4 — serve a scenario's story-frame / scene image from the store (read-only: playback never
+// bills; `npm run build:assets` pre-generates them). objectiveId="scene" => the final all-in image.
+app.get("/api/image", (req, res) => {
+  const scenario = getScenario(String(req.query.scenarioId || ""));
+  const story = scenario.scene?.story;
+  if (!story) return res.status(404).json({ error: "no story for scenario" });
+
+  const objectiveId = String(req.query.objectiveId || "");
+  const prompt =
+    objectiveId === "scene"
+      ? story.sceneImagePrompt
+      : story.frames.find((f) => f.objectiveId === objectiveId)?.imagePrompt;
+  if (!prompt) return res.status(404).json({ error: "no frame for that objective" });
+
+  const e4 = getE4();
+  const key = store.imageKey(e4.name, e4.model, IMAGE_STYLE.id, prompt);
+  const buf = store.read(key, "image");
+  if (!buf) return res.status(404).json({ error: "image not built — run: npm run build:assets -- " + scenario.id });
+
+  res.setHeader("Content-Type", "image/jpeg");
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("X-Asset-Cache", "hit");
+  res.end(buf);
 });
 
 // M6 — captured session records (replay + versioning). All read from assets/sessions/.

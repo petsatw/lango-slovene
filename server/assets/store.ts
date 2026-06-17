@@ -16,7 +16,10 @@ import path from "node:path";
 
 export type AssetType = "audio" | "image";
 
-const EXT: Record<AssetType, string> = { audio: "mp3", image: "png" };
+// Fixed extension per type so getPath stays deterministic (key+type → path, no manifest read).
+// Images follow the E4 provider's output — Grok returns JPEG. A PNG-output provider would need a
+// migration here; the manifest records the actual mimeType so a mismatch is detectable.
+const EXT: Record<AssetType, string> = { audio: "mp3", image: "jpg" };
 
 // Gitignored assets/ at repo root by default; override with ASSET_DIR (absolute, or relative to cwd).
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -29,6 +32,7 @@ export interface AssetMeta {
   voiceOrModel: string; // voiceTag for audio, model+style for images
   text?: string; // audio source text
   prompt?: string; // image prompt (M2)
+  mimeType?: string; // actual content type of the bytes (e.g. image/jpeg) — recorded for detectability
   scenarioId?: string;
   objectiveId?: string;
 }
@@ -72,6 +76,7 @@ export function put(key: string, type: AssetType, bytes: Buffer, meta: AssetMeta
     voiceOrModel: meta.voiceOrModel,
     ...(meta.text !== undefined ? { text: meta.text } : {}),
     ...(meta.prompt !== undefined ? { prompt: meta.prompt } : {}),
+    ...(meta.mimeType !== undefined ? { mimeType: meta.mimeType } : {}),
     ...(meta.scenarioId !== undefined ? { scenarioId: meta.scenarioId } : {}),
     ...(meta.objectiveId !== undefined ? { objectiveId: meta.objectiveId } : {}),
     createdAt: new Date().toISOString(),
@@ -88,7 +93,7 @@ export async function getOrCreate(
 ): Promise<{ bytes: Buffer; hit: boolean }> {
   const existing = read(key, type);
   if (existing) return { bytes: existing, hit: true };
-  const { bytes } = await gen();
-  put(key, type, bytes, meta);
+  const { bytes, mimeType } = await gen();
+  put(key, type, bytes, { ...meta, mimeType });
   return { bytes, hit: false };
 }

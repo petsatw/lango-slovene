@@ -265,6 +265,48 @@ async function stopRecordingAndSend() {
   }
 }
 
+// ---- M4: Story player — one frame per objective (image + SL line + audio), ending on the scene ----
+let storyMeta = null;   // { sentences, frames:[{objectiveId,lineSL}], hasScene } from /api/config
+let storySteps = [];    // [{ objectiveId, lineSL, scene? }]
+let storyIdx = 0;
+
+function buildStorySteps() {
+  if (!storyMeta) return [];
+  const steps = storyMeta.frames.map((f) => ({ objectiveId: f.objectiveId, lineSL: f.lineSL }));
+  if (storyMeta.hasScene) steps.push({ objectiveId: "scene", lineSL: "", scene: true });
+  return steps;
+}
+
+function renderStoryStep() {
+  const step = storySteps[storyIdx];
+  if (!step) return;
+  const img = $("story-img");
+  img.alt = step.scene ? "Full scene" : step.lineSL;
+  img.src = `/api/image?scenarioId=${encodeURIComponent(storyMeta.scenarioId)}&objectiveId=${encodeURIComponent(step.objectiveId)}`;
+  $("story-line").textContent = step.scene ? "🎬" : step.lineSL;
+  $("story-progress").textContent = `${storyIdx + 1} / ${storySteps.length}`;
+  $("story-prev").disabled = storyIdx === 0;
+  $("story-next").disabled = storyIdx === storySteps.length - 1;
+  // Play the frame's line from the store (free if pre-built; silent on the final scene).
+  if (!step.scene && step.lineSL) {
+    playReplyStreaming(step.lineSL, { scenarioId: storyMeta.scenarioId, objectiveId: step.objectiveId });
+  }
+}
+
+function openStory() {
+  storySteps = buildStorySteps();
+  if (!storySteps.length) return;
+  storyIdx = 0;
+  $("story").hidden = false;
+  renderStoryStep();
+}
+
+function closeStory() { $("story").hidden = true; }
+function storyGo(delta) {
+  storyIdx = Math.max(0, Math.min(storySteps.length - 1, storyIdx + delta));
+  renderStoryStep();
+}
+
 // ---- M6: Past runs — replay a captured session turn-by-turn, free (audio served from the store) ----
 
 // Play one stored clip to completion (resolves on 'ended'); used to step a replay turn-by-turn.
@@ -348,6 +390,10 @@ async function init() {
     session = cfg.session || null;
     runId = newRunId(session?.scenarioId || cfg.scenario.id);
     renderObjectives();
+    if (cfg.scenario.story) {
+      storyMeta = { ...cfg.scenario.story, scenarioId: cfg.scenario.id };
+      $("story-open").hidden = false;
+    }
     if (cfg.scenario.opening) addBubble("tutor", cfg.scenario.opening);
   } catch (err) {
     obs.error(`config: ${err.message}`);
@@ -362,6 +408,12 @@ async function init() {
     runsToggle.setAttribute("aria-expanded", String(open));
     if (open) loadRuns();
   });
+
+  // Story player controls.
+  $("story-open").addEventListener("click", openStory);
+  $("story-close").addEventListener("click", closeStory);
+  $("story-prev").addEventListener("click", () => storyGo(-1));
+  $("story-next").addEventListener("click", () => storyGo(1));
 
   const btn = $("talk");
   btn.disabled = false;

@@ -3,6 +3,13 @@
 
 import type { Objective, SessionState } from "./types";
 
+/** One visual story frame = one learning concept (image + its SL line + that line's audio). */
+export interface StoryFrame {
+  objectiveId: string; // ties the frame to an objective (and thus its targetSL audio)
+  lineSL: string; // the Slovenian line shown/spoken on this frame (usually the objective's targetSL)
+  imagePrompt: string; // raw prompt for the frame image (the house style prefix is added at gen time)
+}
+
 export interface Scenario {
   id: string;
   title: string;
@@ -14,10 +21,13 @@ export interface Scenario {
   /** The tutor's first Slovenian line (shown/spoken at session start). */
   opening: string;
   objectives: Objective[];
-  /** PLANNED (Feature 2 — visual story panels). Stubbed, not rendered in the MVP. */
+  /** Visual story layer (M3/M4) — narrated opener, one frame per objective, one final all-in scene. */
   scene?: {
-    image?: string; // backdrop asset
-    story?: string[]; // ≤5 short simple-Slovenian sentences, one per story panel
+    story?: {
+      sentences: string[]; // ≤5 short simple-Slovenian narration sentences
+      frames: StoryFrame[]; // one visual frame per learning objective
+      sceneImagePrompt: string; // final image: ALL objectives in one picture
+    };
   };
 }
 
@@ -51,16 +61,50 @@ export const CAFE: Scenario = {
       hintEN: "Ask the price, then thank and say goodbye.",
     },
   ],
-  // PLANNED visual layer — content sketch only; not rendered yet.
+  // Visual story layer (M3): narrated opener + one frame per objective + a final all-in scene.
   scene: {
-    image: undefined,
-    story: [
-      "Vstopiš v majhno kavarno v Ljubljani.",
-      "Za pultom te prijazno pozdravi natakar.",
-      "Naročiš kavo z mlekom.",
-      "Vprašaš, koliko stane.",
-      "Plačaš in se posloviš.",
-    ],
+    story: {
+      sentences: [
+        "Vstopiš v majhno kavarno v Ljubljani.",
+        "Za pultom te prijazno pozdravi natakar.",
+        "Naročiš kavo z mlekom.",
+        "Vprašaš, koliko stane.",
+        "Plačaš in se posloviš.",
+      ],
+      frames: [
+        {
+          objectiveId: "greet",
+          lineSL: "Dober dan.",
+          imagePrompt:
+            "A friendly barista behind a small café counter waving hello to a customer who has just " +
+            "walked in, warm welcoming smile.",
+        },
+        {
+          objectiveId: "order_coffee",
+          lineSL: "Eno kavo, prosim.",
+          imagePrompt:
+            "A customer at the café counter ordering one coffee, holding up one finger; the barista " +
+            "listening; a single espresso cup ready on the counter.",
+        },
+        {
+          objectiveId: "with_milk",
+          lineSL: "Z mlekom, prosim.",
+          imagePrompt:
+            "The barista pouring milk from a small jug into a cup of coffee at the café counter; cozy " +
+            "and warm.",
+        },
+        {
+          objectiveId: "pay_leave",
+          lineSL: "Koliko stane? Hvala, nasvidenje.",
+          imagePrompt:
+            "A customer handing a few coins to the smiling barista across the café counter and waving " +
+            "goodbye.",
+        },
+      ],
+      sceneImagePrompt:
+        "A lively café scene in Ljubljana showing the whole interaction at once: a customer greeting " +
+        "the barista, a coffee with milk on the counter, coins being paid, and a friendly goodbye wave.",
+    },
   },
 };
 

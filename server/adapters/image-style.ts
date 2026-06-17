@@ -9,10 +9,11 @@
 export const IMAGE_STYLE = {
   id: "v1-flat-warm",
 
-  // Prompt prefix applied to every image — the house style in words.
+  // Prompt prefix applied to every image — the house style in words. (Incidental Slovenian text —
+  // menus, signs — is welcome for immersion; we do NOT suppress it. User decision 2026-06-17.)
   prefix:
     "Flat, warm, friendly children's-book illustration. Soft rounded shapes, clean vector style, " +
-    "gentle Slovenian café/town setting, cohesive muted palette, no text in the image. ",
+    "gentle Slovenian café/town setting, cohesive muted palette. ",
 
   // STUB — richer style-guidance text appended to every prompt (color notes, character look,
   // line weight, lighting, etc.). Empty today; fill in to tighten the house style.
