@@ -29,6 +29,12 @@
     <button id="play-fallback" class="play-fallback" hidden>▶ Tap to hear the tutor</button>
   </main>
 
+  <!-- Past runs — replay a captured session turn-by-turn for free (M6). -->
+  <section id="runs" class="runs">
+    <button id="runs-toggle" class="runs-toggle" type="button" aria-expanded="false">↺ Past runs</button>
+    <div id="runs-panel" class="runs-panel" hidden></div>
+  </section>
+
   <!-- Observability overlay — shows each stage live so failures are visible, not mysterious. -->
   <section id="obs" class="obs">
     <div class="obs-row"><span>state</span><b id="obs-state">idle</b></div>

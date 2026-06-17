@@ -115,6 +115,29 @@ main {
   padding: 12px 18px; font-size: 15px;
 }
 
+.runs { border-top: 1px solid #23272f; }
+.runs-toggle {
+  width: 100%; text-align: left;
+  background: var(--panel); color: var(--muted);
+  border: none; padding: 10px 16px; font-size: 13px; cursor: pointer;
+}
+.runs-toggle:hover { color: var(--text); }
+.runs-panel { background: var(--panel); padding: 4px 12px 12px; }
+.runs-empty { color: var(--muted); font-size: 13px; margin: 8px 4px; }
+.run-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 6px; border-bottom: 1px solid #23272f; font-size: 14px;
+}
+.run-row:last-child { border-bottom: none; }
+.run-name { font-weight: 600; flex-shrink: 0; max-width: 40%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.run-meta { color: var(--muted); font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.run-play, .run-fav {
+  border: none; background: #2a2f3a; color: #fff; border-radius: 50%;
+  width: 28px; height: 28px; font-size: 12px; padding: 0; cursor: pointer; flex-shrink: 0;
+}
+.run-play { background: var(--green); }
+.run-fav { background: transparent; color: #ffd479; font-size: 16px; }
+
 .obs {
   background: var(--panel);
   border-top: 1px solid #23272f;

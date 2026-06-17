@@ -265,6 +265,80 @@ async function stopRecordingAndSend() {
   }
 }
 
+// ---- M6: Past runs — replay a captured session turn-by-turn, free (audio served from the store) ----
+
+// Play one stored clip to completion (resolves on 'ended'); used to step a replay turn-by-turn.
+function playClipToEnd(text, scenarioId) {
+  return new Promise((resolve) => {
+    const audio = new Audio();
+    const params = new URLSearchParams({ text });
+    if (scenarioId) params.set("scenarioId", scenarioId);
+    audio.src = `/api/speak?${params.toString()}`;
+    audio.onended = resolve;
+    audio.onerror = resolve;
+    audio.play().catch(resolve);
+  });
+}
+
+function fmtWhen(iso) {
+  try { return new Date(iso).toLocaleString(); } catch { return iso; }
+}
+
+async function loadRuns() {
+  const panel = $("runs-panel");
+  panel.innerHTML = "<p class='runs-empty'>Loading…</p>";
+  try {
+    const { sessions } = await (await fetch("/api/sessions")).json();
+    if (!sessions.length) { panel.innerHTML = "<p class='runs-empty'>No past runs yet.</p>"; return; }
+    panel.innerHTML = "";
+    for (const s of sessions) {
+      const row = document.createElement("div");
+      row.className = "run-row";
+      const star = s.favorite ? "★" : "☆";
+      const name = s.label || s.id;
+      row.innerHTML =
+        `<button class="run-play" type="button" title="Replay this run">▶</button>` +
+        `<span class="run-name">${name}</span>` +
+        `<span class="run-meta">${s.scenarioId} · ${s.completed}/${s.objectives} · ${s.status} · ${fmtWhen(s.createdAt)}</span>` +
+        `<button class="run-fav" type="button" title="Favorite">${star}</button>`;
+      row.querySelector(".run-play").addEventListener("click", () => replayRun(s.id, row));
+      row.querySelector(".run-fav").addEventListener("click", () => toggleFavorite(s.id, !s.favorite));
+      panel.appendChild(row);
+    }
+  } catch (err) {
+    panel.innerHTML = `<p class='runs-empty'>Failed: ${err.message}</p>`;
+  }
+}
+
+async function toggleFavorite(id, favorite) {
+  await fetch(`/api/sessions/${encodeURIComponent(id)}/meta`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ favorite }),
+  });
+  loadRuns();
+}
+
+// Turn-based static replay: step the record in order, playing tutor turns from the store (free)
+// and showing the student lines. Renders into the transcript so it reads like the original encounter.
+async function replayRun(id, row) {
+  const rec = await (await fetch(`/api/sessions/${encodeURIComponent(id)}`)).json();
+  if (rec.error) { obs.error(rec.error); return; }
+  $("transcript").innerHTML = "";
+  $("takeaway").hidden = true;
+  obs.state(`replaying ${rec.id}…`);
+  for (const t of rec.turns) {
+    if (t.role === "tutor") {
+      addBubble("tutor", t.text);
+      await playClipToEnd(t.text, rec.scenarioId);
+    } else {
+      addBubble("user", t.userVerbatim || t.text, t.text && t.userVerbatim ? `≈ ${t.text}` : "");
+      await new Promise((r) => setTimeout(r, 700)); // a beat to read the student line
+    }
+  }
+  obs.state("idle");
+}
+
 async function init() {
   try {
     const cfg = await (await fetch("/api/config")).json();
@@ -278,6 +352,16 @@ async function init() {
   } catch (err) {
     obs.error(`config: ${err.message}`);
   }
+
+  // Past-runs panel: lazy-load the list the first time it's opened.
+  const runsToggle = $("runs-toggle");
+  runsToggle.addEventListener("click", () => {
+    const panel = $("runs-panel");
+    const open = panel.hidden;
+    panel.hidden = !open;
+    runsToggle.setAttribute("aria-expanded", String(open));
+    if (open) loadRuns();
+  });
 
   const btn = $("talk");
   btn.disabled = false;
