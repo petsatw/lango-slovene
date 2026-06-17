@@ -95,7 +95,10 @@ app.get("/api/speak", async (req, res) => {
     return res.end(cached);
   }
 
-  const meta = { provider: e3.name, voiceOrModel: e3.voiceTag, text };
+  // Scenario tags (optional) so live clips are queryable by scenario/objective in the manifest.
+  const scenarioId = req.query.scenarioId ? String(req.query.scenarioId) : undefined;
+  const objectiveId = req.query.objectiveId ? String(req.query.objectiveId) : undefined;
+  const meta = { provider: e3.name, voiceOrModel: e3.voiceTag, text, scenarioId, objectiveId };
 
   try {
     res.setHeader("Content-Type", "audio/mpeg");

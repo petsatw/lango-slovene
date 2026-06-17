@@ -46,7 +46,7 @@ function addBubble(role, text, sub) {
     replay.title = "Replay";
     replay.setAttribute("aria-label", "Replay this line");
     replay.textContent = "▶";
-    replay.addEventListener("click", () => playReplyStreaming(text));
+    replay.addEventListener("click", () => playReplyStreaming(text, { scenarioId: session?.scenarioId }));
     div.appendChild(replay);
   }
 
@@ -90,7 +90,7 @@ function showTakeaway() {
     btn.type = "button";
     btn.title = "Hear it";
     btn.textContent = "▶";
-    btn.addEventListener("click", () => playReplyStreaming(meta.targetSL));
+    btn.addEventListener("click", () => playReplyStreaming(meta.targetSL, { scenarioId: session?.scenarioId, objectiveId: meta.id }));
     row.appendChild(span);
     row.appendChild(btn);
     list.appendChild(row);
@@ -160,10 +160,13 @@ function wavBase64FromBuffer(buffer) {
 
 // Level 1 streaming playback: point an <audio> element at /api/speak; the browser streams and
 // plays the mp3 progressively, so audio starts on the first chunk instead of after full synthesis.
-async function playReplyStreaming(text) {
+async function playReplyStreaming(text, opts = {}) {
   const audio = new Audio();
   audio.preload = "auto";
-  audio.src = `/api/speak?text=${encodeURIComponent(text)}`;
+  const params = new URLSearchParams({ text });
+  if (opts.scenarioId) params.set("scenarioId", opts.scenarioId);
+  if (opts.objectiveId) params.set("objectiveId", opts.objectiveId);
+  audio.src = `/api/speak?${params.toString()}`;
   obs.state("speaking…");
 
   const t0 = performance.now();
@@ -244,7 +247,7 @@ async function stopRecordingAndSend() {
     renderObjectives();
 
     // Text is on screen now; audio streams in and starts on the first chunk.
-    await playReplyStreaming(data.tutorReply);
+    await playReplyStreaming(data.tutorReply, { scenarioId: session?.scenarioId });
 
     if (session && session.complete) showTakeaway();
   } catch (err) {
