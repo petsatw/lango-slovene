@@ -1,7 +1,7 @@
 # Secrets — never commit. See docs/SECRETS.md
 .env
 .env.*
-!.env.example
+!example-vars
 
 # Dependencies
 node_modules/
@@ -17,3 +17,6 @@ fixtures/audio/*.mp4
 fixtures/audio/*.m4a
 fixtures/audio/*.wav
 fixtures/audio/*.ogg
+
+# Local workspace — tactical docs, handoffs, scratch notes (not part of the repo)
+.scratch/
