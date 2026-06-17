@@ -14,7 +14,10 @@
     <h1>Govori 🇸🇮</h1>
     <p id="scenario">…</p>
     <div id="objectives" class="objectives"></div>
-    <button id="story-open" class="story-open" type="button" hidden>📖 Play the story</button>
+    <div class="header-actions">
+      <button id="story-open" class="story-open" type="button" hidden>📖 Play the story</button>
+      <button id="practice-open" class="story-open" type="button" hidden>🎧 Practice</button>
+    </div>
   </header>
 
   <main>
@@ -40,6 +43,26 @@
         <button id="story-prev" class="story-nav" type="button" aria-label="Previous">‹</button>
         <span id="story-progress" class="story-progress"></span>
         <button id="story-next" class="story-nav" type="button" aria-label="Next">›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Free practice mode (M5): hear the canonical phrase, record your own try, compare. Zero API cost. -->
+  <div id="practice" class="story-overlay" hidden>
+    <div class="story-card">
+      <button id="practice-close" class="story-close" type="button" aria-label="Close">✕</button>
+      <p id="practice-label" class="practice-label">—</p>
+      <p id="practice-target" class="story-line">—</p>
+      <div class="practice-actions">
+        <button id="practice-hear" class="practice-btn" type="button">▶ Hear it</button>
+        <button id="practice-record" class="practice-btn record" type="button">🎤 Hold to try</button>
+        <button id="practice-playback" class="practice-btn" type="button" hidden>▶ Your try</button>
+      </div>
+      <p id="practice-hint" class="practice-hint">Listen, then hold the mic and repeat. Play yours back to compare.</p>
+      <div class="story-controls">
+        <button id="practice-prev" class="story-nav" type="button" aria-label="Previous">‹</button>
+        <span id="practice-progress" class="story-progress"></span>
+        <button id="practice-next" class="story-nav" type="button" aria-label="Next">›</button>
       </div>
     </div>
   </div>

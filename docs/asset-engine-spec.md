@@ -126,8 +126,8 @@ Mirrors the E2/E3 swap pattern; the image slot is **E4**.
 ## M4 — Story playback in the app (the visual story feature)
 Render the narrated opener: story frames one-per-objective (image + SL line + audio from the store), ending on the final all-objectives scene. This is PLANNED ARCHITECTURE.md feature #2, now backed by the asset store.
 
-## M5 — Free practice mode (enabled by the store)
-A **practice** mode built on a scenario's **authored** canonical assets (objective phrases + story lines from `build:assets`): play a stored clip → student repeats, at **zero API cost**. Free and offline; optional speaking-check via E2. This is *practice against canonical content* — explicitly distinct from replaying a specific past run, which is §M6.
+## M5 — Free practice mode (BUILT, enabled by the store)
+A **practice** mode over a scenario's **authored** canonical phrases (objective `targetSL`): a "🎧 Practice" player steps through objectives — auto-plays the canonical clip from the store (free disk hit), the student **records their attempt locally** (MediaRecorder) and plays it back to self-compare. **Zero API cost, offline** (beyond the cached `/api/speak` hit). Client-only (`public/`), no new server route. The optional E2 speaking-check is intentionally deferred to keep practice free. Distinct from replaying a specific past run (§M6).
 
 ## M6 — Session capture, replay & versioning ("come back to my run")
 Covers what M1–M5 do not.

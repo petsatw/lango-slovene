@@ -265,6 +265,73 @@ async function stopRecordingAndSend() {
   }
 }
 
+// ---- M5: Free practice — hear the canonical phrase, record your own try locally, compare. No API spend. ----
+let practiceIdx = 0;
+let practiceRec = null;
+let practiceChunks = [];
+let practiceUrl = null; // object URL of the last local attempt
+
+function renderPracticeStep() {
+  const o = objectivesMeta[practiceIdx];
+  if (!o) return;
+  $("practice-label").textContent = o.label;
+  $("practice-target").textContent = o.targetSL;
+  $("practice-progress").textContent = `${practiceIdx + 1} / ${objectivesMeta.length}`;
+  $("practice-prev").disabled = practiceIdx === 0;
+  $("practice-next").disabled = practiceIdx === objectivesMeta.length - 1;
+  if (practiceUrl) { URL.revokeObjectURL(practiceUrl); practiceUrl = null; }
+  $("practice-playback").hidden = true;
+  hearCanonical(); // auto-play the model phrase (free — served from the store)
+}
+
+function hearCanonical() {
+  const o = objectivesMeta[practiceIdx];
+  if (o) playReplyStreaming(o.targetSL, { scenarioId: session?.scenarioId, objectiveId: o.id });
+}
+
+function openPractice() {
+  if (!objectivesMeta.length) return;
+  practiceIdx = 0;
+  $("practice").hidden = false;
+  renderPracticeStep();
+}
+function closePractice() {
+  $("practice").hidden = true;
+  if (practiceRec && practiceRec.state !== "inactive") practiceRec.stop();
+}
+function practiceGo(delta) {
+  practiceIdx = Math.max(0, Math.min(objectivesMeta.length - 1, practiceIdx + delta));
+  renderPracticeStep();
+}
+
+async function startPracticeRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mime = pickMimeType();
+    practiceRec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+    practiceChunks = [];
+    practiceRec.ondataavailable = (e) => e.data.size && practiceChunks.push(e.data);
+    practiceRec.onstop = () => {
+      stream.getTracks().forEach((t) => t.stop());
+      if (!practiceChunks.length) return;
+      const blob = new Blob(practiceChunks, { type: practiceRec.mimeType || mime || "audio/webm" });
+      practiceUrl = URL.createObjectURL(blob);
+      $("practice-playback").hidden = false;
+    };
+    practiceRec.start();
+    $("practice-record").classList.add("recording");
+  } catch (err) {
+    $("practice-hint").textContent = `mic: ${err.message}`;
+  }
+}
+function stopPracticeRecording() {
+  $("practice-record").classList.remove("recording");
+  if (practiceRec && practiceRec.state !== "inactive") practiceRec.stop();
+}
+function playPracticeAttempt() {
+  if (practiceUrl) new Audio(practiceUrl).play().catch(() => {});
+}
+
 // ---- M4: Story player — one frame per objective (image + SL line + audio), ending on the scene ----
 let storyMeta = null;   // { sentences, frames:[{objectiveId,lineSL}], hasScene } from /api/config
 let storySteps = [];    // [{ objectiveId, lineSL, scene? }]
@@ -394,6 +461,7 @@ async function init() {
       storyMeta = { ...cfg.scenario.story, scenarioId: cfg.scenario.id };
       $("story-open").hidden = false;
     }
+    if (objectivesMeta.length) $("practice-open").hidden = false;
     if (cfg.scenario.opening) addBubble("tutor", cfg.scenario.opening);
   } catch (err) {
     obs.error(`config: ${err.message}`);
@@ -414,6 +482,20 @@ async function init() {
   $("story-close").addEventListener("click", closeStory);
   $("story-prev").addEventListener("click", () => storyGo(-1));
   $("story-next").addEventListener("click", () => storyGo(1));
+
+  // Practice controls (M5). Record is hold-to-talk; playback compares your try to the model.
+  $("practice-open").addEventListener("click", openPractice);
+  $("practice-close").addEventListener("click", closePractice);
+  $("practice-prev").addEventListener("click", () => practiceGo(-1));
+  $("practice-next").addEventListener("click", () => practiceGo(1));
+  $("practice-hear").addEventListener("click", hearCanonical);
+  $("practice-playback").addEventListener("click", playPracticeAttempt);
+  const pRec = $("practice-record");
+  pRec.addEventListener("pointerdown", (e) => { e.preventDefault(); startPracticeRecording(); });
+  const pStop = (e) => { e.preventDefault(); stopPracticeRecording(); };
+  pRec.addEventListener("pointerup", pStop);
+  pRec.addEventListener("pointercancel", pStop);
+  pRec.addEventListener("pointerleave", pStop);
 
   const btn = $("talk");
   btn.disabled = false;
