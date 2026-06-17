@@ -3,6 +3,7 @@
 // non-streaming path used by the replay harness.
 
 import { getE2, getE3 } from "./adapters/index";
+import * as store from "./assets/store";
 import { buildSystemPrompt } from "./prompt";
 import { getScenario, freshSession, type Scenario } from "./scenarios";
 import type { ConversationTurn, ObjectiveProgress, SessionState, TurnResult, UnderstandResult } from "./types";
@@ -74,8 +75,20 @@ export async function runTurn(input: {
   const u = await understand(input);
   const e3 = getE3();
 
+  // Through the persistent store: reuse the canonical clip if we've already synthesized this
+  // reply (free, survives restart); otherwise synthesize once and persist for next time.
   const t1 = performance.now();
-  const audio = await e3.synthesize({ text: u.tutorReply });
+  const key = store.audioKey(e3.name, e3.voiceTag, u.tutorReply);
+  const { bytes } = await store.getOrCreate(
+    key,
+    "audio",
+    { provider: e3.name, voiceOrModel: e3.voiceTag, text: u.tutorReply },
+    async () => {
+      const r = await e3.synthesize({ text: u.tutorReply });
+      return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };
+    },
+  );
+  const audio = { audioBase64: bytes.toString("base64"), mimeType: "audio/mpeg" };
   const e3Ms = Math.round(performance.now() - t1);
 
   return {

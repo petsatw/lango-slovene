@@ -20,3 +20,8 @@ fixtures/audio/*.ogg
 
 # Local workspace — tactical docs, handoffs, scratch notes (not part of the repo)
 .scratch/
+
+# Local generated-asset library (audio + images) — reusable content, kept local for now.
+# May later be promoted to a shippable/synced library; gitignored during build-up.
+# Root-anchored so it does NOT match the source dir server/assets/.
+/assets/
