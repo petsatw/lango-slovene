@@ -29,12 +29,19 @@ const MANIFEST = path.join(ASSET_DIR, "manifest.jsonl");
 
 export interface AssetMeta {
   provider: string;
-  voiceOrModel: string; // voiceTag for audio, model+style for images
+  voiceOrModel: string; // voiceTag for audio, model for images
   text?: string; // audio source text
-  prompt?: string; // image prompt (M2)
+  prompt?: string; // the RAW authored image prompt (the editable intent)
   mimeType?: string; // actual content type of the bytes (e.g. image/jpeg) — recorded for detectability
   scenarioId?: string;
   objectiveId?: string;
+  // ---- image provenance (how it came to be) ----
+  styleId?: string; // the visual-system version
+  aspectRatio?: string; // explicit API arg actually used
+  resolution?: string; // explicit API arg actually used
+  effectivePrompt?: string; // the EXACT string sent to the generator (prefix + raw + refText)
+  endpoint?: string; // images/generations | images/edits
+  referenceKeys?: string[]; // store keys of the reference image(s) this was anchored to
 }
 
 // Audio key — unchanged from the original server.ts audioKey, so existing keys stay compatible.
@@ -87,6 +94,12 @@ export function put(key: string, type: AssetType, bytes: Buffer, meta: AssetMeta
     voiceOrModel: meta.voiceOrModel,
     ...(meta.text !== undefined ? { text: meta.text } : {}),
     ...(meta.prompt !== undefined ? { prompt: meta.prompt } : {}),
+    ...(meta.styleId !== undefined ? { styleId: meta.styleId } : {}),
+    ...(meta.aspectRatio !== undefined ? { aspectRatio: meta.aspectRatio } : {}),
+    ...(meta.resolution !== undefined ? { resolution: meta.resolution } : {}),
+    ...(meta.effectivePrompt !== undefined ? { effectivePrompt: meta.effectivePrompt } : {}),
+    ...(meta.endpoint !== undefined ? { endpoint: meta.endpoint } : {}),
+    ...(meta.referenceKeys !== undefined ? { referenceKeys: meta.referenceKeys } : {}),
     ...(meta.mimeType !== undefined ? { mimeType: meta.mimeType } : {}),
     ...(meta.scenarioId !== undefined ? { scenarioId: meta.scenarioId } : {}),
     ...(meta.objectiveId !== undefined ? { objectiveId: meta.objectiveId } : {}),

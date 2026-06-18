@@ -86,6 +86,7 @@ Retrofit today's in-memory audio cache into a durable, content-addressed library
 - **Hot-path cache check = file existence.** `fs.existsSync(assets/audio/<key>.mp3)` is the cache hit; no manifest read needed to serve. The manifest is a *sidecar* for metadata/queries, not the lookup path.
 - **Key function:** generalize the existing `audioKey`. Audio key = `sha256(provider|voiceTag|text)` (unchanged, so existing keys are compatible). Image key (M2) = `sha256(provider|model|styleId|prompt)`.
 - **Manifest entry (JSONL):** `{ key, type:"audio"|"image", path, provider, voiceOrModel, text|prompt, scenarioId?, objectiveId?, createdAt }`. Append on write. Enables "all assets for scenario X" queries and the future library UI.
+- **Image provenance (how it came to be):** image entries also record `effectivePrompt` (the EXACT string sent, prefix+raw), `styleId`, `aspectRatio`, `resolution`, `endpoint` (generations|edits), and `referenceKeys` (the reference sheet it was anchored to). View/audit with `npm run prompts -- <scenarioId>`; `--backfill` persists computed provenance for images generated before this was recorded (deterministic, backs up the manifest first).
 - **Module:** `server/assets/store.ts` exposing:
   ```
   has(key): boolean

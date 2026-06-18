@@ -81,6 +81,7 @@ for (const item of audioItems) {
 
 // 1) Reference sheet — the anchor. Generated once, no reference, verbatim prompt (styled: false).
 let refImages: string[] | undefined;
+let refKeys: string[] | undefined;
 if (assets.length) {
   try {
     const { hit, key, bytes } = await getOrCreateImage(referenceSheetPrompt(assets), {
@@ -91,6 +92,7 @@ if (assets.length) {
     });
     hit ? hits++ : made++;
     refImages = [asDataUri(bytes)];
+    refKeys = [key];
     console.log(`   ${hit ? "hit " : "gen "} image:reference-sheet  ${key.slice(0, 12)}…`);
   } catch (err: any) {
     failures++;
@@ -106,6 +108,7 @@ for (const f of frames) {
       scenarioId: scenario.id,
       objectiveId: f.objectiveId,
       referenceImages: refImages,
+      referenceKeys: refKeys,
     });
     hit ? hits++ : made++;
     console.log(`   ${hit ? "hit " : "gen "} image:frame:${f.objectiveId}  ${key.slice(0, 12)}…`);
@@ -123,6 +126,7 @@ if (sceneImagePrompt) {
       scenarioId: scenario.id,
       objectiveId: "scene",
       referenceImages: refImages,
+      referenceKeys: refKeys,
     });
     hit ? hits++ : made++;
     console.log(`   ${hit ? "hit " : "gen "} image:scene  ${key.slice(0, 12)}…`);
