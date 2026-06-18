@@ -70,8 +70,17 @@ export const CAFE: Scenario = {
       hintEN: "Ask the price, then thank and say goodbye.",
     },
   ],
-  // Visual story layer (M3): narrated opener + one frame per objective + a final all-in scene.
+  // Visual story layer — asset bible + narrated opener + one frame per objective + final all-in scene.
   scene: {
+    // CUSTOMER is described identically to the bakery's, to begin a consistent cross-scenario student.
+    assets: [
+      { label: "BARISTA", descriptor: "friendly woman in her 30s, brown hair in a ponytail, denim apron over a white tee, warm smile; full body" },
+      { label: "CUSTOMER", descriptor: "friendly adult, short brown hair, mustard-yellow coat, red scarf, canvas tote bag; full body" },
+      { label: "CAFE", descriptor: "a small standalone vignette of a cozy Ljubljana café: a wooden counter with an espresso machine and a chalkboard menu behind it" },
+      { label: "COFFEE", descriptor: "a single cup of coffee on a saucer" },
+      { label: "MILK", descriptor: "a small jug of milk" },
+      { label: "COINS", descriptor: "a small handful of a few euro coins" },
+    ],
     story: {
       sentences: [
         "Vstopiš v majhno kavarno v Ljubljani.",
@@ -85,34 +94,35 @@ export const CAFE: Scenario = {
           objectiveId: "greet",
           lineSL: "Dober dan.",
           imagePrompt:
-            "A friendly barista behind a small café counter waving hello to a customer who has just " +
-            "walked in, warm welcoming smile.",
+            "BARISTA behind the counter, smiling and waving hello to CUSTOMER who has just walked in. " +
+            "Focus on the warm greeting between them. Keep the CAFE background simple and uncluttered.",
         },
         {
           objectiveId: "order_coffee",
           lineSL: "Eno kavo, prosim.",
           imagePrompt:
-            "A customer at the café counter ordering one coffee, holding up one finger; the barista " +
-            "listening; a single espresso cup ready on the counter.",
+            "CUSTOMER at the counter holding up one finger to order; BARISTA preparing a single COFFEE. " +
+            "Focus on ordering one coffee. Keep the CAFE background simple and uncluttered.",
         },
         {
           objectiveId: "with_milk",
           lineSL: "Z mlekom, prosim.",
           imagePrompt:
-            "The barista pouring milk from a small jug into a cup of coffee at the café counter; cozy " +
-            "and warm.",
+            "BARISTA pouring MILK from a small jug into the COFFEE at the counter; CUSTOMER watching. " +
+            "Focus on asking for the coffee with milk. Keep the CAFE background simple and uncluttered.",
         },
         {
           objectiveId: "pay_leave",
           lineSL: "Koliko stane? Hvala, nasvidenje.",
           imagePrompt:
-            "A customer handing a few coins to the smiling barista across the café counter and waving " +
-            "goodbye.",
+            "CUSTOMER handing COINS to BARISTA across the counter and waving goodbye, a COFFEE cup in " +
+            "hand. Focus on paying and saying goodbye. Keep the CAFE background simple and uncluttered.",
         },
       ],
       sceneImagePrompt:
-        "A lively café scene in Ljubljana showing the whole interaction at once: a customer greeting " +
-        "the barista, a coffee with milk on the counter, coins being paid, and a friendly goodbye wave.",
+        "A single warm establishing scene capturing the essence of ordering coffee at a café: CUSTOMER " +
+        "at the counter of the CAFE while BARISTA serves them, with the COFFEE, the MILK jug, and COINS " +
+        "all visible on the counter. Full, lived-in CAFE.",
     },
   },
 };

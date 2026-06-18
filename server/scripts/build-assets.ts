@@ -109,6 +109,7 @@ for (const f of frames) {
       objectiveId: f.objectiveId,
       referenceImages: refImages,
       referenceKeys: refKeys,
+      assetLabels: assets.map((a) => a.label),
     });
     hit ? hits++ : made++;
     console.log(`   ${hit ? "hit " : "gen "} image:frame:${f.objectiveId}  ${key.slice(0, 12)}…`);
@@ -127,6 +128,7 @@ if (sceneImagePrompt) {
       objectiveId: "scene",
       referenceImages: refImages,
       referenceKeys: refKeys,
+      assetLabels: assets.map((a) => a.label),
     });
     hit ? hits++ : made++;
     console.log(`   ${hit ? "hit " : "gen "} image:scene  ${key.slice(0, 12)}…`);

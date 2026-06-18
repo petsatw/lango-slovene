@@ -7,7 +7,7 @@
 
 import * as store from "./store";
 import { getE4 } from "../adapters/index";
-import { IMAGE_STYLE, styledPrompt } from "../adapters/image-style";
+import { IMAGE_STYLE, styledPrompt, relevantLabels } from "../adapters/image-style";
 
 export interface ImageRequest {
   aspectRatio: string;
@@ -16,6 +16,7 @@ export interface ImageRequest {
   objectiveId?: string;
   referenceImages?: string[]; // URLs / base64 data URIs / file_ids (≤3) — the reference-sheet anchor
   referenceKeys?: string[]; // store keys of those references — recorded as provenance (not sent)
+  assetLabels?: string[]; // all of the scenario's labels — used to build the per-image reference instruction
   styled?: boolean; // default true; false = send prompt verbatim (reference sheet)
 }
 
@@ -32,8 +33,11 @@ export async function getOrCreateImage(
   if (existing) return { bytes: existing, hit: true, key };
 
   // Everything that produced this image — computed here, recorded once at creation (provenance).
-  const effectivePrompt = req.styled === false ? prompt : styledPrompt(prompt);
-  const endpoint = req.referenceImages?.length ? "images/edits" : "images/generations";
+  // When anchored, build the reference instruction from ONLY the labels this prompt actually uses.
+  const anchored = !!req.referenceImages?.length;
+  const refLabels = anchored ? relevantLabels(prompt, req.assetLabels ?? []) : [];
+  const effectivePrompt = req.styled === false ? prompt : styledPrompt(prompt, { referenceLabels: refLabels });
+  const endpoint = anchored ? "images/edits" : "images/generations";
   const { bytes, mimeType } = await img.generate({
     prompt: effectivePrompt,
     aspectRatio: req.aspectRatio,

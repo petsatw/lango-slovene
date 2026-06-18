@@ -12,7 +12,7 @@ import { existsSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
 import path from "node:path";
 import * as store from "../assets/store";
 import { getE4 } from "../adapters/index";
-import { IMAGE_STYLE, IMAGE_FORMAT, styledPrompt, referenceSheetPrompt } from "../adapters/image-style";
+import { IMAGE_STYLE, IMAGE_FORMAT, styledPrompt, referenceSheetPrompt, relevantLabels } from "../adapters/image-style";
 import { SCENARIOS } from "../scenarios";
 
 const args = process.argv.slice(2);
@@ -48,15 +48,18 @@ if (assets.length) {
   sheetKey = store.imageKey(img.name, img.model, IMAGE_STYLE.id, f.aspectRatio, f.resolution, raw);
   items.push({ label: "reference-sheet", key: sheetKey, ...f, endpoint: "images/generations", effectivePrompt: raw });
 }
+const allLabels = assets.map((a) => a.label);
 for (const fr of story?.frames ?? []) {
   const f = IMAGE_FORMAT.frame;
   const key = store.imageKey(img.name, img.model, IMAGE_STYLE.id, f.aspectRatio, f.resolution, fr.imagePrompt);
-  items.push({ label: `frame:${fr.objectiveId}`, key, ...f, endpoint: "images/edits", effectivePrompt: styledPrompt(fr.imagePrompt), referenceKeys: sheetKey ? [sheetKey] : undefined });
+  const eff = styledPrompt(fr.imagePrompt, { referenceLabels: relevantLabels(fr.imagePrompt, allLabels) });
+  items.push({ label: `frame:${fr.objectiveId}`, key, ...f, endpoint: "images/edits", effectivePrompt: eff, referenceKeys: sheetKey ? [sheetKey] : undefined });
 }
 if (story?.sceneImagePrompt) {
   const f = IMAGE_FORMAT.scene;
   const key = store.imageKey(img.name, img.model, IMAGE_STYLE.id, f.aspectRatio, f.resolution, story.sceneImagePrompt);
-  items.push({ label: "scene", key, ...f, endpoint: "images/edits", effectivePrompt: styledPrompt(story.sceneImagePrompt), referenceKeys: sheetKey ? [sheetKey] : undefined });
+  const eff = styledPrompt(story.sceneImagePrompt, { referenceLabels: relevantLabels(story.sceneImagePrompt, allLabels) });
+  items.push({ label: "scene", key, ...f, endpoint: "images/edits", effectivePrompt: eff, referenceKeys: sheetKey ? [sheetKey] : undefined });
 }
 
 const manifestPath = path.join(store.ASSET_DIR, "manifest.jsonl");

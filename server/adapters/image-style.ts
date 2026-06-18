@@ -26,9 +26,35 @@ export const IMAGE_FORMAT = {
   scene: { aspectRatio: "16:9", resolution: "2k" }, // establishing tableau; video-native
 } as const;
 
-// Frame/scene prompt: house style + the authored prompt + any style-reference text.
-export function styledPrompt(prompt: string): string {
-  return [IMAGE_STYLE.prefix, prompt, IMAGE_STYLE.referenceText]
+// Which asset labels are actually used by a prompt — so the reference instruction names ONLY the
+// assets relevant to this frame/scene (greet shouldn't reference LOAF/ROLLS/COINS). Whole-word match
+// on the ALL-CAPS tokens, returned in the bible's order.
+export function relevantLabels(prompt: string, allLabels: string[]): string[] {
+  return allLabels.filter((label) => new RegExp(`\\b${label}\\b`).test(prompt));
+}
+
+function formatList(items: string[]): string {
+  if (items.length <= 1) return items.join("");
+  return items.slice(0, -1).join(", ") + " and " + items[items.length - 1];
+}
+
+// The reference-sheet usage instruction, built PER frame/scene from just the relevant labels.
+// Added only when an image is anchored to the sheet.
+export function referenceInstruction(labels: string[]): string {
+  return (
+    `To compose the scene, match the following to the corresponding labeled asset on the reference ` +
+    `sheet: ${formatList(labels)}. Use the assets themselves as a style and character references, ` +
+    `making sure to compose them naturally in a new scene, changing perspective, angle, size and ` +
+    `position in order to best represent the scene description. Do not reproduce the labels, they are ` +
+    `purely to asset matching and to establish context.`
+  );
+}
+
+// Frame/scene prompt: house style + (when anchored) the reference instruction for the relevant
+// labels + the authored prompt + any style-reference text.
+export function styledPrompt(prompt: string, opts?: { referenceLabels?: string[] }): string {
+  const ref = opts?.referenceLabels?.length ? referenceInstruction(opts.referenceLabels) : "";
+  return [IMAGE_STYLE.prefix, ref, prompt, IMAGE_STYLE.referenceText]
     .map((s) => s.trim())
     .filter(Boolean)
     .join(" ");
