@@ -229,8 +229,8 @@ export const BAKERY: Scenario = {
 
 // PLANNED scenarios (Feature 1 — choose-your-own-adventure). Declared, not yet implemented.
 export const PLANNED_SCENARIOS: Scenario[] = [
-  { id: "upravna_enota", title: "Registering at the upravna enota", status: "planned", character: "", setup: "", opening: "", objectives: [] },
-  { id: "pharmacy", title: "At the pharmacy (lekarna)", status: "planned", character: "", setup: "", opening: "", objectives: [] },
+  { id: "upravna_enota", name: "Upravna enota", title: "Registering at the upravna enota", status: "planned", character: "", setup: "", opening: "", objectives: [] },
+  { id: "pharmacy", name: "Pharmacy", title: "At the pharmacy (lekarna)", status: "planned", character: "", setup: "", opening: "", objectives: [] },
 ];
 
 export const SCENARIOS: Scenario[] = [CAFE, BAKERY, ...PLANNED_SCENARIOS];
