@@ -1,0 +1,72 @@
+{
+  "id": "bakery",
+  "name": "Bakery",
+  "title": "At the bakery (pekarna)",
+  "status": "active",
+  "character": "a friendly baker at a small neighbourhood bakery (pekarna) in Ljubljana",
+  "setup": "You are a friendly baker at a small neighbourhood pekarna in Ljubljana. A foreigner who is just starting to learn Slovenian has come in to buy bread. They live here and want to practice.",
+  "opening": "Dober dan! Kaj bo dobrega?",
+  "objectives": [
+    { "id": "greet", "label": "Greet", "targetSL": "Dober dan.", "hintEN": "Return the greeting." },
+    {
+      "id": "order_bread",
+      "label": "Order bread",
+      "targetSL": "En kruh, prosim.",
+      "hintEN": "Order one loaf of bread. Masculine 'en kruh' — common beginner error is the feminine 'ena kruh'."
+    },
+    {
+      "id": "order_rolls",
+      "label": "Two rolls",
+      "targetSL": "Dve žemlji, prosim.",
+      "hintEN": "Ask for two bread rolls. Slovenian DUAL 'dve žemlji' — common beginner errors are the plural 'dve žemlje' or the wrong number 'dva žemlja'."
+    },
+    {
+      "id": "pay_leave",
+      "label": "Pay & leave",
+      "targetSL": "Koliko stane? Hvala, nasvidenje.",
+      "hintEN": "Ask the price, then thank and say goodbye."
+    }
+  ],
+  "scene": {
+    "assets": [
+      { "label": "BAKER", "descriptor": "friendly woman in her 40s, dark hair in a bun, green apron over a striped shirt, warm smile; full body" },
+      { "label": "CUSTOMER", "descriptor": "friendly adult, short brown hair, mustard-yellow coat, red scarf, canvas tote bag; full body" },
+      { "label": "BAKERY", "descriptor": "a small standalone vignette of a Slovenian bakery counter: a wooden counter with shelves of bread loaves behind it" },
+      { "label": "LOAF", "descriptor": "a single rustic oval loaf of bread" },
+      { "label": "ROLLS", "descriptor": "exactly two round bread rolls, side by side" },
+      { "label": "COINS", "descriptor": "a small handful of a few euro coins" }
+    ],
+    "story": {
+      "sentences": [
+        "Vstopiš v pekarno v Ljubljani.",
+        "Za pultom te pozdravi pek.",
+        "Naročiš kruh.",
+        "Vzameš še dve žemlji.",
+        "Plačaš in se posloviš."
+      ],
+      "frames": [
+        {
+          "objectiveId": "greet",
+          "lineSL": "Dober dan.",
+          "imagePrompt": "BAKER behind the counter, smiling and waving hello to CUSTOMER who has just walked in. Focus on the warm greeting between them. Keep the BAKERY background simple and uncluttered."
+        },
+        {
+          "objectiveId": "order_bread",
+          "lineSL": "En kruh, prosim.",
+          "imagePrompt": "CUSTOMER at the counter pointing at one LOAF; BAKER reaching for it. Focus on asking for a single loaf of bread. Keep the BAKERY background simple and uncluttered."
+        },
+        {
+          "objectiveId": "order_rolls",
+          "lineSL": "Dve žemlji, prosim.",
+          "imagePrompt": "CUSTOMER holding up two fingers while BAKER places the two ROLLS into a paper bag; the two ROLLS clearly shown. Focus on the number two — unmistakably two rolls. Keep the BAKERY background simple and uncluttered."
+        },
+        {
+          "objectiveId": "pay_leave",
+          "lineSL": "Koliko stane? Hvala, nasvidenje.",
+          "imagePrompt": "CUSTOMER handing COINS to BAKER across the counter and waving goodbye, a paper bag of bread in hand. Focus on paying and saying goodbye. Keep the BAKERY background simple and uncluttered."
+        }
+      ],
+      "sceneImagePrompt": "A single warm establishing scene capturing the essence of ordering and buying bread at a bakery: CUSTOMER at the counter of the BAKERY while BAKER serves them, with the LOAF, the two ROLLS, and COINS all visible on the counter. Full, lived-in BAKERY."
+    }
+  }
+}

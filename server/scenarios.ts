@@ -1,9 +1,17 @@
-// Scenario + objective data. The active café scenario drives the MVP mastery loop.
-// Planned scenarios and the visual `scene` field are stubbed (see docs/ARCHITECTURE.md › Planned).
+// Scenario + objective data. Scenarios live as per-file JSON under server/scenarios/ (one file per
+// scenario, written by the create-scenario engine on commit). This module keeps the TS interfaces,
+// loads + validates the JSON at startup, and exposes SCENARIOS / getScenario / freshSession unchanged.
+//
+// NOTE: the data dir is server/scenarios/ (a sibling directory to this file). `from "./scenarios"`
+// still resolves to THIS file — the dir has no index, so there is no import collision.
+
+import { readdirSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 
 import type { Objective, SessionState } from "./types";
 
-/** One visual story frame = one learning concept (image + its SL line + that line's audio). */
+/** One visual story frame = one learning concept (image + its SL line + audio). */
 export interface StoryFrame {
   objectiveId: string; // ties the frame to an objective (and thus its targetSL audio)
   lineSL: string; // the Slovenian line shown/spoken on this frame (usually the objective's targetSL)
@@ -15,6 +23,13 @@ export interface StoryFrame {
 export interface AssetDef {
   label: string; // ALL-CAPS token, e.g. BAKER — printed on the sheet, referenced in prompts
   descriptor: string; // minimal canonical description that fixes the look
+}
+
+/** Register the tutor speaks in. Student target lines are usually register-neutral; this colours the
+ *  tutor's (character's) voice — declared first in the system prompt so replies stay native + short. */
+export interface Register {
+  form: "ti" | "vi"; // tikanje (informal) vs vikanje (formal)
+  variety: "pogovorni" | "knjizni"; // colloquial vs standard/bookish
 }
 
 export interface Scenario {
@@ -29,6 +44,8 @@ export interface Scenario {
   setup: string;
   /** The tutor's first Slovenian line (shown/spoken at session start). */
   opening: string;
+  /** The register the tutor holds across the scenario (ti/vi + pogovorni/knjizni). */
+  register?: Register;
   objectives: Objective[];
   /** Visual story layer (M3/M4) — narrated opener, one frame per objective, one final all-in scene. */
   scene?: {
@@ -42,201 +59,85 @@ export interface Scenario {
   };
 }
 
-export const CAFE: Scenario = {
-  id: "cafe",
-  name: "Café",
-  title: "Ordering at a café in Ljubljana",
-  status: "active",
-  character: "a friendly barista at a small café in Ljubljana",
-  setup:
-    "You are a friendly barista at a small café in Ljubljana. A foreigner who is just starting " +
-    "to learn Slovenian has come up to order. They live here and want to practice.",
-  opening: "Dober dan! Izvolite?",
-  objectives: [
-    { id: "greet", label: "Greet", targetSL: "Dober dan.", hintEN: "Return the greeting." },
-    {
-      id: "order_coffee",
-      label: "Order a coffee",
-      targetSL: "Eno kavo, prosim.",
-      hintEN: "Order one coffee. Accusative 'eno kavo' — common beginner error is the nominative 'ena kava'.",
-    },
-    {
-      id: "with_milk",
-      label: "With milk",
-      targetSL: "Z mlekom, prosim.",
-      hintEN: "Ask for it with milk. Instrumental 'z mlekom' — common beginner error is 'z mleko'.",
-    },
-    {
-      id: "pay_leave",
-      label: "Pay & leave",
-      targetSL: "Koliko stane? Hvala, nasvidenje.",
-      hintEN: "Ask the price, then thank and say goodbye.",
-    },
-  ],
-  // Visual story layer — asset bible + narrated opener + one frame per objective + final all-in scene.
-  scene: {
-    // CUSTOMER is described identically to the bakery's, to begin a consistent cross-scenario student.
-    assets: [
-      { label: "BARISTA", descriptor: "friendly woman in her 30s, brown hair in a ponytail, denim apron over a white tee, warm smile; full body" },
-      { label: "CUSTOMER", descriptor: "friendly adult, short brown hair, mustard-yellow coat, red scarf, canvas tote bag; full body" },
-      { label: "CAFE", descriptor: "a small standalone vignette of a cozy Ljubljana café: a wooden counter with an espresso machine and a chalkboard menu behind it" },
-      { label: "COFFEE", descriptor: "a single cup of coffee on a saucer" },
-      { label: "MILK", descriptor: "a small jug of milk" },
-      { label: "COINS", descriptor: "a small handful of a few euro coins" },
-    ],
-    story: {
-      sentences: [
-        "Vstopiš v majhno kavarno v Ljubljani.",
-        "Za pultom te prijazno pozdravi natakar.",
-        "Naročiš kavo z mlekom.",
-        "Vprašaš, koliko stane.",
-        "Plačaš in se posloviš.",
-      ],
-      frames: [
-        {
-          objectiveId: "greet",
-          lineSL: "Dober dan.",
-          imagePrompt:
-            "BARISTA behind the counter, smiling and waving hello to CUSTOMER who has just walked in. " +
-            "Focus on the warm greeting between them. Keep the CAFE background simple and uncluttered.",
-        },
-        {
-          objectiveId: "order_coffee",
-          lineSL: "Eno kavo, prosim.",
-          imagePrompt:
-            "CUSTOMER at the counter holding up one finger to order; BARISTA preparing a single COFFEE. " +
-            "Focus on ordering one coffee. Keep the CAFE background simple and uncluttered.",
-        },
-        {
-          objectiveId: "with_milk",
-          lineSL: "Z mlekom, prosim.",
-          imagePrompt:
-            "BARISTA pouring MILK from a small jug into the COFFEE at the counter; CUSTOMER watching. " +
-            "Focus on asking for the coffee with milk. Keep the CAFE background simple and uncluttered.",
-        },
-        {
-          objectiveId: "pay_leave",
-          lineSL: "Koliko stane? Hvala, nasvidenje.",
-          imagePrompt:
-            "CUSTOMER handing COINS to BARISTA across the counter and waving goodbye, a COFFEE cup in " +
-            "hand. Focus on paying and saying goodbye. Keep the CAFE background simple and uncluttered.",
-        },
-      ],
-      sceneImagePrompt:
-        "A single warm establishing scene capturing the essence of ordering coffee at a café: CUSTOMER " +
-        "at the counter of the CAFE while BARISTA serves them, with the COFFEE, the MILK jug, and COINS " +
-        "all visible on the counter. Full, lived-in CAFE.",
-    },
-  },
-};
+// ---- Loader: read + validate every server/scenarios/*.json at startup -------------------------
 
-// The bakery — the second daily transaction. Reuses greet + pay/leave from the café verbatim (free
-// audio reuse, cross-context reinforcement) and adds one beginner stretch: the Slovenian dual.
-export const BAKERY: Scenario = {
-  id: "bakery",
-  name: "Bakery",
-  title: "At the bakery (pekarna)",
-  status: "active",
-  character: "a friendly baker at a small neighbourhood bakery (pekarna) in Ljubljana",
-  setup:
-    "You are a friendly baker at a small neighbourhood pekarna in Ljubljana. A foreigner who is just " +
-    "starting to learn Slovenian has come in to buy bread. They live here and want to practice.",
-  opening: "Dober dan! Kaj bo dobrega?",
-  objectives: [
-    // greet + pay_leave are deliberately identical to the café → their audio is reused for free.
-    { id: "greet", label: "Greet", targetSL: "Dober dan.", hintEN: "Return the greeting." },
-    {
-      id: "order_bread",
-      label: "Order bread",
-      targetSL: "En kruh, prosim.",
-      hintEN: "Order one loaf of bread. Masculine 'en kruh' — common beginner error is the feminine 'ena kruh'.",
-    },
-    {
-      id: "order_rolls",
-      label: "Two rolls",
-      targetSL: "Dve žemlji, prosim.",
-      hintEN:
-        "Ask for two bread rolls. Slovenian DUAL 'dve žemlji' — common beginner errors are the plural " +
-        "'dve žemlje' or the wrong number 'dva žemlja'.",
-    },
-    {
-      id: "pay_leave",
-      label: "Pay & leave",
-      targetSL: "Koliko stane? Hvala, nasvidenje.",
-      hintEN: "Ask the price, then thank and say goodbye.",
-    },
-  ],
-  scene: {
-    // The minimal labeled asset set (the reference-sheet "bible"). Labels are reused verbatim in the
-    // frame/scene prompts below; the sheet is generated once and anchors every frame for consistency.
-    assets: [
-      { label: "BAKER", descriptor: "friendly woman in her 40s, dark hair in a bun, green apron over a striped shirt, warm smile; full body" },
-      { label: "CUSTOMER", descriptor: "friendly adult, short brown hair, mustard-yellow coat, red scarf, canvas tote bag; full body" },
-      { label: "BAKERY", descriptor: "a small standalone vignette of a Slovenian bakery counter: a wooden counter with shelves of bread loaves behind it" },
-      { label: "LOAF", descriptor: "a single rustic oval loaf of bread" },
-      { label: "ROLLS", descriptor: "exactly two round bread rolls, side by side" },
-      { label: "COINS", descriptor: "a small handful of a few euro coins" },
-    ],
-    story: {
-      sentences: [
-        "Vstopiš v pekarno v Ljubljani.",
-        "Za pultom te pozdravi pek.",
-        "Naročiš kruh.",
-        "Vzameš še dve žemlji.",
-        "Plačaš in se posloviš.", // identical to the café's last line → reused
-      ],
-      // Frame prompts are objective-first and reference the sheet's LABELS, with the background
-      // deliberately suppressed so nothing competes with the objective.
-      frames: [
-        {
-          objectiveId: "greet",
-          lineSL: "Dober dan.",
-          imagePrompt:
-            "BAKER behind the counter, smiling and waving hello to CUSTOMER who has just walked in. " +
-            "Focus on the warm greeting between them. Keep the BAKERY background simple and uncluttered.",
-        },
-        {
-          objectiveId: "order_bread",
-          lineSL: "En kruh, prosim.",
-          imagePrompt:
-            "CUSTOMER at the counter pointing at one LOAF; BAKER reaching for it. Focus on asking for a " +
-            "single loaf of bread. Keep the BAKERY background simple and uncluttered.",
-        },
-        {
-          objectiveId: "order_rolls",
-          lineSL: "Dve žemlji, prosim.",
-          imagePrompt:
-            "CUSTOMER holding up two fingers while BAKER places the two ROLLS into a paper bag; the two " +
-            "ROLLS clearly shown. Focus on the number two — unmistakably two rolls. Keep the BAKERY " +
-            "background simple and uncluttered.",
-        },
-        {
-          objectiveId: "pay_leave",
-          lineSL: "Koliko stane? Hvala, nasvidenje.",
-          imagePrompt:
-            "CUSTOMER handing COINS to BAKER across the counter and waving goodbye, a paper bag of bread " +
-            "in hand. Focus on paying and saying goodbye. Keep the BAKERY background simple and uncluttered.",
-        },
-      ],
-      // Scene = establishing tableau: one representative moment, ALL objects present, full setting.
-      sceneImagePrompt:
-        "A single warm establishing scene capturing the essence of ordering and buying bread at a bakery: " +
-        "CUSTOMER at the counter of the BAKERY while BAKER serves them, with the LOAF, the two ROLLS, and " +
-        "COINS all visible on the counter. Full, lived-in BAKERY.",
-    },
-  },
-};
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const SCENARIOS_DIR = path.join(__dirname, "scenarios");
 
-// PLANNED scenarios (Feature 1 — choose-your-own-adventure). Declared, not yet implemented.
+function fail(file: string, msg: string): never {
+  throw new Error(`Invalid scenario "${file}": ${msg}`);
+}
+
+function asString(file: string, obj: any, key: string): string {
+  const v = obj?.[key];
+  if (typeof v !== "string" || v.length === 0) fail(file, `field "${key}" must be a non-empty string`);
+  return v;
+}
+
+/** Validate one parsed JSON object against the Scenario interface (the loader is the data contract). */
+function validateScenario(file: string, raw: any): Scenario {
+  if (!raw || typeof raw !== "object") fail(file, "not an object");
+  asString(file, raw, "id");
+  asString(file, raw, "title");
+  asString(file, raw, "character");
+  asString(file, raw, "setup");
+  asString(file, raw, "opening");
+  if (raw.status !== "active" && raw.status !== "planned") fail(file, `status must be "active" | "planned"`);
+  if (!Array.isArray(raw.objectives)) fail(file, `"objectives" must be an array`);
+  for (const o of raw.objectives) {
+    asString(file, o, "id");
+    asString(file, o, "label");
+    asString(file, o, "targetSL");
+    asString(file, o, "hintEN");
+  }
+  if (raw.register) {
+    if (raw.register.form !== "ti" && raw.register.form !== "vi") fail(file, `register.form must be "ti" | "vi"`);
+    if (raw.register.variety !== "pogovorni" && raw.register.variety !== "knjizni") {
+      fail(file, `register.variety must be "pogovorni" | "knjizni"`);
+    }
+  }
+  if (raw.scene) {
+    for (const a of raw.scene.assets ?? []) {
+      asString(file, a, "label");
+      asString(file, a, "descriptor");
+    }
+    if (raw.scene.story) {
+      if (!Array.isArray(raw.scene.story.sentences)) fail(file, `scene.story.sentences must be an array`);
+      for (const f of raw.scene.story.frames ?? []) {
+        asString(file, f, "objectiveId");
+        asString(file, f, "lineSL");
+        asString(file, f, "imagePrompt");
+      }
+    }
+  }
+  return raw as Scenario;
+}
+
+function loadScenarios(): Scenario[] {
+  const files = readdirSync(SCENARIOS_DIR)
+    .filter((f) => f.endsWith(".json"))
+    .sort(); // stable, deterministic order
+  const loaded = files.map((f) => validateScenario(f, JSON.parse(readFileSync(path.join(SCENARIOS_DIR, f), "utf8"))));
+  return [...loaded, ...PLANNED_SCENARIOS];
+}
+
+// PLANNED scenarios (Feature 1 — choose-your-own-adventure). Declared, not yet implemented. Kept as
+// TS stubs (they own no data file); the create-scenario engine writes real scenarios as JSON.
 export const PLANNED_SCENARIOS: Scenario[] = [
   { id: "upravna_enota", name: "Upravna enota", title: "Registering at the upravna enota", status: "planned", character: "", setup: "", opening: "", objectives: [] },
   { id: "pharmacy", name: "Pharmacy", title: "At the pharmacy (lekarna)", status: "planned", character: "", setup: "", opening: "", objectives: [] },
 ];
 
-export const SCENARIOS: Scenario[] = [CAFE, BAKERY, ...PLANNED_SCENARIOS];
+export const SCENARIOS: Scenario[] = loadScenarios();
 
 export function getScenario(id: string | undefined): Scenario {
-  return SCENARIOS.find((s) => s.id === id && s.status === "active") ?? CAFE;
+  const found =
+    SCENARIOS.find((s) => s.id === id && s.status === "active") ??
+    SCENARIOS.find((s) => s.id === "cafe" && s.status === "active") ??
+    SCENARIOS.find((s) => s.status === "active") ??
+    SCENARIOS[0];
+  if (!found) throw new Error("No scenarios loaded — server/scenarios/ has no valid JSON files.");
+  return found;
 }
 
 export function freshSession(scenario: Scenario): SessionState {
