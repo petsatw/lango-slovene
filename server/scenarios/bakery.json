@@ -6,6 +6,7 @@
   "character": "a friendly baker at a small neighbourhood bakery (pekarna) in Ljubljana",
   "setup": "You are a friendly baker at a small neighbourhood pekarna in Ljubljana. A foreigner who is just starting to learn Slovenian has come in to buy bread. They live here and want to practice.",
   "opening": "Dober dan! Kaj bo dobrega?",
+  "register": { "form": "vi", "variety": "pogovorni" },
   "objectives": [
     { "id": "greet", "label": "Greet", "targetSL": "Dober dan.", "hintEN": "Return the greeting." },
     {
@@ -21,10 +22,16 @@
       "hintEN": "Ask for two bread rolls. Slovenian DUAL 'dve žemlji' — common beginner errors are the plural 'dve žemlje' or the wrong number 'dva žemlja'."
     },
     {
+      "id": "ask_price",
+      "label": "Ask price",
+      "targetSL": "Koliko stane?",
+      "hintEN": "Ask the price — a real exchange; the baker answers with the cost. Just the question; do not bundle the goodbye onto it."
+    },
+    {
       "id": "pay_leave",
       "label": "Pay & leave",
-      "targetSL": "Koliko stane? Hvala, nasvidenje.",
-      "hintEN": "Ask the price, then thank and say goodbye."
+      "targetSL": "Hvala, nasvidenje.",
+      "hintEN": "One-breath closing as you leave. Said on its own, not crammed onto the price question."
     }
   ],
   "scene": {
@@ -32,41 +39,48 @@
       { "label": "BAKER", "descriptor": "friendly woman in her 40s, dark hair in a bun, green apron over a striped shirt, warm smile; full body" },
       { "label": "CUSTOMER", "descriptor": "friendly adult, short brown hair, mustard-yellow coat, red scarf, canvas tote bag; full body" },
       { "label": "BAKERY", "descriptor": "a small standalone vignette of a Slovenian bakery counter: a wooden counter with shelves of bread loaves behind it" },
+      { "label": "DOORWAY", "descriptor": "a simple bakery entrance doorway with a glass door in a warm-toned frame, viewed head-on" },
       { "label": "LOAF", "descriptor": "a single rustic oval loaf of bread" },
       { "label": "ROLLS", "descriptor": "exactly two round bread rolls, side by side" },
-      { "label": "COINS", "descriptor": "a small handful of a few euro coins" }
+      { "label": "PRICE_TAG", "descriptor": "a small blank paper price tag on a short string" },
+      { "label": "EURO_COINS", "descriptor": "a small handful of a few euro coins" }
     ],
     "story": {
       "sentences": [
-        "Vstopiš v pekarno v Ljubljani.",
-        "Za pultom te pozdravi pek.",
-        "Naročiš kruh.",
-        "Vzameš še dve žemlji.",
-        "Plačaš in se posloviš."
+        "Vstopiš v pekarno v Ljubljani in rečeš: »Dober dan.«",
+        "Naročiš: »En kruh, prosim.«",
+        "Dodaš: »Dve žemlji, prosim.«",
+        "Vprašaš: »Koliko stane?«",
+        "Plačaš in rečeš: »Hvala, nasvidenje.«"
       ],
       "frames": [
         {
           "objectiveId": "greet",
           "lineSL": "Dober dan.",
-          "imagePrompt": "BAKER behind the counter, smiling and waving hello to CUSTOMER who has just walked in. Focus on the warm greeting between them. Keep the BAKERY background simple and uncluttered."
+          "imagePrompt": "CUSTOMER stepping IN through the DOORWAY, facing into the room with a welcoming wave — the moment of arriving and greeting. The inward direction (entering, not leaving) is what makes this a greeting."
         },
         {
           "objectiveId": "order_bread",
           "lineSL": "En kruh, prosim.",
-          "imagePrompt": "CUSTOMER at the counter pointing at one LOAF; BAKER reaching for it. Focus on asking for a single loaf of bread. Keep the BAKERY background simple and uncluttered."
+          "imagePrompt": "Exactly one LOAF — a single rustic loaf of bread, unmistakably ONE, nothing else beside it. The quantity 'one' is the point."
         },
         {
           "objectiveId": "order_rolls",
           "lineSL": "Dve žemlji, prosim.",
-          "imagePrompt": "CUSTOMER holding up two fingers while BAKER places the two ROLLS into a paper bag; the two ROLLS clearly shown. Focus on the number two — unmistakably two rolls. Keep the BAKERY background simple and uncluttered."
+          "imagePrompt": "Exactly two ROLLS — two round bread rolls side by side, unmistakably TWO (the Slovenian dual). The quantity 'two' is the point; no other bread in the picture."
+        },
+        {
+          "objectiveId": "ask_price",
+          "lineSL": "Koliko stane?",
+          "imagePrompt": "A single PRICE_TAG showing a large question mark '?' — the concept of asking how much it costs (a question, not a fixed price)."
         },
         {
           "objectiveId": "pay_leave",
-          "lineSL": "Koliko stane? Hvala, nasvidenje.",
-          "imagePrompt": "CUSTOMER handing COINS to BAKER across the counter and waving goodbye, a paper bag of bread in hand. Focus on paying and saying goodbye. Keep the BAKERY background simple and uncluttered."
+          "lineSL": "Hvala, nasvidenje.",
+          "imagePrompt": "CUSTOMER stepping OUT through the DOORWAY, facing away with an over-the-shoulder wave — the moment of leaving and saying goodbye. The outward direction (leaving, not entering) is what makes this a farewell."
         }
       ],
-      "sceneImagePrompt": "A single warm establishing scene capturing the essence of ordering and buying bread at a bakery: CUSTOMER at the counter of the BAKERY while BAKER serves them, with the LOAF, the two ROLLS, and COINS all visible on the counter. Full, lived-in BAKERY."
+      "sceneImagePrompt": "A single warm establishing scene capturing the essence of ordering and buying bread at a bakery: CUSTOMER at the counter of the BAKERY while BAKER serves them, with the LOAF, the two ROLLS, and EURO_COINS all visible on the counter. Full, lived-in BAKERY."
     }
   }
 }

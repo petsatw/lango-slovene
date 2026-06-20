@@ -105,6 +105,7 @@ for (const f of frames) {
   try {
     const { hit, key } = await getOrCreateImage(f.imagePrompt, {
       ...IMAGE_FORMAT.frame,
+      mode: "flashcard", // atomic minimal-compose: isolate the disambiguating assets, no label
       scenarioId: scenario.id,
       objectiveId: f.objectiveId,
       referenceImages: refImages,
@@ -124,6 +125,7 @@ if (sceneImagePrompt) {
   try {
     const { hit, key } = await getOrCreateImage(sceneImagePrompt, {
       ...IMAGE_FORMAT.scene,
+      mode: "scene", // full establishing tableau (referenceInstruction composes a new scene)
       scenarioId: scenario.id,
       objectiveId: "scene",
       referenceImages: refImages,

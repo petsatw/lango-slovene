@@ -6,7 +6,10 @@
 // BUMP `id` (e.g. v2-…) so keys change and stale images aren't served for the new look.
 
 export const IMAGE_STYLE = {
-  id: "v1-flat-warm",
+  // v2: frames switched from "compose a new scene" to minimal-compose flashcards (atomic, neutral
+  // background, no label). Same prompt at the old id would collide on existing 4:3 frames, so this is
+  // a one-time global re-key — all images regenerate on the next build:assets.
+  id: "v2-flat-warm",
 
   // Scenario-agnostic art style. The SETTING comes from each frame/scene prompt + the reference
   // sheet, never from here — so this prefix must not name a specific place (café, bakery, …).
@@ -50,10 +53,36 @@ export function referenceInstruction(labels: string[]): string {
   );
 }
 
+// The MINIMAL-COMPOSE instruction — the atomic-flashcard variant of referenceInstruction. Where the
+// scene path "composes a new scene", a flashcard ISOLATES only the disambiguating assets on a neutral
+// background with NO printed label, still anchored to the sheet so the card's assets are pixel-
+// consistent with the scene. The depiction prose (greet = entering the doorway) carries the
+// disambiguating context; this instruction just constrains the composition.
+export function minimalComposeInstruction(labels: string[]): string {
+  return (
+    `This is a single atomic flashcard, NOT a scene. Match the following to the corresponding labeled ` +
+    `asset on the reference sheet: ${formatList(labels)} — use them as exact style and identity ` +
+    `references so they are pixel-consistent with the other images. Isolate ONLY these assets (plus the ` +
+    `minimal disambiguating context the description names) on a plain, neutral, uncluttered background. ` +
+    `No setting, no extra props, no people or objects beyond what is described, and NO printed words, ` +
+    `letters, or labels anywhere in the image. Keep it centered and clear. Do not reproduce the label ` +
+    `text — the labels are only for asset matching.`
+  );
+}
+
 // Frame/scene prompt: house style + (when anchored) the reference instruction for the relevant
-// labels + the authored prompt + any style-reference text.
-export function styledPrompt(prompt: string, opts?: { referenceLabels?: string[] }): string {
-  const ref = opts?.referenceLabels?.length ? referenceInstruction(opts.referenceLabels) : "";
+// labels + the authored prompt + any style-reference text. `mode` picks the composition instruction:
+// "scene" composes a full tableau (referenceInstruction); "flashcard" minimal-composes an atomic card.
+export function styledPrompt(
+  prompt: string,
+  opts?: { referenceLabels?: string[]; mode?: "flashcard" | "scene" },
+): string {
+  const labels = opts?.referenceLabels ?? [];
+  const ref = labels.length
+    ? opts?.mode === "flashcard"
+      ? minimalComposeInstruction(labels)
+      : referenceInstruction(labels)
+    : "";
   return [IMAGE_STYLE.prefix, ref, prompt, IMAGE_STYLE.referenceText]
     .map((s) => s.trim())
     .filter(Boolean)

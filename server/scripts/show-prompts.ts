@@ -52,7 +52,7 @@ const allLabels = assets.map((a) => a.label);
 for (const fr of story?.frames ?? []) {
   const f = IMAGE_FORMAT.frame;
   const key = store.imageKey(img.name, img.model, IMAGE_STYLE.id, f.aspectRatio, f.resolution, fr.imagePrompt);
-  const eff = styledPrompt(fr.imagePrompt, { referenceLabels: relevantLabels(fr.imagePrompt, allLabels) });
+  const eff = styledPrompt(fr.imagePrompt, { referenceLabels: relevantLabels(fr.imagePrompt, allLabels), mode: "flashcard" });
   items.push({ label: `frame:${fr.objectiveId}`, key, ...f, endpoint: "images/edits", effectivePrompt: eff, referenceKeys: sheetKey ? [sheetKey] : undefined });
 }
 if (story?.sceneImagePrompt) {
