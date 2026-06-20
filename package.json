@@ -12,7 +12,8 @@
     "replay": "tsx server/probes/replay.ts",
     "test:mastery": "tsx server/probes/mastery-test.ts",
     "build:assets": "tsx server/scripts/build-assets.ts",
-    "prompts": "tsx server/scripts/show-prompts.ts"
+    "prompts": "tsx server/scripts/show-prompts.ts",
+    "lint:scenario": "tsx server/scripts/lint-scenario.ts"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
