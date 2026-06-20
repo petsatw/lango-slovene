@@ -17,7 +17,7 @@ Browser PWA  ──/api/turn──▶  Node server  ──▶  E2 (understand+tu
 
 ```bash
 npm install
-cp .env.example .env          # then edit .env IN AN EDITOR — see docs/SECRETS.md
+cp example-vars .env          # then edit .env IN AN EDITOR — see docs/SECRETS.md
 npm run dev                   # http://localhost:8787
 ```
 
