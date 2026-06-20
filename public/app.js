@@ -340,7 +340,8 @@ let storyIdx = 0;
 function buildStorySteps() {
   if (!storyMeta) return [];
   const steps = storyMeta.frames.map((f) => ({ objectiveId: f.objectiveId, lineSL: f.lineSL }));
-  if (storyMeta.hasScene) steps.push({ objectiveId: "scene", lineSL: "", scene: true });
+  // The full scene opens the story: the user clicks › off it to start into the per-objective frames.
+  if (storyMeta.hasScene) steps.unshift({ objectiveId: "scene", lineSL: "", scene: true });
   return steps;
 }
 
