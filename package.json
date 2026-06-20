@@ -13,7 +13,8 @@
     "test:mastery": "tsx server/probes/mastery-test.ts",
     "build:assets": "tsx server/scripts/build-assets.ts",
     "prompts": "tsx server/scripts/show-prompts.ts",
-    "lint:scenario": "tsx server/scripts/lint-scenario.ts"
+    "lint:scenario": "tsx server/scripts/lint-scenario.ts",
+    "prune:assets": "tsx server/scripts/prune-assets.ts"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
