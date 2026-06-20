@@ -19,6 +19,8 @@ export interface AssetDef {
 
 export interface Scenario {
   id: string;
+  /** Short label for the picker dropdown (e.g. "Café"). Falls back to title if absent. */
+  name?: string;
   title: string;
   status: "active" | "planned";
   /** Who the tutor plays. */
@@ -42,6 +44,7 @@ export interface Scenario {
 
 export const CAFE: Scenario = {
   id: "cafe",
+  name: "Café",
   title: "Ordering at a café in Ljubljana",
   status: "active",
   character: "a friendly barista at a small café in Ljubljana",
@@ -131,6 +134,7 @@ export const CAFE: Scenario = {
 // audio reuse, cross-context reinforcement) and adds one beginner stretch: the Slovenian dual.
 export const BAKERY: Scenario = {
   id: "bakery",
+  name: "Bakery",
   title: "At the bakery (pekarna)",
   status: "active",
   character: "a friendly baker at a small neighbourhood bakery (pekarna) in Ljubljana",

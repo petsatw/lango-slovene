@@ -28,6 +28,15 @@ header { padding: 24px 20px 8px; text-align: center; }
 header h1 { margin: 0; font-size: 28px; }
 header p { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
 
+/* Scenario picker: dropdown of the chosen scenario + its one-line description. */
+.scenario-row { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.scenario-select {
+  background: var(--panel); color: var(--text);
+  border: 1px solid var(--green); border-radius: 999px;
+  padding: 4px 10px; font-size: 14px; cursor: pointer;
+}
+.scenario-desc { color: var(--muted); font-size: 15px; }
+
 .objectives {
   display: flex;
   flex-wrap: wrap;

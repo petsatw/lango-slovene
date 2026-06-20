@@ -13,7 +13,7 @@ import { getE2, getE3, getE4 } from "./adapters/index";
 import * as store from "./assets/store";
 import * as sessions from "./assets/sessions";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
-import { CAFE, SCENARIOS, freshSession, getScenario } from "./scenarios";
+import { SCENARIOS, freshSession, getScenario } from "./scenarios";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -37,27 +37,30 @@ function cachePut(key: string, buf: Buffer): void {
 app.use(express.json({ limit: "25mb" }));
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-// Active providers, the scenario (with objectives for the dots + a fresh session), and the
-// scenario list (active + PLANNED) for the future selector. NO keys — safe for the client.
-app.get("/api/config", (_req, res) => {
+// Active providers, the chosen scenario (with objectives for the dots + a fresh session), and the
+// scenario list (active + PLANNED) for the picker. NO keys — safe for the client.
+// ?scenarioId= selects which scenario to boot; getScenario falls back to CAFE for unknown/planned ids.
+app.get("/api/config", (req, res) => {
+  const scenario = getScenario(req.query.scenarioId ? String(req.query.scenarioId) : undefined);
   res.json({
     providers: { e2: getE2().name, e3: getE3().name },
     scenario: {
-      id: CAFE.id,
-      title: CAFE.title,
-      opening: CAFE.opening,
-      objectives: CAFE.objectives.map((o) => ({ id: o.id, label: o.label, targetSL: o.targetSL })),
+      id: scenario.id,
+      name: scenario.name ?? scenario.title,
+      title: scenario.title,
+      opening: scenario.opening,
+      objectives: scenario.objectives.map((o) => ({ id: o.id, label: o.label, targetSL: o.targetSL })),
       // Story layer (M4): frame order + SL lines for playback; image bytes come from /api/image.
-      story: CAFE.scene?.story
+      story: scenario.scene?.story
         ? {
-            sentences: CAFE.scene.story.sentences,
-            frames: CAFE.scene.story.frames.map((f) => ({ objectiveId: f.objectiveId, lineSL: f.lineSL })),
-            hasScene: !!CAFE.scene.story.sceneImagePrompt,
+            sentences: scenario.scene.story.sentences,
+            frames: scenario.scene.story.frames.map((f) => ({ objectiveId: f.objectiveId, lineSL: f.lineSL })),
+            hasScene: !!scenario.scene.story.sceneImagePrompt,
           }
         : null,
     },
-    session: freshSession(CAFE),
-    scenarios: SCENARIOS.map((s) => ({ id: s.id, title: s.title, status: s.status })), // PLANNED selector
+    session: freshSession(scenario),
+    scenarios: SCENARIOS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, status: s.status })),
   });
 });
 

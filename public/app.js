@@ -448,21 +448,66 @@ async function replayRun(id, row) {
   obs.state("idle");
 }
 
+// Fill the picker once with every scenario. Planned ones are listed but disabled.
+function populateScenarioPicker(scenarios, currentId) {
+  const sel = $("scenario-select");
+  sel.innerHTML = "";
+  for (const s of scenarios || []) {
+    const opt = document.createElement("option");
+    opt.value = s.id;
+    opt.textContent = s.status === "planned" ? `${s.name} (soon)` : s.name;
+    opt.disabled = s.status === "planned";
+    if (s.id === currentId) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+// Apply a /api/config payload to the view, resetting the conversation for a fresh scenario run.
+function applyConfig(cfg) {
+  obs.providers(`${cfg.providers.e2} + ${cfg.providers.e3}`);
+  $("scenario-desc").textContent = cfg.scenario.title;
+
+  // Fresh session: clear transcript, history and any prior takeaway, re-enable the talk button.
+  history.length = 0;
+  $("transcript").innerHTML = "";
+  const takeaway = $("takeaway");
+  takeaway.hidden = true;
+  takeaway.innerHTML = "";
+  $("talk").disabled = false;
+  $("talk-label").textContent = "Hold to speak";
+
+  objectivesMeta = cfg.scenario.objectives || [];
+  session = cfg.session || null;
+  runId = newRunId(session?.scenarioId || cfg.scenario.id);
+  renderObjectives();
+
+  if (cfg.scenario.story) {
+    storyMeta = { ...cfg.scenario.story, scenarioId: cfg.scenario.id };
+    $("story-open").hidden = false;
+  } else {
+    storyMeta = null;
+    $("story-open").hidden = true;
+  }
+  $("practice-open").hidden = !objectivesMeta.length;
+  if (cfg.scenario.opening) addBubble("tutor", cfg.scenario.opening);
+}
+
+// Switch scenarios: re-boot the chosen one from the server, then apply it.
+async function selectScenario(scenarioId) {
+  try {
+    const cfg = await (await fetch(`/api/config?scenarioId=${encodeURIComponent(scenarioId)}`)).json();
+    applyConfig(cfg);
+  } catch (err) {
+    obs.error(`config: ${err.message}`);
+  }
+}
+
 async function init() {
   try {
     const cfg = await (await fetch("/api/config")).json();
-    $("scenario").textContent = cfg.scenario.title;
-    obs.providers(`${cfg.providers.e2} + ${cfg.providers.e3}`);
-    objectivesMeta = cfg.scenario.objectives || [];
-    session = cfg.session || null;
-    runId = newRunId(session?.scenarioId || cfg.scenario.id);
-    renderObjectives();
-    if (cfg.scenario.story) {
-      storyMeta = { ...cfg.scenario.story, scenarioId: cfg.scenario.id };
-      $("story-open").hidden = false;
-    }
-    if (objectivesMeta.length) $("practice-open").hidden = false;
-    if (cfg.scenario.opening) addBubble("tutor", cfg.scenario.opening);
+    populateScenarioPicker(cfg.scenarios, cfg.scenario.id);
+    $("scenario-select").addEventListener("change", (e) => selectScenario(e.target.value));
+    applyConfig(cfg);
   } catch (err) {
     obs.error(`config: ${err.message}`);
   }
