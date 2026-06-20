@@ -6,6 +6,7 @@
 //   npm run prompts -- <scenarioId>              # view
 //   npm run prompts -- <scenarioId> --backfill   # write computed provenance into matching manifest
 //                                                 # entries that lack it (exact, deterministic; backs up first)
+//   npm run prompts -- --file <path.json>        # preview a DRAFT scenario's assembled prompts (no commit)
 
 import "dotenv/config";
 import { existsSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
@@ -13,16 +14,27 @@ import path from "node:path";
 import * as store from "../assets/store";
 import { getE4 } from "../adapters/index";
 import { IMAGE_STYLE, IMAGE_FORMAT, styledPrompt, referenceSheetPrompt, relevantLabels } from "../adapters/image-style";
-import { SCENARIOS } from "../scenarios";
+import { SCENARIOS, type Scenario } from "../scenarios";
 
 const args = process.argv.slice(2);
 const backfill = args.includes("--backfill");
-const id = args.find((a) => !a.startsWith("--")) || "cafe";
+const fileIdx = args.indexOf("--file");
 
-const scenario = SCENARIOS.find((s) => s.id === id && s.status === "active");
-if (!scenario) {
-  console.error(`No active scenario "${id}". Active: ${SCENARIOS.filter((s) => s.status === "active").map((s) => s.id).join(", ")}`);
-  process.exit(1);
+let scenario: Scenario | undefined;
+if (fileIdx !== -1) {
+  const p = args[fileIdx + 1];
+  if (!p) {
+    console.error("--file requires a path");
+    process.exit(1);
+  }
+  scenario = JSON.parse(readFileSync(p, "utf8")) as Scenario; // draft preview — no commit, no status filter
+} else {
+  const id = args.find((a) => !a.startsWith("--")) || "cafe";
+  scenario = SCENARIOS.find((s) => s.id === id && s.status === "active");
+  if (!scenario) {
+    console.error(`No active scenario "${id}". Active: ${SCENARIOS.filter((s) => s.status === "active").map((s) => s.id).join(", ")}`);
+    process.exit(1);
+  }
 }
 
 const img = getE4();
