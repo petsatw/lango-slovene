@@ -336,6 +336,39 @@ function playPracticeAttempt() {
 let storyMeta = null;   // { sentences, frames:[{objectiveId,lineSL}], hasScene } from /api/config
 let storySteps = [];    // [{ objectiveId, lineSL, scene? }]
 let storyIdx = 0;
+let storyNarrationToken = 0; // bumped to cancel an in-flight narration sequence (on nav / close)
+let storyNarrationAudio = null;
+
+// Cancel any narration currently playing (e.g. the learner advanced off the scene or closed the story).
+function stopSceneNarration() {
+  storyNarrationToken++;
+  if (storyNarrationAudio) { try { storyNarrationAudio.pause(); } catch {} storyNarrationAudio = null; }
+}
+
+// The scene screen is the comprehensible-input preview: auto-play the story narration sentences in
+// order (free store hits from build:assets). Cancellable mid-sequence via the token.
+async function playSceneNarration() {
+  const sentences = storyMeta?.sentences || [];
+  stopSceneNarration();                 // supersede any prior sequence
+  const token = storyNarrationToken;
+  if (!sentences.length) return;
+  obs.state("story…");
+  for (const sentence of sentences) {
+    if (token !== storyNarrationToken) return; // cancelled
+    await new Promise((resolve) => {
+      if (token !== storyNarrationToken) return resolve();
+      const audio = new Audio();
+      storyNarrationAudio = audio;
+      const params = new URLSearchParams({ text: sentence });
+      if (storyMeta?.scenarioId) params.set("scenarioId", storyMeta.scenarioId);
+      audio.src = `/api/speak?${params.toString()}`;
+      audio.onended = resolve;
+      audio.onerror = resolve;
+      audio.play().catch(resolve); // autoplay shouldn't be blocked (opened via a click), but don't stall
+    });
+  }
+  if (token === storyNarrationToken) obs.state("idle");
+}
 
 function buildStorySteps() {
   if (!storyMeta) return [];
@@ -355,9 +388,15 @@ function renderStoryStep() {
   $("story-progress").textContent = `${storyIdx + 1} / ${storySteps.length}`;
   $("story-prev").disabled = storyIdx === 0;
   $("story-next").disabled = storyIdx === storySteps.length - 1;
-  // Play the frame's line from the store (free if pre-built; silent on the final scene).
-  if (!step.scene && step.lineSL) {
-    playReplyStreaming(step.lineSL, { scenarioId: storyMeta.scenarioId, objectiveId: step.objectiveId });
+  // Scene screen → auto-play the full story narration; frame screens → stop narration and play the
+  // frame's own line from the store (free if pre-built).
+  if (step.scene) {
+    playSceneNarration();
+  } else {
+    stopSceneNarration();
+    if (step.lineSL) {
+      playReplyStreaming(step.lineSL, { scenarioId: storyMeta.scenarioId, objectiveId: step.objectiveId });
+    }
   }
 }
 
@@ -369,7 +408,7 @@ function openStory() {
   renderStoryStep();
 }
 
-function closeStory() { $("story").hidden = true; }
+function closeStory() { stopSceneNarration(); $("story").hidden = true; }
 function storyGo(delta) {
   storyIdx = Math.max(0, Math.min(storySteps.length - 1, storyIdx + delta));
   renderStoryStep();
