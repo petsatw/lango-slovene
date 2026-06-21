@@ -10,7 +10,7 @@
 // generation is canonical and reused thereafter — one clip per phrase, by design.
 
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync, unlinkSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -77,6 +77,17 @@ export function has(key: string, type: AssetType): boolean {
 export function read(key: string, type: AssetType): Buffer | null {
   const p = getPath(key, type);
   return existsSync(p) ? readFileSync(p) : null;
+}
+
+// Force-regenerate a single leaf: delete its bytes so the next getOrCreate is a miss (the regenerator
+// re-rolls and put()s fresh bytes + a new manifest line). The manifest is append-only by design, so
+// the stale entry stays as history; the newest createdAt wins on read. Returns whether a file existed.
+// (`delete` is a reserved word — hence `remove`.)
+export function remove(key: string, type: AssetType): boolean {
+  const p = getPath(key, type);
+  if (!existsSync(p)) return false;
+  unlinkSync(p);
+  return true;
 }
 
 // Write the file + append one manifest line. Content-addressed, so an existing key is a no-op

@@ -13,8 +13,26 @@ export function buildSystemPrompt(scenario: Scenario, session: SessionState): st
     return `- [id=${o.id}] target: "${o.targetSL}"  (${o.hintEN})  — status: ${status}`;
   });
 
+  // Register-first: declare ti/vi + the variety up front so every reply is in the right register and
+  // stays as short as a real native would speak. Falls back to a sensible colloquial default.
+  const reg = scenario.register ?? { form: "vi", variety: "pogovorni" };
+  const formText =
+    reg.form === "ti"
+      ? "TIKANJE (informal 'ti') — address the student informally"
+      : "VIKANJE (formal 'vi') — address the student politely in the plural-polite form";
+  const varietyText =
+    reg.variety === "pogovorni"
+      ? "POGOVORNI (colloquial, everyday spoken Slovenian) — short, elliptical, the way locals actually talk at this counter"
+      : "KNJIŽNI (standard/bookish) — clean standard Slovenian";
+
   return [
     `ROLE: You are ${scenario.character}. ${scenario.setup}`,
+    "",
+    "REGISTER (decide this BEFORE every reply, and hold it consistently):",
+    `- ${formText}.`,
+    `- ${varietyText}.`,
+    "- Say the SHORTEST line a native would actually say here. Register, not length, is the bound:",
+    "  a real local is terse. No full textbook sentences when an elliptical phrase is what's said.",
     "",
     "You are a LANGUAGE TUTOR disguised as this character. Two jobs only:",
     "1) Stay in character and keep the scene alive and immersive — ALWAYS in Slovenian.",
@@ -31,6 +49,13 @@ export function buildSystemPrompt(scenario: Scenario, session: SessionState): st
     "- Steer toward the FIRST objective that is not yet completed, by prompting it naturally in character.",
     "- If an objective has status 'recast', bring it back naturally so the student can use it correctly again",
     "  (interleave it) — this is how it gets completed. Reuse already-completed phrases naturally too.",
+    "- RATCHET DOWN on a stumble — never repeat the same prompt louder. When the student misses or stalls on",
+    "  the objective you're steering toward, drop exactly ONE rung of support on the next prompt:",
+    "    1. open prompt (the natural in-character question that makes the target the answer), then if they miss →",
+    "    2. an either/or that includes the target (\"...X ali Y?\"), then if they still miss →",
+    "    3. a leading choice that CONTAINS the target so they only have to say it back.",
+    "  One rung per stumble, in character, still Slovenian-only. (This is the single-retry scaffold — do NOT",
+    "  gate completion or force repeated cold reproduction; one good production still completes the objective.)",
     "- A brief off-topic exchange is fine, but then steer back to the objective.",
     "- When all objectives are completed, give a short, warm closing line in Slovenian.",
     "",

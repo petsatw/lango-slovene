@@ -41,6 +41,8 @@ StoryFrame { objectiveId, lineSL, imagePrompt }         // a concept = a frame (
 
 This model is the *target*; M1 below does not require all of it — it requires the store that will hold it.
 
+> **Authoring update (2026-06-20):** per [scenario-authoring.md](scenario-authoring.md), a **frame is an atomic flashcard** — the *simplest unambiguous* depiction of one phrase's atomic concept (the "one" in "eno kavo"; milk added for "z mlekom"; greet = `CUSTOMER` entering the doorway, NOT a bare wave). It is **minimal-composed and anchored to the reference sheet — not "drift-free"** (object renders drift; anchoring is what holds consistency — see § Atomic flashcard frames below). The whole **situation** lives in the single **scene image**, in the *same* flat children's-book house style as the frames (the difference is composition, not style; "adult" = the content). The **story** is a genuine ≤5-sentence child-simple tale that naturally contains each `targetSL`. This supersedes the mini-scene framing of `imagePrompt` below; existing café frames must be re-authored and re-run through `build:assets`.
+
 ### Session record (a played run — distinct from authored assets)
 The assets above are a scenario's **authored** content (materialized by `build:assets`, M3). A **session record** is different: the captured, ordered transcript of **one actual played run**, each turn pointing at the store clip that voices it.
 ```
@@ -123,6 +125,37 @@ Character/landmark drift is solved by anchoring every image to a per-scenario **
 3. **Anchored frames + scene** — each is generated via the **edits endpoint** `POST /v1/images/edits` with the reference sheet passed as `image:{url:<base64 data URI>, type:"image_url"}` (≤3 refs). The edits path **composes a fresh scene anchored to the sheet** (verified — not an edit *of* the sheet). Frame prompts are objective-first, name only labels, and suppress the background; the scene is an establishing tableau (one moment, all objects, full setting).
 4. **Reference instruction (per-frame)** — `referenceInstruction(labels)` prepends an explicit "match these labels to the reference sheet, compose a new scene, don't reproduce the labels" instruction, built from **only the labels that frame/scene actually uses** (`relevantLabels(prompt, allLabels)`). So `greet` references just `BARISTA, CUSTOMER and CAFE`, not the whole sheet. Composed by `styledPrompt(prompt, {referenceLabels})`, recorded in `effectivePrompt`.
 - The reference sheet is folded into `styleId` for cache purposes (bump `styleId` when a sheet changes). Adding aspect/resolution to the key **orphaned the café's pre-engine images** — café story frames 404 until the café is re-run through this engine with its own asset bible.
+
+### Atomic flashcard frames (authoring update 2026-06-20; MVP)
+Per [scenario-authoring.md › The FRAMES = atomic flashcards](scenario-authoring.md), a frame is an **atomic flashcard**: the *simplest unambiguous* depiction of one phrase's atomic concept — not a mini-scene, and **not merely "object-only."** A bare waving hand is ambiguous (hello? goodbye?) and so is NOT atomic; "waving while stepping in through a doorway" (greet) is. Two MVP pieces, both new:
+- **Flashcard-creation step (LLM):** derives the atomic concept + its minimal non-ambiguous depiction from `targetSL` + `hintEN` (+ the asset bible) and emits the image prompt referencing bible labels. Its prompt **is the rubric**. Quantity/case/number that is the lesson must be shown unambiguously (one cup for *eno kavo*; two rolls for the dual *dve žemlji*). Abstract concepts pull in the minimal disambiguating context (a doorway + direction), composed from bible assets — so a concept may need a dedicated context asset, not just one object.
+- **Minimal-compose render mode:** generates only the disambiguating bible asset(s) on a neutral background, **no printed label**, anchored to the reference sheet (so the card's `COFFEE` is the *same* render as the scene's). This is distinct from the current frame path, which composes a full scene (`referenceInstruction`, above). Minimal-compose reduces composition, not drift — anchoring stays mandatory.
+
+### Cross-scenario consistency — shared asset catalog (NET-NEW; the open gap)
+The reference sheet above pins consistency **within one scenario**. It does **not** pin it **across** scenarios: today the café and bakery keep the student visually consistent only by **hand-copying** the `CUSTOMER` descriptor (`scenarios.ts` café `:81`, bakery's matching note), which is fragile and drifts the moment a descriptor or sheet is regenerated. The fix is a **shared asset catalog**: cross-cutting assets — above all the student (`CUSTOMER`) and money (`EURO_COINS`) — are defined **once** with a single canonical descriptor **and a pinned canonical reference render**, and scenarios **reference them by label** instead of re-describing. (Abstract concepts like greet/goodbye are not single shared icons; they're composed contrastively from `CUSTOMER` + each scenario's doorway + direction, so the consistent `CUSTOMER` is what carries them across scenarios.) A scenario's effective sheet = shared catalog assets (pinned) + its own local assets. This mirrors the shared-objective-id pattern (greet/pay_leave audio reuse) on the visual side, and is the prerequisite for "the same student walks through café → bakery → butcher." Until it exists, treat any recurring asset's descriptor as copy-exact and bump every dependent `styleId` together. *Status: PLANNED — the per-scenario sheet (M2) is built; the shared catalog is not.*
+
+---
+
+## Scenario-generation pipeline (the operating model) — MVP: make it run end-to-end
+
+The pieces below (rubric, content model, prompt builder, flashcard-creation step, minimal-compose render, image-consistency engine, `build:assets`) exist and are composable, but are **not yet wired into one loop**. The MVP goal is to make that loop operational; each stage can be improved individually afterward. The **responsibility split** across the stages — requestor / creator (judgment) / language subagent / code (logic) / asset generators — is the **[scenario-engine-contract.md](scenario-engine-contract.md)**.
+
+```
+[scenario request]
+   → GENERATE the full package + INTERNAL VERIFICATION
+   → [submit for approval]
+   → [reject & revise]   OR   [approve & commit]
+```
+
+**PR semantics — this is the load-bearing decision.** Generation behaves like opening a pull request: nothing is surfaced half-built. The engine produces the *entire* package AND self-verifies it against the rubric **before** submission (the rubric in [scenario-authoring.md](scenario-authoring.md) is the "CI" — objectives are atomic & one-utterance, story is ≤5 child-simple sentences containing every `targetSL`, register consistent, each flashcard atomic/unambiguous, shared ids/assets reused). The reviewer sees a complete, internally-passed artifact, not an interactive per-element check-in.
+
+**The package** (one scenario): the `Scenario` record (id/name/title/character/setup/opening/register) + ordered objectives + story + asset bible + per-objective atomic flashcard prompts + scene prompt. (Audio/image bytes are materialized on commit via `build:assets`.)
+
+**Gate:**
+- **approve & commit** → write the `Scenario` into `server/scenarios.ts` (or a per-file scenario as they multiply), run `build:assets` to materialize audio + images, mark `status: "active"` (auto-appears in the picker).
+- **reject & revise** → reviewer notes route back to regeneration of the flagged element(s); re-submit. (A revise can target one objective, one flashcard, the story, etc. — not necessarily the whole package.)
+
+**Accepted waste.** This loop will burn generations — rejected packages, throwaway image renders on revise. That cost is accepted to get the pipeline running; the components are composable and can be optimized (caching, partial regen, better derivation prompts) individually later. Priority now is operational end-to-end, not efficient.
 
 ---
 

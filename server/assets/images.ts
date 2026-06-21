@@ -18,6 +18,7 @@ export interface ImageRequest {
   referenceKeys?: string[]; // store keys of those references — recorded as provenance (not sent)
   assetLabels?: string[]; // all of the scenario's labels — used to build the per-image reference instruction
   styled?: boolean; // default true; false = send prompt verbatim (reference sheet)
+  mode?: "flashcard" | "scene"; // composition: minimal-compose atomic card vs full tableau (default scene)
 }
 
 export async function getOrCreateImage(
@@ -36,7 +37,8 @@ export async function getOrCreateImage(
   // When anchored, build the reference instruction from ONLY the labels this prompt actually uses.
   const anchored = !!req.referenceImages?.length;
   const refLabels = anchored ? relevantLabels(prompt, req.assetLabels ?? []) : [];
-  const effectivePrompt = req.styled === false ? prompt : styledPrompt(prompt, { referenceLabels: refLabels });
+  const effectivePrompt =
+    req.styled === false ? prompt : styledPrompt(prompt, { referenceLabels: refLabels, mode: req.mode });
   const endpoint = anchored ? "images/edits" : "images/generations";
   const { bytes, mimeType } = await img.generate({
     prompt: effectivePrompt,
