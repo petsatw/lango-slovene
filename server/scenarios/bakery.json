@@ -57,7 +57,7 @@
         {
           "objectiveId": "greet",
           "lineSL": "Dober dan.",
-          "imagePrompt": "CUSTOMER stepping IN through the DOORWAY, facing into the room with a welcoming wave — the moment of arriving and greeting. The inward direction (entering, not leaving) is what makes this a greeting."
+          "imagePrompt": "Viewpoint from INSIDE the room looking toward the entrance: CUSTOMER stands in the open DOORWAY, framed by it, facing the viewer and waving as they step in over the threshold — the moment of arriving and greeting, seen from within the room they are entering."
         },
         {
           "objectiveId": "order_bread",
