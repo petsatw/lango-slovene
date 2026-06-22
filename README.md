@@ -1,12 +1,10 @@
-# What AI unlocks for Slovene language learners
+*Govori — an AI language tutor to help learn everyday Slovene.*
 
-*Govori — a voice tutor for real, everyday Slovene.*
+# What AI unlocks for Slovene language learners
 
 [▶ Watch the demo](media/demo.mp4)
 
-Most tools drill you on textbook Slovene you'll never hear on the street, or hand you
-generic AI that drifts into something that isn't quite Slovene. This is different — a working
-voice tutor that talks *with* you in real, everyday Ljubljana Slovene, and an engine that builds
+A voice tutor that talks *with* you in real, everyday Ljubljana Slovene, and an engine that builds
 you a new scene to practice whenever you need one.
 
 ### However you say it, this tutor handles it — and keeps you learning.
@@ -14,11 +12,10 @@ Mixed language, terrible grammar, bad pronunciation — it doesn't matter. It ge
 responds in real Slovene, like an insanely patient local.
 
 ### Everyday Slovene, focused on what you need to learn most right now.
-No fixed script. The tutor steers each session toward what'll help you most, and corrects you the
-way a local would — says it back the right way, moves on, no lecture.
+No fixed script. The tutor steers each session toward what'll help you most, keeping you focused with helpful hints and repeats in a natural flow.
 
 ### Rehearse, listen, repeat — endlessly.
-The butcher, the baker, the candlestick maker. And when you need something specific — a landlord
+The butcher, the baker, the candlestick maker. When you need something specific — a landlord
 call, a hardware-store clerk, an immigration officer, nailing the case right the first time — the
 tutor builds that scenario for you. Whatever it is, you can create it with a single sentence.
 
