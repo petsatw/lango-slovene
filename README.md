@@ -2,7 +2,7 @@
 
 # What AI unlocks for Slovene language learners
 
-[▶ Watch the demo](media/demo.mp4)
+https://github.com/user-attachments/assets/2ae91746-9553-4109-9ce3-30f39edf2b73
 
 A voice tutor that talks *with* you in real, everyday Ljubljana Slovene, and an engine that builds
 you a new scene to practice whenever you need one.
