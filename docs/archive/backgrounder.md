@@ -1,5 +1,9 @@
 Context: 
 
+> **ARCHIVED (2026-06-22).** Early ideation/brainstorm dump — superseded by
+> [../../README.md](../../README.md) and [../ARCHITECTURE.md](../ARCHITECTURE.md).
+> Kept for history only; does not reflect the current project.
+
 # AI Assisted Slovenian Language Learning🇸🇮
 
 ---

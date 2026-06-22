@@ -1,10 +1,27 @@
-# Architecture — Current Baseline
+# Architecture — Baseline & Trajectory
 
-**Project:** AI Slovenian conversation tutor for expats. Mobile-first voice PWA.
-**Date:** 2026-06-15
-**Status:** Working MVP demo — one scenario (café), real providers, verified end-to-end.
+**Project:** Govori — AI voice tutor for everyday Ljubljana Slovene. Mobile-first PWA + Node server.
+**Date:** 2026-06-15 · **Updated:** 2026-06-22
+**Status:** Working MVP — three scenarios (café, bakery, butcher) authored by the scenario engine; real providers, verified end-to-end.
 
-This captures what exists *today* as a stable baseline, and marks the **extension seams** where future mastery features plug in — deliberately without committing to which feature comes next.
+This captures what exists *today* as a stable baseline, the **extension seams** where future
+features plug in, and the **trajectory** it is built toward (see *Vision & trajectory* below).
+Anything not actually built is marked **[PLANNED]**.
+
+## Vision & trajectory
+
+Today this is a voice tutor with a working, gated **scenario-generation engine**. The trajectory is
+an **immersive, generative language-learning platform** — *building with AI in Ljubljana, for
+Ljubljana*, in the open.
+
+- **Now:** native-quality, everyday-Ljubljana Slovene; a constrained mastery-scaffold tutor; an
+  engine that authors new immersive scenarios on demand (lint + independent critic before ship).
+- **Near [PLANNED]:** cross-session mastery (objectives resurface and harden across scenarios over
+  time) and a learner-facing scenario selector — see *Planned features* #1, #4.
+- **Bigger [PLANNED]:** the tutor as an agent that works *with* the learner — steering deeper or
+  broader into whatever they care about — and an engine whose pedagogy scaffold and asset pipeline
+  generalize beyond Slovene to other languages and places. The model layer is already abstracted
+  behind swappable adapters; the pedagogy is language-shaped, not Slovene-specific.
 
 ---
 
@@ -41,7 +58,7 @@ rules. See [mastery-loop-spec.md](mastery-loop-spec.md).
 | `server/server.ts` | endpoints (`/api/config`, `/api/health`, `/api/turn`, `/api/speak`), provider-agnostic audio cache |
 | `server/orchestrator.ts` | session-aware `understand()` (E2 + mastery rules, used by /api/turn) and `runTurn()` (full, used by replay) |
 | `server/adapters/` | `E2Adapter` (Gemini), `E3Adapter` (ElevenLabs), `index.ts` registry selected by env |
-| `server/scenarios.ts` | scenario + objective data (active café; **planned** scenarios stubbed; **planned** visual `scene` field) |
+| `server/scenarios.ts` + `server/scenarios/*.json` | scenario + objective data as one JSON per scenario (café, bakery, butcher active); each carries the visual `scene` field (assets, story, frames) |
 | `server/prompt.ts` | `buildSystemPrompt(scenario, session)` — character, **objectives + statuses**, recast policy, turn policy, JSON contract |
 | `server/types.ts` | swappable adapter contracts + session/objective types |
 | `server/probes/` | `e2`/`e3` contract probes + `replay` harness (real services, no mocks) |
@@ -55,13 +72,13 @@ rules. See [mastery-loop-spec.md](mastery-loop-spec.md).
 ## Swap seams (already abstracted)
 - **E2 provider** — implement `E2Adapter`, register, set `E2_PROVIDER`. (For the blind A/B.)
 - **E3 provider/voice** — implement `E3Adapter` (`synthesize` + optional `stream` + `voiceTag`), set `E3_PROVIDER`. Cache and replay work for any provider.
-- **Scenario / tutor behavior** — `server/prompt.ts`. Today: one hardcoded café scenario + system prompt.
+- **Scenario / tutor behavior** — `server/prompt.ts` builds the system prompt from scenario data; scenarios are JSON in `server/scenarios/` (café, bakery, butcher), authored by the engine.
 
 ## Verification approach
 Test the seams with **real** services; never mock the heart. `probe:e2`, `probe:e3`, `replay` (real recorded/real-TTS clips through the live pipeline), plus a live observability overlay showing each stage + latency. See [README](../README.md).
 
 ## Known state / limitations (today)
-- **Mastery loop: built** — objective-driven sessions, constrained recast tutor, deterministic mastery gating, takeaway. One scenario (café).
+- **Mastery loop: built** — objective-driven sessions, constrained recast tutor, deterministic mastery gating, takeaway. Three scenarios (café, bakery, butcher), authored by the engine.
 - **Voice quality**: `eleven_v3` is the only ElevenLabs model covering Slovenian; native quality not yet judged by ear / blind A/B.
 - **History/session**: client holds conversation history + session state in memory; nothing persisted across reloads/restarts (audio cache is in-memory, bounded 200).
 - **Asset reuse is implicit and colliding (observed)** — the asset store is content-addressed on the *finished prompt + anchor bytes*, so cross-scenario reuse happens silently whenever two scenarios produce the same key (e.g. `greet`/`ask_price`/`pay_leave` audio + frames hit cache across café/bakery/butcher). That is convenient now but it is reuse *by accident, not by intent*: there's no per-asset identity, no opt-in, and the combined per-scenario **reference sheet** forces every asset to be re-rendered together and bound to one sheet, so a single asset can't be varied (outfit/setting) without disturbing the others. This is already pushing us toward the cross-session architecture sooner than planned — see Planned feature #5.
@@ -124,3 +141,36 @@ The baseline is built so the following can be added without re-architecting:
 6. **Learner profile (persistent)** — a per-student store above `SessionState` records attempted/completed/mastered per objective across sessions, against a shared cross-cutting objective catalog. The session loop already emits per-objective verdicts (`objective_progress`); persisting and aggregating them across sessions is the new piece. (Powers Planned feature #4.)
 
 These are described as *seams*, not commitments — which feature lands first is the open decision.
+
+## Scaling
+
+How the baseline grows toward the platform vision without re-architecting:
+
+- **Content scale (engine-driven).** Scenarios are *data*, authored by the engine, so coverage grows
+  by generation rather than hand-coding. The two scale preconditions are already specced:
+  cross-session orchestration (Planned feature #4) and the per-asset / reuse-by-intent asset engine
+  (Planned feature #5). *[PLANNED]* beyond what those features describe.
+- **Provider scale (actual).** The model layer is abstracted behind swappable `E2`/`E3` adapters
+  selected by env, so providers can be A/B-tested or swapped without touching the app. Cost/repro is
+  bounded by the content-addressed asset store + cache + surgical regen.
+- **Language / market scale [PLANNED].** The pedagogy scaffold (constrained tutor, mastery loop) and
+  the asset pipeline are language-shaped, not Slovene-specific; extending to another language is a
+  content + rubric effort over the same engine, not a rebuild. No second language is built yet.
+- **Multi-learner scale [PLANNED].** Today's session/audio state is in-memory and per-sitting; a
+  persistent `LearnerProfile` (Planned feature #4) and durable storage are required before
+  many concurrent learners are supported.
+
+## Community [PLANNED]
+
+The repo already ships its authoring engine — the `create-scenario` skill and its subagents
+([../.claude/](../.claude/)) — so the generative core is forkable and inspectable, not hidden. The
+project actively wants non-code participation as much as code: suggesting scenarios, native-speaker
+review of Slovene naturalness, and helping it reach people in and around Ljubljana. A `CONTRIBUTING.md`
+defining these roles and the "suggest a scenario" path is **[PLANNED]**; see [../README.md](../README.md)
+for current framing.
+
+## Licensing [PLANNED]
+
+The intent is to build and share this **in the open**. A specific license has **not yet been chosen**
+— this is an open decision (e.g. a permissive MIT/Apache-2.0 vs. a copyleft option), and no `LICENSE`
+file exists yet. Until one is added, default copyright applies; treat reuse as "ask first."
