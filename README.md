@@ -9,7 +9,7 @@ you a new scene to practice whenever you need one.
 
 ### However you say it, this tutor handles it — and keeps you learning.
 Mixed language, terrible grammar, bad pronunciation — it doesn't matter. It gets what you mean and
-responds in real Slovene, like an insanely patient local.
+responds in Slovene, keeping you natively immersed, almost like an insanely patient local.
 
 ### Everyday Slovene, focused on what you need to learn most right now.
 No fixed script. The tutor steers each session toward what'll help you most, keeping you focused with helpful hints and repeats in a natural flow.
