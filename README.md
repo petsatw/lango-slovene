@@ -1,4 +1,4 @@
-# What AI unlocks for anyone wanting or needing to learn Slovene
+# What AI unlocks for Slovene language learners
 
 *Govori — a voice tutor for real, everyday Slovene.*
 
