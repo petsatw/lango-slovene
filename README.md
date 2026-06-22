@@ -14,7 +14,7 @@ responds in Slovene, keeping you natively immersed, almost like an insanely pati
 ### Everyday Slovene, focused on what you need to learn most right now.
 No fixed script. The tutor steers each session toward what'll help you most, keeping you focused with helpful hints and repeats in a natural flow.
 
-### Rehearse, listen, repeat — endlessly.
+### Rehearse, listen, repeat, remix
 The butcher, the baker, the candlestick maker. When you need something specific — a landlord
 call, a hardware-store clerk, an immigration officer, nailing the case right the first time — the
 tutor builds that scenario for you. Whatever it is, you can create it with a single sentence.
