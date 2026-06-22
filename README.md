@@ -4,12 +4,11 @@
 
 https://github.com/user-attachments/assets/2ae91746-9553-4109-9ce3-30f39edf2b73
 
-A voice tutor that talks *with* you in real, everyday Ljubljana Slovene, and an engine that builds
-you a new scene to practice whenever you need one.
+A voice tutor that talks *with* you in real time practice sessions, and an engine that can build new dynamic audio-visual lessons for the topics you need to practice most. 
 
 ### However you say it, this tutor handles it — and keeps you learning.
 Mixed language, terrible grammar, bad pronunciation — it doesn't matter. It gets what you mean and
-responds in Slovene, keeping you natively immersed, almost like an insanely patient local.
+responds in Slovene, keeping you natively immersed, gently modeling corrections, infinitely patient.
 
 ### Everyday Slovene, focused on what you need to learn most right now.
 No fixed script. The tutor steers each session toward what'll help you most, keeping you focused with helpful hints and repeats in a natural flow.
@@ -22,7 +21,7 @@ tutor builds that scenario for you. Whatever it is, you can create it with a sin
 ---
 
 **Building with AI in Ljubljana, for Ljubljana.**
-Not just another language app — an immersive, generative language-learning platform, built and
+This is more than a language app, it is the starting point for immersive, generative language-learning platform, built and
 shared in the open.
 
 ---
