@@ -13,4 +13,5 @@
 **Reference**
 
 - [SECRETS.md](SECRETS.md) — API keys and how they're handled.
+- [server/utils/](../server/utils/README.md) — asset-store maintenance utilities (re-keying, etc.).
 - [research/](research/) — the expert-panel research the design rests on (preserved as-is).
