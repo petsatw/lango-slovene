@@ -1,8 +1,8 @@
-// Garbage-collect orphaned IMAGE assets from the store. An image file is "live" iff its key is the
-// reference-sheet / frame / scene key of some ACTIVE scenario at the current style + format. Images
-// are ONLY ever authored assets (there is no runtime image generation — frames/scene/sheet are all
-// produced by build:assets), so any image on disk that is not in the live set is dead: superseded by
-// an IMAGE_STYLE.id bump, a re-authored prompt, a renamed label, or a removed scenario.
+// Garbage-collect orphaned IMAGE assets from the store. An image file is "live" iff its key is a
+// per-asset render / frame / scene key of some ACTIVE scenario at the current style + format. Images
+// are ONLY ever authored assets (there is no runtime image generation — asset renders/frames/scene are
+// all produced by build:assets), so any image on disk that is not in the live set is dead: superseded
+// by an IMAGE_STYLE.id bump, a re-authored prompt, a renamed label, or a removed scenario.
 //
 // AUDIO is deliberately NOT pruned here: the store also holds live-session tutor clips that are valid
 // cache but are not authored assets, so an authored-key test would wrongly delete them.
@@ -15,7 +15,9 @@ import { existsSync, readdirSync, readFileSync, writeFileSync, copyFileSync } fr
 import path from "node:path";
 import * as store from "../assets/store";
 import { getE4 } from "../adapters/index";
-import { IMAGE_STYLE, IMAGE_FORMAT, referenceSheetPrompt } from "../adapters/image-style";
+import { IMAGE_STYLE, IMAGE_FORMAT, relevantLabels } from "../adapters/image-style";
+import { assetRenderKey } from "../assets/images";
+import { referenceSheetKey } from "../assets/reference-sheet";
 import { SCENARIOS } from "../scenarios";
 
 const apply = process.argv.slice(2).includes("--apply");
@@ -28,9 +30,25 @@ for (const s of SCENARIOS.filter((s) => s.status === "active")) {
   const story = s.scene?.story;
   const key = (prompt: string, f: { aspectRatio: string; resolution: string }) =>
     store.imageKey(img.name, img.model, IMAGE_STYLE.id, f.aspectRatio, f.resolution, prompt);
-  if (assets.length) live.add(key(referenceSheetPrompt(assets), IMAGE_FORMAT.sheet));
-  for (const fr of story?.frames ?? []) live.add(key(fr.imagePrompt, IMAGE_FORMAT.frame));
-  if (story?.sceneImagePrompt) live.add(key(story.sceneImagePrompt, IMAGE_FORMAT.scene));
+  const allLabels = assets.map((a) => a.label);
+  const renderKeyByLabel = new Map(assets.map((a) => [a.label, assetRenderKey(a)]));
+  // The composed reference sheet a prompt anchors to (the montage of the renders it uses) is itself a
+  // live derived asset → keep it too.
+  const sheetKey = (prompt: string) => {
+    const renderKeys = relevantLabels(prompt, allLabels).map((l) => renderKeyByLabel.get(l)!).filter(Boolean);
+    return renderKeys.length ? referenceSheetKey(renderKeys) : undefined;
+  };
+  for (const a of assets) live.add(assetRenderKey(a)); // each asset's canonical render
+  for (const fr of story?.frames ?? []) {
+    live.add(key(fr.imagePrompt, IMAGE_FORMAT.frame));
+    const sk = sheetKey(fr.imagePrompt);
+    if (sk) live.add(sk);
+  }
+  if (story?.sceneImagePrompt) {
+    live.add(key(story.sceneImagePrompt, IMAGE_FORMAT.scene));
+    const sk = sheetKey(story.sceneImagePrompt);
+    if (sk) live.add(sk);
+  }
 }
 
 const imageDir = path.join(store.ASSET_DIR, "image");

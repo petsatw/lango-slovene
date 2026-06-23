@@ -9,19 +9,13 @@
 // checked against the currently-loaded SCENARIOS, so a brand-new draft passes by reusing greet etc.
 
 import { readFileSync } from "node:fs";
-import { SCENARIOS, type Scenario } from "../scenarios";
-import { relevantLabels } from "../adapters/image-style";
+import { SCENARIOS, validateScenario, type Scenario } from "../scenarios";
 
 export interface LintIssue {
   level: "error";
   rule: string;
   message: string;
 }
-
-// Uppercase words used for EMPHASIS in prompts (not asset labels) — excluded from the label check.
-const EMPHASIS_WORDS = new Set([
-  "IN", "OUT", "ON", "OFF", "ONE", "TWO", "NO", "A", "AN", "THE", "AND", "OR", "NOT", "WITH", "OF", "TO",
-]);
 
 /** Run every deterministic rubric check on one scenario. `others` = the scenarios it can share ids
  *  with (everything else that's loaded). Returns the list of failures (empty = pass). */
@@ -69,21 +63,24 @@ export function lintScenario(scenario: Scenario, others: Scenario[]): LintIssue[
     }
   }
 
-  // 5) Every ALL-CAPS asset token used in a frame/scene prompt is defined in the bible.
+  // 5) Asset references use the delimited token {{LABEL}} (ALL-CAPS is otherwise free for emphasis):
+  //    (a) every {{TOKEN}} must be a bible label; (b) a bible label sitting in prose WITHOUT braces is
+  //    almost certainly a forgotten reference marker — flag it so it gets anchored.
   const prompts = [
     ...(story?.frames ?? []).map((f) => ({ where: `frame:${f.objectiveId}`, text: f.imagePrompt })),
     ...(story?.sceneImagePrompt ? [{ where: "scene", text: story.sceneImagePrompt }] : []),
   ];
+  const bibleSet = new Set(bibleLabels);
   for (const p of prompts) {
-    const tokens = p.text.match(/\b[A-Z][A-Z0-9_]+\b/g) ?? [];
-    for (const t of tokens) {
-      if (EMPHASIS_WORDS.has(t)) continue;
-      if (!bibleLabels.includes(t)) {
-        err("label-in-bible", `${p.where} references "${t}", which is not a label in the asset bible.`);
+    for (const m of p.text.matchAll(/\{\{([A-Z0-9_]+)\}\}/g)) {
+      const tok = m[1]!;
+      if (!bibleSet.has(tok)) err("label-in-bible", `${p.where} references {{${tok}}}, which is not a label in the asset bible.`);
+    }
+    for (const label of bibleLabels) {
+      if (new RegExp(`(?<!\\{\\{)\\b${label}\\b(?!\\}\\})`).test(p.text)) {
+        err("unbraced-label", `${p.where} mentions ${label} without braces — wrap asset references as {{${label}}}.`);
       }
     }
-    // Cross-check the helper that actually feeds prompt assembly agrees the used labels are known.
-    void relevantLabels(p.text, bibleLabels);
   }
 
   // 6) One frame per objective (so playback + audio line up).
@@ -111,7 +108,7 @@ function main() {
       console.error("--file requires a path");
       process.exit(2);
     }
-    target = JSON.parse(readFileSync(path, "utf8")) as Scenario;
+    target = validateScenario(path, JSON.parse(readFileSync(path, "utf8")));
     others = SCENARIOS.filter((s) => s.id !== target.id);
   } else {
     const id = args.find((a) => !a.startsWith("--")) || "cafe";

@@ -13,8 +13,9 @@ import { existsSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
 import path from "node:path";
 import * as store from "../assets/store";
 import { getE4 } from "../adapters/index";
-import { IMAGE_STYLE, IMAGE_FORMAT, styledPrompt, referenceSheetPrompt, relevantLabels } from "../adapters/image-style";
-import { SCENARIOS, type Scenario } from "../scenarios";
+import { IMAGE_STYLE, IMAGE_FORMAT, styledPrompt, singleAssetSheetPrompt, relevantLabels } from "../adapters/image-style";
+import { referenceSheetKey } from "../assets/reference-sheet";
+import { SCENARIOS, validateScenario, type Scenario } from "../scenarios";
 
 const args = process.argv.slice(2);
 const backfill = args.includes("--backfill");
@@ -27,7 +28,7 @@ if (fileIdx !== -1) {
     console.error("--file requires a path");
     process.exit(1);
   }
-  scenario = JSON.parse(readFileSync(p, "utf8")) as Scenario; // draft preview — no commit, no status filter
+  scenario = validateScenario(p, JSON.parse(readFileSync(p, "utf8"))); // draft preview — resolves catalog refs
 } else {
   const id = args.find((a) => !a.startsWith("--")) || "cafe";
   scenario = SCENARIOS.find((s) => s.id === id && s.status === "active");
@@ -53,25 +54,41 @@ interface Prov {
 
 // Recompute exactly what build:assets does, so we know each current asset's key + provenance.
 const items: Prov[] = [];
-let sheetKey: string | undefined;
-if (assets.length) {
-  const raw = referenceSheetPrompt(assets);
-  const f = IMAGE_FORMAT.sheet;
-  sheetKey = store.imageKey(img.name, img.model, IMAGE_STYLE.id, f.aspectRatio, f.resolution, raw);
-  items.push({ label: "reference-sheet", key: sheetKey, ...f, endpoint: "images/generations", effectivePrompt: raw });
-}
 const allLabels = assets.map((a) => a.label);
+const assetKeyByLabel = new Map<string, string>();
+
+// Per-asset canonical renders (the reference units).
+for (const a of assets) {
+  const f = IMAGE_FORMAT.asset;
+  const raw = singleAssetSheetPrompt(a.label, a.descriptor);
+  const key = store.imageKey(img.name, img.model, IMAGE_STYLE.id, f.aspectRatio, f.resolution, raw);
+  assetKeyByLabel.set(a.label, key);
+  const shared = a.catalogId ? ` (shared:${a.catalogId})` : "";
+  items.push({ label: `asset:${a.label}${shared}`, key, ...f, endpoint: "images/generations", effectivePrompt: raw });
+}
+
+// The composed reference SHEET an anchored prompt is built against: the labelled montage of the assets
+// it uses (bible order). Returns its store key + the labels on it (which build the instruction).
+const sheetFor = (prompt: string): { key: string; labels: string[] } | undefined => {
+  const labels = relevantLabels(prompt, allLabels);
+  const renderKeys = labels.map((l) => assetKeyByLabel.get(l)).filter((k): k is string => !!k);
+  if (!renderKeys.length) return undefined;
+  return { key: referenceSheetKey(renderKeys), labels };
+};
+
 for (const fr of story?.frames ?? []) {
   const f = IMAGE_FORMAT.frame;
   const key = store.imageKey(img.name, img.model, IMAGE_STYLE.id, f.aspectRatio, f.resolution, fr.imagePrompt);
-  const eff = styledPrompt(fr.imagePrompt, { referenceLabels: relevantLabels(fr.imagePrompt, allLabels), mode: "flashcard" });
-  items.push({ label: `frame:${fr.objectiveId}`, key, ...f, endpoint: "images/edits", effectivePrompt: eff, referenceKeys: sheetKey ? [sheetKey] : undefined });
+  const sheet = sheetFor(fr.imagePrompt);
+  const eff = styledPrompt(fr.imagePrompt, { referenceLabels: sheet?.labels ?? [], mode: "flashcard" });
+  items.push({ label: `frame:${fr.objectiveId}`, key, ...f, endpoint: sheet ? "images/edits" : "images/generations", effectivePrompt: eff, referenceKeys: sheet ? [sheet.key] : undefined });
 }
 if (story?.sceneImagePrompt) {
   const f = IMAGE_FORMAT.scene;
   const key = store.imageKey(img.name, img.model, IMAGE_STYLE.id, f.aspectRatio, f.resolution, story.sceneImagePrompt);
-  const eff = styledPrompt(story.sceneImagePrompt, { referenceLabels: relevantLabels(story.sceneImagePrompt, allLabels) });
-  items.push({ label: "scene", key, ...f, endpoint: "images/edits", effectivePrompt: eff, referenceKeys: sheetKey ? [sheetKey] : undefined });
+  const sheet = sheetFor(story.sceneImagePrompt);
+  const eff = styledPrompt(story.sceneImagePrompt, { referenceLabels: sheet?.labels ?? [] });
+  items.push({ label: "scene", key, ...f, endpoint: sheet ? "images/edits" : "images/generations", effectivePrompt: eff, referenceKeys: sheet ? [sheet.key] : undefined });
 }
 
 const manifestPath = path.join(store.ASSET_DIR, "manifest.jsonl");

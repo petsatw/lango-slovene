@@ -6,9 +6,11 @@
 // BUMP `id` (e.g. v2-…) so keys change and stale images aren't served for the new look.
 
 export const IMAGE_STYLE = {
-  // v2: frames switched from "compose a new scene" to minimal-compose flashcards (atomic, neutral
-  // background, no label). Same prompt at the old id would collide on existing 4:3 frames, so this is
-  // a one-time global re-key — all images regenerate on the next build:assets.
+  // styleId folds the visual SYSTEM into the cache key. Bump it ONLY for a deliberate global re-render
+  // (a changed art style / look). The v3 per-asset-reference mechanism did NOT bump it: it changes how
+  // an image is anchored when it (re)generates, but it must not force-regenerate images whose pixels
+  // are still good — a key change is bookkeeping, regeneration is a content decision (see store keying:
+  // frame/scene keys strip the {{TOKEN}} braces, so adding that notation doesn't churn the cache).
   id: "v2-flat-warm",
 
   // Scenario-agnostic art style. The SETTING comes from each frame/scene prompt + the reference
@@ -22,18 +24,39 @@ export const IMAGE_STYLE = {
 };
 
 // Aspect ratio + resolution are a property of the ASSET TYPE, set by the engine (explicit API args,
-// never prose). Per-asset-type so they can diverge; today: focused 4:3 frames, 16:9 sheet/scene.
+// never prose). Per-asset-type so they can diverge; today: focused 4:3 frames, 16:9 scene.
 export const IMAGE_FORMAT = {
-  sheet: { aspectRatio: "16:9", resolution: "2k" }, // wide labeled lineup; it's the anchor → 2k
+  asset: { aspectRatio: "1:1", resolution: "1k" }, // one isolated canonical render → the reference unit
   frame: { aspectRatio: "4:3", resolution: "2k" }, // single-objective focus
   scene: { aspectRatio: "16:9", resolution: "2k" }, // establishing tableau; video-native
 } as const;
 
-// Which asset labels are actually used by a prompt — so the reference instruction names ONLY the
-// assets relevant to this frame/scene (greet shouldn't reference LOAF/ROLLS/COINS). Whole-word match
-// on the ALL-CAPS tokens, returned in the bible's order.
+// A bible asset is referenced in a prompt by an UNAMBIGUOUS delimited token: `{{CUSTOMER}}`. The
+// braces are the marker — they distinguish a reference from ALL-CAPS used for plain emphasis
+// (INSIDE, ONE, TWO) and need no whitelist. They are NOT stripped: the sheet builder prints the same
+// `{{LABEL}}` under each tile and the reference instruction names the same token, so the generator
+// sees one identical marker in the prose, the instruction, and printed on the sheet → exact match.
+export const TOKEN_RE = /\{\{([A-Z0-9_]+)\}\}/g;
+
+/** Wrap a bible label as its reference token. */
+export function token(label: string): string {
+  return `{{${label}}}`;
+}
+
+/** Strip the {{ }} from reference tokens ({{CUSTOMER}} → CUSTOMER). NOT used for keying — image keys
+ *  are the literal prompt. This is a one-shot helper for the {{TOKEN}} migration (rekey-assets): an
+ *  image whose only change is adding the braces is the same picture, so its existing bytes are re-keyed
+ *  to the new prompt rather than regenerated. */
+export function stripTokens(prompt: string): string {
+  return prompt.replace(TOKEN_RE, "$1");
+}
+
+// Which bible assets a prompt actually references (greet shouldn't pull LOAF/ROLLS/COINS), returned in
+// the bible's order so the montage tiles + the instruction list agree.
 export function relevantLabels(prompt: string, allLabels: string[]): string[] {
-  return allLabels.filter((label) => new RegExp(`\\b${label}\\b`).test(prompt));
+  const referenced = new Set<string>();
+  for (const m of prompt.matchAll(TOKEN_RE)) if (m[1]) referenced.add(m[1]);
+  return allLabels.filter((label) => referenced.has(label));
 }
 
 function formatList(items: string[]): string {
@@ -41,32 +64,32 @@ function formatList(items: string[]): string {
   return items.slice(0, -1).join(", ") + " and " + items[items.length - 1];
 }
 
-// The reference-sheet usage instruction, built PER frame/scene from just the relevant labels.
-// Added only when an image is anchored to the sheet.
+// The reference-usage instruction, built PER frame/scene from just the relevant labels. Added only
+// when an image is anchored. The reference image is ONE labelled sheet, composed locally for this image
+// from the assets it uses (each tile is named beneath it) — so match by label.
 export function referenceInstruction(labels: string[]): string {
   return (
-    `To compose the scene, match the following to the corresponding labeled asset on the reference ` +
-    `sheet: ${formatList(labels)}. Use the assets themselves as a style and character references, ` +
-    `making sure to compose them naturally in a new scene, changing perspective, angle, size and ` +
-    `position in order to best represent the scene description. Do not reproduce the labels, they are ` +
-    `purely to asset matching and to establish context.`
+    `To compose the scene, match each of these tokens to the item printed with the same label on the ` +
+    `reference sheet: ${formatList(labels.map(token))}. Use those items as the exact style and identity ` +
+    `references — same design, colour, and proportions — and compose them naturally into a new scene, ` +
+    `changing perspective, angle, size and position to best represent the scene description. Do not ` +
+    `draw the {{...}} tokens or any labels in the image; they are only there to match each item.`
   );
 }
 
 // The MINIMAL-COMPOSE instruction — the atomic-flashcard variant of referenceInstruction. Where the
 // scene path "composes a new scene", a flashcard ISOLATES only the disambiguating assets on a neutral
-// background with NO printed label, still anchored to the sheet so the card's assets are pixel-
-// consistent with the scene. The depiction prose (greet = entering the doorway) carries the
-// disambiguating context; this instruction just constrains the composition.
+// background with NO printed label, still anchored to the per-asset reference renders so the card's
+// assets are pixel-consistent with the scene. The depiction prose (greet = entering the doorway)
+// carries the disambiguating context; this instruction just constrains the composition.
 export function minimalComposeInstruction(labels: string[]): string {
   return (
-    `This is a single atomic flashcard, NOT a scene. Match the following to the corresponding labeled ` +
-    `asset on the reference sheet: ${formatList(labels)} — use them as exact style and identity ` +
-    `references so they are pixel-consistent with the other images. Isolate ONLY these assets (plus the ` +
-    `minimal disambiguating context the description names) on a plain, neutral, uncluttered background. ` +
-    `No setting, no extra props, no people or objects beyond what is described, and NO printed words, ` +
-    `letters, or labels anywhere in the image. Keep it centered and clear. Do not reproduce the label ` +
-    `text — the labels are only for asset matching.`
+    `This is a single atomic flashcard, NOT a scene. Match each of these tokens to the item printed with ` +
+    `the same label on the reference sheet: ${formatList(labels.map(token))} — use those items as exact ` +
+    `style and identity references so they are pixel-consistent with the other images. Isolate ONLY these ` +
+    `assets (plus the minimal disambiguating context the description names) on a plain, neutral, ` +
+    `uncluttered background. No setting, no extra props, no people or objects beyond what is described, ` +
+    `and NO printed words, letters, or {{...}} tokens anywhere in the image. Keep it centered and clear.`
   );
 }
 
@@ -89,19 +112,18 @@ export function styledPrompt(
     .join(" ");
 }
 
-// The reference-sheet ("model sheet") prompt — a DISTINCT path: art-style words but an explicit
-// neutral-background, labeled-catalog instruction (no scene). This image becomes the anchor that
-// every frame/scene is generated against, which is what holds character/setting consistent.
-export function referenceSheetPrompt(assets: { label: string; descriptor: string }[]): string {
-  const lines = assets.map((a) => `• ${a.label} — ${a.descriptor}.`).join("\n");
+// The per-asset CANONICAL RENDER prompt — one isolated item on a plain background, in the house style.
+// This is the reference UNIT of the v3 system: each asset is rendered once and reused as the anchor
+// for every frame/scene that uses it. Because a shared (catalog) asset's descriptor is identical
+// wherever it's referenced, the content-addressed store renders it ONCE and reuses it across scenarios
+// (money = the canary). No printed label — the image IS the single asset, identified by position.
+export function singleAssetSheetPrompt(label: string, descriptor: string): string {
   return (
-    "A character-and-prop model sheet (reference sheet) on a plain off-white background — a neat, " +
-    "evenly-spaced catalog of separate, isolated items, NOT a scene. " +
+    "A single isolated item on a plain, neutral off-white background — one clean catalog render, NOT a " +
+    "scene. " +
     IMAGE_STYLE.prefix +
-    "Draw each item once, isolated, and print its NAME in small clean capital letters directly " +
-    "beneath it. No background scenery, no story, no interaction between items — just the labeled " +
-    "items on the plain background, all in one consistent style and palette.\n\n" +
-    "Items (draw each once, label exactly as written):\n" +
-    lines
+    `Draw exactly one thing: ${descriptor}. ` +
+    "Centered, fully visible, no background scenery, no other objects or people, no printed words, " +
+    "letters, or labels anywhere in the image."
   );
 }

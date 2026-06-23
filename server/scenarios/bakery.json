@@ -4,6 +4,7 @@
   "title": "At the bakery (pekarna)",
   "status": "active",
   "character": "a friendly baker at a small neighbourhood bakery (pekarna) in Ljubljana",
+  "characterRef": "baker",
   "setup": "You are a friendly baker at a small neighbourhood pekarna in Ljubljana. A foreigner who is just starting to learn Slovenian has come in to buy bread. They live here and want to practice.",
   "opening": "Dober dan! Kaj bo dobrega?",
   "register": { "form": "vi", "variety": "pogovorni" },
@@ -36,14 +37,14 @@
   ],
   "scene": {
     "assets": [
-      { "label": "BAKER", "descriptor": "friendly woman in her 40s, dark hair in a bun, green apron over a striped shirt, warm smile; full body" },
-      { "label": "CUSTOMER", "descriptor": "friendly adult, short brown hair, mustard-yellow coat, red scarf, canvas tote bag; full body" },
+      { "ref": "baker" },
+      { "ref": "customer" },
       { "label": "BAKERY", "descriptor": "a small standalone vignette of a Slovenian bakery counter: a wooden counter with shelves of bread loaves behind it" },
       { "label": "DOORWAY", "descriptor": "a simple bakery entrance doorway with a glass door in a warm-toned frame, viewed head-on" },
       { "label": "LOAF", "descriptor": "a single rustic oval loaf of bread" },
       { "label": "ROLLS", "descriptor": "exactly two round bread rolls, side by side" },
-      { "label": "PRICE_TAG", "descriptor": "a small blank paper price tag on a short string" },
-      { "label": "EURO_COINS", "descriptor": "a small handful of a few euro coins" }
+      { "ref": "price_tag" },
+      { "ref": "euro_coins" }
     ],
     "story": {
       "sentences": [
@@ -57,30 +58,30 @@
         {
           "objectiveId": "greet",
           "lineSL": "Dober dan.",
-          "imagePrompt": "Viewpoint from INSIDE the room looking toward the entrance: CUSTOMER stands in the open DOORWAY, framed by it, facing the viewer and waving as they step in over the threshold — the moment of arriving and greeting, seen from within the room they are entering."
+          "imagePrompt": "Viewpoint from INSIDE the room looking toward the entrance: {{CUSTOMER}} stands in the open {{DOORWAY}}, framed by it, facing the viewer and waving as they step in over the threshold — the moment of arriving and greeting, seen from within the room they are entering."
         },
         {
           "objectiveId": "order_bread",
           "lineSL": "En kruh, prosim.",
-          "imagePrompt": "Exactly one LOAF — a single rustic loaf of bread, unmistakably ONE, nothing else beside it. The quantity 'one' is the point."
+          "imagePrompt": "Exactly one {{LOAF}} — a single rustic loaf of bread, unmistakably ONE, nothing else beside it. The quantity 'one' is the point."
         },
         {
           "objectiveId": "order_rolls",
           "lineSL": "Dve žemlji, prosim.",
-          "imagePrompt": "Exactly two ROLLS — two round bread rolls side by side, unmistakably TWO (the Slovenian dual). The quantity 'two' is the point; no other bread in the picture."
+          "imagePrompt": "Exactly two {{ROLLS}} — two round bread rolls side by side, unmistakably TWO (the Slovenian dual). The quantity 'two' is the point; no other bread in the picture."
         },
         {
           "objectiveId": "ask_price",
           "lineSL": "Koliko stane?",
-          "imagePrompt": "A single PRICE_TAG showing a large question mark '?' — the concept of asking how much it costs (a question, not a fixed price)."
+          "imagePrompt": "A single {{PRICE_TAG}} showing a large question mark '?' — the concept of asking how much it costs (a question, not a fixed price)."
         },
         {
           "objectiveId": "pay_leave",
           "lineSL": "Hvala, nasvidenje.",
-          "imagePrompt": "CUSTOMER stepping OUT through the DOORWAY, facing away with an over-the-shoulder wave — the moment of leaving and saying goodbye. The outward direction (leaving, not entering) is what makes this a farewell."
+          "imagePrompt": "{{CUSTOMER}} stepping OUT through the {{DOORWAY}}, facing away with an over-the-shoulder wave — the moment of leaving and saying goodbye. The outward direction (leaving, not entering) is what makes this a farewell."
         }
       ],
-      "sceneImagePrompt": "A single warm establishing scene capturing the essence of ordering and buying bread at a bakery: CUSTOMER at the counter of the BAKERY while BAKER serves them, with the LOAF, the two ROLLS, and EURO_COINS all visible on the counter. Full, lived-in BAKERY."
+      "sceneImagePrompt": "A single warm establishing scene capturing the essence of ordering and buying bread at a bakery: {{CUSTOMER}} at the counter of the {{BAKERY}} while {{BAKER}} serves them, with the {{LOAF}}, the two {{ROLLS}}, and {{EURO_COINS}} all visible on the counter. Full, lived-in {{BAKERY}}."
     }
   }
 }

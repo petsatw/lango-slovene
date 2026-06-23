@@ -4,6 +4,7 @@
   "title": "At the butcher (mesnica)",
   "status": "active",
   "character": "a friendly butcher at a small neighbourhood butcher shop (mesnica) in Ljubljana",
+  "characterRef": "butcher",
   "setup": "You are a friendly butcher at a small neighbourhood mesnica in Ljubljana. A foreigner who is just starting to learn Slovenian has come in to buy minced beef. They live here and want to practice.",
   "opening": "Dober dan! Kaj pa bo?",
   "register": { "form": "vi", "variety": "pogovorni" },
@@ -36,15 +37,15 @@
   ],
   "scene": {
     "assets": [
-      { "label": "BUTCHER", "descriptor": "friendly man in his 50s, short grey hair, white butcher's coat over a blue-striped apron, warm smile; full body" },
-      { "label": "CUSTOMER", "descriptor": "friendly adult, short brown hair, mustard-yellow coat, red scarf, canvas tote bag; full body" },
+      { "ref": "butcher" },
+      { "ref": "customer" },
       { "label": "MESNICA", "descriptor": "a small standalone vignette of a Slovenian butcher shop counter: a glass refrigerated display case of meat with a wooden chopping block and a hanging dial scale behind it" },
       { "label": "DOORWAY", "descriptor": "a simple butcher shop entrance doorway with a glass door in a warm-toned frame, viewed head-on" },
       { "label": "GROUND_MEAT", "descriptor": "a single portion of fresh pink-red minced meat on a sheet of white butcher paper" },
       { "label": "SCALE", "descriptor": "a butcher's round dial weighing scale with a single needle on a 0-to-1-kilogram face" },
-      { "label": "COW", "descriptor": "a single simple brown-and-white cow standing in profile" },
-      { "label": "PRICE_TAG", "descriptor": "a small blank paper price tag on a short string" },
-      { "label": "EURO_COINS", "descriptor": "a small handful of a few euro coins" }
+      { "label": "BEEF_ICON", "descriptor": "a simple flat cow icon — a single-colour cow silhouette like the stamp printed on beef packaging, not a realistic animal" },
+      { "ref": "price_tag" },
+      { "ref": "euro_coins" }
     ],
     "story": {
       "sentences": [
@@ -58,30 +59,30 @@
         {
           "objectiveId": "greet",
           "lineSL": "Dober dan.",
-          "imagePrompt": "Viewpoint from inside the room looking toward the entrance: CUSTOMER stands in the open DOORWAY, framed by it, facing the viewer and waving as they step in over the threshold — the moment of arriving and greeting, seen from within the room they are entering."
+          "imagePrompt": "Viewpoint from inside the room looking toward the entrance: {{CUSTOMER}} stands in the open {{DOORWAY}}, framed by it, facing the viewer and waving as they step in over the threshold — the moment of arriving and greeting, seen from within the room they are entering."
         },
         {
           "objectiveId": "order_beef",
           "lineSL": "Pol kile mletega mesa.",
-          "imagePrompt": "A single portion of GROUND_MEAT sitting on the pan of the SCALE, the round dial's needle pointing straight to the halfway mark of its 0-to-1-kilogram face — unmistakably half a kilo. The weight 'half a kilo' is the point; nothing else on the scale."
+          "imagePrompt": "A single portion of {{GROUND_MEAT}} sitting on the pan of the {{SCALE}}, the round dial's needle pointing straight to the halfway mark of its 0-to-1-kilogram face — unmistakably half a kilo. The weight 'half a kilo' is the point; nothing else on the scale."
         },
         {
           "objectiveId": "specify_beef",
           "lineSL": "Goveje, prosim.",
-          "imagePrompt": "A portion of GROUND_MEAT with a single COW standing right beside it — the meat is beef, from a cow, unmistakably not pork. The cow identifies the meat as beef; no other animal in the picture."
+          "imagePrompt": "A portion of {{GROUND_MEAT}} with a single {{BEEF_ICON}} beside it — the meat is beef, marked by the cow icon, unmistakably not pork. The icon identifies the meat as beef; nothing else in the picture."
         },
         {
           "objectiveId": "ask_price",
           "lineSL": "Koliko stane?",
-          "imagePrompt": "A single PRICE_TAG showing a large question mark '?' — the concept of asking how much it costs (a question, not a fixed price)."
+          "imagePrompt": "A single {{PRICE_TAG}} showing a large question mark '?' — the concept of asking how much it costs (a question, not a fixed price)."
         },
         {
           "objectiveId": "pay_leave",
           "lineSL": "Hvala, nasvidenje.",
-          "imagePrompt": "CUSTOMER stepping OUT through the DOORWAY, facing away with an over-the-shoulder wave — the moment of leaving and saying goodbye. The outward direction (leaving, not entering) is what makes this a farewell."
+          "imagePrompt": "{{CUSTOMER}} stepping OUT through the {{DOORWAY}}, facing away with an over-the-shoulder wave — the moment of leaving and saying goodbye. The outward direction (leaving, not entering) is what makes this a farewell."
         }
       ],
-      "sceneImagePrompt": "A single warm establishing scene capturing the essence of buying minced beef at a butcher shop: CUSTOMER at the counter of the MESNICA while BUTCHER serves them, with the GROUND_MEAT on the SCALE and EURO_COINS visible on the counter. Full, lived-in MESNICA."
+      "sceneImagePrompt": "A single warm establishing scene capturing the essence of buying minced beef at a butcher shop: {{CUSTOMER}} at the counter of the {{MESNICA}} while {{BUTCHER}} serves them, with the {{GROUND_MEAT}} on the {{SCALE}} and {{EURO_COINS}} visible on the counter. Full, lived-in {{MESNICA}}."
     }
   }
 }

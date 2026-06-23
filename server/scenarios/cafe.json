@@ -4,6 +4,7 @@
   "title": "Ordering at a café in Ljubljana",
   "status": "active",
   "character": "a friendly barista at a small café in Ljubljana",
+  "characterRef": "barista",
   "setup": "You are a friendly barista at a small café in Ljubljana. A foreigner who is just starting to learn Slovenian has come up to order. They live here and want to practice.",
   "opening": "Dober dan! Izvolite?",
   "register": { "form": "vi", "variety": "pogovorni" },
@@ -36,14 +37,14 @@
   ],
   "scene": {
     "assets": [
-      { "label": "BARISTA", "descriptor": "friendly woman in her 30s, brown hair in a ponytail, denim apron over a white tee, warm smile; full body" },
-      { "label": "CUSTOMER", "descriptor": "friendly adult, short brown hair, mustard-yellow coat, red scarf, canvas tote bag; full body" },
+      { "ref": "barista" },
+      { "ref": "customer" },
       { "label": "CAFE", "descriptor": "a small standalone vignette of a cozy Ljubljana café: a wooden counter with an espresso machine and a chalkboard menu behind it" },
       { "label": "DOORWAY", "descriptor": "a simple café entrance doorway with a glass door in a warm-toned frame, viewed head-on" },
       { "label": "COFFEE", "descriptor": "a single cup of coffee on a saucer" },
       { "label": "MILK", "descriptor": "a small jug of milk" },
-      { "label": "PRICE_TAG", "descriptor": "a small blank paper price tag on a short string" },
-      { "label": "EURO_COINS", "descriptor": "a small handful of a few euro coins" }
+      { "ref": "price_tag" },
+      { "ref": "euro_coins" }
     ],
     "story": {
       "sentences": [
@@ -57,30 +58,30 @@
         {
           "objectiveId": "greet",
           "lineSL": "Dober dan.",
-          "imagePrompt": "Viewpoint from INSIDE the room looking toward the entrance: CUSTOMER stands in the open DOORWAY, framed by it, facing the viewer and waving as they step in over the threshold — the moment of arriving and greeting, seen from within the room they are entering."
+          "imagePrompt": "Viewpoint from INSIDE the room looking toward the entrance: {{CUSTOMER}} stands in the open {{DOORWAY}}, framed by it, facing the viewer and waving as they step in over the threshold — the moment of arriving and greeting, seen from within the room they are entering."
         },
         {
           "objectiveId": "order_coffee",
           "lineSL": "Eno kavo, prosim.",
-          "imagePrompt": "Exactly one COFFEE — a single cup on its saucer, unmistakably ONE, nothing else beside it. The quantity 'one' is the point."
+          "imagePrompt": "Exactly one {{COFFEE}} — a single cup on its saucer, unmistakably ONE, nothing else beside it. The quantity 'one' is the point."
         },
         {
           "objectiveId": "with_milk",
           "lineSL": "Z mlekom, prosim.",
-          "imagePrompt": "MILK being poured from the jug into the COFFEE, the stream of milk clearly visible going into the cup — coffee WITH milk, as opposed to plain black coffee."
+          "imagePrompt": "{{MILK}} being poured from the jug into the {{COFFEE}}, the stream of milk clearly visible going into the cup — coffee WITH milk, as opposed to plain black coffee."
         },
         {
           "objectiveId": "ask_price",
           "lineSL": "Koliko stane?",
-          "imagePrompt": "A single PRICE_TAG showing a large question mark '?' — the concept of asking how much it costs (a question, not a fixed price)."
+          "imagePrompt": "A single {{PRICE_TAG}} showing a large question mark '?' — the concept of asking how much it costs (a question, not a fixed price)."
         },
         {
           "objectiveId": "pay_leave",
           "lineSL": "Hvala, nasvidenje.",
-          "imagePrompt": "CUSTOMER stepping OUT through the DOORWAY, facing away with an over-the-shoulder wave — the moment of leaving and saying goodbye. The outward direction (leaving, not entering) is what makes this a farewell."
+          "imagePrompt": "{{CUSTOMER}} stepping OUT through the {{DOORWAY}}, facing away with an over-the-shoulder wave — the moment of leaving and saying goodbye. The outward direction (leaving, not entering) is what makes this a farewell."
         }
       ],
-      "sceneImagePrompt": "A single warm establishing scene capturing the essence of ordering coffee at a café: CUSTOMER at the counter of the CAFE while BARISTA serves them, with the COFFEE, the MILK jug, and EURO_COINS all visible on the counter. Full, lived-in CAFE."
+      "sceneImagePrompt": "A single warm establishing scene capturing the essence of ordering coffee at a café: {{CUSTOMER}} at the counter of the {{CAFE}} while {{BARISTA}} serves them, with the {{COFFEE}}, the {{MILK}} jug, and {{EURO_COINS}} all visible on the counter. Full, lived-in {{CAFE}}."
     }
   }
 }

@@ -15,11 +15,14 @@
     "build:assets": "tsx server/scripts/build-assets.ts",
     "prompts": "tsx server/scripts/show-prompts.ts",
     "lint:scenario": "tsx server/scripts/lint-scenario.ts",
-    "prune:assets": "tsx server/scripts/prune-assets.ts"
+    "prune:assets": "tsx server/scripts/prune-assets.ts",
+    "audit:assets": "tsx server/scripts/audit-assets.ts",
+    "rekey:assets": "tsx server/utils/rekey-assets.ts"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "jimp": "^1.6.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
