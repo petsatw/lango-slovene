@@ -55,7 +55,7 @@ function addBubble(role, text, sub) {
     replay.title = "Replay";
     replay.setAttribute("aria-label", "Replay this line");
     replay.textContent = "▶";
-    replay.addEventListener("click", () => playReplyStreaming(text, { scenarioId: session?.scenarioId }));
+    replay.addEventListener("click", () => playReplyStreaming(text, { scenarioId: session?.scenarioId, voice: "character" }));
     div.appendChild(replay);
   }
 
@@ -175,6 +175,7 @@ async function playReplyStreaming(text, opts = {}) {
   const params = new URLSearchParams({ text });
   if (opts.scenarioId) params.set("scenarioId", opts.scenarioId);
   if (opts.objectiveId) params.set("objectiveId", opts.objectiveId);
+  if (opts.voice) params.set("voice", opts.voice); // "character" → the scenario character's voice
   audio.src = `/api/speak?${params.toString()}`;
   obs.state("speaking…");
 
@@ -255,8 +256,8 @@ async function stopRecordingAndSend() {
     session = data.session;
     renderObjectives();
 
-    // Text is on screen now; audio streams in and starts on the first chunk.
-    await playReplyStreaming(data.tutorReply, { scenarioId: session?.scenarioId });
+    // Text is on screen now; audio streams in and starts on the first chunk (the character's voice).
+    await playReplyStreaming(data.tutorReply, { scenarioId: session?.scenarioId, voice: "character" });
 
     if (session && session.complete) showTakeaway();
   } catch (err) {
@@ -422,6 +423,7 @@ function playClipToEnd(text, scenarioId) {
     const audio = new Audio();
     const params = new URLSearchParams({ text });
     if (scenarioId) params.set("scenarioId", scenarioId);
+    params.set("voice", "character"); // replayed clips are tutor (character) turns
     audio.src = `/api/speak?${params.toString()}`;
     audio.onended = resolve;
     audio.onerror = resolve;

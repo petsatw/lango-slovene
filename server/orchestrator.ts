@@ -5,7 +5,7 @@
 import { getE2, getE3 } from "./adapters/index";
 import * as store from "./assets/store";
 import { buildSystemPrompt } from "./prompt";
-import { getScenario, freshSession, type Scenario } from "./scenarios";
+import { getScenario, freshSession, characterVoiceProfile, type Scenario } from "./scenarios";
 import type { ConversationTurn, ObjectiveProgress, SessionState, TurnResult, UnderstandResult } from "./types";
 
 const TURN_CAP = 14; // safety stop so a session can't run forever
@@ -75,16 +75,20 @@ export async function runTurn(input: {
   const u = await understand(input);
   const e3 = getE3();
 
+  // The tutor reply IS the character speaking → synthesize in the character's voice profile.
+  const voiceProfile = characterVoiceProfile(getScenario(u.session.scenarioId));
+  const voiceTag = e3.voiceTagFor(voiceProfile);
+
   // Through the persistent store: reuse the canonical clip if we've already synthesized this
   // reply (free, survives restart); otherwise synthesize once and persist for next time.
   const t1 = performance.now();
-  const key = store.audioKey(e3.name, e3.voiceTag, u.tutorReply);
+  const key = store.audioKey(e3.name, voiceTag, u.tutorReply);
   const { bytes } = await store.getOrCreate(
     key,
     "audio",
-    { provider: e3.name, voiceOrModel: e3.voiceTag, text: u.tutorReply },
+    { provider: e3.name, voiceOrModel: voiceTag, text: u.tutorReply },
     async () => {
-      const r = await e3.synthesize({ text: u.tutorReply });
+      const r = await e3.synthesize({ text: u.tutorReply, voiceProfile });
       return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };
     },
   );

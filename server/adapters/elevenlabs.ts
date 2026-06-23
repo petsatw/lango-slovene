@@ -1,9 +1,22 @@
 // E3 adapter — ElevenLabs (native-quality Slovenian TTS).
 // Returns mp3 audio. Key sent as the xi-api-key header, server-side only.
+//
+// Voice profiles (provider-specific binding): a named, provider-agnostic voice profile from the
+// catalog (female-speaker / male-speaker) is bound HERE to a concrete ElevenLabs voice id via env.
+// `female-speaker` deliberately maps to the legacy ELEVENLABS_VOICE_ID so its voiceTag — and thus
+// every existing teacher/target/narration audio key — is byte-identical to before the catalog.
 
 import type { E3Adapter, E3Result } from "../types";
+import { TEACHER_VOICE_PROFILE } from "../catalog";
 
 const BASE = "https://api.elevenlabs.io/v1/text-to-speech";
+
+// profile id → the env var holding its concrete ElevenLabs voice id. female-speaker = the legacy var
+// (keeps existing keys); add a row + env var to introduce a new profile's voice.
+const PROFILE_ENV: Record<string, string> = {
+  "female-speaker": "ELEVENLABS_VOICE_ID",
+  "male-speaker": "ELEVENLABS_VOICE_ID_MALE",
+};
 
 function requireKey(): string {
   const key = process.env.ELEVENLABS_API_KEY;
@@ -13,19 +26,31 @@ function requireKey(): string {
 
 export class ElevenLabsE3 implements E3Adapter {
   readonly name = "elevenlabs";
-  private voiceId = process.env.ELEVENLABS_VOICE_ID || "";
   // Slovenian (slv) is only covered by eleven_v3 — multilingual_v2 / flash_v2_5 do NOT list it.
   private modelId = process.env.ELEVENLABS_MODEL_ID || "eleven_v3";
 
-  get voiceTag(): string {
-    return `${this.voiceId}:${this.modelId}`;
+  /** Concrete ElevenLabs voice id for a profile (default: the teacher voice). "" if its env is unset. */
+  private voiceIdFor(voiceProfile: string = TEACHER_VOICE_PROFILE): string {
+    const envVar = PROFILE_ENV[voiceProfile];
+    if (!envVar) throw new Error(`No ElevenLabs voice binding for profile "${voiceProfile}" (add it to PROFILE_ENV)`);
+    return process.env[envVar] || "";
   }
 
-  async synthesize(input: { text: string }): Promise<E3Result> {
-    const key = requireKey();
-    if (!this.voiceId) throw new Error("ELEVENLABS_VOICE_ID is not set (pick a Slovenian voice)");
+  /** Cache-key tag for a profile — `${voiceId}:${modelId}`. Omit → teacher voice (legacy tag). */
+  voiceTagFor(voiceProfile?: string): string {
+    return `${this.voiceIdFor(voiceProfile)}:${this.modelId}`;
+  }
 
-    const res = await fetch(`${BASE}/${this.voiceId}`, {
+  get voiceTag(): string {
+    return this.voiceTagFor();
+  }
+
+  async synthesize(input: { text: string; voiceProfile?: string }): Promise<E3Result> {
+    const key = requireKey();
+    const voiceId = this.voiceIdFor(input.voiceProfile);
+    if (!voiceId) throw new Error(`No ElevenLabs voice id set for profile "${input.voiceProfile ?? TEACHER_VOICE_PROFILE}" (set ${PROFILE_ENV[input.voiceProfile ?? TEACHER_VOICE_PROFILE]})`);
+
+    const res = await fetch(`${BASE}/${voiceId}`, {
       method: "POST",
       headers: {
         "xi-api-key": key,
@@ -49,11 +74,12 @@ export class ElevenLabsE3 implements E3Adapter {
   }
 
   // Level 1 streaming: progressive mp3 chunks so the client can start playback on the first chunk.
-  async stream(input: { text: string }): Promise<ReadableStream<Uint8Array>> {
+  async stream(input: { text: string; voiceProfile?: string }): Promise<ReadableStream<Uint8Array>> {
     const key = requireKey();
-    if (!this.voiceId) throw new Error("ELEVENLABS_VOICE_ID is not set (pick a Slovenian voice)");
+    const voiceId = this.voiceIdFor(input.voiceProfile);
+    if (!voiceId) throw new Error(`No ElevenLabs voice id set for profile "${input.voiceProfile ?? TEACHER_VOICE_PROFILE}" (set ${PROFILE_ENV[input.voiceProfile ?? TEACHER_VOICE_PROFILE]})`);
 
-    const res = await fetch(`${BASE}/${this.voiceId}/stream`, {
+    const res = await fetch(`${BASE}/${voiceId}/stream`, {
       method: "POST",
       headers: { "xi-api-key": key, "Content-Type": "application/json", Accept: "audio/mpeg" },
       body: JSON.stringify({

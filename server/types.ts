@@ -74,14 +74,17 @@ export interface E3Result {
 
 export interface E3Adapter {
   readonly name: string;
-  /** Stable identifier of the current voice/model config — part of the audio cache key, so a
-   *  voice/model change doesn't replay stale audio. */
+  /** Stable cache-key tag for the TEACHER/default voice profile — part of the audio cache key, so a
+   *  voice/model change doesn't replay stale audio. Equals `voiceTagFor(teacherProfile)`. */
   readonly voiceTag: string;
-  /** Full-buffer synthesis — used by probes and the replay harness. */
-  synthesize(input: { text: string }): Promise<E3Result>;
+  /** Cache-key tag for a NAMED voice profile (e.g. "male-speaker"). Audio reuse keys by the speaker's
+   *  voice profile: the same text in two profiles is two distinct clips. Omit → the teacher voice. */
+  voiceTagFor(voiceProfile?: string): string;
+  /** Full-buffer synthesis — used by probes and the replay harness. `voiceProfile` omitted → teacher. */
+  synthesize(input: { text: string; voiceProfile?: string }): Promise<E3Result>;
   /** Progressive streaming synthesis (Level 1) — returns a web ReadableStream of audio bytes.
-   *  Optional: providers without streaming fall back to synthesize(). */
-  stream?(input: { text: string }): Promise<ReadableStream<Uint8Array>>;
+   *  Optional: providers without streaming fall back to synthesize(). `voiceProfile` omitted → teacher. */
+  stream?(input: { text: string; voiceProfile?: string }): Promise<ReadableStream<Uint8Array>>;
 }
 
 /** M2 — pluggable image generation. Swapping providers = implementing this, exactly like E2/E3. */

@@ -13,7 +13,7 @@ import { getE2, getE3, getE4 } from "./adapters/index";
 import * as store from "./assets/store";
 import * as sessions from "./assets/sessions";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
-import { SCENARIOS, freshSession, getScenario } from "./scenarios";
+import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -88,7 +88,10 @@ app.post("/api/turn", async (req, res) => {
       try {
         const e3 = getE3();
         const scenario = getScenario(result.session.scenarioId);
-        const tutorKey = (text: string) => store.audioKey(e3.name, e3.voiceTag, text);
+        // The opening + every tutor reply are the CHARACTER speaking → key by the character's voice
+        // profile, so the captured/replayed clip matches what /api/speak (voice=character) synthesizes.
+        const tutorTag = e3.voiceTagFor(characterVoiceProfile(scenario));
+        const tutorKey = (text: string) => store.audioKey(e3.name, tutorTag, text);
         const seedTurns = sessions.load(runId)
           ? undefined
           : [{ role: "tutor" as const, text: scenario.opening, audioKey: tutorKey(scenario.opening) }];
@@ -124,7 +127,12 @@ app.get("/api/speak", async (req, res) => {
   if (!text.trim()) return res.status(400).json({ error: "text is required" });
 
   const e3 = getE3();
-  const key = store.audioKey(e3.name, e3.voiceTag, text);
+  // Voice selection: `voice=character` → the scenario character's profile (in-scene lines: the tutor
+  // reply / opening); anything else (default) → the teacher voice (targets, story narration, practice).
+  const scenarioIdQ = req.query.scenarioId ? String(req.query.scenarioId) : undefined;
+  const voiceProfile =
+    String(req.query.voice || "") === "character" ? characterVoiceProfile(getScenario(scenarioIdQ)) : undefined;
+  const key = store.audioKey(e3.name, e3.voiceTagFor(voiceProfile), text);
 
   // Hit if it's hot in L1 or already on disk (the disk hit is what survives restart).
   const cached = audioCache.get(key) ?? store.read(key, "audio");
@@ -137,9 +145,8 @@ app.get("/api/speak", async (req, res) => {
   }
 
   // Scenario tags (optional) so live clips are queryable by scenario/objective in the manifest.
-  const scenarioId = req.query.scenarioId ? String(req.query.scenarioId) : undefined;
   const objectiveId = req.query.objectiveId ? String(req.query.objectiveId) : undefined;
-  const meta = { provider: e3.name, voiceOrModel: e3.voiceTag, text, scenarioId, objectiveId };
+  const meta = { provider: e3.name, voiceOrModel: e3.voiceTagFor(voiceProfile), text, scenarioId: scenarioIdQ, objectiveId };
 
   try {
     res.setHeader("Content-Type", "audio/mpeg");
@@ -148,7 +155,7 @@ app.get("/api/speak", async (req, res) => {
 
     if (e3.stream) {
       // Tee: write each chunk to the client as it arrives AND buffer it to persist after streaming.
-      const reader = (await e3.stream({ text })).getReader();
+      const reader = (await e3.stream({ text, voiceProfile })).getReader();
       const chunks: Buffer[] = [];
       for (;;) {
         const { done, value } = await reader.read();
@@ -163,7 +170,7 @@ app.get("/api/speak", async (req, res) => {
       cachePut(key, buf);
     } else {
       // Provider without streaming: send + persist the full buffer.
-      const { audioBase64 } = await e3.synthesize({ text });
+      const { audioBase64 } = await e3.synthesize({ text, voiceProfile });
       const buf = Buffer.from(audioBase64, "base64");
       store.put(key, "audio", buf, meta);
       cachePut(key, buf);

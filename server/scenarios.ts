@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 import type { Objective, SessionState } from "./types";
+import { CATALOG, getCharacter, TEACHER_VOICE_PROFILE } from "./catalog";
 
 /** One visual story frame = one learning concept (image + its SL line + audio). */
 export interface StoryFrame {
@@ -18,11 +19,19 @@ export interface StoryFrame {
   imagePrompt: string; // raw prompt for the frame image (the house style prefix is added at gen time)
 }
 
-/** A canonical asset (character / setting / object) for a scenario. The minimal labeled set is drawn
- *  once on the reference sheet; the LABEL is the token reused in every frame/scene prompt. */
+/** A canonical asset (character / setting / object) for a scenario. Each asset gets its own canonical
+ *  render; the LABEL is the token reused in every frame/scene prompt to anchor that render. */
 export interface AssetDef {
-  label: string; // ALL-CAPS token, e.g. BAKER — printed on the sheet, referenced in prompts
+  label: string; // ALL-CAPS token, e.g. BAKER — referenced in prompts, anchors the per-asset render
   descriptor: string; // minimal canonical description that fixes the look
+  catalogId?: string; // set when resolved from a shared catalog ref (a SHARED asset, not scenario-local)
+}
+
+/** A scene.assets entry can instead be a SHARED-asset reference by catalog id (opt-in reuse). Resolves
+ *  to the catalog object's, or character's-visual, `{ label, descriptor }` — one canonical descriptor,
+ *  so the content-addressed store renders it once and reuses it across scenarios. */
+export interface AssetRef {
+  ref: string; // a catalog object id (objects.json) or character id (characters.json → its visual)
 }
 
 /** Register the tutor speaks in. Student target lines are usually register-neutral; this colours the
@@ -38,8 +47,12 @@ export interface Scenario {
   name?: string;
   title: string;
   status: "active" | "planned";
-  /** Who the tutor plays. */
+  /** Who the tutor plays (free-text role — drives the tutor prompt). */
   character: string;
+  /** Optional catalog character id — bundles the character's visual identity + VOICE PROFILE. Its
+   *  voiceProfile voices in-scene character lines (opening + live tutor reply); its visual is the
+   *  canonical look. Absent → in-scene lines use the teacher voice (back-compat). */
+  characterRef?: string;
   /** The situation, used to set the tutor's role. */
   setup: string;
   /** The tutor's first Slovenian line (shown/spoken at session start). */
@@ -49,7 +62,9 @@ export interface Scenario {
   objectives: Objective[];
   /** Visual story layer (M3/M4) — narrated opener, one frame per objective, one final all-in scene. */
   scene?: {
-    /** The minimal labeled asset set → drives the reference sheet that anchors every image. */
+    /** The labeled asset bible — always RESOLVED `AssetDef[]` after load. Raw JSON entries may be
+     *  scenario-local `{ label, descriptor }` OR shared `{ ref }` to the catalog (see AssetRef /
+     *  validateScenario). Each asset gets its own canonical render anchored by its label. */
     assets?: AssetDef[];
     story?: {
       sentences: string[]; // ≤5 short simple-Slovenian narration sentences
@@ -74,14 +89,38 @@ function asString(file: string, obj: any, key: string): string {
   return v;
 }
 
-/** Validate one parsed JSON object against the Scenario interface (the loader is the data contract). */
-function validateScenario(file: string, raw: any): Scenario {
+/** Resolve one raw scene.assets entry to a concrete AssetDef. A `{ ref }` points at the catalog (a
+ *  shared object, or a character's visual) and carries its catalogId through for provenance; an inline
+ *  `{ label, descriptor }` is scenario-local. */
+function resolveAsset(file: string, a: any): AssetDef {
+  if (a && typeof a.ref === "string") {
+    const id = a.ref;
+    const obj = CATALOG.objects[id];
+    if (obj) return { label: obj.label, descriptor: obj.descriptor, catalogId: id };
+    const ch = CATALOG.characters[id];
+    if (ch) return { label: ch.visual.label, descriptor: ch.visual.descriptor, catalogId: id };
+    fail(file, `scene asset ref "${id}" is not a known catalog object or character`);
+  }
+  asString(file, a, "label");
+  asString(file, a, "descriptor");
+  return { label: a.label, descriptor: a.descriptor };
+}
+
+/** Validate + RESOLVE one parsed JSON object into a Scenario (the loader is the data contract). Also
+ *  used by the --file draft paths (lint / show-prompts) so a draft's catalog `{ ref }`s resolve exactly
+ *  as they do at load. `file` is only used to label errors. */
+export function validateScenario(file: string, raw: any): Scenario {
   if (!raw || typeof raw !== "object") fail(file, "not an object");
   asString(file, raw, "id");
   asString(file, raw, "title");
   asString(file, raw, "character");
   asString(file, raw, "setup");
   asString(file, raw, "opening");
+  if (raw.characterRef !== undefined) {
+    if (typeof raw.characterRef !== "string" || !CATALOG.characters[raw.characterRef]) {
+      fail(file, `characterRef "${raw.characterRef}" is not a known catalog character`);
+    }
+  }
   if (raw.status !== "active" && raw.status !== "planned") fail(file, `status must be "active" | "planned"`);
   if (!Array.isArray(raw.objectives)) fail(file, `"objectives" must be an array`);
   for (const o of raw.objectives) {
@@ -97,9 +136,11 @@ function validateScenario(file: string, raw: any): Scenario {
     }
   }
   if (raw.scene) {
-    for (const a of raw.scene.assets ?? []) {
-      asString(file, a, "label");
-      asString(file, a, "descriptor");
+    // Resolve every scene asset (inline or shared `{ ref }`) to a concrete AssetDef in place, so all
+    // downstream (build-assets, images, lint) sees one uniform resolved bible.
+    if (raw.scene.assets !== undefined) {
+      if (!Array.isArray(raw.scene.assets)) fail(file, `scene.assets must be an array`);
+      raw.scene.assets = raw.scene.assets.map((a: any) => resolveAsset(file, a));
     }
     if (raw.scene.story) {
       if (!Array.isArray(raw.scene.story.sentences)) fail(file, `scene.story.sentences must be an array`);
@@ -138,6 +179,12 @@ export function getScenario(id: string | undefined): Scenario {
     SCENARIOS[0];
   if (!found) throw new Error("No scenarios loaded — server/scenarios/ has no valid JSON files.");
   return found;
+}
+
+/** The voice profile that voices this scenario's IN-SCENE character lines — the opening and the live
+ *  tutor reply (the tutor playing the character). Falls back to the teacher voice when no characterRef. */
+export function characterVoiceProfile(scenario: Scenario): string {
+  return scenario.characterRef ? getCharacter(scenario.characterRef).voiceProfile : TEACHER_VOICE_PROFILE;
 }
 
 export function freshSession(scenario: Scenario): SessionState {

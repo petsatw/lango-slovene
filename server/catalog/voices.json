@@ -1,0 +1,7 @@
+{
+  "teacher": "female-speaker",
+  "profiles": {
+    "female-speaker": { "description": "warm female teacher voice — the learner-facing narration + practice voice" },
+    "male-speaker": { "description": "warm male voice — for male in-scene characters" }
+  }
+}

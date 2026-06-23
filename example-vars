@@ -16,6 +16,7 @@ GEMINI_MODEL=gemini-3.5-flash
 # higher-latency / access-gated — the e3 probe will confirm access when you add the key.
 ELEVENLABS_API_KEY=
 ELEVENLABS_VOICE_ID=
+ELEVENLABS_VOICE_ID_MALE=
 ELEVENLABS_MODEL_ID=eleven_v3
 
 # --- E4: xAI Grok image generation (scenario story-frame + scene images) ---

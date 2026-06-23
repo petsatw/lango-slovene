@@ -1,0 +1,14 @@
+{
+  "customer": {
+    "label": "CUSTOMER",
+    "descriptor": "friendly adult, short brown hair, mustard-yellow coat, red scarf, canvas tote bag; full body"
+  },
+  "euro_coins": {
+    "label": "EURO_COINS",
+    "descriptor": "a small handful of a few euro coins"
+  },
+  "price_tag": {
+    "label": "PRICE_TAG",
+    "descriptor": "a small blank paper price tag on a short string"
+  }
+}
