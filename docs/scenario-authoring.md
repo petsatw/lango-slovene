@@ -1,8 +1,9 @@
-# Scenario & Objective Authoring Rubric (MVP)
+# Scenario authoring rubric
 
-**Date:** 2026-06-20
-**Status:** ACTIVE — the rubric every MVP scenario must pass. Source of truth for authoring scenarios, objectives, stories, and frames.
-**Research basis:** distilled from the 8-expert panel — see [research/scenario-engine-expert-panel-2026-06-20/SUMMARY.md](research/scenario-engine-expert-panel-2026-06-20/SUMMARY.md) and the per-expert transcripts beside it. This doc keeps ONLY what is buildable within today's tools and the current turn structure.
+The acceptance criteria every scenario must pass — for the scenario, its objectives, the story, the
+asset bible, the atomic flashcards, and the scene. The create-scenario skill self-checks against this
+before submitting; the scenario-critic judges against it. Distilled from the
+[expert-panel research](research/scenario-engine-expert-panel-2026-06-20/SUMMARY.md).
 
 ## Scope — what is MVP vs. PLANNED
 
@@ -76,7 +77,7 @@ Each objective phrase is in there, but it reads as a little story, not a drill.
 
 ## The ASSET BIBLE & REFERENCE SHEET (consistency — author this FIRST)
 
-This is the backbone of every image, and it is **not optional**. A flashcard's entire job is to bind one phrase to one exact picture; if the coffee on the `eno kavo` card is not the *same* coffee in the scene image, and the *same* coffee the next scenario shows, the binding breaks and the card mis-teaches. Image models drift on objects (vessel, colour, plating, light), not just faces. So **consistency is achieved by anchoring to a reference sheet, never by re-describing in prose.** The engine for this already exists — see [asset-engine-spec.md › M2 "Consistency engine — reference sheet"](asset-engine-spec.md).
+This is the backbone of every image, and it is **not optional**. A flashcard's entire job is to bind one phrase to one exact picture; if the coffee on the `eno kavo` card is not the *same* coffee in the scene image, and the *same* coffee the next scenario shows, the binding breaks and the card mis-teaches. Image models drift on objects (vessel, colour, plating, light), not just faces. So **consistency is achieved by anchoring to a reference sheet, never by re-describing in prose.**
 
 How it works (author the text; generation is downstream):
 - **Asset bible** = `Scenario.scene.assets: AssetDef[]` ([server/scenarios.ts:13-18](server/scenarios.ts#L13-L18)). Every visible thing — each CHARACTER, the SETTING, each OBJECT, and each abstract-concept ICON — is one `{ label, descriptor }`: an ALL-CAPS token (internal only, never shown to the learner) + a minimal canonical description that fixes its look.
@@ -84,7 +85,7 @@ How it works (author the text; generation is downstream):
 
 Rules:
 - [ ] Every object/character/setting/icon that appears in ANY frame or the scene is a labelled `AssetDef`. Nothing is drawn that isn't in the bible.
-- [ ] **Cross-scenario assets are reused by label from a shared catalog, not re-described.** Above all the student (`CUSTOMER`) and money (`EURO_COINS`) must be *identical* across café, bakery, butcher… Today café/bakery hand-copy the `CUSTOMER` descriptor — fragile; the canonical home is a shared catalog (see [asset-engine-spec.md](asset-engine-spec.md)). Reuse the exact descriptor + the same sheet render.
+- [ ] **Cross-scenario assets are reused by label from a shared catalog, not re-described.** Above all the student (`CUSTOMER`) and money (`EURO_COINS`) must be *identical* across café, bakery, butcher… Today café/bakery hand-copy the `CUSTOMER` descriptor — fragile; the canonical home is a shared catalog (a [roadmap](ROADMAP.md) item). Reuse the exact descriptor + the same sheet render.
 - [ ] Abstract objectives (greet, the closing) are **composed contrastively from bible assets** (e.g. greet = `CUSTOMER` entering the `SETTING` doorway; goodbye = `CUSTOMER` leaving it), **not** a single ambiguous icon — they still must be anchored to the sheet.
 - [ ] Descriptors are minimal but discriminating (enough to pin the look, no scene context).
 
@@ -98,11 +99,9 @@ A frame captures ONE **atomic concept** — the phrase's unit of meaning, includ
 - [ ] **Minimal-compose from reference-sheet assets:** the smallest set of bible assets (+ minimal disambiguating context like a doorway/direction) that makes the concept unambiguous — and nothing more. For combined meanings ("z mlekom" = `COFFEE` + `MILK`) compose exactly those.
 - [ ] **Neutral background, no printed label/text** (the ALL-CAPS token is internal; English never appears on a Slovenian card), **anchored to the reference sheet** so the card's assets are pixel-consistent with the scene and every other scenario. Minimal-compose does NOT mean drift-free — anchoring is what makes it consistent, and it is mandatory.
 
-> **Note — this is a new engine stage to build (MVP), and it redefines the current frames.** Today's café frames are *full scenes* (customer at the counter, barista pouring) — the engine's frame path explicitly "composes a new scene" ([asset-engine-spec.md](asset-engine-spec.md), `referenceInstruction`). Atomic flashcards need two MVP pieces: (1) a **flashcard-creation step** that *derives* the atomic concept and its simplest unambiguous depiction from `targetSL` + `hintEN` (+ the asset bible) and emits the image prompt — an LLM step whose prompt **is this rubric**, with a human review/approve gate; and (2) a **minimal-compose render mode** (only the disambiguating assets, neutral background, anchored to the sheet) that turns that prompt into the image. Both are MVP. Then re-author/re-derive existing frames and re-run `build:assets`.
-
 ## The SCENE image (one per scenario)
 
-The one place we show the **whole situation**: an establishing depiction of what an adult in Ljubljana actually encounters — the café counter and barista, the bakery case, the office window. Same **flat, warm children's-book illustration** house style as every other image ([asset-engine-spec.md](asset-engine-spec.md) / `IMAGE_STYLE`) — "adult" refers to the *content* (an everyday grown-up errand), not a realistic/photoreal style. It differs from the frames in **composition**, not style: a full tableau vs. an atomic card. This is the establishing image that **opens the story** (the learner clicks ▸ off it into the atomic frames).
+The one place we show the **whole situation**: an establishing depiction of what an adult in Ljubljana actually encounters — the café counter and barista, the bakery case, the office window. Same **flat, warm children's-book illustration** house style as every other image (`IMAGE_STYLE` in `server/adapters/image-style.ts`) — "adult" refers to the *content* (an everyday grown-up errand), not a realistic/photoreal style. It differs from the frames in **composition**, not style: a full tableau vs. an atomic card. This is the establishing image that **opens the story** (the learner clicks ▸ off it into the atomic frames).
 
 - [ ] Everyday adult Ljubljana situation, simplified to its essentials (uncluttered, not touristy).
 - [ ] **Composed from the same reference sheet** as the flashcards — the scene's coffee/beef/customer are the *same* canonical assets, so a learner recognises on the card exactly what they see in the scene.

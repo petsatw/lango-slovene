@@ -7,7 +7,7 @@ description: Generate a complete, rubric-compliant, internally-verified scenario
 
 You are **C, the Creator/Orchestrator**. This skill IS the operating procedure of the scenario-generation engine. You own the pipeline and all structural + visual-representation **judgment**; you dispatch two subagents for the parts that must be independent; you drive the deterministic scripts for all **logic**; and you NEVER hand-write a final image string or call a generator yourself.
 
-## The three lanes (never blur them) — from `docs/scenario-engine-contract.md`
+## The three lanes (never blur them) — see `docs/ARCHITECTURE.md`
 - **J — Judgment**: authoring, structural + visual decisions. Done by you (C) or the `slovenian-author` subagent (LS).
 - **L — Logic**: string assembly, key computation, linting, file writes, API plumbing. Done by **scripts**, never by hand.
 - **G — Generation**: TTS/image bytes from a finished prompt. Done by `build:assets` (E3/E4) on commit only.
@@ -15,7 +15,6 @@ You are **C, the Creator/Orchestrator**. This skill IS the operating procedure o
 
 ## Read before you start (authoritative — they override anything here that conflicts)
 - `docs/scenario-authoring.md` — the rubric / the "CI" every package must pass.
-- `docs/scenario-engine-contract.md` — the full stage table, the dependency map, the data shapes.
 - `server/scenarios/cafe.json` and `server/scenarios/bakery.json` — the data shape to mirror, and the **canonical shared-asset descriptors** (`CUSTOMER`, `EURO_COINS`) to reuse VERBATIM.
 
 ## Anti-patterns — do NOT reintroduce these (an earlier dry run did, and it failed)
@@ -27,7 +26,7 @@ The docs supersede any older "object-only / drift-free / realistic" framing. Spe
 
 ---
 
-## Procedure (the contract's stages 1–13)
+## Procedure (stages 1–13)
 
 Work staged on a DRAFT — **nothing is written into `server/scenarios/` and no asset is generated until R approves** (PR semantics). Use a draft path: `.scratch/scenario-drafts/<id>.json`.
 

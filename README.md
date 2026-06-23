@@ -26,76 +26,95 @@ shared in the open.
 
 ---
 
-## Under the hood
+## How it works
 
-The value isn't "an AI that talks to you" — that's the commodity that fails learners. The app owns
-the teaching and keeps the model on a short leash: short tutor turns, simple Slovene, corrections by
-recast, and you doing most of the talking.
-
-- **The teaching is structured, not improvised.** Each scenario is a set of small objectives; the
-  server — not the model — tracks what you've actually said and steers the next turn.
-  → [mastery loop](docs/mastery-loop-spec.md)
-- **Scenarios are generated, then checked — not hand-written.** Each one is authored in native
-  Ljubljana Slovene, passed through a deterministic linter, and signed off by a *separate* AI critic
-  before it ships. The repo ships the authoring agents themselves
-  ([.claude/skills/create-scenario/](.claude/skills/create-scenario/SKILL.md)).
-  → [the engine](docs/scenario-engine-contract.md)
-- **Provider-agnostic by design.** Speech and language run through swappable adapters, so providers
-  can be A/B-tested. → [architecture](docs/ARCHITECTURE.md)
-
-Ships with three scenarios today (café, bakery, butcher); new ones are generated on demand.
+The app owns the teaching, not the model. Each scenario is a set of small objectives; the server —
+not the model — tracks what you've said and rebuilds the prompt every turn, keeping the model on a
+short leash: short turns, simple Slovene, corrections by recast, you doing most of the talking.
+Scenarios are generated and quality-checked, not hand-written. Every provider is a swappable adapter.
 
 ```
 Browser PWA  ──/api/turn──▶  Node server  ──▶  understand + tutor  ──▶  Slovenian voice
  push-to-talk                (owns the rules)     (e.g. Gemini)           (e.g. ElevenLabs)
 ```
 
-## Quickstart
+## Quick start
+
+**Setup (once):**
 
 ```bash
 npm install
-cp example-vars .env          # then edit .env in an editor — see docs/SECRETS.md
-npm run dev                   # http://localhost:8787
+cp example-vars .env          # add your keys in an editor — see docs/SECRETS.md
 ```
 
-Open the URL on your phone (same network) or desktop, **hold** the button, speak, release.
+> 🔑 Keys go in `.env` only — never the shell, commits, or chat.
 
-> 🔑 Keys go in `.env` only — never the shell, commits, or chat. Read [docs/SECRETS.md](docs/SECRETS.md) first.
+Then pick a path:
 
-## Verifying it actually works
+**1 · Try the three ready-made scenarios** — café, bakery, butcher
 
-This app's heart is the live integration of real speech services, so we **test the seams with real
-services, observe the whole pipeline live, and never mock the heart.**
+```bash
+npm run fetch:assets          # download the prebuilt scene images + audio (free)
+npm run dev                   # http://localhost:8787 — pick a scenario, hold to speak
+```
 
-| Check | Command | What it proves | Needs |
-|---|---|---|---|
-| **E2 contract** | `npm run probe:e2` | understand+tutor key + endpoint reachable | E2 key |
-| **E3 contract** | `npm run probe:e3` | voice key works + returns real audio (writes `fixtures/out/e3-probe.mp3` to judge by ear) | E3 key |
-| **End-to-end replay** | `npm run replay` | real recorded clips → full pipeline → audio, within latency budget | both keys + clips (see [fixtures/README.md](fixtures/README.md)) |
-| **Golden path** | manual | live human speech works on the real device | a phone + the script below |
-| **Live observability** | built into the UI | shows each stage + latency; reveals *which* link failed | — |
+The scenes and flashcards come from the downloaded bundle (no image-generation key needed); the
+conversation runs live through your understand + voice keys.
 
-**Golden-path rehearsal (run before any demo, on the actual phone + network):**
-1. Hold, say in Slovenian: *"Dober dan."* → tutor greets back.
-2. Hold, code-switch: *"Em… ena kava, prosim… can I get it with mleko?"* → tutor understands, recasts the milk phrase.
-3. Hold, make a case error on purpose → tutor replies with the corrected form modeled naturally.
-4. Confirm: audio plays, latency feels live, overlay shows green stages.
+**2 · Check your wiring first** — a few cents, confirms your keys are connected
 
-If any step fails, the overlay tells you the failing stage immediately.
+```bash
+npm run probe:e2   # understand + tutor reachable
+npm run probe:e3   # voice returns real audio
+npm run replay     # one recorded clip → full pipeline → audio
+```
 
-## Swapping providers
+More detail in *Verifying it actually works*, below.
 
-Adapters live in [server/adapters/](server/adapters/). To test another provider: add a class
-implementing `E2Adapter` or `E3Adapter` ([server/types.ts](server/types.ts)), register it in
-[server/adapters/index.ts](server/adapters/index.ts), flip `E2_PROVIDER` / `E3_PROVIDER` in `.env`,
-and re-run the probes. The swap point is one config line — this is how the blind native-speaker A/B
-is run.
+**3 · Generate your own scenario** — any situation, in one sentence
 
-## Notes
-- Model ids (`GEMINI_MODEL`, `ELEVENLABS_MODEL_ID`) and the Slovenian `ELEVENLABS_VOICE_ID` are
-  env-configurable — verify them against current provider docs.
-- Audio format from the browser varies (Chrome→webm, iOS Safari→mp4). The adapter passes the
-  recorded mime through; the E2 probe + replay surface any format incompatibility immediately.
-- Native mobile app, streaming playback, and continuous voice detection are deliberately deferred.
-</content>
-</invoke>
+Run the **create-scenario** skill in Claude Code (describe a situation; it authors and self-checks
+the scenario), then materialize its assets:
+
+```bash
+npm run build:assets -- <scenario-id>   # one-time; bills the speech + image providers
+```
+
+It auto-appears in the picker. → [how the engine works](docs/ARCHITECTURE.md)
+
+## Project structure
+
+| Path | What it does |
+|---|---|
+| `public/` | the push-to-talk PWA |
+| `server/orchestrator.ts` · `prompt.ts` | a turn: understand, apply the mastery rules, rebuild the prompt |
+| `server/adapters/` | swappable providers — understand (E2), voice (E3), image (E4) |
+| `server/scenarios/*.json` | the scenarios, as data |
+| `.claude/skills/create-scenario/` | the engine that authors new scenarios |
+
+Full map: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Design choices
+
+- **The app owns the pedagogy, not the model.** Deterministic `pending → recast → completed` rules
+  live in the server, so teaching quality doesn't ride on the model behaving.
+- **Every provider is an adapter.** Swap the understanding model, the voice, or the image generator
+  with one `.env` line — the same seam that lets the engine target another language.
+- **Scenarios are data, generated then gated.** Author → deterministic lint → independent critic →
+  ship, so content scales without quality collapse.
+
+## Docs
+
+- [docs/README.md](docs/README.md) — the docs map.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — how it's built, and the files that matter.
+- [docs/ROADMAP.md](docs/ROADMAP.md) — where it's going, and the pieces to get there.
+- [AGENTS.md](AGENTS.md) — conventions for agents (and people) working in the repo.
+
+Common seams: add a scenario (`server/scenarios/*.json`, via the engine) · swap a provider
+(`server/types.ts` + `server/adapters/index.ts` + `.env`) · verify against real services
+(`npm run probe:e2` / `probe:e3` / `replay`).
+
+## License
+
+Not chosen yet — see [docs/ROADMAP.md](docs/ROADMAP.md). Until one is added, default copyright
+applies; ask first.
