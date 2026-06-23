@@ -27,6 +27,9 @@ fixtures/audio/*.ogg
 # Claude Code — personal/local settings stay local; shared agents + skills are committed
 .claude/settings.local.json
 
+# Asset bundles — distributed via GitHub Releases, never committed
+scenario-assets-*.tgz
+
 # Local generated-asset library (audio + images) — reusable content, kept local for now.
 # May later be promoted to a shippable/synced library; gitignored during build-up.
 # Root-anchored so it does NOT match the source dir server/assets/.
