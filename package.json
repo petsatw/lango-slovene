@@ -17,6 +17,8 @@
     "lint:scenario": "tsx server/scripts/lint-scenario.ts",
     "prune:assets": "tsx server/scripts/prune-assets.ts",
     "audit:assets": "tsx server/scripts/audit-assets.ts",
+    "render:asset": "tsx server/scripts/render-asset.ts",
+    "render:concept": "tsx server/scripts/render-concept.ts",
     "rekey:assets": "tsx server/utils/rekey-assets.ts"
   },
   "dependencies": {
