@@ -52,9 +52,12 @@ run and open enough to spread. Each requirement maps to one piece below.
    learner-facing surface: a selector of what to practice next and a "completed" review view, fed by
    the learner model.
 6. **Content that scales without consistency collapse** *(unlocks multi-scenario depth and new
-   languages).* Per-asset visual references composed on demand (not one monolithic sheet per
-   scenario), reuse by intent (unique by default, shared only when asked), and identity-consistent
-   characters across scenarios. *(the asset-engine refactor)*
+   languages).* ✅ **Largely shipped** (the asset-engine refactor): a shared **catalog** (objects,
+   characters, composed **concepts**, voices) where everything is referenced by id; per-asset canonical
+   renders composed on demand into a per-image labelled montage; identity-consistent characters +
+   identity metadata; and a render-vs-rekey toolkit with **decision-gated** propagation (see
+   [asset-pipeline.md](asset-pipeline.md)). *Remaining:* finish the three scene tableaux; an optional
+   dependency-aware "what would re-rendering this invalidate" view.
 7. **An engine anyone can run — any agent, any language.** The authoring procedure (rubric + gates +
    scripts) made tool-neutral, so it runs with Claude, Gemini, Codex, or a careful human — not only
    the Claude skill — plus a language/voice config seam so Slovene is the first target, not a

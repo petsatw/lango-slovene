@@ -33,9 +33,18 @@ hold button → record → POST /api/turn (audio + session state)
 | `server/orchestrator.ts` | runs a turn: E2 understand + apply the mastery rules |
 | `server/prompt.ts` | builds the tutor prompt from scenario + session state |
 | `server/adapters/` | E2 understand · E3 voice · E4 image — swap by env |
-| `server/scenarios/*.json` | the scenarios — **data, not code** |
-| `server/assets/store.ts` | content-addressed cache for audio + images |
+| `server/scenarios/*.json` | the scenarios — **data, not code** (assets referenced by catalog id) |
+| `server/catalog.ts` + `server/catalog/*.json` | the shared asset CATALOG: objects, characters, **concepts** (composed), voices |
+| `server/assets/store.ts` | content-addressed cache for audio + images (keys + provenance manifest) |
+| `server/assets/images.ts` | `getOrCreateImage` / `getOrCreateAssetRender` / `assetRenderKey` |
+| `server/assets/reference-sheet.ts` | composes the per-image labelled montage from per-asset renders (jimp, local) |
 | `server/scripts/build-assets.ts` | materialize a scenario's audio + images |
+| `server/scripts/render-asset.ts` · `render-concept.ts` | (re)render one catalog asset / composed concept |
+| `server/scripts/audit-assets.ts` | the asset-graph audit (`assets/migration-audit.html`) |
+| `server/utils/rekey-assets.ts` | re-key / harvest / restyle — move bytes to new keys **without regenerating** |
+
+The asset toolkit and the render-vs-rekey decision model are documented in
+[asset-pipeline.md](asset-pipeline.md).
 
 The loop in one line: the tutor recasts an error in character, the learner gets one natural retry,
 and an objective completes when the model judges it produced acceptably — mastery is *production*,
@@ -63,10 +72,14 @@ The present-state facts the [roadmap](ROADMAP.md) is built to fix:
 - **No persistence.** Session and conversation state are in-memory and per-sitting — closing the
   browser starts fresh. (Generated audio/image *assets* are cached durably; the *session* isn't.)
   This is why a persistent learner model is the keystone roadmap item.
-- **Cross-scenario asset reuse is accidental.** The store is content-addressed on the finished prompt
-  + anchor bytes, so two scenarios share an asset only when their keys happen to collide — no
-  per-asset identity, no opt-in, and the one combined reference sheet forces every asset to re-render
-  together. This is what the asset-engine refactor replaces.
+- **Cross-scenario asset reuse is now first-class** (the asset-engine refactor shipped). Every asset is
+  a **catalog item** with a stable id; scenarios reference it by id, so reuse is intentional, not
+  accidental. Each asset has its own canonical render, composed on demand into a per-image labelled
+  montage (no monolithic sheet). Recurring depictions (greet, leave, …) are **concepts** — one shared
+  image across scenarios. See [asset-pipeline.md](asset-pipeline.md). *Known sharp edge:* because a
+  composed image keys on its authored prompt (not its constituents' render keys), changing a source
+  asset does **not** auto-invalidate its dependents — that propagation is deliberately **decision-gated**
+  (you choose what to re-render; the audit's `used-by` edges show the candidates).
 - **Latency ≈6 s/turn.** Today E2 ≈5 s + E3 first-audio ≈1.4 s; Level-1 E3 streaming is done and the
   `E3Adapter.stream` seam exists. Level-2 (E2 token streaming + sentence pipelining → ~1–2 s) is planned.
 

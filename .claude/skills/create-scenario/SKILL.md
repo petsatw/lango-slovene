@@ -15,12 +15,17 @@ You are **C, the Creator/Orchestrator**. This skill IS the operating procedure o
 
 ## Read before you start (authoritative — they override anything here that conflicts)
 - `docs/scenario-authoring.md` — the rubric / the "CI" every package must pass.
-- `server/scenarios/cafe.json` and `server/scenarios/bakery.json` — the data shape to mirror, and the **canonical shared-asset descriptors** (`CUSTOMER`, `EURO_COINS`) to reuse VERBATIM.
+- `server/scenarios/cafe.json` and `server/scenarios/bakery.json` — the data shape to mirror.
+- `server/catalog/{objects,characters,voices}.json` — the **shared asset catalog**: the canonical source of
+  reusable assets (`customer`, `euro_coins`, `price_tag`, `doorway`, the characters) + their identity
+  metadata. Reuse a shared asset by **catalog id**, never by re-typing its descriptor (see stage 5).
+- `npm run audit:assets` → `assets/migration-audit.html` — the **asset graph**: every existing canonical
+  render and what each composed image is built-from. This is what you consult for the reuse decision (stage 6).
 
 ## Anti-patterns — do NOT reintroduce these (an earlier dry run did, and it failed)
 The docs supersede any older "object-only / drift-free / realistic" framing. Specifically:
 - Frames are **atomic flashcards**, not "object-only" icons. A bare waving hand is ambiguous (hello vs. goodbye) → it FAILS. Disambiguate **contrastively** (greet = `CUSTOMER` entering a `DOORWAY`; goodbye = `CUSTOMER` leaving it — by direction).
-- There is no "drift-free" depiction. Consistency comes from **anchoring to the reference sheet**, always.
+- There is no "drift-free" depiction. Consistency comes from **anchoring to the per-asset canonical renders** (composed into a labelled montage at gen time), always.
 - The scene is the **same flat children's-book house style** as the frames; it differs in *composition* (full tableau), not style. "Adult" = the everyday-errand content, never a photoreal look.
 - The closing is its own one-breath objective `"Hvala, nasvidenje."`; NEVER bundle it with the price question.
 
@@ -43,10 +48,23 @@ Dispatch the **`slovenian-author`** agent with the brief (situation, register de
 Quick pass against the rubric: native-not-textbook? register consistent? story contains every `targetSL`? no objective bundles a question with a closing? If something's off, **bounce back to `slovenian-author` with the specific note** (re-dispatch) — do not fix the Slovenian silently. R confirms naturalness later; you are the first filter.
 
 ### 5 — Asset bible (J, C)
-Author `scene.assets: AssetDef[]` — every visible thing as `{ label (ALL-CAPS), descriptor (minimal, look-fixing) }`. **Reuse shared assets by copying their descriptor verbatim** from `cafe.json`/`bakery.json`: `CUSTOMER` and `EURO_COINS` must be identical across scenarios. Add the minimal context assets the atomic frames need (commonly a `DOORWAY` for greet/goodbye, a `PRICE_TAG` for ask-price).
+**Every asset is a catalog item — there is no scenario-local asset.** `scene.assets` entries are ALWAYS `{ ref: "<catalogId>" }`; recurring characters come via `Scenario.characterRef`. An inline `{ label, descriptor }` is legacy and must not be authored.
+- **Reuse first.** If the thing already exists in the catalog (`server/catalog/objects.json` · `characters.json` · `concepts.json`), ref it by id. A `{ ref }` resolves at load to the catalog's `{ label, descriptor }` (+ identity metadata like gender), so the render is content-addressed once and reused everywhere — even setting-bearing things (`cafe`, `mesnica`) are catalog objects that just happen to be referenced once today.
+- **New thing → add it to the catalog first, then ref it.** Pick a lowercase id (label = `ID.toUpperCase()`), add `{ label, descriptor (minimal, look-fixing) }` to `objects.json`, then reference `{ ref: "id" }`. Don't inline.
+- **Declare identity metadata** on any new catalog person/figure (e.g. `gender`) — it both fixes the depiction and drives the language; its absence is what let the customer drift male.
+- **People proportions:** the house style's soft, "rounded" look is an ART choice — edges and linework — NOT a body-shape directive; it never dictates build. Draw people in all natural shapes and sizes; give a specific character a build only if it's part of who they are.
 
 ### 6 — Visual derivation, per objective (J, C) — the flashcard judgment
-For each objective decide its **atomic concept**, its nearest **confusable**, and the **minimal unambiguous depiction**, then write the frame's `imagePrompt` as **depiction prose that names only the bible labels it uses** (+ the minimal disambiguating context). Show the quantity/case/number that IS the lesson unmistakably (exactly one cup; exactly two rolls; milk visibly poured in vs. plain). This prose is all you author — the engine adds the house style + minimal-compose + anchor at gen time. Do NOT write "flat warm children's-book…", "match the reference sheet…", or any prefix — that's L's job.
+For each objective decide its **atomic concept**, its nearest **confusable**, and the **minimal unambiguous depiction**.
+
+**First, the reuse-or-author decision** (consult the asset graph — `npm run audit:assets`). This is a semantic JUDGMENT — a multimodal call on meaning, never prompt-string matching. **Reuse an existing render iff ALL three hold:**
+1. **Same referent, right specificity.** The render depicts *the very thing the line is about*, not merely the same category. A loaf or rolls both depict *bread*, so either serves a generic "naročim kruh"; neither depicts *burek* or *štruklji* — those need their own render. If the line names a specific item or count (`dve žemlji` = two rolls), the render must show *that* item/count — a loaf won't do even though both are bread.
+2. **No added Action / Relation / State (A/R/S).** A physical action ("slice the bread"), a second asset it must be shown *with* ("hand the coins to the baker"), or a state change (whole → sliced) means the as-is render under-specifies it → author a new frame, **anchored on the existing render** so the asset stays consistent.
+3. **Metadata holds.** Declared identity/constraints match — `{{CUSTOMER}}` is the girl, register/setting particulars fit. A render contradicting declared metadata is unsuitable even if the object matches.
+
+Outcome: **pass** → reuse that render (free; no new prompt). **fail / uncertain** → author. A dissonant wrong-reuse costs more than a regen, so reuse only on a confident match; the `scenario-critic` (stage 9) re-checks every reuse call.
+
+**If authoring**, write the frame's `imagePrompt` as **depiction prose that names the assets it uses as braced `{{TOKEN}}`s** (+ the minimal disambiguating context). Show the quantity/case/number that IS the lesson unmistakably (exactly one cup; exactly two rolls; milk visibly poured in vs. plain). This prose is all you author — the engine adds the house style + minimal-compose + anchor (composing the labelled montage from the per-asset renders) at gen time. Do NOT write "flat warm children's-book…", "match the reference sheet…", or any prefix — that's L's job.
 
 ### 7 — Scene spec (J, C)
 Write `sceneImagePrompt` — one calm establishing tableau naming the bible labels of the transaction's key elements (same shape as café/bakery's scene prompt).
@@ -76,7 +94,7 @@ Route each note to its authoring stage (language → 3 via `slovenian-author`; a
 ## Surgical fixes after commit
 To re-roll ONE already-committed leaf (a bad frame render, a flat audio take) without rebuilding everything:
 `npm run build:assets -- <id> --regen frame:<objectiveId> | scene | audio:opening | audio:<objectiveId> | audio:story[i]`.
-The reference sheet is forbidden as a surgical target (it cascades) — to change it, edit the bible and do a full rebuild, or bump `IMAGE_STYLE.id`.
+Renders are now per-asset (composed into a labelled montage at gen time), so there is no monolithic sheet to surgically target — re-roll the frame/scene that's wrong, or edit the asset's catalog descriptor and let its dependents be re-rendered by decision (the audit shows them). **Do NOT bump `IMAGE_STYLE.id` to force a re-render** — that is a brute-force global re-roll reserved for a deliberate art-style change; a content fix is a per-asset decision, and an unchanged-picture key shift is a re-key, not a regeneration.
 
 ## Scope (MVP — do not add)
-Single-attempt recast + retry is the loop; do NOT add completion-gating/enforced uptake. No cross-session orchestration, no shared cross-scenario asset catalog, no automating the human naturalness check. Those are PLANNED.
+Single-attempt recast + retry is the loop; do NOT add completion-gating/enforced uptake. No cross-session orchestration, no automating the human naturalness check. Those are PLANNED. (The shared cross-scenario asset catalog now EXISTS — reuse it; that line is no longer a scope exclusion.)
