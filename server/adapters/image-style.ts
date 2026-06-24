@@ -15,9 +15,15 @@ export const IMAGE_STYLE = {
 
   // Scenario-agnostic art style. The SETTING comes from each frame/scene prompt + the reference
   // sheet, never from here — so this prefix must not name a specific place (café, bakery, …).
+  // NOTE: "rounded" here means soft EDGES/linework (the approachable look), NOT body shape — the style
+  // never dictates build; people render in all natural shapes. The prefix is in the per-asset render
+  // prompt (singleAssetSheetPrompt) but NOT in frame
+  // keys (those key on the authored prompt + styleId), so editing it re-keys only asset renders; rekey
+  // the ones whose picture is unchanged, re-render the people.
   prefix:
-    "Flat, warm, friendly children's-book illustration. Soft rounded shapes, clean vector style, " +
-    "cohesive muted palette, gentle Slovenian feel. ",
+    "Flat, warm, friendly children's-book illustration with soft edges and clean, gently rounded " +
+    "linework, a cohesive muted palette, and a contemporary Ljubljana old-town feel — present-day " +
+    "Slovenia, dressed and styled for today, with only a few subtle traditional accents. ",
 
   // STUB — extra style-guidance text appended to frame/scene prompts. Empty today.
   referenceText: "",
@@ -84,12 +90,12 @@ export function referenceInstruction(labels: string[]): string {
 // carries the disambiguating context; this instruction just constrains the composition.
 export function minimalComposeInstruction(labels: string[]): string {
   return (
-    `This is a single atomic flashcard, NOT a scene. Match each of these tokens to the item printed with ` +
-    `the same label on the reference sheet: ${formatList(labels.map(token))} — use those items as exact ` +
-    `style and identity references so they are pixel-consistent with the other images. Isolate ONLY these ` +
-    `assets (plus the minimal disambiguating context the description names) on a plain, neutral, ` +
-    `uncluttered background. No setting, no extra props, no people or objects beyond what is described, ` +
-    `and NO printed words, letters, or {{...}} tokens anywhere in the image. Keep it centered and clear.`
+    `Match each token to the item printed with the same label on the reference sheet: ${formatList(labels.map(token))}. ` +
+    `Those reference items define each thing's identity and style — keep its design, colour, and proportions — ` +
+    `but you are free to recompose them: change perspective, angle, size, and position as needed to best depict ` +
+    `the description. This is a single atomic flashcard: place only these assets (plus the minimal context the ` +
+    `description names) on a plain, neutral, uncluttered background — no setting, no extra props or people, and ` +
+    `no printed words, letters, or {{...}} tokens anywhere in the image. Keep it centered and clear.`
   );
 }
 
@@ -106,7 +112,9 @@ export function styledPrompt(
       ? minimalComposeInstruction(labels)
       : referenceInstruction(labels)
     : "";
-  return [IMAGE_STYLE.prefix, ref, prompt, IMAGE_STYLE.referenceText]
+  // The authored DEPICTION leads (what to draw), then the house style + composition instructions. Keying
+  // is on the raw authored prompt, not this assembled string, so reordering churns no cache.
+  return [prompt, IMAGE_STYLE.prefix, ref, IMAGE_STYLE.referenceText]
     .map((s) => s.trim())
     .filter(Boolean)
     .join(" ");
