@@ -56,3 +56,8 @@ scripts and gates. Making that fully first-class for other tools is [roadmap](do
 - **Secrets in `.env` only** — never the shell, commits, or chat. See [docs/SECRETS.md](docs/SECRETS.md).
 - Model ids and the Slovenian voice id are env-configurable; verify against current provider docs.
 - `.scratch/`, `.consensus-runs/`, `/assets/`, and `*.local.json` settings are local-only (gitignored).
+- **Never generate images or audio unless the operator explicitly asks.** A key change is bookkeeping,
+  not a regeneration — re-key unchanged pictures; only changed content costs a generation. When a source
+  asset changes, its dependents do **not** auto-update: propagation is **decision-gated** (you list the
+  affected dependents and the operator chooses what to re-render). Toolkit + key model:
+  [docs/asset-pipeline.md](docs/asset-pipeline.md).
