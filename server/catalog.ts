@@ -32,11 +32,27 @@ export interface CatalogCharacter {
   name: string;
   voiceProfile: string; // a VoiceProfile id
   visual: AssetDef; // { label, descriptor } — the canonical look
+  /** Identity metadata that BOTH constrains the depiction and drives the language (pronoun/agreement).
+   *  e.g. gender "feminine" — a render that contradicts it is unsuitable. The load-bearing fact a
+   *  reuse decision (create-scenario stage 6) reads; absence is what let the CUSTOMER drift male. */
+  gender?: "feminine" | "masculine";
 }
 
 /** A shared object/figure with one canonical descriptor → one canonical render reused across scenarios. */
 export interface CatalogObject extends AssetDef {
   id: string;
+  gender?: "feminine" | "masculine"; // for figure assets (e.g. the customer avatar); see CatalogCharacter.gender
+}
+
+/** A COMPOSED concept: a reusable depiction built FROM other catalog assets (the ontology's composite
+ *  node). Its identity is the depiction `prompt` (which names its assets as `{{TOKEN}}`s) + the assets it
+ *  `composedFrom`. The render is the content-addressed image at that prompt — so every frame that uses the
+ *  same depiction shares one canonical image (greet/leave are the same picture in every scenario). */
+export interface CatalogConcept {
+  id: string;
+  label: string;
+  prompt: string;
+  composedFrom: string[]; // catalog asset ids this concept anchors on
 }
 
 export interface Catalog {
@@ -44,6 +60,7 @@ export interface Catalog {
   voiceProfiles: Record<string, VoiceProfile>;
   characters: Record<string, CatalogCharacter>;
   objects: Record<string, CatalogObject>;
+  concepts: Record<string, CatalogConcept>;
 }
 
 // ---- Loader ---------------------------------------------------------------------------------------
@@ -91,6 +108,7 @@ function loadCatalog(): Catalog {
         label: asString(c.visual, "label", `characters.json/${id}.visual`),
         descriptor: asString(c.visual, "descriptor", `characters.json/${id}.visual`),
       },
+      ...(c.gender !== undefined ? { gender: c.gender } : {}),
     };
   }
 
@@ -103,10 +121,33 @@ function loadCatalog(): Catalog {
       id,
       label: asString(o, "label", `objects.json/${id}`),
       descriptor: asString(o, "descriptor", `objects.json/${id}`),
+      ...(o.gender !== undefined ? { gender: o.gender } : {}),
     };
   }
 
-  return { teacherVoiceProfile, voiceProfiles, characters, objects };
+  // concepts (composed) — optional file
+  const concepts: Record<string, CatalogConcept> = {};
+  let rawConcepts: any = {};
+  try {
+    rawConcepts = read("concepts.json");
+  } catch {
+    rawConcepts = {};
+  }
+  for (const id of Object.keys(rawConcepts)) {
+    const c = rawConcepts[id];
+    const composedFrom = Array.isArray(c.composedFrom) ? c.composedFrom : fail(`concepts.json/${id}: composedFrom must be an array`);
+    for (const a of composedFrom) {
+      if (!objects[a] && !characters[a]) fail(`concept "${id}" composedFrom unknown asset "${a}"`);
+    }
+    concepts[id] = {
+      id,
+      label: asString(c, "label", `concepts.json/${id}`),
+      prompt: asString(c, "prompt", `concepts.json/${id}`),
+      composedFrom,
+    };
+  }
+
+  return { teacherVoiceProfile, voiceProfiles, characters, objects, concepts };
 }
 
 export const CATALOG: Catalog = loadCatalog();
@@ -127,6 +168,22 @@ export function getVoiceProfile(id: string): VoiceProfile {
   const v = CATALOG.voiceProfiles[id];
   if (!v) throw new Error(`Unknown voice profile "${id}". Known: ${Object.keys(CATALOG.voiceProfiles).join(", ")}`);
   return v;
+}
+
+export function getConcept(id: string): CatalogConcept {
+  const c = CATALOG.concepts[id];
+  if (!c) throw new Error(`Unknown catalog concept "${id}". Known: ${Object.keys(CATALOG.concepts).join(", ")}`);
+  return c;
+}
+
+/** Resolve a catalog asset id (object or character) to its { label, descriptor } — used to anchor a
+ *  composed concept on its constituents' canonical renders. */
+export function getAssetVisual(id: string): AssetDef {
+  const o = CATALOG.objects[id];
+  if (o) return { label: o.label, descriptor: o.descriptor };
+  const ch = CATALOG.characters[id];
+  if (ch) return { label: ch.visual.label, descriptor: ch.visual.descriptor };
+  throw new Error(`Unknown catalog asset "${id}" (not an object or character).`);
 }
 
 /** The teacher/default voice profile id — learner-facing narration + practice audio. */

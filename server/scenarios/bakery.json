@@ -39,10 +39,10 @@
     "assets": [
       { "ref": "baker" },
       { "ref": "customer" },
-      { "label": "BAKERY", "descriptor": "a small standalone vignette of a Slovenian bakery counter: a wooden counter with shelves of bread loaves behind it" },
-      { "label": "DOORWAY", "descriptor": "a simple bakery entrance doorway with a glass door in a warm-toned frame, viewed head-on" },
-      { "label": "LOAF", "descriptor": "a single rustic oval loaf of bread" },
-      { "label": "ROLLS", "descriptor": "exactly two round bread rolls, side by side" },
+      { "ref": "bakery" },
+      { "ref": "doorway" },
+      { "ref": "loaf" },
+      { "ref": "rolls" },
       { "ref": "price_tag" },
       { "ref": "euro_coins" }
     ],

@@ -39,11 +39,11 @@
     "assets": [
       { "ref": "butcher" },
       { "ref": "customer" },
-      { "label": "MESNICA", "descriptor": "a small standalone vignette of a Slovenian butcher shop counter: a glass refrigerated display case of meat with a wooden chopping block and a hanging dial scale behind it" },
-      { "label": "DOORWAY", "descriptor": "a simple butcher shop entrance doorway with a glass door in a warm-toned frame, viewed head-on" },
-      { "label": "GROUND_MEAT", "descriptor": "a single portion of fresh pink-red minced meat on a sheet of white butcher paper" },
-      { "label": "SCALE", "descriptor": "a butcher's round dial weighing scale with a single needle on a 0-to-1-kilogram face" },
-      { "label": "BEEF_ICON", "descriptor": "a simple flat cow icon — a single-colour cow silhouette like the stamp printed on beef packaging, not a realistic animal" },
+      { "ref": "mesnica" },
+      { "ref": "doorway" },
+      { "ref": "ground_meat" },
+      { "ref": "scale" },
+      { "ref": "beef_icon" },
       { "ref": "price_tag" },
       { "ref": "euro_coins" }
     ],
@@ -64,12 +64,12 @@
         {
           "objectiveId": "order_beef",
           "lineSL": "Pol kile mletega mesa.",
-          "imagePrompt": "A single portion of {{GROUND_MEAT}} sitting on the pan of the {{SCALE}}, the round dial's needle pointing straight to the halfway mark of its 0-to-1-kilogram face — unmistakably half a kilo. The weight 'half a kilo' is the point; nothing else on the scale."
+          "imagePrompt": "{{GROUND_MEAT}} resting on the pan of the {{SCALE}}, the dial's needle pointing to a mark on the gram face — meat being weighed, ordered by weight."
         },
         {
           "objectiveId": "specify_beef",
           "lineSL": "Goveje, prosim.",
-          "imagePrompt": "A portion of {{GROUND_MEAT}} with a single {{BEEF_ICON}} beside it — the meat is beef, marked by the cow icon, unmistakably not pork. The icon identifies the meat as beef; nothing else in the picture."
+          "imagePrompt": "{{GROUND_MEAT}} on its white butcher paper, with the {{BEEF_ICON}} printed as a single clear stamp on the paper beside the meat — marking this minced meat as beef."
         },
         {
           "objectiveId": "ask_price",

@@ -1,14 +1,59 @@
 {
   "customer": {
     "label": "CUSTOMER",
-    "descriptor": "friendly adult, short brown hair, mustard-yellow coat, red scarf, canvas tote bag; full body"
+    "descriptor": "friendly woman, slim build, short brown hair, mustard-yellow coat, red scarf, canvas tote bag; full body",
+    "gender": "feminine"
   },
   "euro_coins": {
     "label": "EURO_COINS",
-    "descriptor": "a small handful of a few euro coins"
+    "descriptor": "a euro banknote and a couple of coins lying naturally on a small shop change tray, as on a shop counter; the banknote is marked with the € euro symbol, and each coin is stamped with the cent symbol (¢) only — no digits, numbers, denominations, or any other markings on the coins or the note"
   },
   "price_tag": {
     "label": "PRICE_TAG",
     "descriptor": "a small blank paper price tag on a short string"
+  },
+  "doorway": {
+    "label": "DOORWAY",
+    "descriptor": "a simple generic shop entrance with a plain glass door in a warm wooden frame, no signage or branding, viewed head-on"
+  },
+  "cafe": {
+    "label": "CAFE",
+    "descriptor": "a small standalone vignette of a cozy Ljubljana café: a wooden counter with an espresso machine and a chalkboard menu behind it"
+  },
+  "coffee": {
+    "label": "COFFEE",
+    "descriptor": "a single cup of coffee on a saucer"
+  },
+  "milk": {
+    "label": "MILK",
+    "descriptor": "a small jug of milk"
+  },
+  "bakery": {
+    "label": "BAKERY",
+    "descriptor": "a small standalone vignette of a Slovenian bakery counter: a wooden counter with shelves of bread loaves behind it"
+  },
+  "loaf": {
+    "label": "LOAF",
+    "descriptor": "a single rustic oval loaf of bread"
+  },
+  "rolls": {
+    "label": "ROLLS",
+    "descriptor": "exactly two round bread rolls, side by side"
+  },
+  "mesnica": {
+    "label": "MESNICA",
+    "descriptor": "a small standalone vignette of a Slovenian butcher shop counter: a glass refrigerated display case of meat with a wooden chopping block and a hanging dial scale behind it"
+  },
+  "ground_meat": {
+    "label": "GROUND_MEAT",
+    "descriptor": "a single portion of fresh pink-red minced meat on a sheet of white butcher paper"
+  },
+  "scale": {
+    "label": "SCALE",
+    "descriptor": "a round dial weighing scale with an empty metal pan on top above the dial, a single needle, the face marked in grams in increments of 100 around its edge"
+  },
+  "beef_icon": {
+    "label": "BEEF_ICON",
+    "descriptor": "a simple flat cow icon — a single-colour cow silhouette like the stamp printed on beef packaging, not a realistic animal"
   }
 }

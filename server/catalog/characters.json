@@ -2,25 +2,28 @@
   "barista": {
     "name": "Barista",
     "voiceProfile": "female-speaker",
+    "gender": "feminine",
     "visual": {
       "label": "BARISTA",
-      "descriptor": "friendly woman in her 30s, brown hair in a ponytail, denim apron over a white tee, warm smile; full body"
+      "descriptor": "friendly woman in her 30s, slim build, brown hair in a ponytail, denim apron over a white tee, warm smile; full body"
     }
   },
   "baker": {
     "name": "Baker",
     "voiceProfile": "female-speaker",
+    "gender": "feminine",
     "visual": {
       "label": "BAKER",
-      "descriptor": "friendly woman in her 40s, dark hair in a bun, green apron over a striped shirt, warm smile; full body"
+      "descriptor": "friendly woman in her 40s, average build, dark hair in a bun, green apron over a striped shirt, warm smile; full body"
     }
   },
   "butcher": {
     "name": "Butcher",
     "voiceProfile": "male-speaker",
+    "gender": "masculine",
     "visual": {
       "label": "BUTCHER",
-      "descriptor": "friendly man in his 50s, short grey hair, white butcher's coat over a blue-striped apron, warm smile; full body"
+      "descriptor": "friendly man in his 50s, tall and lean, short grey hair, white butcher's coat over a blue-striped apron, warm smile; full body"
     }
   }
 }

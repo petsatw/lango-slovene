@@ -39,10 +39,10 @@
     "assets": [
       { "ref": "barista" },
       { "ref": "customer" },
-      { "label": "CAFE", "descriptor": "a small standalone vignette of a cozy Ljubljana café: a wooden counter with an espresso machine and a chalkboard menu behind it" },
-      { "label": "DOORWAY", "descriptor": "a simple café entrance doorway with a glass door in a warm-toned frame, viewed head-on" },
-      { "label": "COFFEE", "descriptor": "a single cup of coffee on a saucer" },
-      { "label": "MILK", "descriptor": "a small jug of milk" },
+      { "ref": "cafe" },
+      { "ref": "doorway" },
+      { "ref": "coffee" },
+      { "ref": "milk" },
       { "ref": "price_tag" },
       { "ref": "euro_coins" }
     ],
