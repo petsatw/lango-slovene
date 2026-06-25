@@ -1,6 +1,6 @@
 ---
 name: create-scenario
-description: Generate a complete, rubric-compliant, internally-verified scenario PACKAGE (scenario + objectives + story + asset bible + atomic-flashcard prompts + scene prompt) for the lango-slovenian tutor, present it PR-style for approval, and on approve commit it (write the scenario JSON + materialize assets + it auto-appears in the picker). Use when the user wants to author/add a new practice scenario (café, bakery, butcher, pharmacy, …) or says "create a scenario", "new scenario", "add a scenario".
+description: Generate a complete, rubric-compliant, internally-verified scenario PACKAGE (scenario + objectives + story + asset bible + atomic-flashcard prompts + scene prompt) for the lango-slovenian tutor, present it PR-style for approval, and on approve commit it (write the scenario JSON + materialize assets + it auto-appears in the picker). Use when the user wants to author/add a new practice scenario (café, bakery, butcher, pharmacy, …) or says "create a scenario", "new scenario", "add a scenario". Pass `--self-directed` to let the engine itself DISCOVER the best next scenario for the current learner from the existing repertoire + research principles (headless authoring; generation still gated on approval).
 ---
 
 # create-scenario — the scenario-generation orchestrator
@@ -31,12 +31,59 @@ The docs supersede any older "object-only / drift-free / realistic" framing. Spe
 
 ---
 
+## Self-directed mode (`--self-directed`)
+
+When invoked with `--self-directed`, the engine runs **headless**: no user brief, no pausing for image
+review, and **no clarifying questions** — you DISCOVER the best next scenario yourself, author it end to
+end, and present the finished package. The selection is driven by the research principles, applied to the
+**current learner's repertoire** (what's already in `server/scenarios/` + the catalog). This adds **stage 0**
+below and makes stage 1 automatic; **everything else (stages 2–13) is unchanged**.
+
+**Hard boundary — the generation gate stays.** Self-directed removes the human from *discovery and
+authoring*, NOT from *generation*. You still STOP at stage 11 and present the package; you never generate
+images/audio or commit without explicit approval. ("Never auto-generate assets" is a standing rule —
+self-directed authoring up to the gate is fine; auto-rendering past it is not.)
+
+### 0 — Autonomous scenario discovery (J) — self-directed only
+Pick the scenario that most advances *this* learner. Do it by evidence from the repertoire, not by taste.
+
+1. **Survey the repertoire + catalog.** Read every `server/scenarios/*.json` and `npm run audit:assets`.
+   Build a coverage map: per existing scenario, its **register**, its objectives' **grammar features**
+   (case / gender / number / the dual / agreement), and — most important — each objective's
+   **negotiation rung** (see ladder). Note which ids are **shared** across scenarios (today: only the
+   `greet` / `pay_leave` bookends).
+2. **Locate the frontier.** The progression ladder (the research's circling ladder, inverted — each rung
+   is a harder comprehend-and-respond turn):
+   - **0** recite one case-marked chunk into a fixed slot · **1** learner-*initiated* exchange (you ask,
+     the character answers — `ask_price`) · **2** respond to a **binary either/or** the character asks
+     (`specify_beef`) · **3** respond to an **open question** (answer not contained in the prompt) ·
+     **4** **repair** (handle "didn't catch that" / ask for repetition).
+   The frontier = the lowest rung not yet well-covered. Target **one rung above** what the learner has
+   saturated; never skip a rung.
+3. **Enumerate candidates** that ALL hold: (a) sit exactly one rung above the frontier; (b) overlap the
+   existing catalog/scenarios enough to reuse a **majority** of assets (reuse-or-author, stage 6); (c)
+   introduce **≤1 new hard feature** (one case/cluster/phrase, per the objective rubric); (d) are a real
+   bounded transaction an adult in Ljubljana meets within ~2 weeks.
+4. **Score and pick.** Prefer the candidate that, beyond the above, **adds a shared-id objective that
+   interleaves** with an existing scenario (advances cross-session spaced review — the research's #1 gap),
+   forces a **negotiation** the repertoire still lacks, and keeps register coverage balanced. Highest score
+   wins; ties → lowest new-asset cost.
+5. **Narrate the decision.** Before authoring, state in one short block: the coverage map's gap, the chosen
+   rung + transaction, why it beat the runners-up, and the ≤1 new feature. Then feed this as the stage-2
+   brief and proceed. (Selection is JUDGMENT; it obeys the same J/L/G lanes — you decide, scripts assemble,
+   nothing generates.)
+
+In self-directed mode **stage 1 is skipped** (its inputs come from stage 0); run stages 2–13 normally,
+narrating each reuse-or-author call (stage 6) as you go.
+
+---
+
 ## Procedure (stages 1–13)
 
 Work staged on a DRAFT — **nothing is written into `server/scenarios/` and no asset is generated until R approves** (PR semantics). Use a draft path: `.scratch/scenario-drafts/<id>.json`.
 
 ### 1 — Parse the request (J)
-From the user's brief, fix: the situation, a **register hint** (ti/vi + pogovorni/knjižni), and a rough **objective count** (4–6). Pick a kebab/lowercase `id` and check `server/scenarios/<id>.json` doesn't already exist.
+*(Self-directed mode skips this — the brief comes from stage 0.)* From the user's brief, fix: the situation, a **register hint** (ti/vi + pogovorni/knjižni), and a rough **objective count** (4–6). Pick a kebab/lowercase `id` and check `server/scenarios/<id>.json` doesn't already exist.
 
 ### 2 — Scenario skeleton + objective meanings (J)
 Draft `id / name / title / character / setup / opening-intent / register` and the **ordered objective list as EN meanings + the grammar point each should teach**. Enforce the arc: greet (easy win) → core exchange → one real exchange (e.g. ask price, where the character must answer) → one-breath closing. Reuse shared ids by the same id: `greet`, the split `ask_price`, and the clean `pay_leave` = "Hvala, nasvidenje.". Decide the register and be ready to defend it — **R is the in-country authority and may override it**.
@@ -49,7 +96,7 @@ Quick pass against the rubric: native-not-textbook? register consistent? story c
 
 ### 5 — Asset bible (J, C)
 **Every asset is a catalog item — there is no scenario-local asset.** `scene.assets` entries are ALWAYS `{ ref: "<catalogId>" }`; recurring characters come via `Scenario.characterRef`. An inline `{ label, descriptor }` is legacy and must not be authored.
-- **Reuse first.** If the thing already exists in the catalog (`server/catalog/objects.json` · `characters.json` · `concepts.json`), ref it by id. A `{ ref }` resolves at load to the catalog's `{ label, descriptor }` (+ identity metadata like gender), so the render is content-addressed once and reused everywhere — even setting-bearing things (`cafe`, `mesnica`) are catalog objects that just happen to be referenced once today.
+- **Reuse first.** If the thing already exists in the catalog (`server/catalog/objects.json` · `characters.json` · `concepts.json`), ref it by id. A `{ ref }` resolves at load to a render that's content-addressed once and reused everywhere. Note the [ontology](../../../docs/ARCHITECTURE.md#the-asset-ontology): a **character is an actor** that references its figure object; a **location** (`cafe`, `bakery`, `mesnica`) is a `scene`-format **concept** — a build-once "set" the scene composes its cast and props onto (compose it via `scene.assets: [{ ref: "cafe" }]` + a `{{CAFE}}` token), not a per-scenario backdrop.
 - **New thing → add it to the catalog first, then ref it.** Pick a lowercase id (label = `ID.toUpperCase()`), add `{ label, descriptor (minimal, look-fixing) }` to `objects.json`, then reference `{ ref: "id" }`. Don't inline.
 - **Declare identity metadata** on any new catalog person/figure (e.g. `gender`) — it both fixes the depiction and drives the language; its absence is what let the customer drift male.
 - **People proportions:** the house style's soft, "rounded" look is an ART choice — edges and linework — NOT a body-shape directive; it never dictates build. Draw people in all natural shapes and sizes; give a specific character a build only if it's part of who they are.
