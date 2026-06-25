@@ -1,0 +1,85 @@
+{
+  "id": "lekarna",
+  "name": "Pharmacy",
+  "title": "At the pharmacy (lekarna)",
+  "status": "active",
+  "character": "a friendly pharmacist at a neighbourhood pharmacy (lekarna) in Ljubljana",
+  "characterRef": "pharmacist",
+  "setup": "You are a friendly pharmacist at a neighbourhood lekarna in Ljubljana. A foreigner who is just starting to learn Slovenian has come in with a headache to get something for it. They live here and want to practice.",
+  "opening": "Dober dan! Kako vam lahko pomagam?",
+  "register": { "form": "vi", "variety": "pogovorni" },
+  "objectives": [
+    { "id": "greet", "label": "Greet", "targetSL": "Dober dan.", "hintEN": "Beginners reach for the informal 'Zdravo' to a stranger; with a pharmacist it's the neutral 'Dober dan.'" },
+    {
+      "id": "say_symptom",
+      "label": "Say what hurts",
+      "targetSL": "Boli me glava.",
+      "hintEN": "English speakers calque the subject and say 'Moja glava boli' (or word-order-slip to 'Glava me boli'); in Slovenian the body part is the nominative subject and the person is the accusative clitic: boli ME glava."
+    },
+    {
+      "id": "choose_form",
+      "label": "Tablets, please",
+      "targetSL": "Tablete, prosim.",
+      "hintEN": "Beginners reach for the cognate 'pilule' (or answer in English); the native word for over-the-counter pills is 'tablete'. Answering the binary 'Tablete ali sirup?'."
+    },
+    {
+      "id": "ask_price",
+      "label": "Ask price",
+      "targetSL": "Koliko stane?",
+      "hintEN": "Ask the price — a real exchange; the pharmacist answers with the cost. Just the question; do not bundle the goodbye onto it."
+    },
+    {
+      "id": "pay_leave",
+      "label": "Pay & leave",
+      "targetSL": "Hvala, nasvidenje.",
+      "hintEN": "One-breath closing as you leave. Said on its own, not crammed onto the price question."
+    }
+  ],
+  "scene": {
+    "assets": [
+      { "ref": "pharmacist" },
+      { "ref": "customer" },
+      { "ref": "doorway" },
+      { "ref": "tablets" },
+      { "ref": "price_tag" },
+      { "ref": "euro_coins" }
+    ],
+    "story": {
+      "sentences": [
+        "Prideš v lekarno in rečeš: »Dober dan.«",
+        "Boli te glava, zato poveš: »Boli me glava.«",
+        "Lekarnarka vpraša: »Tablete ali sirup?«, in ti rečeš: »Tablete, prosim.«",
+        "Vprašaš: »Koliko stane?«",
+        "Plačaš in rečeš: »Hvala, nasvidenje.«"
+      ],
+      "frames": [
+        {
+          "objectiveId": "greet",
+          "lineSL": "Dober dan.",
+          "imagePrompt": "Viewpoint from INSIDE the room looking toward the entrance: {{CUSTOMER}} stands in the open {{DOORWAY}}, framed by it, facing the viewer and waving as they step in over the threshold — the moment of arriving and greeting, seen from within the room they are entering."
+        },
+        {
+          "objectiveId": "say_symptom",
+          "lineSL": "Boli me glava.",
+          "imagePrompt": "{{CUSTOMER}} pressing one hand to the side of her forehead with a pained, wincing expression, a few small radiating ache-lines at her temple localising the hurt to her HEAD — the unmistakable look of a headache, not a stomach- or throat-ache."
+        },
+        {
+          "objectiveId": "choose_form",
+          "lineSL": "Tablete, prosim.",
+          "imagePrompt": "A single blister pack of {{TABLETS}} — round white pills in a clearly-pilled silver foil sheet, unmistakably tablets as opposed to a bottle of liquid syrup. The 'tablets' form is the point."
+        },
+        {
+          "objectiveId": "ask_price",
+          "lineSL": "Koliko stane?",
+          "imagePrompt": "A single {{PRICE_TAG}} showing a large question mark '?' — the concept of asking how much it costs (a question, not a fixed price)."
+        },
+        {
+          "objectiveId": "pay_leave",
+          "lineSL": "Hvala, nasvidenje.",
+          "imagePrompt": "{{CUSTOMER}} stepping OUT through the {{DOORWAY}}, facing away with an over-the-shoulder wave — the moment of leaving and saying goodbye. The outward direction (leaving, not entering) is what makes this a farewell."
+        }
+      ],
+      "sceneImagePrompt": "Inside a pharmacy: {{CUSTOMER}} stands at the counter while {{PHARMACIST}} serves them; a pack of {{TABLETS}} and {{EURO_COINS}} sit on the counter, white shelves of medicine boxes on the back wall behind. A calm, uncluttered everyday moment."
+    }
+  }
+}
