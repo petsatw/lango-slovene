@@ -33,7 +33,8 @@ run and open enough to spread. Each requirement maps to one piece below.
 2. **The app owns the teaching.** Deterministic mastery rules in the server, prompt rebuilt from
    state each turn. *(single-session)*
 3. **On-demand, quality-gated scenario generation.** Author → deterministic lint → independent
-   critic → ship. *(runs today as an agent skill)*
+   critic → ship. A `--self-directed` mode discovers the best *next* scenario itself, from the existing
+   repertoire + the research principles. *(runs today as an agent skill)*
 
 **To build — in dependency order**
 
@@ -52,12 +53,13 @@ run and open enough to spread. Each requirement maps to one piece below.
    learner-facing surface: a selector of what to practice next and a "completed" review view, fed by
    the learner model.
 6. **Content that scales without consistency collapse** *(unlocks multi-scenario depth and new
-   languages).* ✅ **Largely shipped** (the asset-engine refactor): a shared **catalog** (objects,
-   characters, composed **concepts**, voices) where everything is referenced by id; per-asset canonical
-   renders composed on demand into a per-image labelled montage; identity-consistent characters +
-   identity metadata; and a render-vs-rekey toolkit with **decision-gated** propagation (see
-   [asset-pipeline.md](asset-pipeline.md)). *Remaining:* finish the three scene tableaux; an optional
-   dependency-aware "what would re-rendering this invalidate" view.
+   languages).* ✅ **Shipped** (the asset-engine refactor, then deepened into a relational ontology):
+   a shared **catalog** referenced by id — objects, **actors** (cross-media characters that point at a
+   figure object), composed **concepts** including reusable **location sets**, and voices; per-asset
+   canonical renders composed on demand into a per-image labelled montage; a scene composed on a
+   build-once location set, so cost is *sets + scenes*, not *sets × scenes*; identity metadata; and a
+   render-vs-rekey toolkit with **decision-gated** propagation (see [asset-pipeline.md](asset-pipeline.md)).
+   *Remaining:* an optional dependency-aware "what would re-rendering this invalidate" view.
 7. **An engine anyone can run — any agent, any language.** The authoring procedure (rubric + gates +
    scripts) made tool-neutral, so it runs with Claude, Gemini, Codex, or a careful human — not only
    the Claude skill — plus a language/voice config seam so Slovene is the first target, not a

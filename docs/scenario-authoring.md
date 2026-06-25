@@ -80,9 +80,9 @@ Each objective phrase is in there, but it reads as a little story, not a drill.
 This is the backbone of every image, and it is **not optional**. A flashcard's entire job is to bind one phrase to one exact picture; if the coffee on the `eno kavo` card is not the *same* coffee in the scene image, and the *same* coffee the next scenario shows, the binding breaks and the card mis-teaches. Image models drift on objects (vessel, colour, plating, light), not just faces. So **consistency is achieved by anchoring to a reference sheet, never by re-describing in prose.**
 
 How it works (author the references; generation is downstream — see [asset-pipeline.md](asset-pipeline.md)):
-- **Everything is a CATALOG item.** `Scenario.scene.assets` entries are `{ ref: "<catalogId>" }`; the character is `Scenario.characterRef`. There is no scenario-local asset. A catalog object/character is `{ label, descriptor }` (+ `gender` on people); the ALL-CAPS `label` is the `{{TOKEN}}` a prompt uses to reference it (internal, never shown).
+- **Everything is a CATALOG node.** `Scenario.scene.assets` entries are `{ ref: "<catalogId>" }` — an object, an **actor**'s figure, or a **concept** (like a location); the speaking character is `Scenario.characterRef`. There is no scenario-local asset. An object is `{ label, descriptor }` (+ `gender`); a **character is an actor** that owns no pixels — it references objects (`type`, `visualRef`) plus a voice. The ALL-CAPS `label` is the `{{TOKEN}}` a prompt uses to reference it (internal, never shown). The full relational picture is [the ontology](ARCHITECTURE.md#the-asset-ontology).
 - **Per-asset canonical render.** Each catalog asset is rendered ONCE on a neutral background. At gen time the engine gathers the assets a prompt names, **montages their renders into one labelled reference sheet**, and anchors the image to it — so every frame and the scene inherit the same canonical assets. (No monolithic per-scenario sheet.)
-- **Concepts** = composed, reusable depictions (`concepts.json`: `{ label, prompt, composedFrom }`). A recurring abstract objective like greet/leave is a concept; a frame reuses it by setting its `imagePrompt` to the concept's prompt, so they share ONE canonical image across scenarios.
+- **Concepts** = composed, reusable depictions (`concepts.json`: `{ label, prompt, composedFrom, aspectRatio?, format? }`). `composedFrom` may reference objects, actors, *or other concepts*. A recurring abstract objective like greet/leave is a concept (a frame reuses it by setting its `imagePrompt` to the concept's prompt → ONE shared image); a **location** (`cafe`/`bakery`/`mesnica`) is a `scene`-format concept — a **build-once "set"** the scene composes its cast and props onto, so many scenarios can reuse one location.
 
 Rules:
 - [ ] Everything in any frame or the scene is referenced by **catalog id** (`{ ref }` / `characterRef`). Need something new? Add it to the catalog first (lowercase id, `label = ID.toUpperCase()`), then ref it. Never inline a `{ label, descriptor }`.
@@ -115,17 +115,17 @@ The one place we show the **whole situation**: an establishing depiction of what
 
 | # | id | targetSL | hintEN (one error) | atomic concept → minimal unambiguous flashcard |
 |---|------|----------|--------------------|-----------------|
-| 1 | `greet` | "Dober dan." | beginners reach for "Zdravo" (informal) to a stranger | greeting on arrival → `CUSTOMER` waving while **stepping in** through the `CAFE` doorway (a bare wave is ambiguous with goodbye) |
+| 1 | `greet` | "Dober dan." | beginners reach for "Zdravo" (informal) to a stranger | greeting on arrival → the `greet` concept: `CUSTOMER` waving while **stepping in** through the `DOORWAY` (a bare wave is ambiguous with goodbye) |
 | 2 | `order_coffee` | "Eno kavo, prosim." | "kava"→ needs accusative "kavo" after "eno" | exactly one coffee → a single `COFFEE`, clearly **one** |
 | 3 | `with_milk` | "Z mlekom, prosim." | "z mleko"→ instrumental "z mlekom" | coffee **with milk** → `MILK` being poured into the `COFFEE` (vs. plain) |
 | 4 | `ask_price` | "Koliko stane?" | (a real exchange — barista answers with the price) | asking the cost → a price tag showing **"?"** (vs. a for-sale tag) |
-| 5 | `pay_leave` | "Hvala, nasvidenje." | said as the closing, one breath | parting on leaving → `CUSTOMER` **over-the-shoulder wave while stepping out** the `CAFE` doorway |
+| 5 | `pay_leave` | "Hvala, nasvidenje." | said as the closing, one breath | parting on leaving → the `leave` concept: `CUSTOMER` **over-the-shoulder wave while stepping out** the `DOORWAY` |
 
 - Arc: greet → order → modify → ask price (real exchange) → close. ✓ 5 objectives, first = easy win, last = one-breath closing.
 - `ask_price` and `pay_leave` are **separate** objectives (the old single "Koliko stane? Hvala, nasvidenje." bundled a question needing an answer with the closing — that violates the one-utterance rule).
 - Shared ids: `greet`, `pay_leave` reuse the bakery's audio.
-- Note `greet` vs `pay_leave`: same `CUSTOMER` + `CAFE` doorway assets, disambiguated **contrastively** by direction (entering vs. leaving) — a bare wave would fail atomicity for both.
-- **Asset bible:** `BARISTA`, `CUSTOMER`, `CAFE`, `COFFEE`, `MILK`, `EURO_COINS`. `CUSTOMER` and `EURO_COINS` are **shared assets** — identical to the bakery/butcher by reusing the same descriptor + sheet render, not re-described. Each flashcard minimal-composes only its disambiguating assets, anchored to the sheet; the scene is all assets in one café tableau.
+- Note `greet` vs `pay_leave`: same `CUSTOMER` + `DOORWAY` (the shared `greet`/`leave` concepts), disambiguated **contrastively** by direction (entering vs. leaving) — a bare wave would fail atomicity for both.
+- **Asset bible:** the `cafe` **location concept** (the build-once set) + `BARISTA` (an **actor** → its figure object), `CUSTOMER`, `DOORWAY`, `COFFEE`, `MILK`, `PRICE_TAG`, `EURO_COINS` objects, plus the shared `greet`/`leave` concepts. `CUSTOMER`, `DOORWAY`, `EURO_COINS`, `greet`, `leave` are **shared** by id — identical across café/bakery/butcher, not re-described. Each flashcard minimal-composes only its disambiguating assets; the scene composes the `cafe` set + cast + props in one tableau.
 - Story (≤5 sentences, child-simple) weaves all five `targetSL` in.
 
 ---

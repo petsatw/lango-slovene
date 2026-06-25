@@ -15,17 +15,24 @@ reference it by id. Catalog lives in `server/catalog/*.json`, loaded by `server/
 
 | Kind | File | Shape | Render |
 |---|---|---|---|
-| **object** | `objects.json` | `{ label, descriptor, gender? }` | one isolated canonical render |
-| **character** | `characters.json` | `{ name, voiceProfile, gender?, visual:{label,descriptor} }` | its `visual` render + a voice |
-| **concept** | `concepts.json` | `{ label, prompt, composedFrom:[ids] }` | a *composed* depiction built from other assets |
+| **object** | `objects.json` | `{ label, descriptor, gender? }` | one isolated canonical render. Props *and* figure-images (`coffee`, `counter`, `baker`, `customer`). |
+| **character** (actor) | `characters.json` | `{ type:[ids], visualRef:id, voiceProfile, gender?, name? }` | **owns no pixels** — references its `visualRef` object's render, plus a voice |
+| **concept** | `concepts.json` | `{ label, prompt, composedFrom:[ids], aspectRatio?, format? }` | a *composed* depiction built from other catalog nodes — objects, characters, **or other concepts**. `greet`/`leave` *and* the `cafe`/`bakery`/`mesnica` **locations** are concepts. |
 | **voice** | `voices.json` | named provider-agnostic voice profile | — |
 
-- A scenario's `scene.assets` entries are always `{ ref: "<id>" }`; its character is `characterRef`.
+This is the **relational ontology** — the *edges* between nodes are the model; see
+[ARCHITECTURE.md › The asset ontology](ARCHITECTURE.md#the-asset-ontology) for the full map.
+
+- A scenario's `scene.assets` entries are always `{ ref: "<id>" }` (object, character, **or concept**);
+  its character is `characterRef`. A character resolves, for composition, to its `visualRef` object.
 - **Identity metadata** (`gender`) on people both fixes the depiction and drives Slovene agreement.
   Its absence is what let the customer drift male.
-- A **concept** is the compositional node: its render is the content-addressed image at its `prompt`,
-  so **every frame whose `imagePrompt` equals the concept prompt shares that ONE image** (greet/leave/
-  ground_beef/meat_by_weight are each one canonical picture reused across scenarios).
+- A **concept** is the compositional node: its render is the content-addressed image at its `prompt`
+  (at its `aspectRatio`), so **every frame whose `imagePrompt` equals the concept prompt shares that ONE
+  image**. `composedFrom` may reference *other concepts*, so a **scene anchors on a location concept** —
+  a build-once "set" (counter + fixtures) — plus the cast and props. `server/assets/compose.ts` resolves
+  any id → its render, **recursively**. `format` picks the styling (`flashcard` = atomic card · `scene` =
+  full tableau); `aspectRatio` the dimensions (4:3 frame · 16:9 location/scene).
 
 ## The key model — what change invalidates what
 
@@ -57,6 +64,8 @@ Free / no provider calls:
 - `npm run audit:assets` → `assets/migration-audit.html` — the **asset graph**: every catalog node with
   its render (or "missing"), identity metadata, `built-from` / `used-by` edges, and per-image render
   state. Read this to decide what needs doing. Generates nothing.
+- `npm run gallery` → `assets/catalog-gallery.html` — a clean visual index of every rendered object,
+  actor, concept/location, and each scenario's scene + flashcard frames. Generates nothing.
 - `npm run rekey:assets [-- --apply]` — re-key frames whose only change is the `{{TOKEN}}` brace
   notation (same picture → copy bytes to the new key).
 - `npm run rekey:assets -- --harvest [--apply]` — seed a canonical asset render from a **sole-asset
