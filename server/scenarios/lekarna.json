@@ -80,7 +80,7 @@
           "imagePrompt": "{{CUSTOMER}} stepping OUT through the {{DOORWAY}}, facing away with an over-the-shoulder wave — the moment of leaving and saying goodbye. The outward direction (leaving, not entering) is what makes this a farewell."
         }
       ],
-      "sceneImagePrompt": "At a {{LEKARNA}}: {{CUSTOMER}} stands at the counter while {{PHARMACIST}} serves them; a pack of {{TABLETS}} and {{EURO_COINS}} on the counter. They face each other across the counter in a natural, unhurried exchange, with easy space around them."
+      "sceneImagePrompt": "At a {{LEKARNA}}: {{PHARMACIST}} stands behind the counter and {{CUSTOMER}} stands in front of it, the two turned toward each other across the counter in a natural exchange; a pack of {{TABLETS}} and {{EURO_COINS}} on the counter between them, with easy space around them."
     }
   }
 }
