@@ -2,10 +2,14 @@
 // and actor, every composed concept (locations + atomic depictions), and every scenario's scene + frames.
 // Read-only: resolves each node to its render key and links the on-disk image; generates nothing.
 //
-//   npm run gallery   →   assets/catalog-gallery.html   (open it)
+//   npm run gallery            →  writes assets/catalog-gallery.html (open it)
+//   GET /gallery (dev server)  →  same page, rebuilt live each request — just refresh after rendering
+//
+// buildGalleryHtml() reads the CURRENT catalog + store every call, so the live route is always fresh.
 
 import "dotenv/config";
 import { writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import path from "node:path";
 import * as store from "../assets/store";
 import { getE4 } from "../adapters/index";
@@ -15,84 +19,89 @@ import { conceptRenderKey } from "../assets/compose";
 import { CATALOG, getAssetVisual } from "../catalog";
 import { SCENARIOS } from "../scenarios";
 
-const e4 = getE4();
 const esc = (s: string) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
-const imgKey = (prompt: string, fmt: { aspectRatio: string; resolution: string }) =>
-  store.imageKey(e4.name, e4.model, IMAGE_STYLE.id, fmt.aspectRatio, fmt.resolution, prompt);
 
-// A render thumbnail (or a "missing" placeholder) for a store key.
-function thumb(key: string, alt: string, cls = ""): string {
-  return store.has(key, "image")
-    ? `<a href="image/${key}.jpg" target="_blank"><img class="thumb ${cls}" loading="lazy" src="image/${key}.jpg" alt="${esc(alt)}"></a>`
-    : `<div class="thumb ${cls} missing">— no render —</div>`;
-}
+// Build the gallery page from the current catalog + on-disk renders. `imgBase` is the URL prefix for
+// image links: "image" for the static file (opened from assets/), or an absolute path like
+// "/gallery/image" when the dev server serves the page live.
+export function buildGalleryHtml(opts: { imgBase?: string } = {}): string {
+  const imgBase = opts.imgBase ?? "image";
+  const e4 = getE4();
+  const imgKey = (prompt: string, fmt: { aspectRatio: string; resolution: string }) =>
+    store.imageKey(e4.name, e4.model, IMAGE_STYLE.id, fmt.aspectRatio, fmt.resolution, prompt);
 
-// Which objects are used as a character's figure (visualRef) — tagged in the objects grid.
-const figureIds = new Set<string>();
-for (const c of Object.values(CATALOG.characters)) {
-  figureIds.add(c.visualRef);
-  c.type.forEach((t) => figureIds.add(t));
-}
+  // A render thumbnail (or a "missing" placeholder) for a store key.
+  const thumb = (key: string, alt: string, cls = ""): string =>
+    store.has(key, "image")
+      ? `<a href="${imgBase}/${key}.jpg" target="_blank"><img class="thumb ${cls}" loading="lazy" src="${imgBase}/${key}.jpg" alt="${esc(alt)}"></a>`
+      : `<div class="thumb ${cls} missing">— no render —</div>`;
 
-// ---- OBJECTS -------------------------------------------------------------------------------------
-const objectCards = Object.values(CATALOG.objects)
-  .map((o) => {
-    const key = assetRenderKey({ label: o.label, descriptor: o.descriptor });
-    const tags = [figureIds.has(o.id) ? `<span class="tag fig">figure</span>` : "", o.gender ? `<span class="tag">${o.gender}</span>` : ""].join("");
-    return `<figure>${thumb(key, o.label)}<figcaption><b>${esc(o.label)}</b> <code>${esc(o.id)}</code>${tags}<div class="desc">${esc(o.descriptor)}</div></figcaption></figure>`;
-  })
-  .join("");
+  // Which objects are used as a character's figure (visualRef) — tagged in the objects grid.
+  const figureIds = new Set<string>();
+  for (const c of Object.values(CATALOG.characters)) {
+    figureIds.add(c.visualRef);
+    c.type.forEach((t) => figureIds.add(t));
+  }
 
-// ---- ACTORS (characters) -------------------------------------------------------------------------
-const actorCards = Object.values(CATALOG.characters)
-  .map((c) => {
-    const v = getAssetVisual(c.id); // resolves to the visualRef object
-    const key = assetRenderKey(v);
-    const meta = `type [${c.type.join(", ")}] · visualRef <code>${esc(c.visualRef)}</code> · ${esc(c.gender ?? "—")} · voice <code>${esc(c.voiceProfile)}</code>`;
-    return `<figure>${thumb(key, c.id)}<figcaption><b>${esc(c.name ?? c.id)}</b> <code>${esc(c.id)}</code><div class="desc">${meta}</div></figcaption></figure>`;
-  })
-  .join("");
+  // ---- OBJECTS ---------------------------------------------------------------------------------
+  const objectCards = Object.values(CATALOG.objects)
+    .map((o) => {
+      const key = assetRenderKey({ label: o.label, descriptor: o.descriptor });
+      const tags = [figureIds.has(o.id) ? `<span class="tag fig">figure</span>` : "", o.gender ? `<span class="tag">${o.gender}</span>` : ""].join("");
+      return `<figure>${thumb(key, o.label)}<figcaption><b>${esc(o.label)}</b> <code>${esc(o.id)}</code>${tags}<div class="desc">${esc(o.descriptor)}</div></figcaption></figure>`;
+    })
+    .join("");
 
-// ---- CONCEPTS (locations + atomic depictions) ----------------------------------------------------
-const conceptCards = Object.values(CATALOG.concepts)
-  .map((c) => {
-    const key = conceptRenderKey(c);
-    const ar = c.aspectRatio ?? IMAGE_FORMAT.frame.aspectRatio;
-    const fmt = c.format ?? "flashcard";
-    const isLoc = fmt === "scene";
-    return `<figure class="${isLoc ? "wide" : ""}">${thumb(key, c.label, isLoc ? "wide" : "")}<figcaption><b>${esc(c.label)}</b> <code>${esc(c.id)}</code> <span class="tag ${isLoc ? "loc" : ""}">${fmt} · ${ar}</span><div class="desc">composedFrom: ${c.composedFrom.map((a) => `<code>${esc(a)}</code>`).join(" + ")}</div></figcaption></figure>`;
-  })
-  .join("");
+  // ---- ACTORS (characters) ---------------------------------------------------------------------
+  const actorCards = Object.values(CATALOG.characters)
+    .map((c) => {
+      const v = getAssetVisual(c.id); // resolves to the visualRef object
+      const key = assetRenderKey(v);
+      const meta = `type [${c.type.join(", ")}] · visualRef <code>${esc(c.visualRef)}</code> · ${esc(c.gender ?? "—")} · voice <code>${esc(c.voiceProfile)}</code>`;
+      return `<figure>${thumb(key, c.id)}<figcaption><b>${esc(c.name ?? c.id)}</b> <code>${esc(c.id)}</code><div class="desc">${meta}</div></figcaption></figure>`;
+    })
+    .join("");
 
-// ---- SCENARIOS (scene + frames) ------------------------------------------------------------------
-const scenarioSections = SCENARIOS.filter((s) => s.status === "active")
-  .map((s) => {
-    const story = s.scene?.story;
-    const sceneKey = story?.sceneImagePrompt ? imgKey(story.sceneImagePrompt, IMAGE_FORMAT.scene) : "";
-    const scene = sceneKey ? `<div class="scene">${thumb(sceneKey, `${s.id} scene`, "wide")}</div>` : "";
-    const objById = new Map(s.objectives.map((o) => [o.id, o]));
-    const frames = (story?.frames ?? [])
-      .map((f) => {
-        const key = imgKey(f.imagePrompt, IMAGE_FORMAT.frame);
-        const o = objById.get(f.objectiveId);
-        return `<figure>${thumb(key, f.objectiveId)}<figcaption><b>${esc(o?.targetSL ?? f.objectiveId)}</b><div class="desc"><code>${esc(f.objectiveId)}</code></div></figcaption></figure>`;
-      })
-      .join("");
-    return `<section class="scenario"><h2>${esc(s.name)} <code>${esc(s.id)}</code> <span class="role">${esc(s.character)}</span></h2>${scene}<div class="grid frames">${frames}</div></section>`;
-  })
-  .join("");
+  // ---- CONCEPTS (locations + atomic depictions) ------------------------------------------------
+  const conceptCards = Object.values(CATALOG.concepts)
+    .map((c) => {
+      const key = conceptRenderKey(c);
+      const ar = c.aspectRatio ?? IMAGE_FORMAT.frame.aspectRatio;
+      const fmt = c.format ?? "flashcard";
+      const isLoc = fmt === "scene";
+      return `<figure class="${isLoc ? "wide" : ""}">${thumb(key, c.label, isLoc ? "wide" : "")}<figcaption><b>${esc(c.label)}</b> <code>${esc(c.id)}</code> <span class="tag ${isLoc ? "loc" : ""}">${fmt} · ${ar}</span><div class="desc">composedFrom: ${c.composedFrom.map((a) => `<code>${esc(a)}</code>`).join(" + ")}</div></figcaption></figure>`;
+    })
+    .join("");
 
-const renderedCount = (() => {
-  let n = 0;
-  const keys: string[] = [
-    ...Object.values(CATALOG.objects).map((o) => assetRenderKey({ label: o.label, descriptor: o.descriptor })),
-    ...Object.values(CATALOG.concepts).map((c) => conceptRenderKey(c)),
-  ];
-  for (const k of keys) if (store.has(k, "image")) n++;
-  return n;
-})();
+  // ---- SCENARIOS (scene + frames) --------------------------------------------------------------
+  const scenarioSections = SCENARIOS.filter((s) => s.status === "active")
+    .map((s) => {
+      const story = s.scene?.story;
+      const sceneKey = story?.sceneImagePrompt ? imgKey(story.sceneImagePrompt, IMAGE_FORMAT.scene) : "";
+      const scene = sceneKey ? `<div class="scene">${thumb(sceneKey, `${s.id} scene`, "wide")}</div>` : "";
+      const objById = new Map(s.objectives.map((o) => [o.id, o]));
+      const frames = (story?.frames ?? [])
+        .map((f) => {
+          const key = imgKey(f.imagePrompt, IMAGE_FORMAT.frame);
+          const o = objById.get(f.objectiveId);
+          return `<figure>${thumb(key, f.objectiveId)}<figcaption><b>${esc(o?.targetSL ?? f.objectiveId)}</b><div class="desc"><code>${esc(f.objectiveId)}</code></div></figcaption></figure>`;
+        })
+        .join("");
+      return `<section class="scenario"><h2>${esc(s.name ?? s.title)} <code>${esc(s.id)}</code> <span class="role">${esc(s.character)}</span></h2>${scene}<div class="grid frames">${frames}</div></section>`;
+    })
+    .join("");
 
-const html = `<!doctype html><html><head><meta charset="utf-8"><title>lango-slovenian — catalog gallery</title>
+  const renderedCount = (() => {
+    let n = 0;
+    const keys: string[] = [
+      ...Object.values(CATALOG.objects).map((o) => assetRenderKey({ label: o.label, descriptor: o.descriptor })),
+      ...Object.values(CATALOG.concepts).map((c) => conceptRenderKey(c)),
+    ];
+    for (const k of keys) if (store.has(k, "image")) n++;
+    return n;
+  })();
+
+  return `<!doctype html><html><head><meta charset="utf-8"><title>lango-slovenian — catalog gallery</title>
 <style>
 :root{--bg:#0f1115;--panel:#181b21;--muted:#9aa1ad;--line:#262b33;--accent:#7c3aed}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#e6e8eb;font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -123,7 +132,13 @@ code{background:#0b0d11;border:1px solid var(--line);border-radius:4px;padding:0
 <section><h2>Concepts &amp; locations <span class="count">${Object.keys(CATALOG.concepts).length}</span></h2><div class="grid">${conceptCards}</div></section>
 ${scenarioSections}
 </div></body></html>`;
+}
 
-const out = path.join(store.ASSET_DIR, "catalog-gallery.html");
-writeFileSync(out, html);
-console.log(`✅ wrote ${path.relative(process.cwd(), out)}\n   ${Object.keys(CATALOG.objects).length} objects · ${Object.keys(CATALOG.characters).length} actors · ${Object.keys(CATALOG.concepts).length} concepts · ${SCENARIOS.filter((s) => s.status === "active").length} scenarios\n   open it: open ${path.relative(process.cwd(), out)}`);
+// CLI: write the static file. Guarded so importing this module (e.g. the dev server's /gallery route)
+// neither writes nor logs.
+const isMain = !!process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
+if (isMain) {
+  const out = path.join(store.ASSET_DIR, "catalog-gallery.html");
+  writeFileSync(out, buildGalleryHtml());
+  console.log(`✅ wrote ${path.relative(process.cwd(), out)}\n   ${Object.keys(CATALOG.objects).length} objects · ${Object.keys(CATALOG.characters).length} actors · ${Object.keys(CATALOG.concepts).length} concepts · ${SCENARIOS.filter((s) => s.status === "active").length} scenarios\n   open it: open ${path.relative(process.cwd(), out)}`);
+}

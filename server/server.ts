@@ -14,6 +14,7 @@ import * as store from "./assets/store";
 import * as sessions from "./assets/sessions";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
+import { buildGalleryHtml } from "./scripts/gallery";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -36,6 +37,16 @@ function cachePut(key: string, buf: Buffer): void {
 // Audio clips arrive as base64 JSON — allow a generous body size.
 app.use(express.json({ limit: "25mb" }));
 app.use(express.static(path.join(__dirname, "..", "public")));
+
+// Live catalog gallery — rebuilt from the CURRENT catalog + on-disk renders on every request, so you
+// can just refresh http://localhost:PORT/gallery after rendering or adding assets. Read-only, bills
+// nothing. Images are revalidated each load (maxAge 0) so a re-rolled asset under the same key updates.
+app.use("/gallery/image", express.static(path.join(store.ASSET_DIR, "image"), { maxAge: 0, etag: true }));
+app.get("/gallery", (_req, res) => {
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.setHeader("Cache-Control", "no-store");
+  res.end(buildGalleryHtml({ imgBase: "/gallery/image" }));
+});
 
 // Active providers, the chosen scenario (with objectives for the dots + a fresh session), and the
 // scenario list (active + PLANNED) for the picker. NO keys — safe for the client.

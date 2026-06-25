@@ -21,22 +21,29 @@
   },
   "cafe": {
     "label": "CAFE",
-    "prompt": "An empty café interior, seen head-on: a {{COUNTER}} across the front with an {{ESPRESSO_MACHINE}} on the back wall behind it. Warm, calm, uncluttered, no people.",
-    "composedFrom": ["counter", "espresso_machine"],
+    "prompt": "A small café interior. A wooden counter runs along the front, its top clear. Behind it, the {{ESPRESSO_MACHINE}} on the back counter, a glass case of breakfast pastries, cups stacked on a shelf, and a chalkboard on the wall. The chalkboard is handwritten in chalk in Slovene and reads, line by line: Danes posebej:, then rogljiček, then kremšnita. No other text or lettering appears anywhere in the image. No people.",
+    "composedFrom": ["espresso_machine"],
     "aspectRatio": "16:9",
     "format": "scene"
   },
   "bakery": {
     "label": "BAKERY",
-    "prompt": "An empty bakery interior, seen head-on: a {{COUNTER}} across the front with {{DISPLAY_SHELVES}} on the back wall behind it. Warm, calm, uncluttered, no people.",
-    "composedFrom": ["counter", "display_shelves"],
+    "prompt": "A welcoming bakery interior. A wooden counter runs along the front, its top clear. Behind it, wall shelves of bread and pastries with a {{POTICA}} on a cake stand, a basket of loaves on the floor, and a chalkboard on the wall. The chalkboard is handwritten in chalk in Slovene and reads, line by line: Danes posebej:, then potica, then gibanica. No other text or lettering appears anywhere in the image. No people.",
+    "composedFrom": ["potica"],
     "aspectRatio": "16:9",
     "format": "scene"
   },
   "mesnica": {
     "label": "MESNICA",
-    "prompt": "An empty butcher-shop interior, seen head-on: a {{COUNTER}} across the front with a {{DISPLAY_CASE}} on the back wall behind it. Warm, calm, uncluttered, no people.",
-    "composedFrom": ["counter", "display_case"],
+    "prompt": "A welcoming butcher shop interior. A counter runs along the front, its top clear. Behind it, a refrigerated glass-and-steel display case of meat, a ring of {{SAUSAGES}} hanging on a rail above, white tiled walls and a steel work surface. No people.",
+    "composedFrom": ["sausages"],
+    "aspectRatio": "16:9",
+    "format": "scene"
+  },
+  "lekarna": {
+    "label": "LEKARNA",
+    "prompt": "A pharmacy (lekarna) interior. A wooden counter runs along the front; behind it, white shelves of medicine boxes line the back wall, with a pack of {{TABLETS}} and a few coins on the counter. No people.",
+    "composedFrom": ["tablets"],
     "aspectRatio": "16:9",
     "format": "scene"
   }

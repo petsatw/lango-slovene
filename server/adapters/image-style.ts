@@ -13,8 +13,9 @@ export const IMAGE_STYLE = {
   // frame/scene keys strip the {{TOKEN}} braces, so adding that notation doesn't churn the cache).
   id: "v2-flat-warm",
 
-  // Scenario-agnostic art style. The SETTING comes from each frame/scene prompt + the reference
-  // sheet, never from here — so this prefix must not name a specific place (café, bakery, …).
+  // Scenario-agnostic art style + the shared city vibe (present-day Ljubljana's historic district)
+  // that every image carries. The SCENARIO setting (café vs. bakery vs. butcher) still comes from each
+  // prompt + the reference sheet, never from here — so this prefix must not name a specific shop.
   // NOTE: "rounded" here means soft EDGES/linework (the approachable look), NOT body shape — the style
   // never dictates build; people render in all natural shapes. The prefix is in the per-asset render
   // prompt (singleAssetSheetPrompt) but NOT in frame
@@ -22,8 +23,8 @@ export const IMAGE_STYLE = {
   // the ones whose picture is unchanged, re-render the people.
   prefix:
     "Flat, warm, friendly children's-book illustration with soft edges and clean, gently rounded " +
-    "linework, a cohesive muted palette, and a contemporary Ljubljana old-town feel — present-day " +
-    "Slovenia, dressed and styled for today, with only a few subtle traditional accents. ",
+    "linework and a cohesive muted palette, with the accents and touches of the historic district " +
+    "of present-day Ljubljana. ",
 
   // STUB — extra style-guidance text appended to frame/scene prompts. Empty today.
   referenceText: "",
@@ -77,7 +78,7 @@ export function referenceInstruction(labels: string[]): string {
   return (
     `To compose the scene, match each of these tokens to the item printed with the same label on the ` +
     `reference sheet: ${formatList(labels.map(token))}. Use those items as the exact style and identity ` +
-    `references — same design, colour, and proportions — and compose them naturally into a new scene, ` +
+    `references — stay true to the details while composing them naturally into the new scene, ` +
     `changing perspective, angle, size and position to best represent the scene description. Do not ` +
     `draw the {{...}} tokens or any labels in the image; they are only there to match each item.`
   );

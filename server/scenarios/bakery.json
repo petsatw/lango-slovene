@@ -81,7 +81,7 @@
           "imagePrompt": "{{CUSTOMER}} stepping OUT through the {{DOORWAY}}, facing away with an over-the-shoulder wave — the moment of leaving and saying goodbye. The outward direction (leaving, not entering) is what makes this a farewell."
         }
       ],
-      "sceneImagePrompt": "Buying bread in a {{BAKERY}}: {{CUSTOMER}} stands at the counter while {{BAKER}} serves her; one {{LOAF}}, two {{ROLLS}} and {{EURO_COINS}} on the counter. A calm, uncluttered everyday moment."
+      "sceneImagePrompt": "Buying bread in a {{BAKERY}}: {{CUSTOMER}} stands at the counter while {{BAKER}} serves her; one {{LOAF}}, two {{ROLLS}} and {{EURO_COINS}} on the counter. They face each other across the counter in a natural, unhurried exchange, with easy space around them."
     }
   }
 }

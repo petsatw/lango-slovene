@@ -22,6 +22,27 @@ You are **C, the Creator/Orchestrator**. This skill IS the operating procedure o
 - `npm run audit:assets` → `assets/migration-audit.html` — the **asset graph**: every existing canonical
   render and what each composed image is built-from. This is what you consult for the reuse decision (stage 6).
 
+## The catalog — entry kinds + creation process (read before adding ANYTHING)
+Every generated image traces to a CATALOG entry. A scenario's **frames and scene are NOT catalog entries** —
+they are scenario-local images that *reference* catalog entries by `{{TOKEN}}`. Adding to the catalog is not
+free-form: each entry is exactly one of four KINDS, each with a fixed structure and render path. **Decide the
+kind first, then follow its row** — never add an entry without placing it in this table. Self-directed mode
+obeys this identically; no ad-hoc entries.
+
+| kind | file | what it is | render path | format |
+|---|---|---|---|---|
+| **object** | `objects.json` | ONE isolated thing (cup, loaf, espresso machine, tablets) — the reference unit | `render:asset` | 1:1 |
+| **character** | `characters.json` | an actor = a figure `object` (`visualRef`) + identity (`gender`) + `voiceProfile` | via its visualRef object | 1:1 |
+| **concept · flashcard** | `concepts.json` (no `format`) | a composed ATOMIC depiction (`greet`, `ground_beef`) — `composedFrom` object/actor tiles | `render:concept` | 4:3 |
+| **concept · scene / location ("set")** | `concepts.json` `"format":"scene"` | a build-ONCE standing room a scene composes its cast + props onto | `render:concept` | **16:9 — the set standard** |
+
+Rules that hold for every kind:
+- New thing → add the catalog entry FIRST (lowercase `id`, `label = ID.toUpperCase()`, minimal look-fixing
+  descriptor/prompt), THEN `{ ref:"id" }` it. Never inline `{label,descriptor}`; never re-type a descriptor.
+- Reuse by id only when an existing entry is the SAME referent at the right specificity (stage 6 test).
+- A render is produced by the kind's script, never by hand-writing a final prompt: you author the depiction,
+  L assembles + anchors, G renders.
+
 ## Anti-patterns — do NOT reintroduce these (an earlier dry run did, and it failed)
 The docs supersede any older "object-only / drift-free / realistic" framing. Specifically:
 - Frames are **atomic flashcards**, not "object-only" icons. A bare waving hand is ambiguous (hello vs. goodbye) → it FAILS. Disambiguate **contrastively** (greet = `CUSTOMER` entering a `DOORWAY`; goodbye = `CUSTOMER` leaving it — by direction).
@@ -43,6 +64,12 @@ below and makes stage 1 automatic; **everything else (stages 2–13) is unchange
 authoring*, NOT from *generation*. You still STOP at stage 11 and present the package; you never generate
 images/audio or commit without explicit approval. ("Never auto-generate assets" is a standing rule —
 self-directed authoring up to the gate is fine; auto-rendering past it is not.)
+
+**The SET render is the one review to insist on.** Headless skips per-frame review — but a NEW location set
+(stage 5b) propagates to every scene built on it, so a bad set is a compounding cost a single bad frame is
+not. When stage 5b CREATES a set, flag its render **operator-review-recommended** in the package (soft rule,
+strongly advised). Reusing an existing set avoids this entirely — so prefer, at stage 0, a transaction at a
+place we already have, and only introduce a new set when the learning frontier genuinely demands it.
 
 ### 0 — Autonomous scenario discovery (J) — self-directed only
 Pick the scenario that most advances *this* learner. Do it by evidence from the repertoire, not by taste.
@@ -101,6 +128,31 @@ Quick pass against the rubric: native-not-textbook? register consistent? story c
 - **Declare identity metadata** on any new catalog person/figure (e.g. `gender`) — it both fixes the depiction and drives the language; its absence is what let the customer drift male.
 - **People proportions:** the house style's soft, "rounded" look is an ART choice — edges and linework — NOT a body-shape directive; it never dictates build. Draw people in all natural shapes and sizes; give a specific character a build only if it's part of who they are.
 
+### 5b — Resolve the SET / location (J, C) — every scenario has a place
+A scenario's situation is a transaction IN a place; that place is a `scene`-format location concept (the
+single highest-leverage asset — one render propagates to EVERY scene built on it).
+1. **Reuse if it exists.** Search `concepts.json` for a `scene`-format concept depicting THIS place
+   (semantic judgment, like stage 6). Hit → `scene.assets:[{ref:"<id>"}]` + a `{{LOCATION}}` token in the
+   scene prompt. Done — the set is free, and no new-set review is needed. Prefer this; in self-directed
+   mode let it bias selection (stage 0) toward transactions at a place we already have.
+2. **Create if it doesn't.** Author a new location concept:
+   a. **Hero.** Pick ONE iconic object that carries the place's identity (espresso machine, potica, sausage
+      ring). Reuse a catalog object if one genuinely fits — but do NOT force it: if nothing iconic exists,
+      DEFINE and add new hero object(s) first (stage 5 rules). The hero is the only anchored token.
+   b. **Set prompt.** `{{HERO}}` + concrete-noun prose for the back-wall content and fixtures. INTERIOR
+      only (no storefront/exterior); foreground surface left clear for the scene's swappable goods; alive,
+      not empty; simple. `format:"scene"`, `aspectRatio:"16:9"`, `composedFrom:["hero"]`. Aliveness comes
+      from real objects you NAME, not mood adjectives; do NOT write "head-on" (it flattens the room).
+   c. **Signage.** Steer AWAY from signs/chalkboards. If one is genuinely part of the place, specify its
+      contents VERBATIM in Slovene and nudge its position so it does not dominate — and know a figure may
+      occlude it once the scene is populated.
+   d. **Render + REVIEW.** `render:concept -- <id>`, then **operator-review the set render** before any
+      scene uses it (the propagation asymmetry makes this the one review worth insisting on — see the
+      self-directed boundary).
+(Shortcut: a legacy prose-backdrop scenario can be folded into the set system by *harvesting* — edit the
+people out of its existing scene image and store the result at the concept's render key. One-off, not the
+standard path.)
+
 ### 6 — Visual derivation, per objective (J, C) — the flashcard judgment
 For each objective decide its **atomic concept**, its nearest **confusable**, and the **minimal unambiguous depiction**.
 
@@ -114,7 +166,8 @@ Outcome: **pass** → reuse that render (free; no new prompt). **fail / uncertai
 **If authoring**, write the frame's `imagePrompt` as **depiction prose that names the assets it uses as braced `{{TOKEN}}`s** (+ the minimal disambiguating context). Show the quantity/case/number that IS the lesson unmistakably (exactly one cup; exactly two rolls; milk visibly poured in vs. plain). This prose is all you author — the engine adds the house style + minimal-compose + anchor (composing the labelled montage from the per-asset renders) at gen time. Do NOT write "flat warm children's-book…", "match the reference sheet…", or any prefix — that's L's job.
 
 ### 7 — Scene spec (J, C)
-Write `sceneImagePrompt` — one calm establishing tableau naming the bible labels of the transaction's key elements (same shape as café/bakery's scene prompt).
+Write `sceneImagePrompt` — one calm establishing tableau naming the bible labels of the transaction's key elements (same shape as café/bakery's scene prompt). Reference the place via its `{{LOCATION}}` token (stage 5b), not re-described room prose.
+**Stage the cast.** The catalog character/asset renders are STATIC tiles, so the scene prompt MUST place them: describe each character's position and the interaction between them (who faces whom across the counter, natural spacing between them). Keep it as simple as possible — but never omit it; an unstaged scene composes the static figures awkwardly (cramped, not facing, no exchange).
 
 ### 8 — Assemble the draft (L)
 Write the full `Scenario` object to `.scratch/scenario-drafts/<id>.json`, `status: "active"`, matching the shape in `server/scenarios/cafe.json` exactly (validated by the loader on commit).

@@ -54,7 +54,15 @@
   },
   "espresso_machine": {
     "label": "ESPRESSO_MACHINE",
-    "descriptor": "a chrome espresso machine, the kind on a café back counter"
+    "descriptor": "a vintage lever espresso machine — a rounded polished-chrome body with brass trim, a tall pull lever with a wooden handle, and a small eagle finial on the domed top"
+  },
+  "potica": {
+    "label": "POTICA",
+    "descriptor": "a potica — a round, ring-shaped Slovenian walnut roll cake with a golden domed top, one slice cut to show the dark swirled nut filling inside"
+  },
+  "sausages": {
+    "label": "SAUSAGES",
+    "descriptor": "a ring of kranjska klobasa — a horseshoe of plump, glossy linked Carniolan sausages"
   },
   "display_shelves": {
     "label": "DISPLAY_SHELVES",

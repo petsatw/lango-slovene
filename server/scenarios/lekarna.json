@@ -37,6 +37,7 @@
   ],
   "scene": {
     "assets": [
+      { "ref": "lekarna" },
       { "ref": "pharmacist" },
       { "ref": "customer" },
       { "ref": "doorway" },
@@ -79,7 +80,7 @@
           "imagePrompt": "{{CUSTOMER}} stepping OUT through the {{DOORWAY}}, facing away with an over-the-shoulder wave — the moment of leaving and saying goodbye. The outward direction (leaving, not entering) is what makes this a farewell."
         }
       ],
-      "sceneImagePrompt": "Inside a pharmacy: {{CUSTOMER}} stands at the counter while {{PHARMACIST}} serves them; a pack of {{TABLETS}} and {{EURO_COINS}} sit on the counter, white shelves of medicine boxes on the back wall behind. A calm, uncluttered everyday moment."
+      "sceneImagePrompt": "At a {{LEKARNA}}: {{CUSTOMER}} stands at the counter while {{PHARMACIST}} serves them; a pack of {{TABLETS}} and {{EURO_COINS}} on the counter. They face each other across the counter in a natural, unhurried exchange, with easy space around them."
     }
   }
 }
