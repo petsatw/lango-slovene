@@ -25,17 +25,24 @@ export interface VoiceProfile {
   description: string;
 }
 
-/** A character ENTITY: one stable identity = a visual (the model-sheet asset) + a voice profile.
- *  Recurring characters keep this identity across scenarios (outfit/setting may vary; identity does not). */
+/** A character ENTITY: a cross-media ACTOR (image ↔ voice) that owns no pixels itself — it REFERENCES
+ *  catalog objects. `type` = the object id(s) it is a kind of; `visualRef` = the object used as its
+ *  reference image (the same object as its type in the simple case; a named individual's own canonical
+ *  render — e.g. `natasa_the_baker` — in the advanced case). Recurring characters keep this identity
+ *  across scenarios. */
 export interface CatalogCharacter {
   id: string;
-  name: string;
+  /** Object id(s) this actor IS A KIND OF — the figure-type image(s). Simple case: `["baker"]`. */
+  type: string[];
+  /** Object id used as this actor's reference image. Simple case: same as its type (`"baker"`); a named
+   *  individual points at their own canonical render (`"natasa_the_baker"`). */
+  visualRef: string;
   voiceProfile: string; // a VoiceProfile id
-  visual: AssetDef; // { label, descriptor } — the canonical look
   /** Identity metadata that BOTH constrains the depiction and drives the language (pronoun/agreement).
-   *  e.g. gender "feminine" — a render that contradicts it is unsuitable. The load-bearing fact a
-   *  reuse decision (create-scenario stage 6) reads; absence is what let the CUSTOMER drift male. */
+   *  e.g. gender "feminine" — a render that contradicts it is unsuitable. */
   gender?: "feminine" | "masculine";
+  /** Optional individual name ("Nataša"); absent for a generic role actor. */
+  name?: string;
 }
 
 /** A shared object/figure with one canonical descriptor → one canonical render reused across scenarios. */
@@ -53,6 +60,13 @@ export interface CatalogConcept {
   label: string;
   prompt: string;
   composedFrom: string[]; // catalog asset ids this concept anchors on
+  /** Render dimensions. Defaults to the frame ratio "4:3" (a focused flashcard); an establishing
+   *  scene-tableau concept sets "16:9". Composed concepts render at 2k regardless. */
+  aspectRatio?: "1:1" | "4:3" | "16:9";
+  /** Composition styling (maps to the render `mode`): "flashcard" = atomic, isolated on a neutral
+   *  background (greet/leave/…); "scene" = compose the referenced assets into a full tableau.
+   *  Defaults to "flashcard". */
+  format?: "flashcard" | "scene";
 }
 
 export interface Catalog {
@@ -93,26 +107,7 @@ function loadCatalog(): Catalog {
   }
   if (!voiceProfiles[teacherVoiceProfile]) fail(`teacher voice "${teacherVoiceProfile}" is not a declared profile`);
 
-  // characters
-  const rawChars = read("characters.json");
-  const characters: Record<string, CatalogCharacter> = {};
-  for (const id of Object.keys(rawChars)) {
-    const c = rawChars[id];
-    const voiceProfile = asString(c, "voiceProfile", `characters.json/${id}`);
-    if (!voiceProfiles[voiceProfile]) fail(`character "${id}" uses unknown voiceProfile "${voiceProfile}"`);
-    characters[id] = {
-      id,
-      name: asString(c, "name", `characters.json/${id}`),
-      voiceProfile,
-      visual: {
-        label: asString(c.visual, "label", `characters.json/${id}.visual`),
-        descriptor: asString(c.visual, "descriptor", `characters.json/${id}.visual`),
-      },
-      ...(c.gender !== undefined ? { gender: c.gender } : {}),
-    };
-  }
-
-  // objects
+  // objects (loaded before characters — a character's type/visualRef reference object ids)
   const rawObjects = read("objects.json");
   const objects: Record<string, CatalogObject> = {};
   for (const id of Object.keys(rawObjects)) {
@@ -122,6 +117,27 @@ function loadCatalog(): Catalog {
       label: asString(o, "label", `objects.json/${id}`),
       descriptor: asString(o, "descriptor", `objects.json/${id}`),
       ...(o.gender !== undefined ? { gender: o.gender } : {}),
+    };
+  }
+
+  // characters — cross-media actors that REFERENCE objects (no embedded visual)
+  const rawChars = read("characters.json");
+  const characters: Record<string, CatalogCharacter> = {};
+  for (const id of Object.keys(rawChars)) {
+    const c = rawChars[id];
+    const voiceProfile = asString(c, "voiceProfile", `characters.json/${id}`);
+    if (!voiceProfiles[voiceProfile]) fail(`character "${id}" uses unknown voiceProfile "${voiceProfile}"`);
+    const type = Array.isArray(c.type) && c.type.length ? c.type : fail(`characters.json/${id}: type must be a non-empty array of object ids`);
+    for (const t of type) if (!objects[t]) fail(`character "${id}" type references unknown object "${t}"`);
+    const visualRef = asString(c, "visualRef", `characters.json/${id}`);
+    if (!objects[visualRef]) fail(`character "${id}" visualRef references unknown object "${visualRef}"`);
+    characters[id] = {
+      id,
+      type,
+      visualRef,
+      voiceProfile,
+      ...(c.gender !== undefined ? { gender: c.gender } : {}),
+      ...(c.name !== undefined ? { name: asString(c, "name", `characters.json/${id}`) } : {}),
     };
   }
 
@@ -139,11 +155,17 @@ function loadCatalog(): Catalog {
     for (const a of composedFrom) {
       if (!objects[a] && !characters[a]) fail(`concept "${id}" composedFrom unknown asset "${a}"`);
     }
+    if (c.aspectRatio !== undefined && !["1:1", "4:3", "16:9"].includes(c.aspectRatio))
+      fail(`concepts.json/${id}: aspectRatio must be "1:1", "4:3", or "16:9"`);
+    if (c.format !== undefined && !["flashcard", "scene"].includes(c.format))
+      fail(`concepts.json/${id}: format must be "flashcard" or "scene"`);
     concepts[id] = {
       id,
       label: asString(c, "label", `concepts.json/${id}`),
       prompt: asString(c, "prompt", `concepts.json/${id}`),
       composedFrom,
+      ...(c.aspectRatio !== undefined ? { aspectRatio: c.aspectRatio } : {}),
+      ...(c.format !== undefined ? { format: c.format } : {}),
     };
   }
 
@@ -177,12 +199,17 @@ export function getConcept(id: string): CatalogConcept {
 }
 
 /** Resolve a catalog asset id (object or character) to its { label, descriptor } — used to anchor a
- *  composed concept on its constituents' canonical renders. */
+ *  composed concept on its constituents' canonical renders. A character resolves to its `visualRef`
+ *  object (the actor owns no pixels — it points at an object image). */
 export function getAssetVisual(id: string): AssetDef {
   const o = CATALOG.objects[id];
   if (o) return { label: o.label, descriptor: o.descriptor };
   const ch = CATALOG.characters[id];
-  if (ch) return { label: ch.visual.label, descriptor: ch.visual.descriptor };
+  if (ch) {
+    const v = CATALOG.objects[ch.visualRef];
+    if (!v) throw new Error(`character "${id}" visualRef "${ch.visualRef}" is not a known object`);
+    return { label: v.label, descriptor: v.descriptor };
+  }
   throw new Error(`Unknown catalog asset "${id}" (not an object or character).`);
 }
 

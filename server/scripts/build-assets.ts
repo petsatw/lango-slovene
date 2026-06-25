@@ -19,7 +19,9 @@ import { getE3, getE4 } from "../adapters/index";
 import * as store from "../assets/store";
 import { getOrCreateImage, getOrCreateAssetRender, assetRenderKey, asDataUri } from "../assets/images";
 import { getOrCreateReferenceSheet } from "../assets/reference-sheet";
+import { renderConcept } from "../assets/compose";
 import { IMAGE_STYLE, IMAGE_FORMAT, relevantLabels } from "../adapters/image-style";
+import { CATALOG } from "../catalog";
 import { SCENARIOS, characterVoiceProfile } from "../scenarios";
 
 // ---- args: <scenarioId> [--regen <selector>] -----------------------------------------------------
@@ -126,10 +128,13 @@ const renderCache = new Map<string, { bytes: Buffer; key: string }>();
 async function getRender(a: { label: string; descriptor: string; catalogId?: string }) {
   const cached = renderCache.get(a.label);
   if (cached) return cached;
-  const { hit, key, bytes } = await getOrCreateAssetRender(a);
+  // A scene asset may be a CONCEPT (a location like `cafe`) — render it through the composed path so the
+  // scene anchors on its render; otherwise it's a plain per-asset canonical render.
+  const concept = a.catalogId ? CATALOG.concepts[a.catalogId] : undefined;
+  const { hit, key, bytes } = concept ? await renderConcept(concept) : await getOrCreateAssetRender(a);
   hit ? hits++ : made++;
-  const shared = a.catalogId ? ` (shared:${a.catalogId})` : "";
-  console.log(`   ${hit ? "hit " : "gen "} image:asset:${a.label}${shared}  ${key.slice(0, 12)}…`);
+  const tag = concept ? ` (concept:${a.catalogId})` : a.catalogId ? ` (shared:${a.catalogId})` : "";
+  console.log(`   ${hit ? "hit " : "gen "} image:asset:${a.label}${tag}  ${key.slice(0, 12)}…`);
   const entry = { bytes, key };
   renderCache.set(a.label, entry);
   return entry;

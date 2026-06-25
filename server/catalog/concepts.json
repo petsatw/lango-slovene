@@ -18,5 +18,26 @@
     "label": "MEAT_BY_WEIGHT",
     "prompt": "{{GROUND_MEAT}} resting on the pan of the {{SCALE}}, the dial's needle pointing to a mark on the gram face — meat being weighed, ordered by weight.",
     "composedFrom": ["ground_meat", "scale"]
+  },
+  "cafe": {
+    "label": "CAFE",
+    "prompt": "An empty café interior, seen head-on: a {{COUNTER}} across the front with an {{ESPRESSO_MACHINE}} on the back wall behind it. Warm, calm, uncluttered, no people.",
+    "composedFrom": ["counter", "espresso_machine"],
+    "aspectRatio": "16:9",
+    "format": "scene"
+  },
+  "bakery": {
+    "label": "BAKERY",
+    "prompt": "An empty bakery interior, seen head-on: a {{COUNTER}} across the front with {{DISPLAY_SHELVES}} on the back wall behind it. Warm, calm, uncluttered, no people.",
+    "composedFrom": ["counter", "display_shelves"],
+    "aspectRatio": "16:9",
+    "format": "scene"
+  },
+  "mesnica": {
+    "label": "MESNICA",
+    "prompt": "An empty butcher-shop interior, seen head-on: a {{COUNTER}} across the front with a {{DISPLAY_CASE}} on the back wall behind it. Warm, calm, uncluttered, no people.",
+    "composedFrom": ["counter", "display_case"],
+    "aspectRatio": "16:9",
+    "format": "scene"
   }
 }

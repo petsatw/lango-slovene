@@ -25,7 +25,10 @@ function resolve(id: string): { label: string; descriptor: string } {
   const o = CATALOG.objects[id];
   if (o) return { label: o.label, descriptor: o.descriptor };
   const c = CATALOG.characters[id];
-  if (c) return { label: c.visual.label, descriptor: c.visual.descriptor };
+  if (c) {
+    const v = CATALOG.objects[c.visualRef]; // an actor's image IS its visualRef object
+    if (v) return { label: v.label, descriptor: v.descriptor };
+  }
   throw new Error(`"${id}" is not a known catalog object or character. Known objects: ${Object.keys(CATALOG.objects).join(", ")}; characters: ${Object.keys(CATALOG.characters).join(", ")}`);
 }
 

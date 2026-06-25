@@ -98,8 +98,16 @@ function resolveAsset(file: string, a: any): AssetDef {
     const obj = CATALOG.objects[id];
     if (obj) return { label: obj.label, descriptor: obj.descriptor, catalogId: id };
     const ch = CATALOG.characters[id];
-    if (ch) return { label: ch.visual.label, descriptor: ch.visual.descriptor, catalogId: id };
-    fail(file, `scene asset ref "${id}" is not a known catalog object or character`);
+    if (ch) {
+      const v = CATALOG.objects[ch.visualRef];
+      if (!v) fail(file, `character "${id}" visualRef "${ch.visualRef}" is not a known object`);
+      return { label: v.label, descriptor: v.descriptor, catalogId: id };
+    }
+    // A concept ref (e.g. a location like `cafe`) — it owns no descriptor; its render is composed from
+    // its constituents at build time (see assets/compose.ts). Carry the id through for that dispatch.
+    const concept = CATALOG.concepts[id];
+    if (concept) return { label: concept.label, descriptor: "", catalogId: id };
+    fail(file, `scene asset ref "${id}" is not a known catalog object, character, or concept`);
   }
   asString(file, a, "label");
   asString(file, a, "descriptor");

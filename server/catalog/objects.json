@@ -16,10 +16,6 @@
     "label": "DOORWAY",
     "descriptor": "a simple generic shop entrance with a plain glass door in a warm wooden frame, no signage or branding, viewed head-on"
   },
-  "cafe": {
-    "label": "CAFE",
-    "descriptor": "a small standalone vignette of a cozy Ljubljana café: a wooden counter with an espresso machine and a chalkboard menu behind it"
-  },
   "coffee": {
     "label": "COFFEE",
     "descriptor": "a single cup of coffee on a saucer"
@@ -28,10 +24,6 @@
     "label": "MILK",
     "descriptor": "a small jug of milk"
   },
-  "bakery": {
-    "label": "BAKERY",
-    "descriptor": "a small standalone vignette of a Slovenian bakery counter: a wooden counter with shelves of bread loaves behind it"
-  },
   "loaf": {
     "label": "LOAF",
     "descriptor": "a single rustic oval loaf of bread"
@@ -39,10 +31,6 @@
   "rolls": {
     "label": "ROLLS",
     "descriptor": "exactly two round bread rolls, side by side"
-  },
-  "mesnica": {
-    "label": "MESNICA",
-    "descriptor": "a small standalone vignette of a Slovenian butcher shop counter: a glass refrigerated display case of meat with a wooden chopping block and a hanging dial scale behind it"
   },
   "ground_meat": {
     "label": "GROUND_MEAT",
@@ -55,5 +43,45 @@
   "beef_icon": {
     "label": "BEEF_ICON",
     "descriptor": "a simple flat cow icon — a single-colour cow silhouette like the stamp printed on beef packaging, not a realistic animal"
+  },
+  "tablets": {
+    "label": "TABLETS",
+    "descriptor": "a single blister pack of round white tablets in a silver foil sheet"
+  },
+  "counter": {
+    "label": "COUNTER",
+    "descriptor": "a plain wooden shop counter, seen head-on, nothing on it"
+  },
+  "espresso_machine": {
+    "label": "ESPRESSO_MACHINE",
+    "descriptor": "a chrome espresso machine, the kind on a café back counter"
+  },
+  "display_shelves": {
+    "label": "DISPLAY_SHELVES",
+    "descriptor": "plain empty wooden wall shelves, the kind behind a shop counter"
+  },
+  "display_case": {
+    "label": "DISPLAY_CASE",
+    "descriptor": "an empty glass refrigerated display case, the kind behind a shop counter"
+  },
+  "barista": {
+    "label": "BARISTA",
+    "descriptor": "friendly woman in her 30s, slim build, brown hair in a ponytail, denim apron over a white tee, warm smile; full body",
+    "gender": "feminine"
+  },
+  "baker": {
+    "label": "BAKER",
+    "descriptor": "friendly woman in her 40s, average build, dark hair in a bun, green apron over a striped shirt, warm smile; full body",
+    "gender": "feminine"
+  },
+  "butcher": {
+    "label": "BUTCHER",
+    "descriptor": "friendly man in his 50s, tall and lean, short grey hair, white butcher's coat over a blue-striped apron, warm smile; full body",
+    "gender": "masculine"
+  },
+  "pharmacist": {
+    "label": "PHARMACIST",
+    "descriptor": "friendly woman in her 40s, average build, auburn hair tied back, white pharmacist's coat over a light blue blouse, warm smile; full body",
+    "gender": "feminine"
   }
 }

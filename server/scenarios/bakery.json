@@ -37,9 +37,9 @@
   ],
   "scene": {
     "assets": [
+      { "ref": "bakery" },
       { "ref": "baker" },
       { "ref": "customer" },
-      { "ref": "bakery" },
       { "ref": "doorway" },
       { "ref": "loaf" },
       { "ref": "rolls" },
@@ -81,7 +81,7 @@
           "imagePrompt": "{{CUSTOMER}} stepping OUT through the {{DOORWAY}}, facing away with an over-the-shoulder wave — the moment of leaving and saying goodbye. The outward direction (leaving, not entering) is what makes this a farewell."
         }
       ],
-      "sceneImagePrompt": "A single warm establishing scene capturing the essence of ordering and buying bread at a bakery: {{CUSTOMER}} at the counter of the {{BAKERY}} while {{BAKER}} serves them, with the {{LOAF}}, the two {{ROLLS}}, and {{EURO_COINS}} all visible on the counter. Full, lived-in {{BAKERY}}."
+      "sceneImagePrompt": "Buying bread in a {{BAKERY}}: {{CUSTOMER}} stands at the counter while {{BAKER}} serves her; one {{LOAF}}, two {{ROLLS}} and {{EURO_COINS}} on the counter. A calm, uncluttered everyday moment."
     }
   }
 }

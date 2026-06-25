@@ -37,9 +37,9 @@
   ],
   "scene": {
     "assets": [
+      { "ref": "mesnica" },
       { "ref": "butcher" },
       { "ref": "customer" },
-      { "ref": "mesnica" },
       { "ref": "doorway" },
       { "ref": "ground_meat" },
       { "ref": "scale" },
@@ -82,7 +82,7 @@
           "imagePrompt": "{{CUSTOMER}} stepping OUT through the {{DOORWAY}}, facing away with an over-the-shoulder wave — the moment of leaving and saying goodbye. The outward direction (leaving, not entering) is what makes this a farewell."
         }
       ],
-      "sceneImagePrompt": "A single warm establishing scene capturing the essence of buying minced beef at a butcher shop: {{CUSTOMER}} at the counter of the {{MESNICA}} while {{BUTCHER}} serves them, with the {{GROUND_MEAT}} on the {{SCALE}} and {{EURO_COINS}} visible on the counter. Full, lived-in {{MESNICA}}."
+      "sceneImagePrompt": "Buying minced meat in a {{MESNICA}}: {{CUSTOMER}} stands at the counter while {{BUTCHER}} serves her; the {{GROUND_MEAT}} resting on the {{SCALE}} and {{EURO_COINS}} on the counter. A calm, uncluttered everyday moment."
     }
   }
 }

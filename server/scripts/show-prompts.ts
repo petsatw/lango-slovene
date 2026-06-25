@@ -15,6 +15,7 @@ import * as store from "../assets/store";
 import { getE4 } from "../adapters/index";
 import { IMAGE_STYLE, IMAGE_FORMAT, styledPrompt, singleAssetSheetPrompt, relevantLabels } from "../adapters/image-style";
 import { referenceSheetKey } from "../assets/reference-sheet";
+import { CATALOG } from "../catalog";
 import { SCENARIOS, validateScenario, type Scenario } from "../scenarios";
 
 const args = process.argv.slice(2);
@@ -57,14 +58,18 @@ const items: Prov[] = [];
 const allLabels = assets.map((a) => a.label);
 const assetKeyByLabel = new Map<string, string>();
 
-// Per-asset canonical renders (the reference units).
+// Per-asset canonical renders (the reference units). A concept ref (e.g. a location like `cafe`) is keyed
+// on its OWN composed prompt at its aspectRatio, not a single-asset render.
 for (const a of assets) {
-  const f = IMAGE_FORMAT.asset;
-  const raw = singleAssetSheetPrompt(a.label, a.descriptor);
+  const concept = a.catalogId ? CATALOG.concepts[a.catalogId] : undefined;
+  const f = concept
+    ? { aspectRatio: concept.aspectRatio ?? IMAGE_FORMAT.frame.aspectRatio, resolution: IMAGE_FORMAT.frame.resolution }
+    : IMAGE_FORMAT.asset;
+  const raw = concept ? concept.prompt : singleAssetSheetPrompt(a.label, a.descriptor);
   const key = store.imageKey(img.name, img.model, IMAGE_STYLE.id, f.aspectRatio, f.resolution, raw);
   assetKeyByLabel.set(a.label, key);
-  const shared = a.catalogId ? ` (shared:${a.catalogId})` : "";
-  items.push({ label: `asset:${a.label}${shared}`, key, ...f, endpoint: "images/generations", effectivePrompt: raw });
+  const tag = concept ? ` (concept:${a.catalogId})` : a.catalogId ? ` (shared:${a.catalogId})` : "";
+  items.push({ label: `asset:${a.label}${tag}`, key, ...f, endpoint: concept ? "images/edits" : "images/generations", effectivePrompt: raw });
 }
 
 // The composed reference SHEET an anchored prompt is built against: the labelled montage of the assets

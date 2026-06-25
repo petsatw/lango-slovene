@@ -37,9 +37,9 @@
   ],
   "scene": {
     "assets": [
+      { "ref": "cafe" },
       { "ref": "barista" },
       { "ref": "customer" },
-      { "ref": "cafe" },
       { "ref": "doorway" },
       { "ref": "coffee" },
       { "ref": "milk" },
@@ -81,7 +81,7 @@
           "imagePrompt": "{{CUSTOMER}} stepping OUT through the {{DOORWAY}}, facing away with an over-the-shoulder wave — the moment of leaving and saying goodbye. The outward direction (leaving, not entering) is what makes this a farewell."
         }
       ],
-      "sceneImagePrompt": "A single warm establishing scene capturing the essence of ordering coffee at a café: {{CUSTOMER}} at the counter of the {{CAFE}} while {{BARISTA}} serves them, with the {{COFFEE}}, the {{MILK}} jug, and {{EURO_COINS}} all visible on the counter. Full, lived-in {{CAFE}}."
+      "sceneImagePrompt": "Ordering a coffee in a {{CAFE}}: {{CUSTOMER}} stands at the counter while {{BARISTA}} serves her; one {{COFFEE}}, the {{MILK}} jug and {{EURO_COINS}} on the counter. A calm, uncluttered everyday moment."
     }
   }
 }

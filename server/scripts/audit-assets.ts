@@ -227,7 +227,7 @@ function conceptsSection(): string {
   if (!ids.length) return "";
   const cards = ids.map((id) => {
     const c = CATALOG.concepts[id]!;
-    const key = imageKeyFor(c.prompt, IMAGE_FORMAT.frame);
+    const key = imageKeyFor(c.prompt, { aspectRatio: c.aspectRatio ?? IMAGE_FORMAT.frame.aspectRatio, resolution: IMAGE_FORMAT.frame.resolution });
     const built = store.has(key, "image");
     if (built) conceptWhole++;
     const usedBy: string[] = [];
@@ -266,7 +266,7 @@ const rendersToGenerate = new Set<string>();
 
 function scenarioSection(s: Scenario): string {
   const charVoice = characterVoiceProfile(s);
-  const charName = s.characterRef ? getCharacter(s.characterRef).name : "(no catalog character)";
+  const charName = s.characterRef ? (getCharacter(s.characterRef).name ?? s.characterRef) : "(no catalog character)";
   const voiceMismatch = charVoice !== TEACHER_VOICE_PROFILE;
   const story = s.scene?.story;
   const labels = (s.scene?.assets ?? []).map((a) => a.label);

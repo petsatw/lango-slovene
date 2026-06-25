@@ -84,10 +84,9 @@ if (harvest) {
 // and this pass leaves them alone.
 if (restyle) {
   console.log(`\n=== rekey:assets --restyle${apply ? "  --apply" : "  (dry run)"} ===`);
-  const all = [
-    ...Object.values(CATALOG.objects).map((o) => ({ label: o.label, descriptor: o.descriptor })),
-    ...Object.values(CATALOG.characters).map((c) => ({ label: c.visual.label, descriptor: c.visual.descriptor })),
-  ];
+  // Figure images are now objects (an actor's visual is its visualRef object), so iterating objects
+  // covers every catalog render — characters own no pixels of their own.
+  const all = Object.values(CATALOG.objects).map((o) => ({ label: o.label, descriptor: o.descriptor }));
   let copied = 0, present = 0, none = 0;
   for (const a of all) {
     const newKey = assetRenderKey(a);
