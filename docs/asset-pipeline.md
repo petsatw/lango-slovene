@@ -1,8 +1,14 @@
 # Asset pipeline — catalog, rendering, and the decisions that matter
 
 How images become canonical, reusable assets, and — more importantly — **when to generate vs. when to
-just re-key**. Generation is billed and non-deterministic; most "changes" are bookkeeping that cost
-nothing. The single rule that governs everything here:
+just re-key**. This is the operational companion to the data model: the *conceptual* ontology
+(object / character / concept / voice and the edges between them) is in
+[ARCHITECTURE.md › The asset model](ARCHITECTURE.md#the-asset-model), and the field-level catalog
+schemas are in [DATA-MODEL.md › The catalog](DATA-MODEL.md#the-catalog). This doc owns the *toolkit and
+the decisions*.
+
+Generation is billed and non-deterministic; most "changes" are bookkeeping that cost nothing. The
+single rule that governs everything here:
 
 > **A key change is bookkeeping, not a regeneration.** When the picture is unchanged, RE-KEY (copy the
 > bytes to the new key). Only changed *content* costs a generation. Propagation to dependents is
@@ -21,7 +27,7 @@ reference it by id. Catalog lives in `server/catalog/*.json`, loaded by `server/
 | **voice** | `voices.json` | named provider-agnostic voice profile | — |
 
 This is the **relational ontology** — the *edges* between nodes are the model; see
-[ARCHITECTURE.md › The asset ontology](ARCHITECTURE.md#the-asset-ontology) for the full map.
+[ARCHITECTURE.md › The asset model](ARCHITECTURE.md#the-asset-model) for the full map.
 
 - A scenario's `scene.assets` entries are always `{ ref: "<id>" }` (object, character, **or concept**);
   its character is `characterRef`. A character resolves, for composition, to its `visualRef` object.

@@ -1,4 +1,5 @@
-// E4 — the tutor prompt. Built fresh each turn from the scenario + live objective state, so the
+// The tutor prompt (the E2 system prompt). Built fresh each turn from the scenario + live objective
+// state, so the
 // tutor always knows what the student is learning and what's left to master. This is where the
 // turn policy (short, Slovenian-only, recast-don't-lecture, steer + interleave) is enforced.
 

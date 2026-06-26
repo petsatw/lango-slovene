@@ -92,7 +92,7 @@ It auto-appears in the picker. → [how the engine works](docs/ARCHITECTURE.md)
 | `server/scenarios/*.json` | the scenarios, as data |
 | `.claude/skills/create-scenario/` | the engine that authors new scenarios |
 
-Full map: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+Full map: [docs/FILE-MAP.md](docs/FILE-MAP.md). Why it's shaped this way: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Design choices
 
@@ -106,7 +106,8 @@ Full map: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 ## Docs
 
 - [docs/README.md](docs/README.md) — the docs map.
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — how it's built, and the files that matter.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — the keystone: what it is, what you can do, and why it's shaped this way.
+- [docs/FILE-MAP.md](docs/FILE-MAP.md) — where everything lives. [docs/DATA-MODEL.md](docs/DATA-MODEL.md) — the API and data shapes.
 - [docs/ROADMAP.md](docs/ROADMAP.md) — where it's going, and the pieces to get there.
 - [AGENTS.md](AGENTS.md) — conventions for agents (and people) working in the repo.
 
