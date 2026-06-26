@@ -61,11 +61,11 @@ intentional. You decide, per dependent, whether the change warrants a regenerati
 ## The toolkit (commands)
 
 Free / no provider calls:
-- `npm run audit:assets` → `assets/migration-audit.html` — the **asset graph**: every catalog node with
-  its render (or "missing"), identity metadata, `built-from` / `used-by` edges, and per-image render
-  state. Read this to decide what needs doing. Generates nothing.
-- `npm run gallery` → `assets/catalog-gallery.html` — a clean visual index of every rendered object,
-  actor, concept/location, and each scenario's scene + flashcard frames. Generates nothing.
+- **Live catalog gallery** at `GET /gallery` (e.g. `localhost:8787/gallery`) — a visual index of every
+  rendered object, actor, concept/location, and each scenario's scene + flashcard frames, rebuilt from the
+  current catalog + on-disk renders on every request. Just refresh after rendering or editing the catalog —
+  no restart, no script, no static file. Read-only. (The catalog/scenario source files are also the asset
+  graph: `composedFrom` = built-from, `scene.assets` = used-by.)
 - `npm run rekey:assets [-- --apply]` — re-key frames whose only change is the `{{TOKEN}}` brace
   notation (same picture → copy bytes to the new key).
 - `npm run rekey:assets -- --harvest [--apply]` — seed a canonical asset render from a **sole-asset

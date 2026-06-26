@@ -2,22 +2,18 @@
 // and actor, every composed concept (locations + atomic depictions), and every scenario's scene + frames.
 // Read-only: resolves each node to its render key and links the on-disk image; generates nothing.
 //
-//   npm run gallery            →  writes assets/catalog-gallery.html (open it)
-//   GET /gallery (dev server)  →  same page, rebuilt live each request — just refresh after rendering
-//
-// buildGalleryHtml() reads the CURRENT catalog + store every call, so the live route is always fresh.
+// Served live by the dev server at GET /gallery (server.ts): buildGalleryHtml() rebuilds the page from the
+// CURRENT catalog + store on every request, so a plain browser refresh shows new/edited entries and new
+// renders with no restart. There is no static-file output — this module exports only the builder.
 
 import "dotenv/config";
-import { writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import path from "node:path";
 import * as store from "../assets/store";
 import { getE4 } from "../adapters/index";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "../adapters/image-style";
 import { assetRenderKey } from "../assets/images";
 import { conceptRenderKey } from "../assets/compose";
-import { CATALOG, getAssetVisual } from "../catalog";
-import { SCENARIOS } from "../scenarios";
+import { loadCatalog } from "../catalog";
+import { loadScenarios } from "../scenarios";
 
 const esc = (s: string) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
 
@@ -26,6 +22,10 @@ const esc = (s: string) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", 
 // "/gallery/image" when the dev server serves the page live.
 export function buildGalleryHtml(opts: { imgBase?: string } = {}): string {
   const imgBase = opts.imgBase ?? "image";
+  // Read catalog + scenarios FRESH from disk every call, so the live /gallery route reflects new or
+  // edited entries on a plain browser refresh — no server restart. (The image store is already read live.)
+  const catalog = loadCatalog();
+  const scenarios = loadScenarios();
   const e4 = getE4();
   const imgKey = (prompt: string, fmt: { aspectRatio: string; resolution: string }) =>
     store.imageKey(e4.name, e4.model, IMAGE_STYLE.id, fmt.aspectRatio, fmt.resolution, prompt);
@@ -38,13 +38,13 @@ export function buildGalleryHtml(opts: { imgBase?: string } = {}): string {
 
   // Which objects are used as a character's figure (visualRef) — tagged in the objects grid.
   const figureIds = new Set<string>();
-  for (const c of Object.values(CATALOG.characters)) {
+  for (const c of Object.values(catalog.characters)) {
     figureIds.add(c.visualRef);
     c.type.forEach((t) => figureIds.add(t));
   }
 
   // ---- OBJECTS ---------------------------------------------------------------------------------
-  const objectCards = Object.values(CATALOG.objects)
+  const objectCards = Object.values(catalog.objects)
     .map((o) => {
       const key = assetRenderKey({ label: o.label, descriptor: o.descriptor });
       const tags = [figureIds.has(o.id) ? `<span class="tag fig">figure</span>` : "", o.gender ? `<span class="tag">${o.gender}</span>` : ""].join("");
@@ -53,17 +53,16 @@ export function buildGalleryHtml(opts: { imgBase?: string } = {}): string {
     .join("");
 
   // ---- ACTORS (characters) ---------------------------------------------------------------------
-  const actorCards = Object.values(CATALOG.characters)
+  const actorCards = Object.values(catalog.characters)
     .map((c) => {
-      const v = getAssetVisual(c.id); // resolves to the visualRef object
-      const key = assetRenderKey(v);
+      const key = assetRenderKey(catalog.objects[c.visualRef]!); // actor's pixels = its visualRef object (validated at load)
       const meta = `type [${c.type.join(", ")}] · visualRef <code>${esc(c.visualRef)}</code> · ${esc(c.gender ?? "—")} · voice <code>${esc(c.voiceProfile)}</code>`;
       return `<figure>${thumb(key, c.id)}<figcaption><b>${esc(c.name ?? c.id)}</b> <code>${esc(c.id)}</code><div class="desc">${meta}</div></figcaption></figure>`;
     })
     .join("");
 
   // ---- CONCEPTS (locations + atomic depictions) ------------------------------------------------
-  const conceptCards = Object.values(CATALOG.concepts)
+  const conceptCards = Object.values(catalog.concepts)
     .map((c) => {
       const key = conceptRenderKey(c);
       const ar = c.aspectRatio ?? IMAGE_FORMAT.frame.aspectRatio;
@@ -73,8 +72,8 @@ export function buildGalleryHtml(opts: { imgBase?: string } = {}): string {
     })
     .join("");
 
-  // ---- SCENARIOS (scene + frames) --------------------------------------------------------------
-  const scenarioSections = SCENARIOS.filter((s) => s.status === "active")
+  // ---- scenarios (scene + frames) --------------------------------------------------------------
+  const scenarioSections = scenarios.filter((s) => s.status === "active")
     .map((s) => {
       const story = s.scene?.story;
       const sceneKey = story?.sceneImagePrompt ? imgKey(story.sceneImagePrompt, IMAGE_FORMAT.scene) : "";
@@ -94,8 +93,8 @@ export function buildGalleryHtml(opts: { imgBase?: string } = {}): string {
   const renderedCount = (() => {
     let n = 0;
     const keys: string[] = [
-      ...Object.values(CATALOG.objects).map((o) => assetRenderKey({ label: o.label, descriptor: o.descriptor })),
-      ...Object.values(CATALOG.concepts).map((c) => conceptRenderKey(c)),
+      ...Object.values(catalog.objects).map((o) => assetRenderKey({ label: o.label, descriptor: o.descriptor })),
+      ...Object.values(catalog.concepts).map((c) => conceptRenderKey(c)),
     ];
     for (const k of keys) if (store.has(k, "image")) n++;
     return n;
@@ -127,18 +126,9 @@ code{background:#0b0d11;border:1px solid var(--line);border-radius:4px;padding:0
 </style></head><body><div class="wrap">
 <h1>lango-slovenian — catalog gallery</h1>
 <p class="lead">Every rendered object, actor, concept and scenario to date · style <code>${esc(IMAGE_STYLE.id)}</code> · ${renderedCount} canonical renders on disk</p>
-<section><h2>Objects <span class="count">${Object.keys(CATALOG.objects).length}</span></h2><div class="grid">${objectCards}</div></section>
-<section><h2>Actors <span class="count">${Object.keys(CATALOG.characters).length}</span></h2><div class="grid">${actorCards}</div></section>
-<section><h2>Concepts &amp; locations <span class="count">${Object.keys(CATALOG.concepts).length}</span></h2><div class="grid">${conceptCards}</div></section>
+<section><h2>Objects <span class="count">${Object.keys(catalog.objects).length}</span></h2><div class="grid">${objectCards}</div></section>
+<section><h2>Actors <span class="count">${Object.keys(catalog.characters).length}</span></h2><div class="grid">${actorCards}</div></section>
+<section><h2>Concepts &amp; locations <span class="count">${Object.keys(catalog.concepts).length}</span></h2><div class="grid">${conceptCards}</div></section>
 ${scenarioSections}
 </div></body></html>`;
-}
-
-// CLI: write the static file. Guarded so importing this module (e.g. the dev server's /gallery route)
-// neither writes nor logs.
-const isMain = !!process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
-if (isMain) {
-  const out = path.join(store.ASSET_DIR, "catalog-gallery.html");
-  writeFileSync(out, buildGalleryHtml());
-  console.log(`✅ wrote ${path.relative(process.cwd(), out)}\n   ${Object.keys(CATALOG.objects).length} objects · ${Object.keys(CATALOG.characters).length} actors · ${Object.keys(CATALOG.concepts).length} concepts · ${SCENARIOS.filter((s) => s.status === "active").length} scenarios\n   open it: open ${path.relative(process.cwd(), out)}`);
 }

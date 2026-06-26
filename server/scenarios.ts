@@ -162,7 +162,7 @@ export function validateScenario(file: string, raw: any): Scenario {
   return raw as Scenario;
 }
 
-function loadScenarios(): Scenario[] {
+export function loadScenarios(): Scenario[] {
   const files = readdirSync(SCENARIOS_DIR)
     .filter((f) => f.endsWith(".json"))
     .sort(); // stable, deterministic order

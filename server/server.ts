@@ -45,7 +45,14 @@ app.use("/gallery/image", express.static(path.join(store.ASSET_DIR, "image"), { 
 app.get("/gallery", (_req, res) => {
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.setHeader("Cache-Control", "no-store");
-  res.end(buildGalleryHtml({ imgBase: "/gallery/image" }));
+  try {
+    res.end(buildGalleryHtml({ imgBase: "/gallery/image" }));
+  } catch (err: any) {
+    // A catalog/scenario JSON mid-edit throws on reload — show why instead of a blank 500, and recover
+    // on the next refresh once the file is valid again.
+    const msg = String(err?.message ?? err).replace(/[<&]/g, (c) => (c === "<" ? "&lt;" : "&amp;"));
+    res.end(`<pre style="color:#e66;background:#111;padding:24px;font:13px ui-monospace;white-space:pre-wrap">gallery build failed — likely a catalog or scenario file mid-edit:\n\n${msg}</pre>`);
+  }
 });
 
 // Active providers, the chosen scenario (with objectives for the dots + a fresh session), and the

@@ -96,7 +96,7 @@ function asString(obj: any, key: string, where: string): string {
   return v;
 }
 
-function loadCatalog(): Catalog {
+export function loadCatalog(): Catalog {
   // voices
   const rawVoices = read("voices.json");
   const teacherVoiceProfile = asString(rawVoices, "teacher", "voices.json");

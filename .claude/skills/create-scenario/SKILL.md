@@ -19,8 +19,9 @@ You are **C, the Creator/Orchestrator**. This skill IS the operating procedure o
 - `server/catalog/{objects,characters,voices}.json` — the **shared asset catalog**: the canonical source of
   reusable assets (`customer`, `euro_coins`, `price_tag`, `doorway`, the characters) + their identity
   metadata. Reuse a shared asset by **catalog id**, never by re-typing its descriptor (see stage 5).
-- `npm run audit:assets` → `assets/migration-audit.html` — the **asset graph**: every existing canonical
-  render and what each composed image is built-from. This is what you consult for the reuse decision (stage 6).
+- The **live catalog gallery** (`GET /gallery` on the dev server) — the visual index of every existing
+  render. The catalog/scenario source files ARE the asset graph (`composedFrom` = built-from, `scene.assets`
+  = used-by). This is what you consult for the reuse decision (stage 6).
 
 ## The catalog — entry kinds + creation process (read before adding ANYTHING)
 Every generated image traces to a CATALOG entry. A scenario's **frames and scene are NOT catalog entries** —
@@ -74,7 +75,7 @@ place we already have, and only introduce a new set when the learning frontier g
 ### 0 — Autonomous scenario discovery (J) — self-directed only
 Pick the scenario that most advances *this* learner. Do it by evidence from the repertoire, not by taste.
 
-1. **Survey the repertoire + catalog.** Read every `server/scenarios/*.json` and `npm run audit:assets`.
+1. **Survey the repertoire + catalog.** Read every `server/scenarios/*.json` + the catalog files, and view the existing renders (the `GET /gallery` index).
    Build a coverage map: per existing scenario, its **register**, its objectives' **grammar features**
    (case / gender / number / the dual / agreement), and — most important — each objective's
    **negotiation rung** (see ladder). Note which ids are **shared** across scenarios (today: only the
@@ -156,7 +157,7 @@ standard path.)
 ### 6 — Visual derivation, per objective (J, C) — the flashcard judgment
 For each objective decide its **atomic concept**, its nearest **confusable**, and the **minimal unambiguous depiction**.
 
-**First, the reuse-or-author decision** (consult the asset graph — `npm run audit:assets`). This is a semantic JUDGMENT — a multimodal call on meaning, never prompt-string matching. **Reuse an existing render iff ALL three hold:**
+**First, the reuse-or-author decision** (consult the existing renders — the `GET /gallery` visual index + the catalog/scenario source). This is a semantic JUDGMENT — a multimodal call on meaning, never prompt-string matching. **Reuse an existing render iff ALL three hold:**
 1. **Same referent, right specificity.** The render depicts *the very thing the line is about*, not merely the same category. A loaf or rolls both depict *bread*, so either serves a generic "naročim kruh"; neither depicts *burek* or *štruklji* — those need their own render. If the line names a specific item or count (`dve žemlji` = two rolls), the render must show *that* item/count — a loaf won't do even though both are bread.
 2. **No added Action / Relation / State (A/R/S).** A physical action ("slice the bread"), a second asset it must be shown *with* ("hand the coins to the baker"), or a state change (whole → sliced) means the as-is render under-specifies it → author a new frame, **anchored on the existing render** so the asset stays consistent.
 3. **Metadata holds.** Declared identity/constraints match — `{{CUSTOMER}}` is the girl, register/setting particulars fit. A render contradicting declared metadata is unsuitable even if the object matches.

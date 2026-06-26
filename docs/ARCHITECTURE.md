@@ -42,7 +42,7 @@ hold button → record → POST /api/turn (audio + session state)
 | `server/assets/reference-sheet.ts` | composes the per-image labelled montage from per-asset renders (jimp, local) |
 | `server/scripts/build-assets.ts` | materialize a scenario's audio + images |
 | `server/scripts/render-asset.ts` · `render-concept.ts` | (re)render one catalog asset / composed concept (greet, leave, a location) |
-| `server/scripts/audit-assets.ts` · `gallery.ts` | the asset-graph audit (`assets/migration-audit.html`) · the visual catalog gallery (`assets/catalog-gallery.html`) |
+| `server/scripts/gallery.ts` | the visual catalog gallery — served live by the dev server at `GET /gallery` |
 | `server/utils/rekey-assets.ts` | re-key / harvest / restyle — move bytes to new keys **without regenerating** |
 
 The asset toolkit and the render-vs-rekey decision model are documented in
