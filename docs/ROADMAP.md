@@ -42,35 +42,67 @@ run and open enough to spread. Each requirement maps to one piece below.
    `attempted → completed → mastered` lifecycle: an objective reaches *mastered* only on repeated
    correct production, as the *same* objective recurs in different scenarios over time. Requires a
    **shared objective catalog** — common objectives (greet, ask-to-repeat, …) defined once and
-   referenced by id across scenarios, so a correct production anywhere counts. This is also where
-   **enforced uptake** lives — the highest-value mechanic from the research: an objective completes
-   only via a *later, unaided (cold)* reproduction, never an in-session echo. It is deliberately out
-   of the single-session MVP, where forcing it would just create a repetitive doom loop; it only works
-   once the same objective can resurface across days and contexts.
+   referenced by id across scenarios, so a correct production anywhere counts. Mastery is
+   **count-based** (interview-settled): a learnable is mastered after a threshold of successful
+   productions (currently 5, tunable), credited on any understandable-and-correct production —
+   prompted, echoed, or cold — accrued across sittings and contexts, with a flub resetting it. The loop
+   already encourages **uptake** in several forms: a recast never counts (the learner must re-produce the
+   form themselves to advance), productions count across contexts and sittings toward the threshold, and
+   the single-retry ratchet ranges from an unaided open prompt to a handed-over leading choice. No
+   separate gate is needed — the panel's internal "forced/enforced-uptake" label is dropped as
+   confusing. Mastery is deliberately out of the single-session MVP and only works once the same
+   learnable resurfaces across days and contexts.
+   **Full subsystem design:** [learnable-subsystem.md](learnable-subsystem.md) (structure/capabilities)
+   + [learnable-subsystem-stories.md](learnable-subsystem-stories.md) (decisions · user stories ·
+   mastery-loop flows) — patterns + vocabulary as durable masterable units, the
+   learner-model store, and how it wraps the turn loop. It absorbs item 6 (variant sets attach to
+   patterns/objectives). The core pattern library itself:
+   [research/core-pattern-library-2026-06-26/](research/core-pattern-library-2026-06-26/RANKED-PATTERNS.md).
 5. **A tutor that leads, not just reacts.** An orchestration layer over the learner model that chooses
    what scenario/objective comes next from the learner's goals and history, schedules when things
    resurface, and lets the tutor go deeper or broader. This is the "tutor-as-agent" step — and its
    learner-facing surface: a selector of what to practice next and a "completed" review view, fed by
-   the learner model.
-6. **Content that scales without consistency collapse** *(unlocks multi-scenario depth and new
-   languages).* ✅ **Shipped** (the asset-engine refactor, then deepened into a relational ontology):
-   a shared **catalog** referenced by id — objects, **actors** (cross-media characters that point at a
-   figure object), composed **concepts** including reusable **location sets**, and voices; per-asset
-   canonical renders composed on demand into a per-image labelled montage; a scene composed on a
-   build-once location set, so cost is *sets + scenes*, not *sets × scenes*; identity metadata; and a
-   render-vs-rekey toolkit with **decision-gated** propagation (see [asset-pipeline.md](asset-pipeline.md)).
-   *Remaining:* an optional dependency-aware "what would re-rendering this invalidate" view.
-7. **An engine anyone can run — any agent, any language.** The authoring procedure (rubric + gates +
+   the learner model. The **edge-finding** free-conversation level lives here: a learner-pickable mode
+   that leans on already-familiar learnables as stepping stones to probe where the learner's limits are
+   and where they want to go broader or deeper — distinct from the mastery loop (4).
+6. **Accepted-variant sets** *(independent — buildable now; no dependency on 4–5, so it can be pulled
+   ahead of the memory keystone, exactly as the asset work was).* Each objective carries an authored,
+   register-tagged **set** of accepted Slovenian variants instead of one brittle canonical string, and
+   acceptance matches against the set (deterministic; defer semantic/fuzzy match to later). This is the
+   research panel's most-cited weak link and a flagged "do-now" item. Scope: a `variants` field on the
+   objective schema + the acceptance check, plus a variant-set criterion in the authoring rubric and
+   critic. *(Promoted out of the [scenario-authoring.md](scenario-authoring.md) PLANNED list — it was
+   mis-bundled there with the persistence-gated deferrals.)*
+7. **Consistency at scale — rescoped to an audio + fine-tuning pass** *(foundation shipped).* The
+   relational-ontology **foundation is built**: a shared **catalog** referenced by id — objects,
+   **actors** (cross-media characters that point at a figure object), composed **concepts** including
+   reusable **location sets**, and voices; per-asset canonical renders composed on demand into per-image
+   labelled montages; scenes composed on build-once location sets, so cost is *sets + scenes*, not
+   *sets × scenes*; identity metadata; and a render-vs-rekey toolkit with **decision-gated** propagation
+   (see [asset-pipeline.md](asset-pipeline.md)). **Image** consistency is established. *Remaining,
+   rescoped to where the gaps now are:* **audio** consistency and quality (voice-profile coherence,
+   native-acoustic polish), image fine-tuning, and the optional dependency-aware "what would
+   re-rendering this invalidate" view.
+8. **An engine anyone can run — any agent, any language.** The authoring procedure (rubric + gates +
    scripts) made tool-neutral, so it runs with Claude, Gemini, Codex, or a careful human — not only
    the Claude skill — plus a language/voice config seam so Slovene is the first target, not a
    hard-coded assumption.
-8. **Sustainability.** Generated assets cost money to make. Serve them free now (a downloadable
+9. **Sustainability.** Generated assets cost money to make. Serve them free now (a downloadable
    bundle), optionally as a paid bundle later, so generation cost can be recouped. *(started:
    `npm run fetch:assets`)*
+10. **Motivation & retention.** Incentives, streaks, the game of coming back. Duolingo shows this can
+    carry a product even when the underlying acquisition is weak. It comes after the acquisition
+    mechanics (memory, leading, real practice). Until this item, the learner model tracks mastery
+    internally and surfaces no scores, streaks, or progress framing.
+11. **Pronunciation review on record-and-compare.** Add a pronunciation-feedback feature to the existing
+    record-and-compare practice. Record-and-compare is local and unassessed today, so it does not feed
+    the mastery loop; this would give it its own pronunciation review.
 
 ## The critical path
 
 Memory (4) is the keystone — it turns single sessions into real acquisition and is the precondition
-for a tutor that leads (5). The asset refactor (6) is what lets content and languages scale without
-breaking. Tool-neutrality (7) is what turns "my project" into "your engine." Everything else composes
-around those three.
+for a tutor that leads (5). **Accepted-variant sets (6)** are independent of both and are the cheapest
+high-leverage win left, so they can land first. The asset-consistency **foundation is already shipped**;
+what remains (7) is an audio + fine-tuning pass. Tool-neutrality (8) is what turns "my project" into
+"your engine." Everything composes around the memory keystone (4) and tool-neutrality (8) — the asset
+foundation the rest scales on is already in place.

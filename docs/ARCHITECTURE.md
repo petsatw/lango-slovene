@@ -175,8 +175,8 @@ What the rebuilt prompt enforces every turn:
 
 The full pedagogy — the 18-step learning loop, the rubrics, and the research behind each rule — is in
 [research/](research/) (the expert panel) and codified into the authoring
-[rubric](scenario-authoring.md). Note that **enforced uptake** (completion only via a *later, unaided*
-reproduction) and **cross-session spaced review** are deliberately out of the single-session MVP; they
+[rubric](scenario-authoring.md). Note that **count-based mastery across contexts** and **cross-session
+spaced review** are deliberately out of the single-session MVP; they
 depend on the persistent learner model on the [roadmap](ROADMAP.md) (item 4).
 
 ## The asset model
@@ -263,8 +263,10 @@ durable session capture, replay, and favorites; the generation engine and its ga
 
 **Next** — see [ROADMAP.md](ROADMAP.md) for the dependency-ordered plan:
 
-- **A persistent learner model** with enforced uptake and cross-session spaced review *(roadmap 4 — the
-  keystone)*.
+- **A persistent learner model** with count-based mastery and cross-session spaced review *(roadmap 4 —
+  the keystone)*, designed as its own subsystem in
+  [learnable-subsystem.md](learnable-subsystem.md), with decisions + stories in
+  [learnable-subsystem-stories.md](learnable-subsystem-stories.md).
 - **A tutor that leads** — an orchestration layer that chooses what to practice next *(roadmap 5)*.
 - **A tool-neutral, multi-language engine** *(roadmap 7)* and **a sustainability bundle** *(roadmap 8)*.
 - **Lower latency.** Today ≈6 s/turn (E2 ≈5 s + E3 first-audio ≈1.4 s). Level-1 E3 streaming is done and
@@ -281,5 +283,7 @@ durable session capture, replay, and favorites; the generation engine and its ga
 | [asset-pipeline.md](asset-pipeline.md) | the asset toolkit, the key model, and the render-vs-rekey decision | generating, restyling, or auditing assets |
 | [scenario-authoring.md](scenario-authoring.md) | the acceptance rubric for a scenario, objective, story, frames, and scene | authoring or reviewing a scenario |
 | [ROADMAP.md](ROADMAP.md) | the future state and the dependency-ordered pieces to get there | planning what to build next |
+| [learnable-subsystem.md](learnable-subsystem.md) | the cross-session memory subsystem (design): patterns + vocabulary as durable units, the learner model, mastery | building roadmap 4 (memory) or designing the learner model |
+| [learnable-subsystem-stories.md](learnable-subsystem-stories.md) | the mastery loop's captured intent: decisions, canonical user stories, and the mastery-loop flows | speccing or building roadmap 4; reviewing whether the build serves the journey |
 | [SECRETS.md](SECRETS.md) | API-key hygiene and the key-isolation boundary | handling credentials |
 | [research/](research/) | the expert-panel research the pedagogy rests on | understanding *why* a teaching rule exists |

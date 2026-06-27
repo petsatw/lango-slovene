@@ -10,8 +10,8 @@ before submitting; the scenario-critic judges against it. Distilled from the
 The current loop is right for MVP: the tutor recasts an error in character, and the learner gets **one natural chance to retry** within the session; an objective completes when the model judges it produced acceptably. **Keep this.** Do not add completion-gating in MVP.
 
 Explicitly **deferred to PLANNED** (do not design MVP content around them):
-- **Enforced uptake** (completing an objective only via a later, unaided, cold reproduction). Real uptake needs *repetition across contexts and days* — it only works once cross-session integration exists. See [ARCHITECTURE.md › Planned](ARCHITECTURE.md) (persistent learner model). MVP stays single-attempt recast + retry.
-- Cross-session spaced review / resurfacing, accepted-variant acceptance sets, fluency/latency pressure, pronunciation scoring. All PLANNED.
+- **Cross-session mastery** (a learnable mastered by repeated correct production across contexts and days, not a single in-scene completion). Needs cross-session integration — the persistent learner model; see [ARCHITECTURE.md › Planned](ARCHITECTURE.md). MVP stays single-attempt recast + retry.
+- Cross-session spaced review / resurfacing and acceptance latitude are now designed in the **Learnable Subsystem** ([learnable-subsystem.md](learnable-subsystem.md)) — still PLANNED (not built). When it lands, every scenario must **cover ≥1 core pattern**, objectives reference learnables, and acceptance is the model's judgment (variant latitude is guidance, not a deterministic matcher). Fluency/latency pressure and pronunciation scoring remain PLANNED.
 
 So MVP acceptance for an objective is unchanged: produced acceptably once, with a recast-and-retry chance on error. The rubric below governs **what we author**, not how completion is scored.
 
