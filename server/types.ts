@@ -110,6 +110,10 @@ export interface WitnessResult {
   utteranceLang: string; // "sl" | "en" | "mixed"
   targets: TargetEvidence[];
   observed: ObservedItem[];
+  /** Free-chat role the tutor is playing — a short Slovene noun phrase (e.g. "natakarica"), or null
+   *  for the default plain language tutor. The model chooses this on the FIRST real turn (when the
+   *  server passes no pinned role) and the server pins it for the rest of the session. */
+  role?: string | null;
 }
 
 /** E2 — audio understanding + in-character tutoring (one model, one hop). */
@@ -218,6 +222,9 @@ export interface ConverseResult {
   replyGloss?: string;
   correction: string;
   learnableProgress: LearnableProgress[];
+  /** Free chat only: the role the tutor is playing (short Slovene noun phrase), or null for a plain
+   *  tutor. The client pins the first non-null value and POSTs it back each turn so the role holds. */
+  role?: string | null;
   /** Seed onboarding only: true once the scripted dialogue has finished its last step. */
   seedDone?: boolean;
   timings: { e2Ms: number };

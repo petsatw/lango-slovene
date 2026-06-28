@@ -123,17 +123,23 @@ export function buildSystemPrompt(
 }
 
 // ---- Free conversation: the WITNESS prompt (spec §3.5) --------------------------------------------
-// A scenario-less café chat bounded by the learner model. The model is handed a FAMILIAR palette (the
+// A scenario-less chat bounded by the learner model. The model is handed a FAMILIAR palette (the
 // tutor's whole usable vocabulary) and a bounded TARGET set to draw the learner toward. It holds the
 // conversation and reports linguistic EVIDENCE only — it decides no credit and knows nothing about
 // mastery/counts/thresholds. The server (mastery.creditFromEvidence) owns all crediting.
+//
+// ROLE: by default the tutor is a plain language tutor. On the FIRST real turn the server passes no
+// `role`, and the model MAY adopt a context role if today's targets strongly converge on one; it
+// reports the role it chose. The server then pins that role and passes it back every later turn so the
+// persona holds for the whole conversation (free chat is stateless — the prompt is rebuilt each turn).
 const DEFAULT_DIRECTIVE =
-  "Have a relaxed, everyday chat — like a quick, friendly exchange at a café counter.";
+  "Have a relaxed, everyday chat — like a quick, friendly exchange.";
 
 export function buildConversationPrompt(
   familiar: Learnable[],
   targets: Learnable[],
   directive: string = DEFAULT_DIRECTIVE,
+  role?: string | null,
 ): string {
   const knows = familiar.length
     ? familiar.map((l) => `  "${l.sl}" — ${l.gloss}`)
@@ -147,10 +153,32 @@ export function buildConversationPrompt(
     ? targets.map(targetLine)
     : ["  (none this turn — just keep the conversation flowing naturally)"];
 
+  // The role block is the only part that differs once a role is pinned: a chosen role locks the persona;
+  // an absent role tells the model to decide ONCE on this first reply (default = plain tutor).
+  const roleBlock = role
+    ? [
+        `YOUR ROLE (already chosen — HOLD it for the whole conversation): you are playing ${role}.`,
+        "- Speak and react as this person naturally would; let it colour the situation you create.",
+        "- You already introduced yourself — do NOT re-announce the role. Just keep it up.",
+      ]
+    : [
+        "YOUR ROLE (decide ONCE, right now, on this first reply):",
+        "- DEFAULT: a plain, friendly language tutor — no persona, no setting. Most of the time, this.",
+        "- ONLY if today's targets strongly converge on a real-world situation that a specific person would",
+        "  naturally deliver — a waiter, pharmacist, immigration officer, exercise enthusiast, volunteer",
+        "  coordinator, a parent, … — declare and ADOPT that role for the arc of this conversation, to give",
+        "  the learner useful context. Introduce it in ONE short Slovene line with the pattern",
+        "  «Danes sem [ime], [poklic].» — e.g. «Danes sem Ana, natakarica.» / «Danes sem Marko, farmacevt.»",
+        "  Match the role noun's gender to the name (natakarica/natakar, farmacevtka/farmacevt). Then carry",
+        "  straight on into the targets.",
+        "- If the targets don't clearly converge on one, stay the plain tutor and say NOTHING about a role.",
+      ];
+
   return [
-    "You are Ana — a warm, patient barista having a quick, friendly chat in Slovenian with someone who",
-    "has just started learning the language and lives in Slovenia. Keep it real, like a short exchange at",
-    "the café counter.",
+    "You are a warm, patient Slovene tutor having a quick, friendly chat in Slovenian with someone who",
+    "has just started learning the language and lives in Slovenia. Keep it real and natural.",
+    "",
+    ...roleBlock,
     "",
     "HOW TO TALK",
     `- ${directive}`,
@@ -188,6 +216,8 @@ export function buildConversationPrompt(
     "- observed: EVERY other Slovene word or phrase they said this turn that ISN’T one of today’s targets —",
     "  whether or not it’s in THE LEARNER KNOWS, including words you don’t recognize. Capture all of it",
     "  ({ surface, gloss }). Skip anything they said in English (that already lives in transcript_verbatim).",
+    "- role: the role you are playing as a short Slovene noun phrase (e.g. \"natakarica\"), or null if you",
+    "  are a plain tutor. If a role is already chosen above, report that SAME role here unchanged.",
     "",
     "Return strict JSON with exactly these fields:",
     '- "reply": your short spoken Slovenian reply (read aloud — keep it speakable).',
@@ -197,5 +227,6 @@ export function buildConversationPrompt(
     '- "utterance_lang": "sl" | "en" | "mixed".',
     '- "targets": array of { "id", "produced", "said", "said_lang", "correct", "confidence" }.',
     '- "observed": array of { "surface", "gloss" }.',
+    '- "role": short Slovene noun phrase, or null.',
   ].join("\n");
 }

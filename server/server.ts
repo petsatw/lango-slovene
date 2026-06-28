@@ -148,12 +148,10 @@ app.post("/api/turn", async (req, res) => {
 // One free-conversation turn (E2 only) — scenario-less, bounded by the durable learner model. Audio is
 // fetched from /api/speak exactly like /api/turn (voice=character is irrelevant here → teacher voice).
 app.post("/api/converse", async (req, res) => {
-  const { audioBase64, mimeType, history, level, seedId, begin } = req.body ?? {};
-  // Live free chat needs audio; the seed's opening (begin) does not (the script supplies the first line).
-  if (!seedId && (!audioBase64 || !mimeType)) {
-    return res.status(400).json({ error: "audioBase64 and mimeType are required" });
-  }
-  if (seedId && !begin && (!audioBase64 || !mimeType)) {
+  const { audioBase64, mimeType, history, level, seedId, begin, role } = req.body ?? {};
+  // Every turn needs audio EXCEPT an opening (begin): the seed's step 0 or free chat's "Začnemo?" line
+  // is the tutor speaking first, with no learner audio yet.
+  if (!begin && (!audioBase64 || !mimeType)) {
     return res.status(400).json({ error: "audioBase64 and mimeType are required" });
   }
   try {
@@ -164,6 +162,7 @@ app.post("/api/converse", async (req, res) => {
       level: level === 1 ? 1 : 2,
       seedId: seedId ? String(seedId) : undefined,
       begin: !!begin,
+      role: typeof role === "string" && role.trim() ? role : null,
     });
     res.json(result);
   } catch (err: any) {

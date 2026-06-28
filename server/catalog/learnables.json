@@ -1,5 +1,7 @@
 {
   "dober_dan": { "kind": "chunk", "sl": "Dober dan.", "gloss": "good day (greeting)", "core": true, "rank": 19 },
+  "zacnemo": { "kind": "chunk", "sl": "Začnemo?", "gloss": "shall we begin?" },
+  "govorim_slovensko": { "kind": "chunk", "sl": "Govorim slovensko.", "gloss": "I speak Slovene." },
   "eno_femacc": {
     "kind": "pattern",
     "sl": "Eno ___, prosim.",

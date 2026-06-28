@@ -22,6 +22,7 @@ let session = null;          // SessionState — objective progress, held client
 let objectivesMeta = [];     // [{ id, label, targetSL }] from /api/config
 let runId = null;            // unique id for THIS run — groups turns into one captured SessionRecord
 let freeChat = 0;            // 0 = off (scenario turns) ; 1 = free-conversation level 1 ; 2 = level 2
+let chatRole = null;         // free chat: the role the tutor pinned this session (carried back each turn)
 let learnerStarted = false;  // has the learner produced anything yet? (from /api/config) — if not, free chat → seed
 
 // A readable, filesystem-safe run id: <scenario>-<timestamp>-<rand>. One run per page load, so a
@@ -252,7 +253,7 @@ async function stopRecordingAndSend() {
       ? await fetch("/api/converse", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ audioBase64, mimeType: "audio/wav", history, level: freeChat }),
+          body: JSON.stringify({ audioBase64, mimeType: "audio/wav", history, level: freeChat, role: chatRole }),
         })
       : await fetch("/api/turn", {
           method: "POST",
@@ -280,6 +281,8 @@ async function stopRecordingAndSend() {
     history.push({ role: "tutor", text: data.tutorReply });
 
     if (freeChat) {
+      // Pin the role the tutor chose on its first reply so it holds for the rest of the session.
+      if (data.role) chatRole = data.role;
       // No scenario voice in free conversation → teacher voice; no objectives/takeaway.
       await playReplyStreaming(data.tutorReply, {});
     } else {
@@ -573,12 +576,27 @@ function applyConfig(cfg) {
 let seedActive = false;
 let chatModeIdx = 0; // free-chat toggle position: 0 off · 1 Tutorial · 2 L1 · 3 L2
 
-function renderSeedTutor(data) {
-  // Slovene line + its English gloss as the bubble sub-line (the seed is the one place we show English).
-  // The bubble's ▶ replays it in the teacher voice — that IS the "hear it" example. Then auto-play it.
+// Play one teacher-voice clip to completion (resolves on 'ended') — used to chain SL then EN in the seed.
+function playTeacherToEnd(text) {
+  return new Promise((resolve) => {
+    const audio = new Audio();
+    audio.src = `/api/speak?${new URLSearchParams({ text }).toString()}`;
+    audio.onended = resolve;
+    audio.onerror = resolve;
+    audio.play().catch(resolve); // gesture already unlocked audio (the toggle/push-to-talk that got us here)
+  });
+}
+
+async function renderSeedTutor(data) {
+  // Slovene line + its English translation as the bubble sub-line. The bubble's ▶ replays the Slovene in
+  // the teacher voice. Bilingual BY EAR: play the simple Slovene line, then the English back-to-back, so
+  // meaning lands without the learner having to tap — tapping is reserved for free chat.
   addBubble("tutor", data.tutorReply, data.correction || "", {});
   history.push({ role: "tutor", text: data.tutorReply });
-  return playReplyStreaming(data.tutorReply, {}); // teacher voice
+  obs.state("speaking…");
+  await playTeacherToEnd(data.tutorReply);
+  if (data.correction) await playTeacherToEnd(data.correction);
+  obs.state("idle");
 }
 
 // A zero-context learner who taps Free chat lands here: the scripted opener, then ordinary push-to-talk.
@@ -638,6 +656,28 @@ async function seedTurn(audioBase64) {
   }
 }
 
+// Free chat opens with the tutor speaking first — a static Slovene "Začnemo?" (the learner already
+// knows it from the tutorial). No learner audio, no model call, no credit; it just seeds the thread so
+// the conversation has a natural opening instead of an empty history.
+async function beginFreeChat() {
+  chatRole = null; // fresh session — the tutor re-decides its role on the first real reply
+  obs.state("free conversation");
+  try {
+    const res = await fetch("/api/converse", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ begin: true, level: freeChat }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    addBubble("tutor", data.tutorReply, data.replyGloss ? `≈ ${data.replyGloss}` : "", {});
+    history.push({ role: "tutor", text: data.tutorReply });
+    await playReplyStreaming(data.tutorReply, {}); // teacher voice
+  } catch (err) {
+    obs.error(`opening: ${err.message}`);
+  }
+}
+
 // The free-chat toggle cycles: off → Tutorial (replay the seed anytime) → L1 → L2 → off. Each switch
 // clears the chat surface; Tutorial hands off to the scripted seed, L1/L2 to model free conversation.
 const CHAT_MODES = ["off", "tutorial", "L1", "L2"];
@@ -655,8 +695,8 @@ function applyChatMode(idx) {
   history.length = 0;
   $("objectives").hidden = mode !== "off";
   if (mode === "tutorial") enterSeed();
-  else if (mode === "L1") { freeChat = 1; obs.state("free conversation (level 1)"); }
-  else if (mode === "L2") { freeChat = 2; obs.state("free conversation (level 2)"); }
+  else if (mode === "L1") { freeChat = 1; beginFreeChat(); }
+  else if (mode === "L2") { freeChat = 2; beginFreeChat(); }
   else obs.state("idle");
 }
 

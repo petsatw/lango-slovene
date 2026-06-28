@@ -88,6 +88,8 @@ const WITNESS_SCHEMA = {
         required: ["surface"],
       },
     },
+    // "" = plain tutor (Gemini schemas don't express null cleanly, same convention as said/said_lang).
+    role: { type: "STRING" },
   },
   required: ["reply", "transcript_verbatim", "utterance_lang", "targets", "observed"],
 };
@@ -237,6 +239,7 @@ export class GeminiE2 implements E2Adapter {
       observed: observed
         .map((o: any) => ({ surface: String(o?.surface ?? ""), gloss: String(o?.gloss ?? "") }))
         .filter((o: any) => o.surface),
+      role: blank(parsed.role),
     };
   }
 

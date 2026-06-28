@@ -21,7 +21,7 @@ const ASSET_DIR = process.env.ASSET_DIR
 
 const BUNDLE_URL =
   process.env.ASSET_BUNDLE_URL ||
-  "https://github.com/petsatw/lango-slovene/releases/download/assets-v1/scenario-assets-v1.tgz";
+  "https://github.com/petsatw/lango-slovene/releases/download/assets-v2/scenario-assets-v2.tgz";
 
 console.log(`Fetching prebuilt assets\n  from: ${BUNDLE_URL}\n  into: ${ASSET_DIR}\n`);
 

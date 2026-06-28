@@ -9,6 +9,7 @@ import * as turnlog from "./assets/turnlog";
 import * as candidates from "./assets/candidates";
 import { applyCredit, creditFromEvidence, presentObjectives, selectForWitness } from "./mastery";
 import { buildSystemPrompt, buildConversationPrompt } from "./prompt";
+import { getLearnable } from "./learnables";
 import { getScenario, freshSession, characterVoiceProfile, type Scenario } from "./scenarios";
 import { getSeed } from "./seeds";
 import { scriptedSeedTurn } from "./adapters/seed-scripted";
@@ -128,7 +129,8 @@ export async function converse(input: {
   history: ConversationTurn[];
   level?: 1 | 2;
   seedId?: string; // when set, the SEED adapter serves a scripted dialogue instead of the model
-  begin?: boolean; // seed only: return the opening line, credit nothing
+  begin?: boolean; // return the opening line, credit nothing (seed step 0, or free chat's "Začnemo?")
+  role?: string | null; // free chat: the pinned role the client carries back each turn (null = decide)
 }): Promise<ConverseResult> {
   const model = learner.load();
 
@@ -163,10 +165,27 @@ export async function converse(input: {
     };
   }
 
+  // Free-chat opening: the tutor speaks first (no learner audio yet). A static line — no model call, no
+  // credit — mirroring the seed's begin path. The learner already knows "Začnemo?" from the tutorial.
+  if (input.begin) {
+    const z = getLearnable("zacnemo");
+    return {
+      userVerbatim: "",
+      userSaid: "",
+      tutorReply: z.sl,
+      replyGloss: z.gloss,
+      correction: "",
+      learnableProgress: [],
+      role: null,
+      timings: { e2Ms: 0 },
+      providers: { e2: "opening" },
+    };
+  }
+
   if (!input.audioBase64 || !input.mimeType) throw new Error("converse requires audio");
   const level: 1 | 2 = input.level === 1 ? 1 : 2;
   const { familiar, targets } = selectForWitness(model, level);
-  const systemPrompt = buildConversationPrompt(familiar, targets);
+  const systemPrompt = buildConversationPrompt(familiar, targets, undefined, input.role);
   const e2 = getE2();
   if (!e2.witness) {
     throw new Error(`E2 provider "${e2.name}" does not support free-conversation witness turns`);
@@ -221,6 +240,9 @@ export async function converse(input: {
     replyGloss: w.replyGloss,
     correction: "",
     learnableProgress: credit.progress,
+    // Honor the client-pinned role once set; otherwise relay the model's fresh first-turn choice so the
+    // client can pin it. Free chat is stateless, so the role lives on the client between turns.
+    role: input.role ?? w.role ?? null,
     timings: { e2Ms },
     providers: { e2: e2.name },
   };

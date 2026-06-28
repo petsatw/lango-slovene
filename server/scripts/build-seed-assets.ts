@@ -1,7 +1,8 @@
 // Pre-build the SEED conversation's audio so it ships in the starter pack like the scenarios' audio.
-// Each seed step's TUTOR line (tutorSL) is what the learner hears (auto-played + the bubble ▶ replay),
-// spoken in the TEACHER voice. Keys are identical to what /api/speak computes, so a prebuilt clip is
-// served free + offline at runtime (no synthesis, no bill).
+// Each seed step plays BILINGUALLY by ear: the TUTOR's Slovene line (tutorSL) then its English
+// translation (tutorEN), both spoken in the TEACHER voice (eleven_v3 renders English natively). Keys are
+// identical to what /api/speak computes, so a prebuilt clip is served free + offline at runtime (no
+// synthesis, no bill).
 //
 // Generation BILLS — operator-run only (npm run build:seed-assets). Like build:assets, reused clips are
 // free; only missing ones are synthesized. Add the produced files to the fetch:assets bundle to ship them.
@@ -20,7 +21,10 @@ let failures = 0;
 
 const lines = new Map<string, string>(); // dedupe identical lines across steps/seeds
 for (const seed of Object.values(SEEDS)) {
-  for (const step of seed.steps) lines.set(step.tutorSL, seed.id);
+  for (const step of seed.steps) {
+    lines.set(step.tutorSL, seed.id); // the spoken Slovene line
+    lines.set(step.tutorEN, seed.id); // its English translation (played right after — bilingual by ear)
+  }
 }
 
 console.log(`▶ build:seed-assets  e3=${e3.name}  voice=${voiceTag}  lines=${lines.size}`);
