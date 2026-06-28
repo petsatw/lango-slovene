@@ -15,7 +15,7 @@ The browser talks only to these. No endpoint ever returns a key.
 | `GET` | `/api/health` | liveness | `{ ok: true }` |
 | `GET` | `/api/config?scenarioId=` | boot a scenario | providers, the chosen scenario (id, title, opening, objectives, story frame order), a fresh `session`, and the scenario list for the picker. Unknown/planned ids fall back to café. |
 | `POST` | `/api/turn` | one conversational turn (E2 only) | `UnderstandResult` — text fast; audio is fetched separately. Also captures the run if `runId` is sent. |
-| `POST` | `/api/converse` | one free-conversation turn (E2 only, scenario-less) | `ConverseResult` — bounded by the learner model; `level: 1\|2`. Credits the durable mastery layer. Also hosts the **seed**: `{ seedId, begin? }` swaps the model for the scripted adapter (returns the next scripted line + `seedDone`). |
+| `POST` | `/api/converse` | one free-conversation turn (E2 only, scenario-less) | `ConverseResult` — bounded by the learner model; `level: 1\|2`. Credits the durable mastery layer. `begin: true` returns the static opening (`Začnemo?`, no model call/credit); `role` is the client-pinned free-chat role carried back each turn. Also hosts the **seed**: `{ seedId, begin? }` swaps the model for the scripted adapter (returns the next scripted line + `seedDone`). |
 | `GET` | `/api/learner` | inspect the durable learner model (operator) | `LearnerInspection` — derived owned/shaky/unseen + per-learnable counts. Read-only. |
 | `GET` | `/api/speak?text=&voice=&scenarioId=&objectiveId=` | stream tutor/teacher audio (E3) | `audio/mpeg`, streamed progressively. `voice=character` → the scenario character's voice; otherwise the teacher voice. Cache: L1 memory → L2 disk → synthesize+persist. |
 | `GET` | `/api/image?scenarioId=&objectiveId=` | a story frame or scene image | `image/jpeg` from the store. `objectiveId=scene` → the full tableau. 404 with a build hint if not yet built (`npm run build:assets`). |
@@ -108,6 +108,9 @@ interface LearnableProgress { id: string; result: LearnableResult; }
 // Free-conversation turn result (POST /api/converse):
 interface ConverseResult {
   userVerbatim: string; userSaid: string; tutorReply: string; correction: string;
+  replyGloss?: string;             // English translation of tutorReply — click-to-reveal subtitle
+  role?: string | null;            // free chat: the tutor's chosen/pinned role (null = plain tutor)
+  seedDone?: boolean;              // seed only: true once the scripted dialogue finishes
   learnableProgress: LearnableProgress[]; timings: { e2Ms: number }; providers: { e2: string };
 }
 ```
