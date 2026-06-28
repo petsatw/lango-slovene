@@ -104,8 +104,10 @@ Two conventions used throughout:
   anything that registers as an unsuccessful attempt. Keep this mechanism **very dumb** for now.
 - **Decided: pre-mastery, an unsuccessful attempt does not penalize** — the count simply doesn't rise
   (**stall, not regress**). Reset applies **only to already-mastered** learnables.
-- Flub reset is assumed to drop the success count **to 0** (back below threshold) — flagged as an
-  assumption; could be a decrement if the user prefers.
+- Flub **decrements the success count by 1** (clamp ≥ 0) — *operator-confirmed*, gentler than the
+  earlier assumed reset-to-0: a flub costs one, it doesn't wipe progress. At exactly threshold (5→4) the
+  item falls back into the pool, re-masterable with one clean success; deep past threshold a single flub
+  doesn't unseat it. See [learnable-subsystem-spec.md](learnable-subsystem-spec.md) §3.1.
 
 ### Groups & presentation (inside scenarios)
 - An **objective draws from a group** of catalog learnables that satisfy it.
@@ -429,7 +431,7 @@ record-and-compare (roadmap 11); exposure-based entry (future).
 ## Part 6 — Parked & open questions
 - Concrete definitions of **"understandable"** and **"correct."**
 - The signal that the app has an **"exposure-shaped hole"** (the user's question).
-- **Flub reset to 0 vs decrement** (assumed: to 0).
+- ~~Flub reset to 0 vs decrement~~ — **resolved: decrement by 1** (operator-confirmed). See spec §0/§3.1.
 - The **dual** `dve …` — one chunk, or deferred.
 - **Kind boundaries** (vocabulary vs chunk vs pattern) in authoring practice.
 - **Non-visual learnable cueing** (carrier situation, no image).

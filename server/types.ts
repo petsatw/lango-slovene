@@ -14,8 +14,16 @@ export type ObjectiveStatus = "pending" | "recast" | "completed";
 export interface Objective {
   id: string;
   label: string; // short English label for the UI dot
-  targetSL: string; // canonical correct Slovenian the student should produce
+  targetSL: string; // canonical correct Slovenian the student should produce (default/primary line)
   hintEN: string; // internal guidance for the model — never lectured to the student
+  /** Catalog learnable ids this objective exercises (carrier pattern + fillers). Optional: a scenario
+   *  without it keeps today's behaviour exactly (no durable mastery for that objective). See
+   *  docs/learnable-subsystem-spec.md §2.2. */
+  learnables?: string[];
+  /** Per-filler full inflected target line, keyed by the filler learnable id, e.g.
+   *  { "kava": "Eno kavo, prosim.", "voda": "Eno vodo, prosim." }. The single-filler case omits this
+   *  and presentation falls back to targetSL. */
+  fillerLines?: Record<string, string>;
 }
 
 export interface ObjectiveState {
@@ -38,6 +46,31 @@ export interface ObjectiveProgress {
   result: TurnVerdict;
 }
 
+// ---- Mastery loop: the durable LEARNABLE layer (cross-session) ----
+
+/** The model's per-turn verdict on a LEARNABLE the student exercised — the durable mastery layer.
+ *  "success" = produced understandably AND correctly AND without needing a recast; "attempt" = anything
+ *  less. The model reports only learnables the student actually addressed; the server owns all durable
+ *  rules (threshold, flub) and tells the model nothing about stored state. */
+export type LearnableResult = "success" | "attempt";
+export interface LearnableProgress {
+  id: string;
+  result: LearnableResult;
+}
+
+/** Per-learnable durable counts. Status is DERIVED, never stored: absent ⇒ unseen; successes ≥ threshold
+ *  ⇒ mastered; otherwise attempted (shaky/due). */
+export interface LearnableMastery {
+  attempts: number; // rises on every swing (success or fail)
+  successes: number; // rises only on a successful production; mastery measures this
+}
+
+/** The whole learner model — one durable, local, single-learner model (assets/learner.json). */
+export interface LearnerModel {
+  learnables: Record<string, LearnableMastery>;
+  updatedAt: string; // ISO
+}
+
 /** E2 — audio understanding + in-character tutoring (one model, one hop). */
 export interface E2Result {
   /** EXACTLY what the student said, as the model heard it — unsanitized, errors/code-switching preserved. */
@@ -48,8 +81,11 @@ export interface E2Result {
   tutorReply: string;
   /** Brief note on what was gently corrected (shown in overlay; the recast itself lives in tutorReply). */
   correction: string;
-  /** Per-objective verdict for THIS turn — the model's read of what the student produced. */
+  /** Per-objective verdict for THIS turn — the model's read of what the student produced (SCENE layer). */
   objectiveProgress: ObjectiveProgress[];
+  /** Per-learnable verdict for THIS turn — drives the durable MASTERY layer. Empty when the scenario
+   *  authors no learnables (back-compat) or in non-scenario modes that exercise none. */
+  learnableProgress: LearnableProgress[];
   /** The objective the tutor is now steering toward. */
   focusObjectiveId: string;
 }
@@ -115,7 +151,23 @@ export interface UnderstandResult {
   userSaid: string;
   tutorReply: string;
   correction: string;
-  session: SessionState; // updated after the deterministic mastery rules
+  session: SessionState; // updated after the deterministic SCENE rules
+  /** Per-learnable verdicts the model returned this turn (already credited to the durable model). */
+  learnableProgress: LearnableProgress[];
+  timings: { e2Ms: number };
+  providers: { e2: string };
+}
+
+/** Free-conversation turn result (spec §3.5) — no scenario, no objectives, no session; the same
+ *  per-learnable verdict drives the durable mastery layer. */
+export interface ConverseResult {
+  userVerbatim: string;
+  userSaid: string;
+  tutorReply: string;
+  correction: string;
+  learnableProgress: LearnableProgress[];
+  /** Seed onboarding only: true once the scripted dialogue has finished its last step. */
+  seedDone?: boolean;
   timings: { e2Ms: number };
   providers: { e2: string };
 }

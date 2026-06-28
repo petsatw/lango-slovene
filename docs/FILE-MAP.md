@@ -32,9 +32,14 @@ The client holds the live `SessionState` in memory and talks only to `/api`. Key
 | File | What it does |
 |---|---|
 | `server/server.ts` | HTTP endpoints + the hot-audio LRU; serves the PWA, `/api`, and `/gallery`. Captures each run. |
-| `server/orchestrator.ts` | runs a turn: the E2 understand call + the **deterministic mastery rules** (`applyProgress`, `TURN_CAP`) |
-| `server/prompt.ts` | builds the tutor system prompt fresh each turn from scenario + live session state (the turn policy) |
+| `server/orchestrator.ts` | runs a turn: the E2 understand call + the **deterministic mastery rules** (`applyProgress`, `TURN_CAP`); credits the durable learner model; `converse` (free conversation) |
+| `server/prompt.ts` | builds the tutor system prompt fresh each turn (turn policy + mastery-aware lines); `buildConversationPrompt` |
 | `server/scenarios.ts` | loads `scenarios/*.json`; `getScenario`, `freshSession`, `characterVoiceProfile` |
+| `server/learnables.ts` | loads + validates the **learnable catalog** (`catalog/learnables.json`); `getLearnable`, `LEARNABLES` |
+| `server/seeds.ts` | loads + validates the **seed** onboarding dialogues (`seeds/*.json`); `getSeed`, `SEEDS`, `STARTER_SEED_ID` |
+| `server/adapters/seed-scripted.ts` | the **seed adapter** — a static-dialogue stand-in for the model: `scriptedSeedTurn` returns the next scripted line + attempts; `converse` uses it when `seedId` is set |
+| `server/mastery.ts` | the durable mastery-layer pure rules: `applyCredit` (threshold/flub), `presentObjectives`, free-conv selection, `inspect` |
+| `server/assets/learner.ts` | the durable **learner model** store — `assets/learner.json` (`LEARNER_PATH`), `load`/`save` |
 | `server/types.ts` | shared types + the **adapter contracts** (`E2Adapter`, `E3Adapter`, `ImageAdapter`) |
 
 ### Adapters — `server/adapters/` (the swap point)
@@ -69,6 +74,7 @@ it in `index.ts`, set the env var. The core never changes.
 | `server/catalog/characters.json` | **characters/actors** — `{ type, visualRef, voiceProfile, gender?, name? }` |
 | `server/catalog/concepts.json` | **concepts** — `{ label, prompt, composedFrom, aspectRatio?, format? }` (recurring depictions + location sets) |
 | `server/catalog/voices.json` | **voices** — the teacher voice + named provider-agnostic profiles |
+| `server/catalog/learnables.json` | **learnables** — the language catalog (`vocabulary`·`chunk`·`pattern`) objectives reference for durable mastery (loaded by `server/learnables.ts`) |
 
 Field-level detail and examples are in [DATA-MODEL.md › The catalog](DATA-MODEL.md#the-catalog).
 
@@ -88,6 +94,10 @@ Every operator command maps to a file here (or in `server/probes/` / `server/uti
 | `npm run probe:e3` | `server/probes/e3-probe.ts` | check E3 with a real synthesis |
 | `npm run replay` | `server/probes/replay.ts` | real recorded audio → full E2+E3 pipeline, verify output |
 | `npm run test:mastery` | `server/probes/mastery-test.ts` | one clip through the mastery loop, verify objective progress |
+| `npm run test:learnable` | `server/probes/learnable-test.ts` | durable mastery rules — unit + temp-file store + `--live` end-to-end |
+| `npm run probe:converse` | `server/probes/converse-probe.ts` | one clip through free conversation; verify reply + per-learnable crediting |
+| `npm run build:seed-assets` | `server/scripts/build-seed-assets.ts` | pre-build the seed's teacher-voice line audio for the starter pack (operator-run; bills) |
+| `npm run learner` | `server/scripts/learner-show.ts` | print the durable learner model (owned/shaky/unseen) |
 | `npm run build:assets` | `server/scripts/build-assets.ts` | materialize a scenario's audio + images; `--regen` for one leaf |
 | `npm run render:asset` | `server/scripts/render-asset.ts` | render one/more catalog objects or characters by id |
 | `npm run render:concept` | `server/scripts/render-concept.ts` | render one/more composed concepts (greet, leave, a location) |

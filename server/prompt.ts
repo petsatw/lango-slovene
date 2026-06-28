@@ -5,13 +5,39 @@
 
 import type { Scenario } from "./scenarios";
 import type { SessionState } from "./types";
+import { selectForConversation, type ObjectivePresentation } from "./mastery";
+import type { LearnerModel } from "./types";
 
-export function buildSystemPrompt(scenario: Scenario, session: SessionState): string {
+export function buildSystemPrompt(
+  scenario: Scenario,
+  session: SessionState,
+  presentation?: Map<string, ObjectivePresentation>,
+): string {
   const statusById = new Map(session.objectives.map((o) => [o.id, o.status]));
+  const anyLearnables = !!presentation && presentation.size > 0;
 
   const objectiveLines = scenario.objectives.map((o) => {
     const status = statusById.get(o.id) ?? "pending";
-    return `- [id=${o.id}] target: "${o.targetSL}"  (${o.hintEN})  — status: ${status}`;
+    const p = presentation?.get(o.id);
+    // The steer line is the presentation's active target (filler-specific) when present, else the
+    // authored default. The durable mastery layer decides which learnable within the objective to push.
+    const target = p?.activeTargetSL ?? o.targetSL;
+    const head = `- [id=${o.id}] target: "${target}"  (${o.hintEN})  — status: ${status}`;
+    if (!p) return head;
+
+    const lines = [head];
+    const focusIds = new Set(p.focusLearnables.map((l) => l.id));
+    const all = [...p.focusLearnables, ...p.masteredLearnables];
+    if (all.length) {
+      const tag = (id: string) => (focusIds.has(id) ? "[push — still shaky]" : "[mastered — don't push, but credit if they produce it]");
+      lines.push(
+        "    learnables to assess & credit: " +
+          all.map((l) => `${l.id} (${l.kind} "${l.sl}") ${tag(l.id)}`).join("; "),
+      );
+    }
+    if (p.predictableError) lines.push(`    watch for: ${p.predictableError}`);
+    if (p.reviewMode) lines.push("    all of this objective's learnables are mastered — touch it lightly as review, don't drill.");
+    return lines.join("\n");
   });
 
   // Register-first: declare ti/vi + the variety up front so every reply is in the right register and
@@ -68,6 +94,19 @@ export function buildSystemPrompt(scenario: Scenario, session: SessionState): st
     '- "attempted": they tried this objective but with an error you are recasting.',
     "Only include objectives the student actually addressed this turn.",
     "",
+    ...(anyLearnables
+      ? [
+          "ALSO ASSESS THE LEARNABLES (durable mastery — separate from objective status). For each",
+          "learnable listed under the objectives that the student ACTUALLY PRODUCED this turn, decide:",
+          '- "success": they produced it understandably AND correctly AND it did NOT need a recast.',
+          '- "attempt": they exercised it but it was unintelligible, incorrect, or carried by your recast.',
+          "Rules: credit a learnable ONLY if the student actually produced that part. If they say only the",
+          "noun (e.g. \"kavo\"), credit the vocab, NOT the pattern frame. A pattern is produced only when the",
+          "whole frame is. Echoing your leading choice still counts as a production. Include ONLY learnables",
+          "the student addressed; omit the rest. Do not infer from what you said — only from what they said.",
+          "",
+        ]
+      : []),
     "OUTPUT — return strict JSON with exactly these fields:",
     '- "user_verbatim": EXACTLY what the student said, word-for-word, in whatever language(s) they used',
     "  (Slovenian and/or English, mixed). Preserve their errors, wrong endings, filler (\"em\", \"uh\"),",
@@ -77,6 +116,72 @@ export function buildSystemPrompt(scenario: Scenario, session: SessionState): st
     '- "reply_sl": your spoken Slovenian reply (short; this text is read aloud — keep it speakable).',
     '- "correction": one-line ENGLISH note on what you recast, or "" if nothing. (Shown silently, never spoken.)',
     '- "objective_progress": array of { "id": <objective id>, "result": "completed" | "attempted" }.',
+    '- "learnable_progress": array of { "id": <learnable id>, "result": "success" | "attempt" } for the',
+    "  learnables the student produced this turn (empty array if none, or if no learnables are listed).",
     '- "focus_objective_id": the objective id you are now steering toward.',
+  ].join("\n");
+}
+
+// ---- Free conversation (spec §3.5) ----------------------------------------------------------------
+// A scenario-less casual chat, bounded by the learner model: the tutor reuses the learner's familiar
+// learnables (working the not-yet-mastered ones toward mastery) plus, at level 2, 1–2 new catalog items.
+// The same per-learnable verdict drives durable mastery; there are no objectives and no scene.
+export function buildConversationPrompt(model: LearnerModel, level: 1 | 2): string {
+  const { familiar, working, newItems } = selectForConversation(model, level);
+  const line = (l: { id: string; kind: string; sl: string; gloss: string }) =>
+    `${l.id} (${l.kind} "${l.sl}" = ${l.gloss})`;
+
+  const vocabBlock =
+    familiar.length === 0
+      ? ["The learner has no history yet — keep it to the simplest greetings and the new items below."]
+      : [
+          "FAMILIAR (the learner has produced these — reuse them freely, this is their whole vocabulary):",
+          ...familiar.map((l) => `- ${line(l)}`),
+          "",
+          "WORK THESE TOWARD MASTERY (familiar but not yet solid — give natural openings to produce them):",
+          ...(working.length ? working.map((l) => `- ${line(l)}`) : ["- (none — all familiar items are solid)"]),
+        ];
+
+  const newBlock = newItems.length
+    ? [
+        "",
+        "YOU MAY INTRODUCE these 1–2 NEW items (model them naturally, invite the learner to try — gentle):",
+        ...newItems.map((l) => `- ${line(l)}`),
+      ]
+    : [];
+
+  return [
+    "ROLE: You are a warm, patient Slovene conversation partner having a relaxed, everyday chat with a",
+    "beginner who lives in Slovenia. This is FREE CONVERSATION — no script, no objectives, no scene.",
+    "",
+    "REGISTER: colloquial, everyday spoken Slovenian; informal and friendly. Say the shortest natural",
+    "line a local would. The learner should talk MORE than you.",
+    "",
+    "STRICT BOUNDS (this is what keeps the chat within reach):",
+    "- Stay WITHIN the learner's familiar learnables below, PLUS the 1–2 new items (if any). Do not reach",
+    "  for vocabulary or structures outside this set — that is the whole point of the mode.",
+    "- reply_sl is SLOVENIAN ONLY, short (one sentence + at most one short question).",
+    "- Recast errors gently in character; never lecture, never explain grammar.",
+    "- Steer naturally so the learner gets chances to PRODUCE the work-toward-mastery items.",
+    "",
+    ...vocabBlock,
+    ...newBlock,
+    "",
+    "ASSESS THE LEARNABLES (durable mastery). For each learnable above that the learner ACTUALLY PRODUCED",
+    "this turn, decide:",
+    '- "success": produced understandably AND correctly AND without needing a recast.',
+    '- "attempt": exercised but unintelligible, incorrect, or carried by your recast.',
+    "Credit only what they actually produced (just the noun → the vocab, not a pattern frame). Echoing you",
+    "still counts. Include ONLY learnables they addressed.",
+    "",
+    "OUTPUT — return strict JSON with exactly these fields:",
+    '- "user_verbatim": EXACTLY what the learner said, word-for-word, errors/filler/code-switching preserved.',
+    '- "user_said": a short ENGLISH translation of what they meant.',
+    '- "reply_sl": your short spoken Slovenian reply (read aloud — keep it speakable).',
+    '- "correction": one-line ENGLISH note on what you recast, or "" if nothing.',
+    '- "objective_progress": [] (always empty in free conversation).',
+    '- "learnable_progress": array of { "id": <learnable id>, "result": "success" | "attempt" } for what',
+    "  the learner produced this turn (empty array if none).",
+    '- "focus_objective_id": "" (none in free conversation).',
   ].join("\n");
 }

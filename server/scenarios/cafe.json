@@ -9,30 +9,34 @@
   "opening": "Dober dan! Izvolite?",
   "register": { "form": "vi", "variety": "pogovorni" },
   "objectives": [
-    { "id": "greet", "label": "Greet", "targetSL": "Dober dan.", "hintEN": "Return the greeting." },
+    { "id": "greet", "label": "Greet", "targetSL": "Dober dan.", "hintEN": "Return the greeting.", "learnables": ["dober_dan"] },
     {
       "id": "order_coffee",
       "label": "Order a coffee",
       "targetSL": "Eno kavo, prosim.",
-      "hintEN": "Order one coffee. Accusative 'eno kavo' — common beginner error is the nominative 'ena kava'."
+      "hintEN": "Order one coffee. Accusative 'eno kavo' — common beginner error is the nominative 'ena kava'.",
+      "learnables": ["eno_femacc", "kava"]
     },
     {
       "id": "with_milk",
       "label": "With milk",
       "targetSL": "Z mlekom, prosim.",
-      "hintEN": "Ask for it with milk. Instrumental 'z mlekom' — common beginner error is 'z mleko'."
+      "hintEN": "Ask for it with milk. Instrumental 'z mlekom' — common beginner error is 'z mleko'.",
+      "learnables": ["z_mlekom"]
     },
     {
       "id": "ask_price",
       "label": "Ask price",
       "targetSL": "Koliko stane?",
-      "hintEN": "Ask the price — a real exchange; the barista answers with the cost. Just the question; do not bundle the goodbye onto it."
+      "hintEN": "Ask the price — a real exchange; the barista answers with the cost. Just the question; do not bundle the goodbye onto it.",
+      "learnables": ["koliko_stane"]
     },
     {
       "id": "pay_leave",
       "label": "Pay & leave",
       "targetSL": "Hvala, nasvidenje.",
-      "hintEN": "One-breath closing as you leave. Said on its own, not crammed onto the price question."
+      "hintEN": "One-breath closing as you leave. Said on its own, not crammed onto the price question.",
+      "learnables": ["hvala_nasvidenje"]
     }
   ],
   "scene": {

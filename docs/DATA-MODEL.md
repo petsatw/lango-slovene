@@ -15,6 +15,8 @@ The browser talks only to these. No endpoint ever returns a key.
 | `GET` | `/api/health` | liveness | `{ ok: true }` |
 | `GET` | `/api/config?scenarioId=` | boot a scenario | providers, the chosen scenario (id, title, opening, objectives, story frame order), a fresh `session`, and the scenario list for the picker. Unknown/planned ids fall back to café. |
 | `POST` | `/api/turn` | one conversational turn (E2 only) | `UnderstandResult` — text fast; audio is fetched separately. Also captures the run if `runId` is sent. |
+| `POST` | `/api/converse` | one free-conversation turn (E2 only, scenario-less) | `ConverseResult` — bounded by the learner model; `level: 1\|2`. Credits the durable mastery layer. Also hosts the **seed**: `{ seedId, begin? }` swaps the model for the scripted adapter (returns the next scripted line + `seedDone`). |
+| `GET` | `/api/learner` | inspect the durable learner model (operator) | `LearnerInspection` — derived owned/shaky/unseen + per-learnable counts. Read-only. |
 | `GET` | `/api/speak?text=&voice=&scenarioId=&objectiveId=` | stream tutor/teacher audio (E3) | `audio/mpeg`, streamed progressively. `voice=character` → the scenario character's voice; otherwise the teacher voice. Cache: L1 memory → L2 disk → synthesize+persist. |
 | `GET` | `/api/image?scenarioId=&objectiveId=` | a story frame or scene image | `image/jpeg` from the store. `objectiveId=scene` → the full tableau. 404 with a build hint if not yet built (`npm run build:assets`). |
 | `GET` | `/api/sessions` | list past runs (newest first) | `{ sessions: [{ id, scenarioId, createdAt, status, turns, label, favorite, completed, objectives }] }` |
@@ -54,8 +56,10 @@ type ObjectiveStatus = "pending" | "recast" | "completed";
 interface Objective {       // authored in the scenario
   id: string;
   label: string;            // short English label for the UI dot
-  targetSL: string;         // the canonical Slovene the learner should PRODUCE
+  targetSL: string;         // the canonical Slovene the learner should PRODUCE (default/primary line)
   hintEN: string;           // internal model guidance — never spoken to the learner
+  learnables?: string[];    // catalog learnable ids this objective exercises (carrier pattern + fillers)
+  fillerLines?: Record<string, string>; // per-filler inflected line, e.g. { kava: "Eno kavo, prosim." }
 }
 
 interface ObjectiveState {  // live, per session
@@ -76,6 +80,41 @@ interface SessionState {
 type TurnVerdict = "completed" | "attempted";
 interface ObjectiveProgress { id: string; result: TurnVerdict; }
 ```
+
+## The mastery layer (learnables & the learner model)
+
+The durable, cross-session layer added by roadmap 4. Full mechanism:
+[learnable-subsystem-spec.md](learnable-subsystem-spec.md). Shapes:
+
+```ts
+// server/catalog/learnables.json — the language catalog (id = JSON key), parallel to the asset catalog
+type LearnableKind = "vocabulary" | "chunk" | "pattern";
+interface Learnable {
+  id: string; kind: LearnableKind;
+  sl: string;               // word (vocab) · whole phrase (chunk) · frame with "___" (pattern)
+  gloss: string;
+  core?: boolean; rank?: number;     // high-leverage tag + leverage rank (core patterns only)
+  predictableError?: string;         // the one predictable beginner error, surfaced by presentation
+}
+
+// assets/learner.json — one durable, local, single-learner model (path: LEARNER_PATH)
+interface LearnableMastery { attempts: number; successes: number; } // status is DERIVED, never stored
+interface LearnerModel { learnables: Record<string, LearnableMastery>; updatedAt: string; }
+
+// The per-learnable verdict E2 returns (separate from objective_progress) — drives durable mastery:
+type LearnableResult = "success" | "attempt";
+interface LearnableProgress { id: string; result: LearnableResult; }
+
+// Free-conversation turn result (POST /api/converse):
+interface ConverseResult {
+  userVerbatim: string; userSaid: string; tutorReply: string; correction: string;
+  learnableProgress: LearnableProgress[]; timings: { e2Ms: number }; providers: { e2: string };
+}
+```
+
+`E2Result` (and `UnderstandResult`) gain `learnableProgress: LearnableProgress[]`. Crediting rules
+(threshold = 5, flub decrements by 1, pre-mastery misses stall) live in `server/mastery.ts`; status is
+derived — `successes ≥ threshold` ⇒ mastered, present-but-below ⇒ attempted/shaky, absent ⇒ unseen.
 
 ## A scenario
 

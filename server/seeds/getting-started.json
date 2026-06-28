@@ -1,0 +1,105 @@
+{
+  "id": "getting-started",
+  "title": "Getting started",
+  "steps": [
+    {
+      "id": "greet",
+      "mode": "introduce",
+      "tutorSL": "Živjo! Jaz sem Ana. Ko prideš v kavarno, pozdraviš: »Dober dan.« Zdaj ti.",
+      "tutorEN": "Hi! I'm Ana. When you walk into a café, you greet: \"Dober dan.\" (Good day.) Your turn.",
+      "targetSL": "Dober dan.",
+      "targetEN": "Good day.",
+      "learnables": ["dober_dan"]
+    },
+    {
+      "id": "please",
+      "mode": "introduce",
+      "tutorSL": "Lepo! Ena pomembna beseda: »prosim«. Reci jo.",
+      "tutorEN": "Nice! One important word: \"prosim\" (please). Say it.",
+      "targetSL": "Prosim.",
+      "targetEN": "Please.",
+      "learnables": ["prosim"]
+    },
+    {
+      "id": "thanks",
+      "mode": "introduce",
+      "tutorSL": "In »hvala« — to je thank you. Reci: »Hvala.«",
+      "tutorEN": "And \"hvala\" — that's thank you. Say: \"Hvala.\"",
+      "targetSL": "Hvala.",
+      "targetEN": "Thank you.",
+      "learnables": ["hvala"]
+    },
+    {
+      "id": "yes",
+      "mode": "introduce",
+      "tutorSL": "»Ja« je yes, »ne« je no. Reci: »Ja.«",
+      "tutorEN": "\"Ja\" is yes, \"ne\" is no. Say: \"Ja.\"",
+      "targetSL": "Ja.",
+      "targetEN": "Yes.",
+      "learnables": ["ja"]
+    },
+    {
+      "id": "order_coffee",
+      "mode": "introduce",
+      "tutorSL": "Zdaj nekaj uporabnega. Naroči kavo: »Eno kavo, prosim.«",
+      "tutorEN": "Now something useful. Order a coffee: \"Eno kavo, prosim.\" (One coffee, please.)",
+      "targetSL": "Eno kavo, prosim.",
+      "targetEN": "One coffee, please.",
+      "learnables": ["eno_femacc", "kava"]
+    },
+    {
+      "id": "dont_understand",
+      "mode": "introduce",
+      "tutorSL": "Če me ne razumeš, reci: »Ne razumem.«",
+      "tutorEN": "If you don't understand me, say: \"Ne razumem.\" (I don't understand.)",
+      "targetSL": "Ne razumem.",
+      "targetEN": "I don't understand.",
+      "learnables": ["ne_razumem"]
+    },
+    {
+      "id": "repeat",
+      "mode": "introduce",
+      "tutorSL": "Če grem prehitro, reci: »Še enkrat, prosim.«",
+      "tutorEN": "If I go too fast, say: \"Še enkrat, prosim.\" (Again, please.)",
+      "targetSL": "Še enkrat, prosim.",
+      "targetEN": "Again, please.",
+      "learnables": ["se_enkrat"]
+    },
+    {
+      "id": "how_say",
+      "mode": "introduce",
+      "tutorSL": "In če ne veš besede, vprašaj mene. Reci: »Kako se reče coffee?«",
+      "tutorEN": "And if you don't know a word, ask me. Say: \"Kako se reče coffee?\" (How do you say 'coffee'?)",
+      "targetSL": "Kako se reče coffee?",
+      "targetEN": "How do you say 'coffee'?",
+      "learnables": ["kako_se_rece"]
+    },
+    {
+      "id": "greet_recall",
+      "mode": "recall",
+      "tutorSL": "Super ti gre! Spet greš v kavarno — kako pozdraviš ob vstopu?",
+      "tutorEN": "You're doing great! You walk into a café again — how do you greet as you enter?",
+      "targetSL": "Dober dan.",
+      "targetEN": "Good day.",
+      "learnables": ["dober_dan"]
+    },
+    {
+      "id": "order_coffee_recall",
+      "mode": "recall",
+      "tutorSL": "In naroči mi še eno kavo.",
+      "tutorEN": "And order me another coffee.",
+      "targetSL": "Eno kavo, prosim.",
+      "targetEN": "One coffee, please.",
+      "learnables": ["eno_femacc", "kava"]
+    },
+    {
+      "id": "close",
+      "mode": "introduce",
+      "tutorSL": "Odlično! Za konec reci: »Hvala, nasvidenje.«",
+      "tutorEN": "Excellent! To finish, say: \"Hvala, nasvidenje.\" (Thanks, goodbye.)",
+      "targetSL": "Hvala, nasvidenje.",
+      "targetEN": "Thanks, goodbye.",
+      "learnables": ["hvala_nasvidenje"]
+    }
+  ]
+}

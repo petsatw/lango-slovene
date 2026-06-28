@@ -11,6 +11,7 @@ import path from "node:path";
 
 import type { Objective, SessionState } from "./types";
 import { CATALOG, getCharacter, TEACHER_VOICE_PROFILE } from "./catalog";
+import { LEARNABLES } from "./learnables";
 
 /** One visual story frame = one learning concept (image + its SL line + audio). */
 export interface StoryFrame {
@@ -136,6 +137,23 @@ export function validateScenario(file: string, raw: any): Scenario {
     asString(file, o, "label");
     asString(file, o, "targetSL");
     asString(file, o, "hintEN");
+    if (o.learnables !== undefined) {
+      if (!Array.isArray(o.learnables)) fail(file, `objective "${o.id}": learnables must be an array of ids`);
+      for (const id of o.learnables) {
+        if (typeof id !== "string" || !LEARNABLES[id])
+          fail(file, `objective "${o.id}": learnable "${id}" is not in the learnable catalog`);
+      }
+    }
+    if (o.fillerLines !== undefined) {
+      if (typeof o.fillerLines !== "object" || Array.isArray(o.fillerLines))
+        fail(file, `objective "${o.id}": fillerLines must be an object map of learnableId → line`);
+      for (const id of Object.keys(o.fillerLines)) {
+        if (!Array.isArray(o.learnables) || !o.learnables.includes(id))
+          fail(file, `objective "${o.id}": fillerLines key "${id}" must be one of the objective's learnables`);
+        if (typeof o.fillerLines[id] !== "string" || !o.fillerLines[id])
+          fail(file, `objective "${o.id}": fillerLines["${id}"] must be a non-empty string`);
+      }
+    }
   }
   if (raw.register) {
     if (raw.register.form !== "ti" && raw.register.form !== "vi") fail(file, `register.form must be "ti" | "vi"`);

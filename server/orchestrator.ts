@@ -4,9 +4,20 @@
 
 import { getE2, getE3 } from "./adapters/index";
 import * as store from "./assets/store";
-import { buildSystemPrompt } from "./prompt";
+import * as learner from "./assets/learner";
+import { applyCredit, presentObjectives } from "./mastery";
+import { buildSystemPrompt, buildConversationPrompt } from "./prompt";
 import { getScenario, freshSession, characterVoiceProfile, type Scenario } from "./scenarios";
-import type { ConversationTurn, ObjectiveProgress, SessionState, TurnResult, UnderstandResult } from "./types";
+import { getSeed } from "./seeds";
+import { scriptedSeedTurn } from "./adapters/seed-scripted";
+import type {
+  ConversationTurn,
+  ConverseResult,
+  ObjectiveProgress,
+  SessionState,
+  TurnResult,
+  UnderstandResult,
+} from "./types";
 
 const TURN_CAP = 14; // safety stop so a session can't run forever
 
@@ -42,7 +53,12 @@ export async function understand(input: {
 }): Promise<UnderstandResult> {
   const scenario = getScenario(input.session?.scenarioId);
   const session = input.session ?? freshSession(scenario);
-  const systemPrompt = buildSystemPrompt(scenario, session);
+
+  // MASTERY layer: read the durable model so presentation can steer toward the still-unmastered
+  // learnable within each objective (and stop pushing mastered ones).
+  const model = learner.load();
+  const presentation = presentObjectives(scenario.objectives, model);
+  const systemPrompt = buildSystemPrompt(scenario, session, presentation);
   const e2 = getE2();
 
   const t0 = performance.now();
@@ -54,12 +70,72 @@ export async function understand(input: {
   });
   const e2Ms = Math.round(performance.now() - t0);
 
+  // Credit the durable mastery layer (independent of the scene layer) and persist. A turn with no
+  // learnable verdicts (un-authored scenario) is a no-op write of the unchanged model.
+  if (r.learnableProgress.length) learner.save(applyCredit(model, r.learnableProgress));
+
   return {
     userVerbatim: r.userVerbatim,
     userSaid: r.userSaid,
     tutorReply: r.tutorReply,
     correction: r.correction,
     session: applyProgress(scenario, session, r.objectiveProgress),
+    learnableProgress: r.learnableProgress,
+    timings: { e2Ms },
+    providers: { e2: e2.name },
+  };
+}
+
+// Free conversation (spec §3.5) — a scenario-less turn bounded by the durable learner model. Same E2
+// hop, same per-learnable crediting; no objectives, no scene, no session.
+export async function converse(input: {
+  audioBase64?: string;
+  mimeType?: string;
+  history: ConversationTurn[];
+  level?: 1 | 2;
+  seedId?: string; // when set, the SEED adapter serves a scripted dialogue instead of the model
+  begin?: boolean; // seed only: return the opening line, credit nothing
+}): Promise<ConverseResult> {
+  const model = learner.load();
+
+  // Seed onboarding: same pipeline, same chat surface — only the brain is swapped for a static script.
+  if (input.seedId) {
+    const r = scriptedSeedTurn(getSeed(input.seedId), input.history, !!input.begin);
+    if (r.learnableProgress.length) learner.save(applyCredit(model, r.learnableProgress));
+    return {
+      userVerbatim: r.userVerbatim,
+      userSaid: r.userSaid,
+      tutorReply: r.tutorReply,
+      correction: r.correction,
+      learnableProgress: r.learnableProgress,
+      seedDone: r.seedDone,
+      timings: { e2Ms: 0 },
+      providers: { e2: "scripted-seed" },
+    };
+  }
+
+  if (!input.audioBase64 || !input.mimeType) throw new Error("converse requires audio");
+  const level: 1 | 2 = input.level === 1 ? 1 : 2;
+  const systemPrompt = buildConversationPrompt(model, level);
+  const e2 = getE2();
+
+  const t0 = performance.now();
+  const r = await e2.understand({
+    audioBase64: input.audioBase64,
+    mimeType: input.mimeType,
+    systemPrompt,
+    history: input.history,
+  });
+  const e2Ms = Math.round(performance.now() - t0);
+
+  if (r.learnableProgress.length) learner.save(applyCredit(model, r.learnableProgress));
+
+  return {
+    userVerbatim: r.userVerbatim,
+    userSaid: r.userSaid,
+    tutorReply: r.tutorReply,
+    correction: r.correction,
+    learnableProgress: r.learnableProgress,
     timings: { e2Ms },
     providers: { e2: e2.name },
   };

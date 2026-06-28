@@ -150,6 +150,11 @@ left to the model's whim. Each turn the model returns a per-objective verdict; t
   it can complete — recast is not a dead end).
 - The session **completes** when every objective is completed, or a safety cap of **14 turns** is hit.
 
+Alongside this scene layer, the same turn now also credits the **durable mastery layer**: E2 returns a
+per-**learnable** verdict, and the server folds it into the learner model (`assets/learner.json`) —
+independent of objective/scene status. See [State and persistence](#state-and-persistence) and
+[learnable-subsystem-spec.md](learnable-subsystem-spec.md).
+
 Because the prompt is rebuilt from this state every turn, the model always knows what's left and what's
 shaky. The turn policy it's held to (in [`server/prompt.ts`](../server/prompt.ts)) is the
 [teaching model](#the-teaching-model) below.
@@ -223,10 +228,17 @@ confusion — so, precisely:
 
 - **Ephemeral (per sitting).** The live `SessionState` — which objectives are pending/recast/completed
   *right now* — lives in the browser and the conversation history is per-page-load. Reload and the
-  *progress* starts fresh. There is **no persistent learner model yet**: nothing carries mastery from
-  one sitting to the next. That model is the keystone [roadmap](ROADMAP.md) item (4), and it's why
-  "each sitting starts fresh" is true of *progress*.
+  *scene-layer dots* start fresh. This is one of **two layers**: the ephemeral scene layer (objective
+  dots, 14-turn cap) and a **durable mastery layer** (below) that does carry forward.
 - **Durable (on disk).**
+  - **The learner model** (`assets/learner.json`) — the cross-session mastery layer (roadmap 4). Per
+    **learnable** (vocabulary · chunk · pattern, in `server/catalog/learnables.json`) it counts
+    `attempts`/`successes`; a learnable is *mastered* at a threshold (5) of successful productions,
+    credited per-learnable from the same E2 verdict, accrued across sittings and contexts, with a flub
+    decrementing it. So a returning learner is met where they left off even though the scene dots reset.
+    Mechanism: [learnable-subsystem-spec.md](learnable-subsystem-spec.md); subsystem design:
+    [learnable-subsystem.md](learnable-subsystem.md). (Steering/selection over this model — *what* to
+    practise next — is still roadmap 5.)
   - **Session records.** Every *run* is captured to `assets/sessions/<id>.json`, written incrementally
     on each turn — so even an abandoned run (browser/server killed mid-session) leaves its partial
     record. A run is `completed` or `abandoned`, replayable turn-by-turn, and can be named or
@@ -237,8 +249,9 @@ confusion — so, precisely:
     survive restarts and are never re-billed. A small in-memory LRU (200 clips) just skips a disk read
     on hot replays.
 
-So "no persistence" is **not** accurate: artifacts and runs are durable. What's missing is the
-cross-sitting *learner* model — tracked separately on the roadmap.
+So "no persistence" is **not** accurate: artifacts, runs, **and** the cross-sitting learner model are
+durable. What's still missing is the *tutor that leads* — the layer that chooses what to practise next
+from this model (roadmap 5).
 
 ## The scenario engine
 
@@ -263,10 +276,12 @@ durable session capture, replay, and favorites; the generation engine and its ga
 
 **Next** — see [ROADMAP.md](ROADMAP.md) for the dependency-ordered plan:
 
-- **A persistent learner model** with count-based mastery and cross-session spaced review *(roadmap 4 —
-  the keystone)*, designed as its own subsystem in
-  [learnable-subsystem.md](learnable-subsystem.md), with decisions + stories in
-  [learnable-subsystem-stories.md](learnable-subsystem-stories.md).
+- **The mastery loop — built** *(roadmap 4)*: the durable learner model with count-based per-learnable
+  mastery, per-learnable crediting, flub-reset, groups/presentation, and free conversation (levels 1–2).
+  Design:
+  [learnable-subsystem.md](learnable-subsystem.md) · decisions + stories:
+  [learnable-subsystem-stories.md](learnable-subsystem-stories.md) · mechanism + build:
+  [learnable-subsystem-spec.md](learnable-subsystem-spec.md).
 - **A tutor that leads** — an orchestration layer that chooses what to practice next *(roadmap 5)*.
 - **A tool-neutral, multi-language engine** *(roadmap 7)* and **a sustainability bundle** *(roadmap 8)*.
 - **Lower latency.** Today ≈6 s/turn (E2 ≈5 s + E3 first-audio ≈1.4 s). Level-1 E3 streaming is done and
@@ -285,5 +300,7 @@ durable session capture, replay, and favorites; the generation engine and its ga
 | [ROADMAP.md](ROADMAP.md) | the future state and the dependency-ordered pieces to get there | planning what to build next |
 | [learnable-subsystem.md](learnable-subsystem.md) | the cross-session memory subsystem (design): patterns + vocabulary as durable units, the learner model, mastery | building roadmap 4 (memory) or designing the learner model |
 | [learnable-subsystem-stories.md](learnable-subsystem-stories.md) | the mastery loop's captured intent: decisions, canonical user stories, and the mastery-loop flows | speccing or building roadmap 4; reviewing whether the build serves the journey |
+| [learnable-subsystem-spec.md](learnable-subsystem-spec.md) | the mastery loop's **build spec**: data model, per-turn + cross-session control flow, API changes, crediting/presentation rules, the ordered build plan | building/extending the mastery loop; tracing why a counter behaves as it does |
+| [free-conversation.md](free-conversation.md) | the **governing ethos** of free conversation: how it threads natural flow + laser mastery focus (situation-first selection, honor-the-topic/hold-the-level, the focus-set/credit firewall, the seed) | designing/building free conversation; deciding what the mode should and shouldn't do |
 | [SECRETS.md](SECRETS.md) | API-key hygiene and the key-isolation boundary | handling credentials |
 | [research/](research/) | the expert-panel research the pedagogy rests on | understanding *why* a teaching rule exists |

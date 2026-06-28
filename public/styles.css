@@ -85,6 +85,9 @@ main {
   width: 100%;
   max-width: 520px;
   flex: 1;
+  /* Cap the history so it scrolls INTERNALLY instead of growing the page and pushing the talk button
+     out of frame — the button + the latest message stay visible across turns. */
+  max-height: 48dvh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;

@@ -1,0 +1,51 @@
+{
+  "dober_dan": { "kind": "chunk", "sl": "Dober dan.", "gloss": "good day (greeting)", "core": true, "rank": 19 },
+  "eno_femacc": {
+    "kind": "pattern",
+    "sl": "Eno ___, prosim.",
+    "gloss": "one ___, please",
+    "core": true,
+    "rank": 13,
+    "predictableError": "nominative 'ena kava' instead of the accusative 'eno kavo' the frame requires"
+  },
+  "kava": { "kind": "vocabulary", "sl": "kava", "gloss": "coffee" },
+  "voda": { "kind": "vocabulary", "sl": "voda", "gloss": "water" },
+  "caj": { "kind": "vocabulary", "sl": "čaj", "gloss": "tea" },
+  "z_mlekom": {
+    "kind": "chunk",
+    "sl": "Z mlekom, prosim.",
+    "gloss": "with milk, please",
+    "predictableError": "'z mleko' instead of the instrumental 'z mlekom'"
+  },
+  "koliko_stane": { "kind": "chunk", "sl": "Koliko stane?", "gloss": "how much is it?", "core": true, "rank": 14 },
+  "hvala_nasvidenje": { "kind": "chunk", "sl": "Hvala, nasvidenje.", "gloss": "thanks, goodbye" },
+  "ne_razumem": { "kind": "chunk", "sl": "Ne razumem.", "gloss": "I don't understand", "core": true, "rank": 8 },
+  "se_enkrat": { "kind": "chunk", "sl": "Še enkrat, prosim.", "gloss": "again, please", "core": true, "rank": 10 },
+  "kako_se_rece": {
+    "kind": "pattern",
+    "sl": "Kako se reče ___?",
+    "gloss": "how do you say ___?",
+    "core": true,
+    "rank": 7
+  },
+  "prosim": { "kind": "vocabulary", "sl": "prosim", "gloss": "please", "core": true, "rank": 19 },
+  "hvala": { "kind": "vocabulary", "sl": "hvala", "gloss": "thank you", "core": true, "rank": 19 },
+  "ja": { "kind": "vocabulary", "sl": "ja", "gloss": "yes", "core": true, "rank": 20 },
+  "ne": { "kind": "vocabulary", "sl": "ne", "gloss": "no", "core": true, "rank": 20 },
+  "moram_inf": {
+    "kind": "pattern",
+    "sl": "Moram ___.",
+    "gloss": "I must / have to ___",
+    "core": true,
+    "rank": 2,
+    "predictableError": "using a finite verb instead of the infinitive after 'moram'"
+  },
+  "rad_bi": {
+    "kind": "pattern",
+    "sl": "Rad / Rada bi ___.",
+    "gloss": "I'd like ___",
+    "core": true,
+    "rank": 3,
+    "predictableError": "wrong gender form ('rad' vs 'rada') for the speaker"
+  }
+}

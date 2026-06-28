@@ -30,9 +30,28 @@ const RESPONSE_SCHEMA = {
         required: ["id", "result"],
       },
     },
+    learnable_progress: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          id: { type: "STRING" },
+          result: { type: "STRING" },
+        },
+        required: ["id", "result"],
+      },
+    },
     focus_objective_id: { type: "STRING" },
   },
-  required: ["user_verbatim", "user_said", "reply_sl", "correction", "objective_progress", "focus_objective_id"],
+  required: [
+    "user_verbatim",
+    "user_said",
+    "reply_sl",
+    "correction",
+    "objective_progress",
+    "learnable_progress",
+    "focus_objective_id",
+  ],
 };
 
 /** Trim a provider error body so we never echo anything sensitive and keep logs short. */
@@ -95,12 +114,18 @@ export class GeminiE2 implements E2Adapter {
       .map((p: any) => ({ id: String(p?.id ?? ""), result: p?.result === "completed" ? "completed" : "attempted" }))
       .filter((p: any) => p.id) as E2Result["objectiveProgress"];
 
+    const learnable = Array.isArray(parsed.learnable_progress) ? parsed.learnable_progress : [];
+    const learnableProgress = learnable
+      .map((p: any) => ({ id: String(p?.id ?? ""), result: p?.result === "success" ? "success" : "attempt" }))
+      .filter((p: any) => p.id) as E2Result["learnableProgress"];
+
     return {
       userVerbatim: String(parsed.user_verbatim ?? ""),
       userSaid: String(parsed.user_said ?? ""),
       tutorReply: String(parsed.reply_sl ?? ""),
       correction: String(parsed.correction ?? ""),
       objectiveProgress,
+      learnableProgress,
       focusObjectiveId: String(parsed.focus_objective_id ?? ""),
     };
   }

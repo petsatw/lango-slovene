@@ -8,10 +8,12 @@ import "dotenv/config";
 import express from "express";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { understand } from "./orchestrator";
+import { understand, converse } from "./orchestrator";
 import { getE2, getE3, getE4 } from "./adapters/index";
 import * as store from "./assets/store";
 import * as sessions from "./assets/sessions";
+import * as learner from "./assets/learner";
+import { inspect } from "./mastery";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
 import { buildGalleryHtml } from "./scripts/gallery";
@@ -79,11 +81,18 @@ app.get("/api/config", (req, res) => {
     },
     session: freshSession(scenario),
     scenarios: SCENARIOS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, status: s.status })),
+    // Has this learner produced anything yet? If not, free conversation routes them into the seed.
+    started: Object.keys(learner.load().learnables).length > 0,
   });
 });
 
+
 // Liveness only. Does not touch providers or keys.
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
+
+// Operator inspection of the durable learner model (US-17) — read-only, derived, bills nothing. The
+// engine stays invisible to the learner; this is for whoever runs the system.
+app.get("/api/learner", (_req, res) => res.json(inspect(learner.load())));
 
 // One conversational turn — E2 only. Returns text fast; audio is fetched from /api/speak.
 app.post("/api/turn", async (req, res) => {
@@ -133,6 +142,33 @@ app.post("/api/turn", async (req, res) => {
   } catch (err: any) {
     console.error("[turn] failed:", err?.message);
     res.status(502).json({ error: err?.message || "turn failed" });
+  }
+});
+
+// One free-conversation turn (E2 only) — scenario-less, bounded by the durable learner model. Audio is
+// fetched from /api/speak exactly like /api/turn (voice=character is irrelevant here → teacher voice).
+app.post("/api/converse", async (req, res) => {
+  const { audioBase64, mimeType, history, level, seedId, begin } = req.body ?? {};
+  // Live free chat needs audio; the seed's opening (begin) does not (the script supplies the first line).
+  if (!seedId && (!audioBase64 || !mimeType)) {
+    return res.status(400).json({ error: "audioBase64 and mimeType are required" });
+  }
+  if (seedId && !begin && (!audioBase64 || !mimeType)) {
+    return res.status(400).json({ error: "audioBase64 and mimeType are required" });
+  }
+  try {
+    const result = await converse({
+      audioBase64,
+      mimeType,
+      history: Array.isArray(history) ? history : [],
+      level: level === 1 ? 1 : 2,
+      seedId: seedId ? String(seedId) : undefined,
+      begin: !!begin,
+    });
+    res.json(result);
+  } catch (err: any) {
+    console.error("[converse] failed:", err?.message);
+    res.status(502).json({ error: err?.message || "converse failed" });
   }
 });
 
