@@ -5,7 +5,9 @@
 import { getE2, getE3 } from "./adapters/index";
 import * as store from "./assets/store";
 import * as learner from "./assets/learner";
-import { applyCredit, presentObjectives } from "./mastery";
+import * as turnlog from "./assets/turnlog";
+import * as candidates from "./assets/candidates";
+import { applyCredit, creditFromEvidence, presentObjectives, selectForWitness } from "./mastery";
 import { buildSystemPrompt, buildConversationPrompt } from "./prompt";
 import { getScenario, freshSession, characterVoiceProfile, type Scenario } from "./scenarios";
 import { getSeed } from "./seeds";
@@ -13,6 +15,7 @@ import { scriptedSeedTurn } from "./adapters/seed-scripted";
 import type {
   ConversationTurn,
   ConverseResult,
+  LearnerModel,
   ObjectiveProgress,
   SessionState,
   TurnResult,
@@ -20,6 +23,20 @@ import type {
 } from "./types";
 
 const TURN_CAP = 14; // safety stop so a session can't run forever
+
+// Post-credit durable counts for exactly the ids the model credited this turn — lets the turn log
+// show whether a verdict moved one earned production or bundled several familiar items at once.
+function countsFor(
+  model: LearnerModel,
+  progress: { id: string }[],
+): Record<string, { successes: number; attempts: number }> {
+  const out: Record<string, { successes: number; attempts: number }> = {};
+  for (const p of progress) {
+    const l = model.learnables[p.id];
+    if (l) out[p.id] = { successes: l.successes, attempts: l.attempts };
+  }
+  return out;
+}
 
 // Apply the model's per-turn verdicts to session state. Rules:
 //  - "completed"  → status completed
@@ -72,7 +89,24 @@ export async function understand(input: {
 
   // Credit the durable mastery layer (independent of the scene layer) and persist. A turn with no
   // learnable verdicts (un-authored scenario) is a no-op write of the unchanged model.
-  if (r.learnableProgress.length) learner.save(applyCredit(model, r.learnableProgress));
+  let saved = model;
+  if (r.learnableProgress.length) {
+    saved = applyCredit(model, r.learnableProgress);
+    learner.save(saved);
+  }
+
+  turnlog.record({
+    path: "scenario",
+    scenarioId: scenario.id,
+    provider: e2.name,
+    model: process.env.GEMINI_MODEL,
+    e2Ms,
+    systemPrompt,
+    history: input.history,
+    audio: { mimeType: input.mimeType, base64: input.audioBase64 },
+    output: r,
+    creditedCounts: countsFor(saved, r.learnableProgress),
+  });
 
   return {
     userVerbatim: r.userVerbatim,
@@ -101,7 +135,22 @@ export async function converse(input: {
   // Seed onboarding: same pipeline, same chat surface — only the brain is swapped for a static script.
   if (input.seedId) {
     const r = scriptedSeedTurn(getSeed(input.seedId), input.history, !!input.begin);
-    if (r.learnableProgress.length) learner.save(applyCredit(model, r.learnableProgress));
+    let saved = model;
+    if (r.learnableProgress.length) {
+      saved = applyCredit(model, r.learnableProgress);
+      learner.save(saved);
+    }
+    turnlog.record({
+      path: "seed",
+      seedId: input.seedId,
+      provider: "scripted-seed",
+      e2Ms: 0,
+      systemPrompt: "(scripted seed — no model prompt)",
+      history: input.history,
+      audio: input.audioBase64 ? { mimeType: input.mimeType ?? "", base64: input.audioBase64 } : undefined,
+      output: { ...r, objectiveProgress: [], focusObjectiveId: "" },
+      creditedCounts: countsFor(saved, r.learnableProgress),
+    });
     return {
       userVerbatim: r.userVerbatim,
       userSaid: r.userSaid,
@@ -116,11 +165,15 @@ export async function converse(input: {
 
   if (!input.audioBase64 || !input.mimeType) throw new Error("converse requires audio");
   const level: 1 | 2 = input.level === 1 ? 1 : 2;
-  const systemPrompt = buildConversationPrompt(model, level);
+  const { familiar, targets } = selectForWitness(model, level);
+  const systemPrompt = buildConversationPrompt(familiar, targets);
   const e2 = getE2();
+  if (!e2.witness) {
+    throw new Error(`E2 provider "${e2.name}" does not support free-conversation witness turns`);
+  }
 
   const t0 = performance.now();
-  const r = await e2.understand({
+  const w = await e2.witness({
     audioBase64: input.audioBase64,
     mimeType: input.mimeType,
     systemPrompt,
@@ -128,14 +181,46 @@ export async function converse(input: {
   });
   const e2Ms = Math.round(performance.now() - t0);
 
-  if (r.learnableProgress.length) learner.save(applyCredit(model, r.learnableProgress));
+  // Server owns ALL crediting: successes gated to the in-play targets + Slovene + transcript span;
+  // off-target Slovene earns attempts; novel Slovene becomes a catalog candidate (mastery.ts).
+  const credit = creditFromEvidence(model, w, targets);
+  if (credit.progress.length) learner.save(credit.model);
+  if (credit.candidates.length) candidates.record(credit.candidates);
+
+  turnlog.record({
+    path: "free",
+    level,
+    provider: e2.name,
+    model: process.env.GEMINI_MODEL,
+    e2Ms,
+    systemPrompt,
+    history: input.history,
+    audio: { mimeType: input.mimeType, base64: input.audioBase64 },
+    output: {
+      userVerbatim: w.transcriptVerbatim,
+      userSaid: w.userGloss,
+      tutorReply: w.reply,
+      correction: "",
+      learnableProgress: credit.progress,
+      objectiveProgress: [],
+      focusObjectiveId: "",
+    },
+    witness: {
+      utteranceLang: w.utteranceLang,
+      targets: w.targets,
+      observed: w.observed,
+      candidates: credit.candidates,
+    },
+    creditedCounts: countsFor(credit.model, credit.progress),
+  });
 
   return {
-    userVerbatim: r.userVerbatim,
-    userSaid: r.userSaid,
-    tutorReply: r.tutorReply,
-    correction: r.correction,
-    learnableProgress: r.learnableProgress,
+    userVerbatim: w.transcriptVerbatim,
+    userSaid: w.userGloss,
+    tutorReply: w.reply,
+    replyGloss: w.replyGloss,
+    correction: "",
+    learnableProgress: credit.progress,
     timings: { e2Ms },
     providers: { e2: e2.name },
   };

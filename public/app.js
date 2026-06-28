@@ -59,14 +59,20 @@ function addBubble(role, text, sub, replayOpts) {
     replay.title = "Replay";
     replay.setAttribute("aria-label", "Replay this line");
     replay.textContent = "▶";
-    replay.addEventListener("click", () => playReplyStreaming(text, opts));
+    // Stop the click from also toggling the translation under the bubble.
+    replay.addEventListener("click", (e) => { e.stopPropagation(); playReplyStreaming(text, opts); });
     div.appendChild(replay);
   }
 
+  // Translation stays HIDDEN until the learner taps the bubble — keeps the chat immersive, reveals the
+  // English on demand. Tapping again hides it. (Tapping the ▶ replay button never toggles it.)
   if (sub) {
     const s = document.createElement("small");
+    s.className = "translation";
     s.textContent = sub;
     div.appendChild(s);
+    div.classList.add("has-translation");
+    div.addEventListener("click", () => div.classList.toggle("show-translation"));
   }
   const tr = $("transcript");
   tr.appendChild(div);
@@ -262,9 +268,14 @@ async function stopRecordingAndSend() {
     obs.correction(data.correction);
     obs.timings(`e2=${data.timings.e2Ms}ms  audio streaming…`);
 
-    // Show what the tutor actually heard (verbatim), with the English interpretation beneath.
+    // Show what the tutor actually heard (verbatim); tap a bubble to reveal the English beneath.
+    // Free chat carries reply_gloss (translation of the Slovene reply); scenario turns carry a correction.
     addBubble("user", data.userVerbatim || data.userSaid, data.userSaid ? `≈ ${data.userSaid}` : "");
-    addBubble("tutor", data.tutorReply, data.correction ? `↳ ${data.correction}` : "");
+    addBubble(
+      "tutor",
+      data.tutorReply,
+      data.replyGloss ? `≈ ${data.replyGloss}` : data.correction ? `↳ ${data.correction}` : "",
+    );
     history.push({ role: "user", text: data.userSaid });
     history.push({ role: "tutor", text: data.tutorReply });
 

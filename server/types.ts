@@ -71,6 +71,47 @@ export interface LearnerModel {
   updatedAt: string; // ISO
 }
 
+// ---- Free conversation: the WITNESS contract (model = blind linguistic reporter, server owns credit) ----
+// The server hands the model a bounded in-play TARGET set + a FAMILIAR palette; the model holds the
+// conversation in-bounds and reports linguistic EVIDENCE (what the learner said, in which language,
+// whether each target was produced correctly). The model knows nothing about counts/thresholds/credit.
+// All crediting is deterministic and server-side (see mastery.creditFromEvidence).
+
+/** One in-play target the server asks the model to watch for (SERVER → MODEL). */
+export interface WitnessTarget {
+  id: string;
+  kind: string; // vocabulary | chunk | pattern
+  sl: string; // canonical Slovene (frame with "___" for patterns)
+  gloss: string;
+}
+
+/** The model's per-target evidence for one turn (MODEL → SERVER). Facts only — no crediting. */
+export interface TargetEvidence {
+  id: string;
+  produced: boolean; // did the learner actually say this target this turn (echo counts)
+  said: string | null; // the exact slice of the verbatim transcript, or null
+  saidLang: string | null; // language of that slice: "sl" | "en" | "other"
+  correct: boolean; // understandable, correct Slovene (any case/gender/number is fine)
+  confidence: number; // 0..1
+}
+
+/** Any other Slovene the learner produced that wasn't a target — the catalog-growth signal. */
+export interface ObservedItem {
+  surface: string;
+  gloss: string;
+}
+
+/** The full witness turn (MODEL → SERVER). */
+export interface WitnessResult {
+  reply: string; // the tutor's short Slovene reply (spoken by E3)
+  replyGloss: string; // plain-English translation of `reply` — the on-demand subtitle
+  transcriptVerbatim: string; // exactly what the learner said, warts and all
+  userGloss: string; // plain-English translation of what the learner meant
+  utteranceLang: string; // "sl" | "en" | "mixed"
+  targets: TargetEvidence[];
+  observed: ObservedItem[];
+}
+
 /** E2 — audio understanding + in-character tutoring (one model, one hop). */
 export interface E2Result {
   /** EXACTLY what the student said, as the model heard it — unsanitized, errors/code-switching preserved. */
@@ -98,6 +139,15 @@ export interface E2Adapter {
     systemPrompt: string;
     history: ConversationTurn[];
   }): Promise<E2Result>;
+  /** Free-conversation WITNESS turn (mastery loop): holds the chat + returns linguistic EVIDENCE over a
+   *  server-supplied target set, deciding no credit. Optional so non-conversation adapters (scripted
+   *  seed) can omit it. */
+  witness?(input: {
+    audioBase64: string;
+    mimeType: string;
+    systemPrompt: string;
+    history: ConversationTurn[];
+  }): Promise<WitnessResult>;
   /** Cheap credential/endpoint check used by `npm run probe:e2`. Must NOT log the key. */
   ping(): Promise<string>;
 }
@@ -164,6 +214,8 @@ export interface ConverseResult {
   userVerbatim: string;
   userSaid: string;
   tutorReply: string;
+  /** Plain-English translation of the Slovene reply — the click-to-reveal subtitle (free chat). */
+  replyGloss?: string;
   correction: string;
   learnableProgress: LearnableProgress[];
   /** Seed onboarding only: true once the scripted dialogue has finished its last step. */

@@ -14,6 +14,7 @@
     "test:learnable": "tsx server/probes/learnable-test.ts",
     "probe:converse": "tsx server/probes/converse-probe.ts",
     "learner": "tsx server/scripts/learner-show.ts",
+    "turnlog": "tsx server/scripts/turnlog-show.ts",
     "fetch:assets": "tsx server/scripts/fetch-assets.ts",
     "build:assets": "tsx server/scripts/build-assets.ts",
     "build:seed-assets": "tsx server/scripts/build-seed-assets.ts",

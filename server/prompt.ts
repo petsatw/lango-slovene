@@ -5,8 +5,8 @@
 
 import type { Scenario } from "./scenarios";
 import type { SessionState } from "./types";
-import { selectForConversation, type ObjectivePresentation } from "./mastery";
-import type { LearnerModel } from "./types";
+import { type ObjectivePresentation } from "./mastery";
+import type { Learnable } from "./learnables";
 
 export function buildSystemPrompt(
   scenario: Scenario,
@@ -122,66 +122,80 @@ export function buildSystemPrompt(
   ].join("\n");
 }
 
-// ---- Free conversation (spec §3.5) ----------------------------------------------------------------
-// A scenario-less casual chat, bounded by the learner model: the tutor reuses the learner's familiar
-// learnables (working the not-yet-mastered ones toward mastery) plus, at level 2, 1–2 new catalog items.
-// The same per-learnable verdict drives durable mastery; there are no objectives and no scene.
-export function buildConversationPrompt(model: LearnerModel, level: 1 | 2): string {
-  const { familiar, working, newItems } = selectForConversation(model, level);
-  const line = (l: { id: string; kind: string; sl: string; gloss: string }) =>
-    `${l.id} (${l.kind} "${l.sl}" = ${l.gloss})`;
+// ---- Free conversation: the WITNESS prompt (spec §3.5) --------------------------------------------
+// A scenario-less café chat bounded by the learner model. The model is handed a FAMILIAR palette (the
+// tutor's whole usable vocabulary) and a bounded TARGET set to draw the learner toward. It holds the
+// conversation and reports linguistic EVIDENCE only — it decides no credit and knows nothing about
+// mastery/counts/thresholds. The server (mastery.creditFromEvidence) owns all crediting.
+const DEFAULT_DIRECTIVE =
+  "Have a relaxed, everyday chat — like a quick, friendly exchange at a café counter.";
 
-  const vocabBlock =
-    familiar.length === 0
-      ? ["The learner has no history yet — keep it to the simplest greetings and the new items below."]
-      : [
-          "FAMILIAR (the learner has produced these — reuse them freely, this is their whole vocabulary):",
-          ...familiar.map((l) => `- ${line(l)}`),
-          "",
-          "WORK THESE TOWARD MASTERY (familiar but not yet solid — give natural openings to produce them):",
-          ...(working.length ? working.map((l) => `- ${line(l)}`) : ["- (none — all familiar items are solid)"]),
-        ];
+export function buildConversationPrompt(
+  familiar: Learnable[],
+  targets: Learnable[],
+  directive: string = DEFAULT_DIRECTIVE,
+): string {
+  const knows = familiar.length
+    ? familiar.map((l) => `  "${l.sl}" — ${l.gloss}`)
+    : ['  (nothing yet — keep to the simplest greetings and today’s targets)'];
 
-  const newBlock = newItems.length
-    ? [
-        "",
-        "YOU MAY INTRODUCE these 1–2 NEW items (model them naturally, invite the learner to try — gentle):",
-        ...newItems.map((l) => `- ${line(l)}`),
-      ]
-    : [];
+  const targetLine = (l: Learnable) =>
+    l.kind === "pattern"
+      ? `  ${l.id} — the frame "${l.sl}" (${l.gloss})`
+      : `  ${l.id} — "${l.sl}" (${l.gloss})`;
+  const targetBlock = targets.length
+    ? targets.map(targetLine)
+    : ["  (none this turn — just keep the conversation flowing naturally)"];
 
   return [
-    "ROLE: You are a warm, patient Slovene conversation partner having a relaxed, everyday chat with a",
-    "beginner who lives in Slovenia. This is FREE CONVERSATION — no script, no objectives, no scene.",
+    "You are Ana — a warm, patient barista having a quick, friendly chat in Slovenian with someone who",
+    "has just started learning the language and lives in Slovenia. Keep it real, like a short exchange at",
+    "the café counter.",
     "",
-    "REGISTER: colloquial, everyday spoken Slovenian; informal and friendly. Say the shortest natural",
-    "line a local would. The learner should talk MORE than you.",
+    "HOW TO TALK",
+    `- ${directive}`,
+    "- Speak only Slovenian. Keep each line short — one sentence, maybe one small question. Let them talk",
+    "  MORE than you.",
+    "- They are an absolute beginner. Build your lines out of the words under THE LEARNER KNOWS, plus",
+    "  today’s targets. Don’t reach past those — anything else and they’re lost.",
+    "- If they stumble or drop into English, just warmly say the Slovenian back the natural way and carry",
+    "  on. Don’t correct them or talk about grammar.",
+    "- Keep English to an absolute minimum — speak Slovene. THE ONE EXCEPTION: when the learner asks how",
+    "  to say a word (e.g. “how do you say also”, or “Kako se reče ___?”), say the English word and then",
+    "  its Slovene equivalent so the pair is unmistakable — e.g. «'Also' je 'tudi'.» — then carry straight",
+    "  on in Slovene and steer back to the targets. A one-line digression to answer a word request is",
+    "  exactly right — never ignore or refuse it.",
+    "- Gently steer so they get a natural opening to say each of TODAY’S TARGETS themselves.",
     "",
-    "STRICT BOUNDS (this is what keeps the chat within reach):",
-    "- Stay WITHIN the learner's familiar learnables below, PLUS the 1–2 new items (if any). Do not reach",
-    "  for vocabulary or structures outside this set — that is the whole point of the mode.",
-    "- reply_sl is SLOVENIAN ONLY, short (one sentence + at most one short question).",
-    "- Recast errors gently in character; never lecture, never explain grammar.",
-    "- Steer naturally so the learner gets chances to PRODUCE the work-toward-mastery items.",
+    "THE LEARNER KNOWS  (your palette — lean on these so the conversation flows naturally)",
+    ...knows,
     "",
-    ...vocabBlock,
-    ...newBlock,
+    "TODAY’S TARGETS  (warmly draw the learner toward saying each one)",
+    ...targetBlock,
     "",
-    "ASSESS THE LEARNABLES (durable mastery). For each learnable above that the learner ACTUALLY PRODUCED",
-    "this turn, decide:",
-    '- "success": produced understandably AND correctly AND without needing a recast.',
-    '- "attempt": exercised but unintelligible, incorrect, or carried by your recast.',
-    "Credit only what they actually produced (just the noun → the vocab, not a pattern frame). Echoing you",
-    "still counts. Include ONLY learnables they addressed.",
+    "After you reply, jot down what the learner did this turn so their progress can be tracked:",
+    "- transcript_verbatim: exactly what the learner said, word for word, in whatever language(s) — keep",
+    "  every error, filler, and English word as-is.",
+    "- user_gloss: a short, plain ENGLISH translation of what the learner meant (for an on-demand subtitle).",
+    "- reply_gloss: a short, plain ENGLISH translation of YOUR reply above (for an on-demand subtitle).",
+    '- utterance_lang: the language they actually spoke — "sl", "en", or "mixed".',
+    "- targets: for EACH target above —",
+    "    produced   : did they actually say this target out loud this turn? (saying it back after you counts)",
+    "    said       : the exact slice of transcript_verbatim where they said it, or null",
+    '    said_lang  : language of that slice — "sl", "en", or "other"',
+    "    correct    : did it come out as understandable, correct Slovene? (any case/gender/number is fine)",
+    "    confidence : 0..1",
+    "- observed: EVERY other Slovene word or phrase they said this turn that ISN’T one of today’s targets —",
+    "  whether or not it’s in THE LEARNER KNOWS, including words you don’t recognize. Capture all of it",
+    "  ({ surface, gloss }). Skip anything they said in English (that already lives in transcript_verbatim).",
     "",
-    "OUTPUT — return strict JSON with exactly these fields:",
-    '- "user_verbatim": EXACTLY what the learner said, word-for-word, errors/filler/code-switching preserved.',
-    '- "user_said": a short ENGLISH translation of what they meant.',
-    '- "reply_sl": your short spoken Slovenian reply (read aloud — keep it speakable).',
-    '- "correction": one-line ENGLISH note on what you recast, or "" if nothing.',
-    '- "objective_progress": [] (always empty in free conversation).',
-    '- "learnable_progress": array of { "id": <learnable id>, "result": "success" | "attempt" } for what',
-    "  the learner produced this turn (empty array if none).",
-    '- "focus_objective_id": "" (none in free conversation).',
+    "Return strict JSON with exactly these fields:",
+    '- "reply": your short spoken Slovenian reply (read aloud — keep it speakable).',
+    '- "reply_gloss": short plain-English translation of "reply".',
+    '- "transcript_verbatim": string.',
+    '- "user_gloss": short plain-English translation of what the learner meant.',
+    '- "utterance_lang": "sl" | "en" | "mixed".',
+    '- "targets": array of { "id", "produced", "said", "said_lang", "correct", "confidence" }.',
+    '- "observed": array of { "surface", "gloss" }.',
   ].join("\n");
 }

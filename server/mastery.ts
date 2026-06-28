@@ -6,7 +6,14 @@
 // (orchestrator.ts) call these; keeping them pure makes them unit-testable with plain inputs.
 
 import { LEARNABLES, type Learnable } from "./learnables";
-import type { LearnableMastery, LearnableProgress, LearnerModel, Objective } from "./types";
+import type {
+  LearnableMastery,
+  LearnableProgress,
+  LearnerModel,
+  ObservedItem,
+  Objective,
+  WitnessResult,
+} from "./types";
 
 /** Successes needed to count a learnable as mastered. One tunable knob (interview-settled at 5). */
 export const THRESHOLD = 5;
@@ -186,4 +193,107 @@ export function selectForConversation(
       .slice(0, 2);
   }
   return { familiar, working, newItems };
+}
+
+// ---- Free-conversation WITNESS selection + crediting (the model↔server handoff) ----
+// The server, not the model, picks the bounded in-play TARGET set and hands the model the FAMILIAR
+// palette so the chat stays natural. The model reports evidence; crediting is deterministic here.
+
+/** Max in-play targets the model reports on per turn — bounds the prompt + schema as the catalog grows. */
+export const WITNESS_TARGET_CAP = 8;
+
+export interface WitnessSelection {
+  /** Everything the learner has touched (attempted + mastered) — the tutor's conversational palette. */
+  familiar: Learnable[];
+  /** The bounded in-play set to drive THIS turn — the not-yet-mastered items (closest to mastery first)
+   *  plus any freshly-introduced ones. Only these can earn a success. */
+  targets: Learnable[];
+}
+
+export function selectForWitness(
+  model: LearnerModel,
+  level: 1 | 2,
+  threshold = THRESHOLD,
+): WitnessSelection {
+  const { familiar, working, newItems } = selectForConversation(model, level, threshold);
+  const orderedWorking = [...working].sort(
+    (a, b) =>
+      (model.learnables[b.id]?.successes ?? 0) - (model.learnables[a.id]?.successes ?? 0) ||
+      Number(!!b.core) - Number(!!a.core),
+  );
+  const targets = [...orderedWorking, ...newItems].slice(0, WITNESS_TARGET_CAP);
+  return { familiar, targets };
+}
+
+/** Normalize a Slovene surface for catalog lookup: lowercase, drop punctuation, collapse whitespace. */
+function normSurface(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[.,!?¿¡;:"'()«»]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Map a produced Slovene surface to a known catalog learnable (vocab/chunk only — a bare surface can't
+ *  evidence a pattern frame). Used to credit OBSERVED off-target Slovene against the right id. */
+export function findLearnableBySurface(surface: string): Learnable | undefined {
+  const n = normSurface(surface);
+  if (!n) return undefined;
+  return Object.values(LEARNABLES).find((l) => l.kind !== "pattern" && normSurface(l.sl) === n);
+}
+
+export interface WitnessCreditResult {
+  /** The updated durable model (successes/attempts folded in). */
+  model: LearnerModel;
+  /** What was credited this turn — for the turn log and back-compat. */
+  progress: LearnableProgress[];
+  /** Novel Slovene the learner produced with NO catalog match — the catalog-growth queue. */
+  candidates: ObservedItem[];
+}
+
+/** Deterministic server-side crediting from the model's witness evidence (the firewall):
+ *   - SUCCESS is gated to the in-play TARGET set AND Slovene language AND a transcript span check.
+ *     A target produced correctly in Slovene → success; produced in Slovene but wrong → an attempt
+ *     (stalls before mastery, decrements after — the flub rule in applyCredit).
+ *   - produced:false / English / span-mismatch → NO-OP (no credit, no attempt, no decrement).
+ *   - OBSERVED off-target Slovene → an ATTEMPT only (never a success); a known catalog item is credited
+ *     by id, novel Slovene becomes a catalog candidate. Successes can never come off-target. */
+export function creditFromEvidence(
+  model: LearnerModel,
+  evidence: WitnessResult,
+  targets: Learnable[],
+  threshold = THRESHOLD,
+): WitnessCreditResult {
+  const targetIds = new Set(targets.map((t) => t.id));
+  const transcript = (evidence.transcriptVerbatim || "").toLowerCase();
+  const progress: LearnableProgress[] = [];
+  const seen = new Set<string>();
+
+  for (const e of evidence.targets ?? []) {
+    if (!e?.id || !targetIds.has(e.id) || seen.has(e.id)) continue; // allowlist + dedup
+    const said = (e.said ?? "").toLowerCase().trim();
+    const spanOk = said.length > 0 && transcript.includes(said); // evidence must be in the transcript
+    if (e.produced && e.saidLang === "sl" && spanOk) {
+      seen.add(e.id);
+      progress.push({ id: e.id, result: e.correct ? "success" : "attempt" });
+    }
+    // else: produced:false / English / span mismatch → no-op
+  }
+
+  const candidates: ObservedItem[] = [];
+  for (const o of evidence.observed ?? []) {
+    if (!o?.surface) continue;
+    const l = findLearnableBySurface(o.surface);
+    if (l && !targetIds.has(l.id) && !seen.has(l.id)) {
+      // Correct reuse of a MASTERED item is a no-op — observed carries no correctness signal, so we must
+      // not let natural reuse trip the flub-decrement and erode mastery. Only shaky items take an attempt.
+      if (isMastered(model.learnables[l.id], threshold)) continue;
+      seen.add(l.id);
+      progress.push({ id: l.id, result: "attempt" }); // off-target shaky Slovene → attempt only
+    } else if (!l) {
+      candidates.push({ surface: o.surface, gloss: o.gloss ?? "" });
+    }
+  }
+
+  return { model: applyCredit(model, progress, threshold), progress, candidates };
 }
