@@ -1,9 +1,14 @@
 # The Learnable Subsystem — cross-session memory
 
-**Status: design.** Nothing here is built yet. This is the subsystem that gives Govori memory *across*
-sessions — [ROADMAP.md](ROADMAP.md) item 4 (memory across sessions), absorbing item 6 (variant
-latitude). It supersedes the earlier "pattern subsystem" framing: a *pattern* is now one **kind** of
-learnable. Present-state architecture: [ARCHITECTURE.md](ARCHITECTURE.md).
+**Status: built (the mastery loop), with steering still ahead.** The durable layer described here is
+implemented — see the build spec [learnable-subsystem-spec.md](learnable-subsystem-spec.md) and the
+free-conversation ethos [free-conversation.md](free-conversation.md). What's *not* yet built is the
+**tutor-that-leads** steering/selection over this model (ROADMAP item 5) and the bounded
+situation-first selection for live free conversation (its current live path is a naive first cut; the
+**seed onboarding** is the built Phase 1). This is the subsystem that gives Govori memory *across*
+sessions — [ROADMAP.md](ROADMAP.md) item 4, absorbing item 6 (variant latitude). It supersedes the
+earlier "pattern subsystem" framing: a *pattern* is now one **kind** of learnable. Present-state
+architecture: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 Captured intent — the interview decisions, the canonical user stories, and the mastery-loop flows — is in
 [learnable-subsystem-stories.md](learnable-subsystem-stories.md). Read it alongside this doc; where the

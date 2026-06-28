@@ -38,7 +38,15 @@ run and open enough to spread. Each requirement maps to one piece below.
 
 **To build — in dependency order**
 
-4. **Memory across sessions** *(unlocks 5).* A persistent learner model with an
+4. **Memory across sessions — ✅ BUILT (the mastery loop)** *(unlocks 5).* Implemented as the durable
+   **learnable** layer: a per-learner on-disk model counts per-learnable productions, mastered at a
+   threshold (5), flub-decrement, credited per-learnable from the E2 verdict, accrued across sittings;
+   plus free conversation and the audio-only onboarding **seed**. Mechanism + build:
+   [learnable-subsystem-spec.md](learnable-subsystem-spec.md); ethos: [free-conversation.md](free-conversation.md).
+   *Remaining within this area:* bounded **situation-first selection** for live free conversation (the
+   live path is a naive first cut today; the seed is the built piece) — folds into item 5. Original
+   framing below, retained for context:
+   A persistent learner model with an
    `attempted → completed → mastered` lifecycle: an objective reaches *mastered* only on repeated
    correct production, as the *same* objective recurs in different scenarios over time. Requires a
    **shared objective catalog** — common objectives (greet, ask-to-repeat, …) defined once and

@@ -180,9 +180,10 @@ What the rebuilt prompt enforces every turn:
 
 The full pedagogy — the 18-step learning loop, the rubrics, and the research behind each rule — is in
 [research/](research/) (the expert panel) and codified into the authoring
-[rubric](scenario-authoring.md). Note that **count-based mastery across contexts** and **cross-session
-spaced review** are deliberately out of the single-session MVP; they
-depend on the persistent learner model on the [roadmap](ROADMAP.md) (item 4).
+[rubric](scenario-authoring.md). This describes the **inner loop** (one sitting). The **outer loop** —
+**count-based mastery across contexts** on a persistent learner model — is now **built** (the mastery
+loop, item 4; see [learnable-subsystem-spec.md](learnable-subsystem-spec.md)). What's still out is
+**cross-session spaced *resurfacing*** (scheduling *what to bring back when*), which is tutor-leads (item 5).
 
 ## The asset model
 

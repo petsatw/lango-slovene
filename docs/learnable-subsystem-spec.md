@@ -1,6 +1,13 @@
 # The Mastery Loop — Build Spec (roadmap 4, inner mechanic)
 
-**Status: spec (ready to build).** This closes the mechanism gap the design docs left open. It is
+**Status: BUILT** (Parts 1–4 of the build plan are implemented and verified on the real stack; the
+durable mastery layer, per-learnable crediting, presentation, `/api/converse`, `/api/learner`, and the
+audio-only **seed** onboarding all ship). What remains is the **bounded situation-first selection** for
+*live* free conversation — §3.5 below documents the naive first cut that's wired today; the
+[free-conversation.md](free-conversation.md) ethos is the target, and that selection folds into
+tutor-leads (ROADMAP 5). The build plan in Part 5 is retained as the build record.
+
+This closes the mechanism gap the design docs left open. It is
 subordinate to [learnable-subsystem-stories.md](learnable-subsystem-stories.md) (the source of truth —
 decisions, user stories, flows) and [learnable-subsystem.md](learnable-subsystem.md)
 (structure/capabilities). Where any of those conflict with this spec, **they win** and this spec is wrong
@@ -292,11 +299,13 @@ The same crediting machine with a scenario-less prompt:
 | `server/scenarios.ts` | validate the new objective fields; resolve nothing else |
 | `server/prompt.ts` | accept presentation; add mastery-aware objective lines + a `learnable_progress` instruction; NEW `buildConversationPrompt` |
 | `server/adapters/gemini.ts` | add `learnable_progress` to the response schema + parse it |
-| `server/orchestrator.ts` | load model → present → credit → save; `understand` returns a learner snapshot; NEW `converse` path |
-| `server/server.ts` | `POST /api/converse`; `GET /api/learner`; optional learner summary in `/api/config` |
+| `server/orchestrator.ts` | load model → present → credit → save; `understand` also returns `learnableProgress`; NEW `converse` (free chat) + the seed branch (scripted adapter) |
+| `server/seeds.ts` + `server/seeds/getting-started.json` | NEW — the audio-only onboarding **seed** dialogue + loader |
+| `server/adapters/seed-scripted.ts` | NEW — the static-dialogue adapter that stands in for the model in the seed |
+| `server/server.ts` | `POST /api/converse` (also hosts the seed via `seedId`/`begin`); `GET /api/learner`; `started` flag in `/api/config` |
 | `server/scenarios/cafe.json` | author `learnables` on objectives (worked example) |
-| `public/app.js` | minimal free-chat entry (push-to-talk → `/api/converse`, level toggle) |
-| `package.json` | `test:learnable`, `probe:converse`, `learner` scripts |
+| `public/app.js` | free-chat toggle (off → Tutorial → L1 → L2); seed + free chat delivered through the chat surface + push-to-talk |
+| `package.json` | `test:learnable`, `probe:converse`, `learner`, `build:seed-assets` scripts |
 | `docs/*` | DATA-MODEL (new shapes), ARCHITECTURE (the second layer), stories Part 6 (flub→decrement) |
 
 No change to: the asset store/catalog ontology, E3/E4 adapters, session records, the 14-turn cap, the

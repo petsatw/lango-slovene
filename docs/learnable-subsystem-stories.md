@@ -1,6 +1,8 @@
 # The Mastery Loop — Insights, Decisions & User Stories
 
-**Status: captured intent (design interview).** Companion to [learnable-subsystem.md](learnable-subsystem.md)
+**Status: captured intent (design interview) — now IMPLEMENTED as the mastery loop** (see
+[learnable-subsystem-spec.md](learnable-subsystem-spec.md) for the built mechanism and
+[free-conversation.md](free-conversation.md) for the free-conversation ethos). Companion to [learnable-subsystem.md](learnable-subsystem.md)
 (structure/capabilities) and grounded in the current app ([ARCHITECTURE.md](ARCHITECTURE.md),
 [orchestrator.ts](../server/orchestrator.ts), [prompt.ts](../server/prompt.ts)). This document captures
 the **mastery loop** specifically — roadmap item 4's inner mechanic — as worked out in interview. It is
