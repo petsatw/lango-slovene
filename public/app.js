@@ -450,6 +450,108 @@ function storyGo(delta) {
   renderStoryStep();
 }
 
+// ---- Rehearsal: predetermined BRANCHING dialogue (decision tree). Click through a typical exchange;
+// the NPC ("baker") speaks, you pick among canned client replies, the NPC responds. Exposure only —
+// no mic, no server turn, no mastery credit. `dialogue.audio` gates the play buttons: while "pending"
+// (no audio built yet) the lines are click-through/translate only, so a preview can't bill a synth. ----
+let dialogue = null; // { title, audio, voices:{baker,client}, root, nodes } from /api/config
+
+// Play one dialogue line in its speaker's voice (only reachable once dialogue.audio === "ready").
+function playDialogueLine(node) {
+  const voice = dialogue.voices[node.speaker];
+  playReplyStreaming(node.sl, { scenarioId: session?.scenarioId, voice });
+}
+
+// Render one node as a chat bubble in the dialogue card. Baker → tutor (left), client → user (right).
+function dialogueBubble(node) {
+  const div = document.createElement("div");
+  div.className = `bubble ${node.speaker === "baker" ? "tutor" : "user"}`;
+
+  const span = document.createElement("span");
+  span.className = "bubble-text";
+  span.textContent = node.sl;
+  div.appendChild(span);
+
+  // Play button only once the audio is pregenerated — otherwise a click would live-synthesize (bills).
+  if (dialogue.audio === "ready") {
+    const play = document.createElement("button");
+    play.className = "replay";
+    play.type = "button";
+    play.title = "Hear it";
+    play.textContent = "▶";
+    play.addEventListener("click", (e) => { e.stopPropagation(); playDialogueLine(node); });
+    div.appendChild(play);
+  }
+
+  // Same click-to-reveal English as the live transcript.
+  if (node.en) {
+    const s = document.createElement("small");
+    s.className = "translation";
+    s.textContent = node.en;
+    div.appendChild(s);
+    div.classList.add("has-translation");
+    div.addEventListener("click", () => div.classList.toggle("show-translation"));
+  }
+
+  const convo = $("dialogue-convo");
+  convo.appendChild(div);
+  convo.scrollTo({ top: convo.scrollHeight, behavior: "smooth" });
+}
+
+// Show a baker node, then offer its client-reply choices (or a restart if it's terminal).
+function presentBakerNode(nodeId) {
+  const node = dialogue.nodes[nodeId];
+  if (!node) return;
+  dialogueBubble(node);
+  if (dialogue.audio === "ready") playDialogueLine(node);
+  renderChoices(node);
+}
+
+function renderChoices(bakerNode) {
+  const wrap = $("dialogue-choices");
+  wrap.innerHTML = "";
+  const choices = bakerNode.next || [];
+  if (!choices.length) {
+    const btn = document.createElement("button");
+    btn.className = "dialogue-choice restart";
+    btn.type = "button";
+    btn.textContent = "↻ Start over";
+    btn.addEventListener("click", openDialogue);
+    wrap.appendChild(btn);
+    return;
+  }
+  for (const cid of choices) {
+    const cn = dialogue.nodes[cid];
+    const btn = document.createElement("button");
+    btn.className = "dialogue-choice";
+    btn.type = "button";
+    btn.textContent = cn.sl;
+    btn.addEventListener("click", () => chooseClient(cid));
+    wrap.appendChild(btn);
+  }
+}
+
+// The learner picks a client line: show it, then advance to the baker's response (client.next[0]).
+function chooseClient(clientNodeId) {
+  const cn = dialogue.nodes[clientNodeId];
+  $("dialogue-choices").innerHTML = "";
+  dialogueBubble(cn);
+  if (dialogue.audio === "ready") playDialogueLine(cn);
+  const nextBaker = (cn.next || [])[0];
+  if (nextBaker) presentBakerNode(nextBaker);
+  else renderChoices(cn); // client node with no continuation → offer restart
+}
+
+function openDialogue() {
+  if (!dialogue) return;
+  $("dialogue-title").textContent = dialogue.title;
+  $("dialogue-convo").innerHTML = "";
+  $("dialogue-choices").innerHTML = "";
+  $("dialogue").hidden = false;
+  presentBakerNode(dialogue.root);
+}
+function closeDialogue() { $("dialogue").hidden = true; }
+
 // ---- M6: Past runs — replay a captured session turn-by-turn, free (audio served from the store) ----
 
 // Play one stored clip to completion (resolves on 'ended'); used to step a replay turn-by-turn.
@@ -566,6 +668,11 @@ function applyConfig(cfg) {
     $("story-open").hidden = true;
   }
   $("practice-open").hidden = !objectivesMeta.length;
+
+  // Rehearsal dialogue (optional per scenario): the whole branching tree ships in the config payload.
+  dialogue = cfg.dialogue || null;
+  $("dialogue-open").hidden = !dialogue;
+
   learnerStarted = !!cfg.started;
   if (cfg.scenario.opening) addBubble("tutor", cfg.scenario.opening);
 }
@@ -606,7 +713,7 @@ async function enterSeed() {
   $("transcript").innerHTML = "";
   $("takeaway").hidden = true;
   history.length = 0;
-  $("objectives").hidden = true;
+  $("objectives-bar").hidden = true;
   obs.state("getting started");
   try {
     const res = await fetch("/api/converse", {
@@ -693,7 +800,7 @@ function applyChatMode(idx) {
   $("transcript").innerHTML = "";
   $("takeaway").hidden = true;
   history.length = 0;
-  $("objectives").hidden = mode !== "off";
+  $("objectives-bar").hidden = mode !== "off";
   if (mode === "tutorial") enterSeed();
   else if (mode === "L1") { freeChat = 1; beginFreeChat(); }
   else if (mode === "L2") { freeChat = 2; beginFreeChat(); }
@@ -729,6 +836,16 @@ async function init() {
     runsToggle.setAttribute("aria-expanded", String(open));
     if (open) loadRuns();
   });
+
+  // Objectives bar: tap to slide the descriptor card down, tap again to slide it up.
+  $("objectives-toggle").addEventListener("click", () => {
+    const open = $("objectives-bar").classList.toggle("open");
+    $("objectives-toggle").setAttribute("aria-expanded", String(open));
+  });
+
+  // Rehearsal dialogue controls.
+  $("dialogue-open").addEventListener("click", openDialogue);
+  $("dialogue-close").addEventListener("click", closeDialogue);
 
   // Story player controls.
   $("story-open").addEventListener("click", openStory);

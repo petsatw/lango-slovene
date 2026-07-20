@@ -16,8 +16,16 @@
       <select id="scenario-select" class="scenario-select" aria-label="Choose a scenario"></select>
       <span id="scenario-desc" class="scenario-desc">…</span>
     </p>
-    <div id="objectives" class="objectives"></div>
+    <!-- Objectives collapse behind a bar so the dialogue owns the screen; tap to slide the card down. -->
+    <div id="objectives-bar" class="objectives-bar">
+      <button id="objectives-toggle" class="objectives-toggle" type="button" aria-expanded="false" aria-controls="objectives">
+        <span>Learning objectives</span>
+        <span class="objectives-caret" aria-hidden="true">▾</span>
+      </button>
+      <div id="objectives" class="objectives"></div>
+    </div>
     <div class="header-actions">
+      <button id="dialogue-open" class="story-open" type="button" hidden>🎭 Rehearse the dialogue</button>
       <button id="story-open" class="story-open" type="button" hidden>📖 Play the story</button>
       <button id="practice-open" class="story-open" type="button" hidden>🎧 Practice</button>
       <button id="freechat-toggle" class="story-open" type="button" aria-pressed="false">💬 Free chat: off</button>
@@ -48,6 +56,18 @@
         <span id="story-progress" class="story-progress"></span>
         <button id="story-next" class="story-nav" type="button" aria-label="Next">›</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Rehearsal: click through the predetermined branching dialogue. Tap a line to reveal English;
+       play buttons appear only once its audio is built. No mic, no server turn, no mastery credit. -->
+  <div id="dialogue" class="story-overlay" hidden>
+    <div class="story-card dialogue-card">
+      <button id="dialogue-close" class="story-close" type="button" aria-label="Close">✕</button>
+      <p id="dialogue-title" class="practice-label">—</p>
+      <div id="dialogue-convo" class="dialogue-convo" aria-live="polite"></div>
+      <div id="dialogue-choices" class="dialogue-choices"></div>
+      <p class="dialogue-hint">Pick your line. Tap any line to see the English.</p>
     </div>
   </div>
 

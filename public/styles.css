@@ -39,17 +39,30 @@ header p { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
 }
 .scenario-desc { color: var(--muted); font-size: 15px; }
 
-.objectives {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  justify-content: center;
-  margin-top: 12px;
+/* Objectives collapse behind a bar (immersion-first): the label stays visible; the descriptor card
+   slides down on tap. Height-animated via max-height so it can transition — the parent's `.open` state
+   drives it (no `hidden` attr; display:none can't animate). */
+.objectives-bar { width: 100%; max-width: 520px; margin: 12px auto 0; }
+.objectives-toggle {
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: var(--panel); color: var(--text);
+  border: 1px solid var(--green); border-radius: 999px;
+  padding: 8px 16px; font-size: 14px; cursor: pointer;
 }
+.objectives-caret { color: var(--muted); transition: transform 0.25s ease; }
+.objectives-bar.open .objectives-caret { transform: rotate(180deg); }
+.objectives {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.28s ease;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.objectives-bar.open .objectives { max-height: 60dvh; margin-top: 8px; }
 .dot {
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 999px;
+  font-size: 13px; text-align: left;
+  padding: 6px 12px;
+  border-radius: 10px;
   background: #20242c;
   color: var(--muted);
   border: 1px solid #2b2f38;
@@ -153,6 +166,27 @@ main {
 }
 .practice-btn.record.recording { background: var(--green-press); }
 .practice-hint { color: var(--muted); font-size: 12px; margin: 0 0 10px; }
+
+/* Rehearsal dialogue overlay — reuses .story-overlay/.story-card + the live .bubble styles inside. */
+.dialogue-card { display: flex; flex-direction: column; max-height: 82dvh; }
+.dialogue-card .practice-label { text-align: center; }
+.dialogue-convo {
+  flex: 1; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 8px 2px; margin: 6px 0;
+  min-height: 28dvh; max-height: 52dvh;
+}
+.dialogue-choices { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.dialogue-choice {
+  width: 100%; text-align: left;
+  background: #2a2f3a; color: #fff;
+  border: 1px solid #3a4150; border-radius: 12px;
+  padding: 12px 14px; font-size: 16px; cursor: pointer;
+}
+.dialogue-choice:hover { border-color: var(--green); }
+.dialogue-choice:active { transform: scale(0.99); }
+.dialogue-choice.restart { text-align: center; background: var(--green); border-color: var(--green); }
+.dialogue-hint { color: var(--muted); font-size: 12px; text-align: center; margin: 8px 0 0; }
 
 .story-overlay {
   position: fixed; inset: 0; z-index: 20;
