@@ -26,7 +26,7 @@
       "descriptorEN": "Close the transaction and say goodbye."
     }
   ],
-  "audio": "pending",
+  "audio": "ready",
   "voices": {
     "baker": "shop-assistant",
     "client": "female-speaker"
@@ -40,7 +40,8 @@
       "next": [
         "c1a",
         "c1b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Dober dan, izvolite?"
     },
     "c1a": {
       "speaker": "client",
@@ -65,7 +66,8 @@
       "next": [
         "c2a",
         "c2b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Izvolite. Še kaj?"
     },
     "c2a": {
       "speaker": "client",
@@ -90,7 +92,8 @@
       "next": [
         "c3a",
         "c3b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Rogljički so danes sveži. Boste enega?"
     },
     "c3a": {
       "speaker": "client",
@@ -115,7 +118,8 @@
       "next": [
         "c4a",
         "c4b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Izvolite, dam v vrečko."
     },
     "c4a": {
       "speaker": "client",
@@ -139,7 +143,8 @@
       "en": "Four euros ten altogether. Here you are.",
       "next": [
         "c5"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Vse skupaj štiri evre deset. Izvolite."
     },
     "b5card": {
       "speaker": "baker",
@@ -147,7 +152,8 @@
       "en": "Yes, of course you can. Four euros ten altogether.",
       "next": [
         "c5"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Ja, seveda, lahko. Vse skupaj štiri evre deset."
     },
     "c5": {
       "speaker": "client",
@@ -161,7 +167,8 @@
       "speaker": "baker",
       "sl": "Hvala enako, nasvidenje!",
       "en": "Thank you too, goodbye!",
-      "next": []
+      "next": [],
+      "deliverySL": "[hesitant and a little apathetic] Hvala enako, nasvidenje!"
     }
   }
 }

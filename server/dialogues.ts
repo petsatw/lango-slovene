@@ -21,10 +21,14 @@ export type DialogueAudioState = "pending" | "ready";
 
 export interface DialogueNode {
   speaker: DialogueSpeaker;
-  /** The line, in Slovene. */
+  /** The line, in Slovene. This is the DISPLAY caption AND the audio cache key. */
   sl: string;
   /** English gloss — revealed on tap, same click-to-reveal as the live transcript. */
   en: string;
+  /** Optional Slovene WITH inline eleven_v3 audio tags (e.g. "[hesitant] Dober dan…"). When present it
+   *  is what gets SYNTHESIZED, while `sl` stays the clean caption + cache key — so the tags steer the
+   *  voice without ever showing on screen or changing the key. Null/absent → synthesize `sl` plainly. */
+  deliverySL?: string;
   /** Next node ids. On a baker node: the client-reply choices the learner picks between. On a client
    *  node: the baker's response (one id). Empty = end of the dialogue. */
   next: string[];
@@ -104,6 +108,7 @@ export function validateDialogue(file: string, raw: any): Dialogue {
     if (n?.speaker !== "baker" && n?.speaker !== "client") fail(file, `${where}: speaker must be "baker" | "client"`);
     asString(file, n, "sl", where);
     asString(file, n, "en", where);
+    if (n.deliverySL !== undefined) asString(file, n, "deliverySL", where);
     if (!Array.isArray(n.next)) fail(file, `${where}: next must be an array of node ids`);
     for (const id of n.next) {
       if (typeof id !== "string" || !ids.has(id)) fail(file, `${where}: next references unknown node "${id}"`);

@@ -18,6 +18,7 @@
     "fetch:assets": "tsx server/scripts/fetch-assets.ts",
     "build:assets": "tsx server/scripts/build-assets.ts",
     "build:seed-assets": "tsx server/scripts/build-seed-assets.ts",
+    "build:dialogue-assets": "tsx server/scripts/build-dialogue-assets.ts",
     "prompts": "tsx server/scripts/show-prompts.ts",
     "lint:scenario": "tsx server/scripts/lint-scenario.ts",
     "prune:assets": "tsx server/scripts/prune-assets.ts",

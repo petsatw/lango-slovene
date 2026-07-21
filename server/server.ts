@@ -16,6 +16,7 @@ import * as learner from "./assets/learner";
 import { inspect } from "./mastery";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
+import { CATALOG } from "./catalog";
 import { getDialoguesForScenario } from "./dialogues";
 import { buildGalleryHtml } from "./scripts/gallery";
 
@@ -186,10 +187,16 @@ app.get("/api/speak", async (req, res) => {
 
   const e3 = getE3();
   // Voice selection: `voice=character` → the scenario character's profile (in-scene lines: the tutor
-  // reply / opening); anything else (default) → the teacher voice (targets, story narration, practice).
+  // reply / opening); `voice=<catalog profile id>` (e.g. shop-assistant, male-speaker) → that profile
+  // (rehearsal-dialogue speakers); anything else/absent → the teacher voice (targets, narration, practice).
   const scenarioIdQ = req.query.scenarioId ? String(req.query.scenarioId) : undefined;
+  const voiceQ = String(req.query.voice || "");
   const voiceProfile =
-    String(req.query.voice || "") === "character" ? characterVoiceProfile(getScenario(scenarioIdQ)) : undefined;
+    voiceQ === "character"
+      ? characterVoiceProfile(getScenario(scenarioIdQ))
+      : voiceQ && CATALOG.voiceProfiles[voiceQ]
+        ? voiceQ
+        : undefined;
   const key = store.audioKey(e3.name, e3.voiceTagFor(voiceProfile), text);
 
   // Hit if it's hot in L1 or already on disk (the disk hit is what survives restart).
