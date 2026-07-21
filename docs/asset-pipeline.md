@@ -90,10 +90,16 @@ Billed (generate images — only on explicit request):
   is required to refresh a concept after a constituent changed (its prompt key is otherwise a cache hit).
 - `npm run build:assets -- <id> [--regen frame:<obj>|scene|audio:…]` — materialize a whole scenario
   (audio + frames + scene), or surgically re-roll one leaf.
+- `npm run build:dialogue-assets -- <id> [--level <n>] [--regen]` — pregenerate a scenario's
+  **rehearsal-dialogue** audio (per-speaker voice profile), flipping each level to `audio:ready`. Keys on
+  the clean display line; when a node has a `deliverySL` (the line with inline eleven_v3 audio tags) that
+  is what's synthesized while the key stays the display line — so voice direction never changes the key.
+  See [rehearsal-dialogues.md](rehearsal-dialogues.md).
 
 Audio note: voice is speaker-role-based — teacher voice (`female-speaker`) for all learner-facing audio
-(targets, story); the character's voice only for in-scene lines (opening, live tutor reply). Audio is
-also content-addressed and re-keys/re-renders on the same principles.
+(targets, story); the character's voice only for in-scene lines (opening, live tutor reply); rehearsal
+dialogues voice each speaker by a named catalog profile. Audio is also content-addressed and
+re-keys/re-renders on the same principles.
 
 ## How to change the style without forcing new generations
 

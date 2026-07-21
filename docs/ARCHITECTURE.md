@@ -46,6 +46,7 @@ extending, or authoring content for the system). While the heart of the app is l
 |---|---|---|
 | **Push-to-talk turn** | Hold to speak (mixed EN/SL is fine); get an in-character spoken Slovene reply that recasts errors; objective dots update from the server's verdict. | [`public/app.js`](../public/app.js) · `POST /api/turn` · `GET /api/speak` |
 | **Story preview** | Before speaking, step a narrated picture story — one frame per objective (image + SL line + audio), opening on the full-scene tableau. Comprehensible-input priming. | story player · `GET /api/image` · `GET /api/config` |
+| **Rehearse (branching dialogue)** | Click through a pre-authored **decision-tree** version of the exchange — pick a line, hear it, reveal the English — at ascending competency levels. Comprehensible-input rehearsal before the live mic; no mastery credit. | 🎭 Rehearse · [rehearsal-dialogues.md](rehearsal-dialogues.md) · `GET /api/config` · `GET /api/speak` |
 | **Free practice** | Hear the canonical phrase for each objective, record your own attempt **locally**, play it back to compare. No upload, no API spend. | practice panel |
 | **Live progress** | Objective dots `pending ○ → recast ◐ → completed ●`; an end-of-session takeaway lists the phrases you can now say, each replayable. | objective dots · takeaway |
 | **Past runs / replay** | Every run is captured. Reopen the list, replay any run turn-by-turn (free, from the store), and **name** or **favorite** a run. | `GET /api/sessions` · `GET /api/sessions/:id` · `POST /api/sessions/:id/meta` |
@@ -273,7 +274,9 @@ server-owned mastery rules; four scenarios (café, bakery, butcher, pharmacy) ea
 per-objective flashcard frames, and a scene composed on a reusable location set; the relational asset
 catalog (objects · actors · composed concepts/locations · voices) and the content-addressed store;
 durable session capture, replay, and favorites; the generation engine and its gates (including
-`--self-directed`); and the live `/gallery`.
+`--self-directed`); the live `/gallery`; and the **rehearsal dialogues** — pre-authored branching
+decision-tree exchanges at ascending competency levels, with pregenerated per-speaker audio
+([rehearsal-dialogues.md](rehearsal-dialogues.md)).
 
 **Next** — see [ROADMAP.md](ROADMAP.md) for the dependency-ordered plan:
 
@@ -298,6 +301,7 @@ durable session capture, replay, and favorites; the generation engine and its ga
 | [DATA-MODEL.md](DATA-MODEL.md) | the HTTP API and the concrete data shapes (scenario, session, catalog, adapter interfaces) | building a client, extending the model, or adding a provider |
 | [asset-pipeline.md](asset-pipeline.md) | the asset toolkit, the key model, and the render-vs-rekey decision | generating, restyling, or auditing assets |
 | [scenario-authoring.md](scenario-authoring.md) | the acceptance rubric for a scenario, objective, story, frames, and scene | authoring or reviewing a scenario |
+| [rehearsal-dialogues.md](rehearsal-dialogues.md) | the click-through branching **decision-tree** rehearsal mode — schema, levels, delivery notes, audio | authoring, wiring, or generating audio for a rehearsal dialogue |
 | [ROADMAP.md](ROADMAP.md) | the future state and the dependency-ordered pieces to get there | planning what to build next |
 | [learnable-subsystem.md](learnable-subsystem.md) | the cross-session memory subsystem (design): patterns + vocabulary as durable units, the learner model, mastery | building roadmap 4 (memory) or designing the learner model |
 | [learnable-subsystem-stories.md](learnable-subsystem-stories.md) | the mastery loop's captured intent: decisions, canonical user stories, and the mastery-loop flows | speccing or building roadmap 4; reviewing whether the build serves the journey |

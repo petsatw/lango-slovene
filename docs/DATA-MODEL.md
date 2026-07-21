@@ -13,11 +13,11 @@ The browser talks only to these. No endpoint ever returns a key.
 |---|---|---|---|
 | `GET` | `/` | the PWA | `public/index.html` (static) |
 | `GET` | `/api/health` | liveness | `{ ok: true }` |
-| `GET` | `/api/config?scenarioId=` | boot a scenario | providers, the chosen scenario (id, title, opening, objectives, story frame order), a fresh `session`, and the scenario list for the picker. Unknown/planned ids fall back to café. |
+| `GET` | `/api/config?scenarioId=` | boot a scenario | providers, the chosen scenario (id, title, opening, objectives, story frame order), a fresh `session`, the scenario list for the picker, and `dialogues[]` — the scenario's **rehearsal dialogues**, level-sorted (`[]` if none; see [rehearsal-dialogues.md](rehearsal-dialogues.md)). Unknown/planned ids fall back to café. |
 | `POST` | `/api/turn` | one conversational turn (E2 only) | `UnderstandResult` — text fast; audio is fetched separately. Also captures the run if `runId` is sent. |
 | `POST` | `/api/converse` | one free-conversation turn (E2 only, scenario-less) | `ConverseResult` — bounded by the learner model; `level: 1\|2`. Credits the durable mastery layer. `begin: true` returns the static opening (`Začnemo?`, no model call/credit); `role` is the client-pinned free-chat role carried back each turn. Also hosts the **seed**: `{ seedId, begin? }` swaps the model for the scripted adapter (returns the next scripted line + `seedDone`). |
 | `GET` | `/api/learner` | inspect the durable learner model (operator) | `LearnerInspection` — derived owned/shaky/unseen + per-learnable counts. Read-only. |
-| `GET` | `/api/speak?text=&voice=&scenarioId=&objectiveId=` | stream tutor/teacher audio (E3) | `audio/mpeg`, streamed progressively. `voice=character` → the scenario character's voice; otherwise the teacher voice. Cache: L1 memory → L2 disk → synthesize+persist. |
+| `GET` | `/api/speak?text=&voice=&scenarioId=&objectiveId=` | stream tutor/teacher audio (E3) | `audio/mpeg`, streamed progressively. `voice=character` → the scenario character's voice; `voice=<catalog profile id>` (e.g. `shop-assistant`) → that named voice (rehearsal-dialogue speakers); otherwise the teacher voice. Cache: L1 memory → L2 disk → synthesize+persist. |
 | `GET` | `/api/image?scenarioId=&objectiveId=` | a story frame or scene image | `image/jpeg` from the store. `objectiveId=scene` → the full tableau. 404 with a build hint if not yet built (`npm run build:assets`). |
 | `GET` | `/api/sessions` | list past runs (newest first) | `{ sessions: [{ id, scenarioId, createdAt, status, turns, label, favorite, completed, objectives }] }` |
 | `GET` | `/api/sessions/:id` | one run's full record | `SessionRecord` (ordered turns + final objectives) |
@@ -156,6 +156,38 @@ assets are discouraged (the linter flags them). Abbreviated from `cafe.json`:
 `{{TOKEN}}` markers in image prompts are catalog labels — they anchor the generated image to that
 asset's canonical render. The rubric for authoring all of this is in
 [scenario-authoring.md](scenario-authoring.md).
+
+## A rehearsal dialogue
+
+`server/dialogues/<scenario>-<level>.json` — a pre-authored branching decision tree paired with a
+scenario, one file per competency level. Loaded by [`server/dialogues.ts`](../server/dialogues.ts),
+grouped by `scenarioId`, level-sorted. Rehearsal only: no session, no crediting. Full treatment:
+[rehearsal-dialogues.md](rehearsal-dialogues.md).
+
+```ts
+type DialogueSpeaker = "baker" | "client";   // NPC vs learner-stand-in
+
+interface DialogueNode {
+  speaker: DialogueSpeaker;
+  sl: string;               // the line — the on-screen caption AND the audio cache key
+  en: string;               // English gloss (click-to-reveal)
+  deliverySL?: string;      // optional: sl WITH inline eleven_v3 audio tags — SYNTHESIZED instead of sl
+                            //   (sl still keys the cache & shows on screen); absent → synthesize sl plainly
+  next: string[];           // baker node → its client choices ; client node → [single baker id] ; [] = end
+}
+
+interface Dialogue {
+  id: string; scenarioId: string;
+  level: number;            // 1..N ascending; unique per scenario
+  levelLabel: string;       // tab label (e.g. "Survival")
+  title: string;
+  objectives: { label: string; descriptorEN: string }[];   // DISPLAY ONLY — no crediting
+  audio: "pending" | "ready";                               // gates the client's play buttons (cost gate)
+  voices: Record<DialogueSpeaker, string>;                  // per-speaker catalog voice profile id
+  root: string;             // must be a baker node
+  nodes: Record<string, DialogueNode>;
+}
+```
 
 ## A session record
 

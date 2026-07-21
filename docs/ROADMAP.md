@@ -36,6 +36,11 @@ run and open enough to spread. Each requirement maps to one piece below.
    critic → ship. A `--self-directed` mode discovers the best *next* scenario itself, from the existing
    repertoire + the research principles. *(runs today as an agent skill)*
 
+Also built — a lighter third conversation surface: **rehearsal decision-tree dialogues.** Pre-authored
+branching exchanges paired with a scenario at ascending competency levels, with pregenerated per-speaker
+audio and optional delivery-note voice direction. Comprehensible-input *preview* (no mic, no credit);
+[rehearsal-dialogues.md](rehearsal-dialogues.md). The plan for what this becomes is item 12.
+
 **To build — in dependency order**
 
 4. **Memory across sessions — ✅ BUILT (the mastery loop)** *(unlocks 5).* Implemented as the durable
@@ -105,6 +110,17 @@ run and open enough to spread. Each requirement maps to one piece below.
 11. **Pronunciation review on record-and-compare.** Add a pronunciation-feedback feature to the existing
     record-and-compare practice. Record-and-compare is local and unassessed today, so it does not feed
     the mastery loop; this would give it its own pronunciation review.
+12. **Introduce-then-reinforce loop — rehearsal dialogue → free chat** *(builds on 4; folds into 5).*
+    Make the **rehearsal decision-tree dialogue the primary way to introduce new catalog items**: the
+    learner first *meets* new vocabulary/patterns by clicking through a branching exchange that uses
+    them (comprehensible input, hear-and-read, no pressure), then is **handed off into free chat to
+    reinforce** those same items toward mastery. The division of labour that the iterations surfaced —
+    **click-through introduces, free chat reinforces.** Requires: (a) tying each dialogue's introduced
+    items to catalog **learnables** (so "what was just introduced" is a concrete set); (b) a handoff
+    from the rehearsal overlay into a **free-chat session seeded/biased toward those items** (reusing
+    the seed + situation-first selection machinery); and (c) selection of *which* dialogue/level to
+    introduce next from the learner model — which is the item-5 "tutor that leads" surface. Until then
+    the rehearsal dialogue stays a standalone preview and credits nothing.
 
 ## The critical path
 
