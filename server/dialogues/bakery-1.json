@@ -5,31 +5,163 @@
   "levelLabel": "Survival",
   "title": "Buy bread — the basics",
   "objectives": [
-    { "label": "Greet back", "descriptorEN": "Return the baker's greeting appropriately." },
-    { "label": "Order one loaf", "descriptorEN": "Ask for one loaf of bread using the masculine accusative." },
-    { "label": "Order two rolls", "descriptorEN": "Ask for two rolls using the dual number." },
-    { "label": "Ask the price", "descriptorEN": "Ask how much the order costs." },
-    { "label": "Pay & leave", "descriptorEN": "Close the transaction and say goodbye." }
+    {
+      "label": "Greet back",
+      "descriptorEN": "Return the baker's greeting appropriately."
+    },
+    {
+      "label": "Order one loaf",
+      "descriptorEN": "Ask for one loaf of bread using the masculine accusative."
+    },
+    {
+      "label": "Order two rolls",
+      "descriptorEN": "Ask for two rolls using the dual number."
+    },
+    {
+      "label": "Ask the price",
+      "descriptorEN": "Ask how much the order costs."
+    },
+    {
+      "label": "Pay & leave",
+      "descriptorEN": "Close the transaction and say goodbye."
+    }
   ],
   "audio": "pending",
-  "voices": { "baker": "male-speaker", "client": "female-speaker" },
+  "voices": {
+    "baker": "shop-assistant",
+    "client": "female-speaker"
+  },
   "root": "b1",
   "nodes": {
-    "b1": { "speaker": "baker", "sl": "Dober dan, izvolite?", "en": "Good day, what can I get you?", "next": ["c1a", "c1b"] },
-    "c1a": { "speaker": "client", "sl": "Dober dan. En kruh, prosim.", "en": "Good day. One loaf, please.", "next": ["b2"] },
-    "c1b": { "speaker": "client", "sl": "Dober dan. Dve žemlji, prosim.", "en": "Good day. Two rolls, please.", "next": ["b2"] },
-    "b2": { "speaker": "baker", "sl": "Izvolite. Še kaj?", "en": "Here you are. Anything else?", "next": ["c2a", "c2b"] },
-    "c2a": { "speaker": "client", "sl": "Ja, še dve žemlji, prosim.", "en": "Yes, two rolls as well, please.", "next": ["b3"] },
-    "c2b": { "speaker": "client", "sl": "Ne, hvala, to je vse.", "en": "No thanks, that's everything.", "next": ["b3"] },
-    "b3": { "speaker": "baker", "sl": "Rogljički so danes sveži. Boste enega?", "en": "The croissants are fresh today. Would you like one?", "next": ["c3a", "c3b"] },
-    "c3a": { "speaker": "client", "sl": "Ja, en rogljiček, prosim.", "en": "Yes, one croissant, please.", "next": ["b4"] },
-    "c3b": { "speaker": "client", "sl": "Ne, hvala.", "en": "No, thank you.", "next": ["b4"] },
-    "b4": { "speaker": "baker", "sl": "Izvolite, dam v vrečko.", "en": "Here you go, I'll put it in a bag.", "next": ["c4a", "c4b"] },
-    "c4a": { "speaker": "client", "sl": "Koliko je vse skupaj?", "en": "How much is it altogether?", "next": ["b5"] },
-    "c4b": { "speaker": "client", "sl": "Lahko plačam s kartico?", "en": "Can I pay by card?", "next": ["b5card"] },
-    "b5": { "speaker": "baker", "sl": "Vse skupaj štiri evre deset. Izvolite.", "en": "Four euros ten altogether. Here you are.", "next": ["c5"] },
-    "b5card": { "speaker": "baker", "sl": "Ja, seveda, lahko. Vse skupaj štiri evre deset.", "en": "Yes, of course you can. Four euros ten altogether.", "next": ["c5"] },
-    "c5": { "speaker": "client", "sl": "Hvala, nasvidenje.", "en": "Thank you, goodbye.", "next": ["b6"] },
-    "b6": { "speaker": "baker", "sl": "Hvala enako, nasvidenje!", "en": "Thank you too, goodbye!", "next": [] }
+    "b1": {
+      "speaker": "baker",
+      "sl": "Dober dan, izvolite?",
+      "en": "Good day, what can I get you?",
+      "next": [
+        "c1a",
+        "c1b"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Dober dan. En kruh, prosim.",
+      "en": "Good day. One loaf, please.",
+      "next": [
+        "b2"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Dober dan. Dve žemlji, prosim.",
+      "en": "Good day. Two rolls, please.",
+      "next": [
+        "b2"
+      ]
+    },
+    "b2": {
+      "speaker": "baker",
+      "sl": "Izvolite. Še kaj?",
+      "en": "Here you are. Anything else?",
+      "next": [
+        "c2a",
+        "c2b"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Ja, še dve žemlji, prosim.",
+      "en": "Yes, two rolls as well, please.",
+      "next": [
+        "b3"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "Ne, hvala, to je vse.",
+      "en": "No thanks, that's everything.",
+      "next": [
+        "b3"
+      ]
+    },
+    "b3": {
+      "speaker": "baker",
+      "sl": "Rogljički so danes sveži. Boste enega?",
+      "en": "The croissants are fresh today. Would you like one?",
+      "next": [
+        "c3a",
+        "c3b"
+      ]
+    },
+    "c3a": {
+      "speaker": "client",
+      "sl": "Ja, en rogljiček, prosim.",
+      "en": "Yes, one croissant, please.",
+      "next": [
+        "b4"
+      ]
+    },
+    "c3b": {
+      "speaker": "client",
+      "sl": "Ne, hvala.",
+      "en": "No, thank you.",
+      "next": [
+        "b4"
+      ]
+    },
+    "b4": {
+      "speaker": "baker",
+      "sl": "Izvolite, dam v vrečko.",
+      "en": "Here you go, I'll put it in a bag.",
+      "next": [
+        "c4a",
+        "c4b"
+      ]
+    },
+    "c4a": {
+      "speaker": "client",
+      "sl": "Koliko je vse skupaj?",
+      "en": "How much is it altogether?",
+      "next": [
+        "b5"
+      ]
+    },
+    "c4b": {
+      "speaker": "client",
+      "sl": "Lahko plačam s kartico?",
+      "en": "Can I pay by card?",
+      "next": [
+        "b5card"
+      ]
+    },
+    "b5": {
+      "speaker": "baker",
+      "sl": "Vse skupaj štiri evre deset. Izvolite.",
+      "en": "Four euros ten altogether. Here you are.",
+      "next": [
+        "c5"
+      ]
+    },
+    "b5card": {
+      "speaker": "baker",
+      "sl": "Ja, seveda, lahko. Vse skupaj štiri evre deset.",
+      "en": "Yes, of course you can. Four euros ten altogether.",
+      "next": [
+        "c5"
+      ]
+    },
+    "c5": {
+      "speaker": "client",
+      "sl": "Hvala, nasvidenje.",
+      "en": "Thank you, goodbye.",
+      "next": [
+        "b6"
+      ]
+    },
+    "b6": {
+      "speaker": "baker",
+      "sl": "Hvala enako, nasvidenje!",
+      "en": "Thank you too, goodbye!",
+      "next": []
+    }
   }
 }

@@ -16,6 +16,7 @@ const BASE = "https://api.elevenlabs.io/v1/text-to-speech";
 const PROFILE_ENV: Record<string, string> = {
   "female-speaker": "ELEVENLABS_VOICE_ID",
   "male-speaker": "ELEVENLABS_VOICE_ID_MALE",
+  "shop-assistant": "ELEVENLABS_VOICE_ID_SHOP_ASSISTANT",
 };
 
 function requireKey(): string {
