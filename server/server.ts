@@ -16,7 +16,7 @@ import * as learner from "./assets/learner";
 import { inspect } from "./mastery";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
-import { getDialogueForScenario } from "./dialogues";
+import { getDialoguesForScenario } from "./dialogues";
 import { buildGalleryHtml } from "./scripts/gallery";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -80,9 +80,10 @@ app.get("/api/config", (req, res) => {
           }
         : null,
     },
-    // Rehearsal layer: the predetermined branching dialogue paired with this scenario (null if none).
-    // The whole tree is client-side data — it drives a click-through with no server turn.
-    dialogue: getDialogueForScenario(scenario.id),
+    // Rehearsal layer: the predetermined branching dialogues paired with this scenario, one per
+    // competency level (ascending), [] if none. Each whole tree is client-side data — the click-through
+    // runs with no server turn.
+    dialogues: getDialoguesForScenario(scenario.id),
     session: freshSession(scenario),
     scenarios: SCENARIOS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, status: s.status })),
     // Has this learner produced anything yet? If not, free conversation routes them into the seed.

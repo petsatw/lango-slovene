@@ -454,7 +454,8 @@ function storyGo(delta) {
 // the NPC ("baker") speaks, you pick among canned client replies, the NPC responds. Exposure only —
 // no mic, no server turn, no mastery credit. `dialogue.audio` gates the play buttons: while "pending"
 // (no audio built yet) the lines are click-through/translate only, so a preview can't bill a synth. ----
-let dialogue = null; // { title, audio, voices:{baker,client}, root, nodes } from /api/config
+let dialogues = [];  // [{ level, levelLabel, title, objectives, audio, voices, root, nodes }] from /api/config
+let dialogue = null; // the level currently open
 
 // Play one dialogue line in its speaker's voice (only reachable once dialogue.audio === "ready").
 function playDialogueLine(node) {
@@ -516,7 +517,7 @@ function renderChoices(bakerNode) {
     btn.className = "dialogue-choice restart";
     btn.type = "button";
     btn.textContent = "↻ Start over";
-    btn.addEventListener("click", openDialogue);
+    btn.addEventListener("click", startDialogueTree);
     wrap.appendChild(btn);
     return;
   }
@@ -542,13 +543,41 @@ function chooseClient(clientNodeId) {
   else renderChoices(cn); // client node with no continuation → offer restart
 }
 
-function openDialogue() {
-  if (!dialogue) return;
+// Level tabs — one per authored level (hidden when a scenario has only one).
+function renderLevelTabs() {
+  const bar = $("dialogue-levels");
+  bar.innerHTML = "";
+  if (dialogues.length < 2) return;
+  dialogues.forEach((d, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = `dialogue-level${d === dialogue ? " active" : ""}`;
+    b.textContent = `${d.level}. ${d.levelLabel}`;
+    b.addEventListener("click", () => selectDialogueLevel(i));
+    bar.appendChild(b);
+  });
+}
+
+// (Re)start the current level's tree from its root.
+function startDialogueTree() {
   $("dialogue-title").textContent = dialogue.title;
   $("dialogue-convo").innerHTML = "";
   $("dialogue-choices").innerHTML = "";
-  $("dialogue").hidden = false;
   presentBakerNode(dialogue.root);
+}
+
+function selectDialogueLevel(idx) {
+  dialogue = dialogues[idx];
+  renderLevelTabs();
+  startDialogueTree();
+}
+
+function openDialogue() {
+  if (!dialogues.length) return;
+  dialogue = dialogues[0];
+  $("dialogue").hidden = false;
+  renderLevelTabs();
+  startDialogueTree();
 }
 function closeDialogue() { $("dialogue").hidden = true; }
 
@@ -669,9 +698,10 @@ function applyConfig(cfg) {
   }
   $("practice-open").hidden = !objectivesMeta.length;
 
-  // Rehearsal dialogue (optional per scenario): the whole branching tree ships in the config payload.
-  dialogue = cfg.dialogue || null;
-  $("dialogue-open").hidden = !dialogue;
+  // Rehearsal dialogues (optional per scenario): every level's branching tree ships in the config.
+  dialogues = cfg.dialogues || [];
+  dialogue = null;
+  $("dialogue-open").hidden = !dialogues.length;
 
   learnerStarted = !!cfg.started;
   if (cfg.scenario.opening) addBubble("tutor", cfg.scenario.opening);

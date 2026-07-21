@@ -170,6 +170,13 @@ main {
 /* Rehearsal dialogue overlay — reuses .story-overlay/.story-card + the live .bubble styles inside. */
 .dialogue-card { display: flex; flex-direction: column; max-height: 82dvh; }
 .dialogue-card .practice-label { text-align: center; }
+.dialogue-levels { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin: 2px 0 2px; }
+.dialogue-level {
+  background: #20242c; color: var(--muted);
+  border: 1px solid #2b2f38; border-radius: 999px;
+  padding: 5px 12px; font-size: 12px; cursor: pointer;
+}
+.dialogue-level.active { color: #fff; background: var(--green); border-color: var(--green); }
 .dialogue-convo {
   flex: 1; overflow-y: auto;
   display: flex; flex-direction: column; gap: 10px;

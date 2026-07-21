@@ -30,10 +30,23 @@ export interface DialogueNode {
   next: string[];
 }
 
+/** A competency this rehearsal level demonstrates — DISPLAY ONLY (no crediting; mastery is earned live).
+ *  Shown to the learner so each level's "what you can do" is explicit. */
+export interface DialogueObjective {
+  label: string;
+  descriptorEN: string;
+}
+
 export interface Dialogue {
   id: string;
   scenarioId: string;
+  /** Competency level within the scenario: 1..N, ascending difficulty. A scenario may pair several. */
+  level: number;
+  /** Short human label for the level (e.g. "Survival", "Basic A1", "Full A1"). */
+  levelLabel: string;
   title: string;
+  /** What this level demonstrates — display only, drives the level's objective list. */
+  objectives: DialogueObjective[];
   /** "pending" until per-speaker audio is pregenerated; the client hides play buttons while pending so a
    *  preview click-through can't bill a live synthesis. Flip to "ready" only after `build:dialogue-assets`. */
   audio: DialogueAudioState;
@@ -67,6 +80,15 @@ export function validateDialogue(file: string, raw: any): Dialogue {
   asString(file, raw, "id", "dialogue");
   asString(file, raw, "scenarioId", "dialogue");
   asString(file, raw, "title", "dialogue");
+  if (typeof raw.level !== "number" || !Number.isInteger(raw.level) || raw.level < 1)
+    fail(file, `"level" must be a positive integer`);
+  asString(file, raw, "levelLabel", "dialogue");
+  if (!Array.isArray(raw.objectives) || !raw.objectives.length)
+    fail(file, `"objectives" must be a non-empty array`);
+  for (const o of raw.objectives) {
+    asString(file, o, "label", "objective");
+    asString(file, o, "descriptorEN", "objective");
+  }
   if (raw.audio !== "pending" && raw.audio !== "ready") fail(file, `"audio" must be "pending" | "ready"`);
   if (!raw.voices || typeof raw.voices !== "object") fail(file, `"voices" must be an object`);
   asProfile(file, raw.voices, "baker", "voices");
@@ -90,8 +112,9 @@ export function validateDialogue(file: string, raw: any): Dialogue {
   return raw as Dialogue;
 }
 
-export function loadDialogues(): Record<string, Dialogue> {
-  const out: Record<string, Dialogue> = {};
+/** All rehearsal dialogues, grouped by scenarioId and sorted ascending by level. */
+export function loadDialogues(): Record<string, Dialogue[]> {
+  const out: Record<string, Dialogue[]> = {};
   let files: string[];
   try {
     files = readdirSync(DIALOGUES_DIR).filter((f) => f.endsWith(".json")).sort();
@@ -100,14 +123,20 @@ export function loadDialogues(): Record<string, Dialogue> {
   }
   for (const f of files) {
     const d = validateDialogue(f, JSON.parse(readFileSync(path.join(DIALOGUES_DIR, f), "utf8")));
-    out[d.scenarioId] = d;
+    (out[d.scenarioId] ??= []).push(d);
+  }
+  for (const [scenarioId, list] of Object.entries(out)) {
+    list.sort((a, b) => a.level - b.level);
+    const levels = list.map((d) => d.level);
+    if (new Set(levels).size !== levels.length)
+      throw new Error(`Duplicate dialogue level for scenario "${scenarioId}": ${levels.join(", ")}`);
   }
   return out;
 }
 
-export const DIALOGUES: Record<string, Dialogue> = loadDialogues();
+export const DIALOGUES: Record<string, Dialogue[]> = loadDialogues();
 
-/** The rehearsal dialogue paired with a scenario, or null if none is authored. */
-export function getDialogueForScenario(scenarioId: string): Dialogue | null {
-  return DIALOGUES[scenarioId] ?? null;
+/** The rehearsal dialogues paired with a scenario (ascending by level), or [] if none is authored. */
+export function getDialoguesForScenario(scenarioId: string): Dialogue[] {
+  return DIALOGUES[scenarioId] ?? [];
 }

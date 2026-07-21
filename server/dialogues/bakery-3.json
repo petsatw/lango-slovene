@@ -1,0 +1,90 @@
+{
+  "id": "bakery-l3",
+  "scenarioId": "bakery",
+  "level": 3,
+  "levelLabel": "Full A1",
+  "title": "Ordering a cake ahead",
+  "objectives": [
+    { "label": "Order ahead (future)", "descriptorEN": "Order something for a future day using a modal or 'bi' + present." },
+    { "label": "Order for an occasion / number", "descriptorEN": "Specify a cake for a number of people and an occasion." },
+    { "label": "Compare + give a reason with 'ker'", "descriptorEN": "Ask which is fresher/cheaper and choose, giving a reason with 'ker'." },
+    { "label": "Check allergens / ingredients", "descriptorEN": "Ask whether a product contains an allergen and state your own allergy." },
+    { "label": "Handle sold-out + substitute", "descriptorEN": "React to an out-of-stock item and ask for a substitute with 'namesto'." },
+    { "label": "Confirm / summarize the order", "descriptorEN": "Read the whole order back and ask if it is correct." },
+    { "label": "Mild repair / correction", "descriptorEN": "Politely flag a price mistake or say you didn't understand and ask for a repeat." },
+    { "label": "Small talk + warm close", "descriptorEN": "Make brief weather small talk and close the exchange warmly." }
+  ],
+  "audio": "pending",
+  "voices": { "baker": "male-speaker", "client": "female-speaker" },
+  "root": "b1",
+  "nodes": {
+    "b1": { "speaker": "baker", "sl": "Dober dan, izvolite?", "en": "Good day, what can I get you?", "next": ["c1a", "c1b"] },
+    "c1a": { "speaker": "client", "sl": "Dober dan. Bi eno presto, prosim.", "en": "Good day. I'd like a pretzel, please.", "next": ["b2"] },
+    "c1b": { "speaker": "client", "sl": "Pozdravljeni. Bi en rogljiček, prosim.", "en": "Hello. I'd like a croissant, please.", "next": ["b2"] },
+
+    "b2": { "speaker": "baker", "sl": "Izvolite. Še kaj?", "en": "Here you go. Anything else?", "next": ["c2a", "c2b"] },
+    "c2a": { "speaker": "client", "sl": "Ja, rada bi naročila torto za jutri.", "en": "Yes, I'd like to order a cake for tomorrow.", "next": ["b3"] },
+    "c2b": { "speaker": "client", "sl": "Ja, ali lahko naročim torto za jutri?", "en": "Yes, can I order a cake for tomorrow?", "next": ["b3"] },
+
+    "b3": { "speaker": "baker", "sl": "Seveda. Za kdaj in za koliko oseb?", "en": "Of course. For when and for how many people?", "next": ["c3a", "c3b"] },
+    "c3a": { "speaker": "client", "sl": "Za jutri popoldne, za štiri osebe.", "en": "For tomorrow afternoon, for four people.", "next": ["b4"] },
+    "c3b": { "speaker": "client", "sl": "Za jutri, za rojstni dan. Za šest oseb.", "en": "For tomorrow, for a birthday. For six people.", "next": ["b4"] },
+
+    "b4": { "speaker": "baker", "sl": "Prav. Katero torto želite? Imamo čokoladno in sadno.", "en": "Alright. Which cake would you like? We have chocolate and fruit.", "next": ["c4a", "c4b"] },
+    "c4a": { "speaker": "client", "sl": "Katera je bolj sveža?", "en": "Which one is fresher?", "next": ["b5"] },
+    "c4b": { "speaker": "client", "sl": "Katera je cenejša?", "en": "Which one is cheaper?", "next": ["b5"] },
+
+    "b5": { "speaker": "baker", "sl": "Obe sta sveži, danes pečeni. Sadna je malenkost cenejša.", "en": "Both are fresh, baked today. The fruit one is a touch cheaper.", "next": ["c5a", "c5b"] },
+    "c5a": { "speaker": "client", "sl": "Potem bom vzela sadno, ker je cenejša.", "en": "Then I'll take the fruit one, because it's cheaper.", "next": ["b6"] },
+    "c5b": { "speaker": "client", "sl": "Vzela bom čokoladno, ker je bolj okusna.", "en": "I'll take the chocolate one, because it's tastier.", "next": ["b6"] },
+
+    "b6": { "speaker": "baker", "sl": "Odlična izbira. Vas zanima kaj glede sestavin ali alergenov?", "en": "Excellent choice. Would you like to know anything about ingredients or allergens?", "next": ["c6a", "c6b"] },
+    "c6a": { "speaker": "client", "sl": "Ali torta vsebuje oreške?", "en": "Does the cake contain nuts?", "next": ["b7"] },
+    "c6b": { "speaker": "client", "sl": "Sem alergična na sezam. Ali vsebuje sezam?", "en": "I'm allergic to sesame. Does it contain sesame?", "next": ["b7"] },
+
+    "b7": { "speaker": "baker", "sl": "Oreškov ne dodajamo, lahko pa vsebuje sledove oreškov in sezama.", "en": "We don't add nuts, but it may contain traces of nuts and sesame.", "next": ["c7a", "c7b"] },
+    "c7a": { "speaker": "client", "sl": "Aha. Potem bo v redu, hvala.", "en": "I see. Then it'll be fine, thanks.", "next": ["b8"] },
+    "c7b": { "speaker": "client", "sl": "Hvala, da ste povedali. Bom pazila.", "en": "Thanks for telling me. I'll be careful.", "next": ["b8"] },
+
+    "b8": { "speaker": "baker", "sl": "Bomo dodali še kaj svežega? Priporočam danish s čokolado in pistacijami.", "en": "Shall we add something fresh? I recommend the chocolate-pistachio danish.", "next": ["c8a", "c8b"] },
+    "c8a": { "speaker": "client", "sl": "Ja, dva danish s pistacijami, prosim.", "en": "Yes, two pistachio danishes, please.", "next": ["b9"] },
+    "c8b": { "speaker": "client", "sl": "Ne, hvala, samo torto.", "en": "No, thanks, just the cake.", "next": ["b10"] },
+
+    "b9": { "speaker": "baker", "sl": "Joj, danish s pistacijami je pošel, nimamo ga več. Imamo pa navadne s čokolado. Bi te?", "en": "Oh, the pistachio danish is sold out, we don't have any more. But we have plain chocolate ones. Would you like those?", "next": ["c9a", "c9b"] },
+    "c9a": { "speaker": "client", "sl": "Lahko namesto tega dva navadna danish?", "en": "Can I have two plain danishes instead?", "next": ["b10"] },
+    "c9b": { "speaker": "client", "sl": "V redu, potem pa eno focaccio.", "en": "Alright, one focaccia then.", "next": ["b10"] },
+
+    "b10": { "speaker": "baker", "sl": "V redu. Je to vse?", "en": "Okay. Is that everything?", "next": ["c10a", "c10b"] },
+    "c10a": { "speaker": "client", "sl": "Torej: torto za jutri, ostalo pa za zdaj. Je tako prav?", "en": "So: the cake for tomorrow, the rest for now. Is that right?", "next": ["b11"] },
+    "c10b": { "speaker": "client", "sl": "Ja, to je vse, hvala.", "en": "Yes, that's all, thanks.", "next": ["b11"] },
+
+    "b11": { "speaker": "baker", "sl": "Tako je. Skupaj bo osem evrov in petdeset, prosim.", "en": "That's right. Altogether it'll be eight fifty, please.", "next": ["c11a", "c11b"] },
+    "c11a": { "speaker": "client", "sl": "Mislim, da ste se zmotili pri ceni.", "en": "I think you made a mistake with the price.", "next": ["b12"] },
+    "c11b": { "speaker": "client", "sl": "V redu, izvolite.", "en": "Alright, here you go.", "next": ["b13"] },
+
+    "b12": { "speaker": "baker", "sl": "Oprostite, imate prav. Sedem evrov in petdeset, ne osem.", "en": "Sorry, you're right. Seven fifty, not eight.", "next": ["c12a", "c12b"] },
+    "c12a": { "speaker": "client", "sl": "Ni panike. Izvolite deset.", "en": "No worries. Here's ten.", "next": ["b13"] },
+    "c12b": { "speaker": "client", "sl": "Aha, oprostite, nisem razumela. Koliko, prosim?", "en": "Ah, sorry, I didn't understand. How much, please?", "next": ["b12b"] },
+
+    "b12b": { "speaker": "baker", "sl": "Sedem evrov in petdeset, prosim.", "en": "Seven fifty, please.", "next": ["c12r"] },
+    "c12r": { "speaker": "client", "sl": "Aha, izvolite.", "en": "Ah, here you go.", "next": ["b13"] },
+
+    "b13": { "speaker": "baker", "sl": "Hvala. Vam dam vrečko?", "en": "Thank you. Shall I give you a bag?", "next": ["c13a", "c13b"] },
+    "c13a": { "speaker": "client", "sl": "Ja, prosim, eno vrečko.", "en": "Yes, please, one bag.", "next": ["b14"] },
+    "c13b": { "speaker": "client", "sl": "Ne, hvala, imam svojo.", "en": "No, thanks, I have my own.", "next": ["b14"] },
+
+    "b14": { "speaker": "baker", "sl": "Izvolite. Torta bo jutri pripravljena.", "en": "Here you go. The cake will be ready tomorrow.", "next": ["c14a", "c14b"] },
+    "c14a": { "speaker": "client", "sl": "Super. Jutri pridem po torto.", "en": "Great. I'll come for the cake tomorrow.", "next": ["b15"] },
+    "c14b": { "speaker": "client", "sl": "Odlično, hvala. Se vidimo jutri.", "en": "Excellent, thanks. See you tomorrow.", "next": ["b15"] },
+
+    "b15": { "speaker": "baker", "sl": "Kar računajte na to. Danes je pa res lepo vreme, kajne?", "en": "You can count on it. Lovely weather today, isn't it?", "next": ["c15a", "c15b"] },
+    "c15a": { "speaker": "client", "sl": "Ja, res je čudovito. Končno pomlad!", "en": "Yes, it's really wonderful. Spring at last!", "next": ["b16"] },
+    "c15b": { "speaker": "client", "sl": "Res lepo. Upam, da bo tako tudi jutri.", "en": "Really nice. I hope it stays like this tomorrow too.", "next": ["b16"] },
+
+    "b16": { "speaker": "baker", "sl": "Zagotovo. Lep dan še naprej!", "en": "Surely. Have a lovely day!", "next": ["c16a", "c16b"] },
+    "c16a": { "speaker": "client", "sl": "Hvala, enako! Nasvidenje.", "en": "Thanks, you too! Goodbye.", "next": ["b17"] },
+    "c16b": { "speaker": "client", "sl": "Enako, lep dan še naprej! Nasvidenje.", "en": "Same to you, have a lovely day! Goodbye.", "next": ["b17"] },
+
+    "b17": { "speaker": "baker", "sl": "Nasvidenje, se vidimo jutri!", "en": "Goodbye, see you tomorrow!", "next": [] }
+  }
+}
