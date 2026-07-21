@@ -38,7 +38,7 @@
       "descriptorEN": "Make brief weather small talk and close the exchange warmly."
     }
   ],
-  "audio": "pending",
+  "audio": "ready",
   "voices": {
     "baker": "shop-assistant",
     "client": "female-speaker"
@@ -52,7 +52,8 @@
       "next": [
         "c1a",
         "c1b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Dober dan, izvolite?"
     },
     "c1a": {
       "speaker": "client",
@@ -77,7 +78,8 @@
       "next": [
         "c2a",
         "c2b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Izvolite. Še kaj?"
     },
     "c2a": {
       "speaker": "client",
@@ -102,7 +104,8 @@
       "next": [
         "c3a",
         "c3b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Seveda. Za kdaj in za koliko oseb?"
     },
     "c3a": {
       "speaker": "client",
@@ -127,7 +130,8 @@
       "next": [
         "c4a",
         "c4b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Prav. Katero torto želite? Imamo čokoladno in sadno."
     },
     "c4a": {
       "speaker": "client",
@@ -152,7 +156,8 @@
       "next": [
         "c5a",
         "c5b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Obe sta sveži, danes pečeni. Sadna je malenkost cenejša."
     },
     "c5a": {
       "speaker": "client",
@@ -177,7 +182,8 @@
       "next": [
         "c6a",
         "c6b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Odlična izbira. Vas zanima kaj glede sestavin ali alergenov?"
     },
     "c6a": {
       "speaker": "client",
@@ -202,7 +208,8 @@
       "next": [
         "c7a",
         "c7b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Oreškov ne dodajamo, lahko pa vsebuje sledove oreškov in sezama."
     },
     "c7a": {
       "speaker": "client",
@@ -227,7 +234,8 @@
       "next": [
         "c8a",
         "c8b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Bomo dodali še kaj svežega? Priporočam danish s čokolado in pistacijami."
     },
     "c8a": {
       "speaker": "client",
@@ -252,7 +260,8 @@
       "next": [
         "c9a",
         "c9b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Joj, danish s pistacijami je pošel, nimamo ga več. Imamo pa navadne s čokolado. Bi te?"
     },
     "c9a": {
       "speaker": "client",
@@ -277,7 +286,8 @@
       "next": [
         "c10a",
         "c10b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] V redu. Je to vse?"
     },
     "c10a": {
       "speaker": "client",
@@ -302,7 +312,8 @@
       "next": [
         "c11a",
         "c11b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Tako je. Skupaj bo osem evrov in petdeset, prosim."
     },
     "c11a": {
       "speaker": "client",
@@ -327,7 +338,8 @@
       "next": [
         "c12a",
         "c12b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Oprostite, imate prav. Sedem evrov in petdeset, ne osem."
     },
     "c12a": {
       "speaker": "client",
@@ -351,7 +363,8 @@
       "en": "Seven fifty, please.",
       "next": [
         "c12r"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Sedem evrov in petdeset, prosim."
     },
     "c12r": {
       "speaker": "client",
@@ -368,7 +381,8 @@
       "next": [
         "c13a",
         "c13b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Hvala. Vam dam vrečko?"
     },
     "c13a": {
       "speaker": "client",
@@ -393,7 +407,8 @@
       "next": [
         "c14a",
         "c14b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Torta bo pa jutri pripravljena. Samo trenutek, vam še natisnem potrdilo za torto."
     },
     "c14a": {
       "speaker": "client",
@@ -418,7 +433,8 @@
       "next": [
         "c15a",
         "c15b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Oprostite za trenutek, tiskalnik je danes malo počasen."
     },
     "c15a": {
       "speaker": "client",
@@ -443,7 +459,8 @@
       "next": [
         "c16a",
         "c16b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Res je, čudovit dan. Tako, zdaj je natisnjeno, izvolite potrdilo."
     },
     "b16b": {
       "speaker": "baker",
@@ -452,7 +469,8 @@
       "next": [
         "c16a",
         "c16b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Hvala za potrpljenje. Tako, zdaj je natisnjeno, izvolite potrdilo."
     },
     "c16a": {
       "speaker": "client",
@@ -474,7 +492,8 @@
       "speaker": "baker",
       "sl": "Hvala enako, lep dan še naprej in nasvidenje!",
       "en": "Thank you likewise, have a nice day and goodbye!",
-      "next": []
+      "next": [],
+      "deliverySL": "[hesitant and a little apathetic] Hvala enako, lep dan še naprej in nasvidenje!"
     }
   }
 }

@@ -30,7 +30,7 @@
       "descriptorEN": "State a payment method and ask/understand the spoken price."
     }
   ],
-  "audio": "pending",
+  "audio": "ready",
   "voices": {
     "baker": "shop-assistant",
     "client": "female-speaker"
@@ -44,7 +44,8 @@
       "next": [
         "c1a",
         "c1b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Dober dan! Izvolite?"
     },
     "c1a": {
       "speaker": "client",
@@ -69,7 +70,8 @@
       "next": [
         "c2a",
         "c2b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Ja, imamo. Bel ali polnozrnat?"
     },
     "c2a": {
       "speaker": "client",
@@ -94,7 +96,8 @@
       "next": [
         "c3a",
         "c3b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Koliko kruha želite?"
     },
     "c3a": {
       "speaker": "client",
@@ -119,7 +122,8 @@
       "next": [
         "c4a",
         "c4b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Izvolite, sveže narezan. Boste še kaj?"
     },
     "c4a": {
       "speaker": "client",
@@ -144,7 +148,8 @@
       "next": [
         "c5a",
         "c5b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Izvolite. Bi še kakšno sladko pecivo?"
     },
     "c5a": {
       "speaker": "client",
@@ -169,7 +174,8 @@
       "next": [
         "c6a",
         "c6b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Daniša s čokolado žal ni več, imamo pa pirin s sirom. Bi enega?"
     },
     "b6b": {
       "speaker": "baker",
@@ -178,7 +184,8 @@
       "next": [
         "c6a",
         "c6b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Ja, seveda, pirin s sirom Tolminec. Bi enega?"
     },
     "c6a": {
       "speaker": "client",
@@ -203,7 +210,8 @@
       "next": [
         "c7a",
         "c7b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Prav. To bi bilo vse. Kako boste plačali?"
     },
     "c7a": {
       "speaker": "client",
@@ -228,7 +236,8 @@
       "next": [
         "c8a",
         "c8b"
-      ]
+      ],
+      "deliverySL": "[hesitant and a little apathetic] Štiri evre in petdeset centov. Boste rabili vrečko?"
     },
     "c8a": {
       "speaker": "client",
@@ -250,7 +259,8 @@
       "speaker": "baker",
       "sl": "Izvolite. Lep dan še naprej, nasvidenje!",
       "en": "Here you go. Have a nice day, goodbye!",
-      "next": []
+      "next": [],
+      "deliverySL": "[hesitant and a little apathetic] Izvolite. Lep dan še naprej, nasvidenje!"
     }
   }
 }
