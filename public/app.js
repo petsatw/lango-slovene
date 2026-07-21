@@ -457,10 +457,29 @@ function storyGo(delta) {
 let dialogues = [];  // [{ level, levelLabel, title, objectives, audio, voices, root, nodes }] from /api/config
 let dialogue = null; // the level currently open
 
-// Play one dialogue line in its speaker's voice (only reachable once dialogue.audio === "ready").
+let dialogueAudio = null; // the single dialogue clip currently playing (one channel — never overlap)
+
+function stopDialogueAudio() {
+  if (dialogueAudio) { try { dialogueAudio.pause(); } catch {} dialogueAudio = null; }
+}
+
+// Play one dialogue line in its speaker's voice; resolves when it ends (or errors). Supersedes any clip
+// already playing, so the customer and shop-assistant lines never sound at once. Keyed on node.sl.
 function playDialogueLine(node) {
-  const voice = dialogue.voices[node.speaker];
-  playReplyStreaming(node.sl, { scenarioId: session?.scenarioId, voice });
+  return new Promise((resolve) => {
+    stopDialogueAudio();
+    const voice = dialogue.voices[node.speaker];
+    const params = new URLSearchParams({ text: node.sl });
+    if (session?.scenarioId) params.set("scenarioId", session.scenarioId);
+    if (voice) params.set("voice", voice);
+    const audio = new Audio(`/api/speak?${params.toString()}`);
+    dialogueAudio = audio;
+    obs.state("speaking…");
+    const done = () => { if (dialogueAudio === audio) { dialogueAudio = null; obs.state("idle"); } resolve(); };
+    audio.onended = done;
+    audio.onerror = done;
+    audio.play().catch(done); // gesture already unlocked audio (the tap that opened / advanced the tree)
+  });
 }
 
 // Render one node as a chat bubble in the dialogue card. Baker → tutor (left), client → user (right).
@@ -532,15 +551,20 @@ function renderChoices(bakerNode) {
   }
 }
 
-// The learner picks a client line: show it, then advance to the baker's response (client.next[0]).
-function chooseClient(clientNodeId) {
+// The learner picks a client line: show it and (with audio) let the customer speak first, THEN present
+// the baker's response so the two voices play in turn, not on top of each other.
+async function chooseClient(clientNodeId) {
   const cn = dialogue.nodes[clientNodeId];
   $("dialogue-choices").innerHTML = "";
   dialogueBubble(cn);
-  if (dialogue.audio === "ready") playDialogueLine(cn);
   const nextBaker = (cn.next || [])[0];
-  if (nextBaker) presentBakerNode(nextBaker);
-  else renderChoices(cn); // client node with no continuation → offer restart
+  const advance = () => (nextBaker ? presentBakerNode(nextBaker) : renderChoices(cn));
+  if (dialogue.audio === "ready") {
+    await playDialogueLine(cn); // customer speaks…
+    advance();                  // …then the shop assistant replies
+  } else {
+    advance();
+  }
 }
 
 // Level tabs — one per authored level (hidden when a scenario has only one).
@@ -560,6 +584,7 @@ function renderLevelTabs() {
 
 // (Re)start the current level's tree from its root.
 function startDialogueTree() {
+  stopDialogueAudio();
   $("dialogue-title").textContent = dialogue.title;
   $("dialogue-convo").innerHTML = "";
   $("dialogue-choices").innerHTML = "";
@@ -579,7 +604,7 @@ function openDialogue() {
   renderLevelTabs();
   startDialogueTree();
 }
-function closeDialogue() { $("dialogue").hidden = true; }
+function closeDialogue() { stopDialogueAudio(); $("dialogue").hidden = true; }
 
 // ---- M6: Past runs — replay a captured session turn-by-turn, free (audio served from the store) ----
 
