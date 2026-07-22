@@ -23,6 +23,7 @@ let objectivesMeta = [];     // [{ id, label, targetSL }] from /api/config
 let runId = null;            // unique id for THIS run — groups turns into one captured SessionRecord
 let freeChat = 0;            // 0 = off (scenario turns) ; 1 = free-conversation level 1 ; 2 = level 2
 let chatRole = null;         // free chat: the role the tutor pinned this session (carried back each turn)
+let chatFocus = [];          // free chat: learnable ids to bias this session toward (set by a rehearsal handoff)
 let learnerStarted = false;  // has the learner produced anything yet? (from /api/config) — if not, free chat → seed
 
 // A readable, filesystem-safe run id: <scenario>-<timestamp>-<rand>. One run per page load, so a
@@ -253,7 +254,7 @@ async function stopRecordingAndSend() {
       ? await fetch("/api/converse", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ audioBase64, mimeType: "audio/wav", history, level: freeChat, role: chatRole }),
+          body: JSON.stringify({ audioBase64, mimeType: "audio/wav", history, level: freeChat, role: chatRole, focusLearnables: chatFocus }),
         })
       : await fetch("/api/turn", {
           method: "POST",
@@ -588,7 +589,18 @@ function startDialogueTree() {
   $("dialogue-title").textContent = dialogue.title;
   $("dialogue-convo").innerHTML = "";
   $("dialogue-choices").innerHTML = "";
+  // Offer the "try it for real" handoff whenever this level ties itself to catalog learnables.
+  $("dialogue-handoff").hidden = !(dialogue.introduces && dialogue.introduces.length);
   presentBakerNode(dialogue.root);
+}
+
+// Introduce→reinforce handoff (roadmap 12b): leave the rehearsed tree and open a free chat biased toward
+// exactly the learnables THIS level introduced. Rehearsal credits nothing; the free chat is where mastery
+// accrues — the server puts the introduced set in play and the existing witness crediting takes over.
+function reinforceFromDialogue() {
+  const focus = (dialogue && dialogue.introduces) || [];
+  closeDialogue();
+  applyChatMode(3, focus); // 3 = L2 free chat, carrying the just-introduced set as the focus bias
 }
 
 function selectDialogueLevel(idx) {
@@ -844,11 +856,12 @@ async function beginFreeChat() {
 // clears the chat surface; Tutorial hands off to the scripted seed, L1/L2 to model free conversation.
 const CHAT_MODES = ["off", "tutorial", "L1", "L2"];
 const CHAT_LABELS = { off: "off", tutorial: "Tutorial", L1: "L1", L2: "L2" };
-function applyChatMode(idx) {
+function applyChatMode(idx, focus = []) {
   chatModeIdx = idx;
   const mode = CHAT_MODES[idx];
   seedActive = false;
   freeChat = 0;
+  chatFocus = focus; // biased only when a rehearsal handoff passes the just-introduced set; else a plain chat
   const t = $("freechat-toggle");
   t.textContent = `💬 Free chat: ${CHAT_LABELS[mode]}`;
   t.setAttribute("aria-pressed", String(mode !== "off"));
@@ -901,6 +914,7 @@ async function init() {
   // Rehearsal dialogue controls.
   $("dialogue-open").addEventListener("click", openDialogue);
   $("dialogue-close").addEventListener("click", closeDialogue);
+  $("dialogue-handoff").addEventListener("click", reinforceFromDialogue);
 
   // Story player controls.
   $("story-open").addEventListener("click", openStory);

@@ -194,6 +194,16 @@ main {
 .dialogue-choice:active { transform: scale(0.99); }
 .dialogue-choice.restart { text-align: center; background: var(--green); border-color: var(--green); }
 .dialogue-hint { color: var(--muted); font-size: 12px; text-align: center; margin: 8px 0 0; }
+/* Introduce→reinforce handoff: leaves the tree for a free chat biased to the introduced learnables. */
+.dialogue-handoff {
+  width: 100%; text-align: center;
+  background: var(--green); color: #fff;
+  border: 1px solid var(--green); border-radius: 12px;
+  padding: 12px 14px; font-size: 15px; font-weight: 600; cursor: pointer;
+  margin-top: 10px;
+}
+.dialogue-handoff:hover { background: var(--green-press); border-color: var(--green-press); }
+.dialogue-handoff:active { transform: scale(0.99); }
 
 .story-overlay {
   position: fixed; inset: 0; z-index: 20;
