@@ -17,7 +17,7 @@ GEMINI_MODEL=gemini-3.5-flash
 ELEVENLABS_API_KEY=
 ELEVENLABS_VOICE_ID=
 ELEVENLABS_VOICE_ID_MALE=
-ELEVENLABS_MODEL_ID=eleven_v3
+ELEVENLABS_VOICE_ID_SHOP_ASSISTANT=
 
 # --- E4: xAI Grok image generation (scenario story-frame + scene images) ---
 # Endpoint is OpenAI-compatible (https://api.x.ai/v1/images/generations). grok-imagine-image-quality
