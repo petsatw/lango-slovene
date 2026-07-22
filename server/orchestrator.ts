@@ -131,6 +131,7 @@ export async function converse(input: {
   seedId?: string; // when set, the SEED adapter serves a scripted dialogue instead of the model
   begin?: boolean; // return the opening line, credit nothing (seed step 0, or free chat's "Začnemo?")
   role?: string | null; // free chat: the pinned role the client carries back each turn (null = decide)
+  focusLearnables?: string[]; // rehearsal→free-chat handoff: bias this turn's targets toward these ids
 }): Promise<ConverseResult> {
   const model = learner.load();
 
@@ -184,7 +185,7 @@ export async function converse(input: {
 
   if (!input.audioBase64 || !input.mimeType) throw new Error("converse requires audio");
   const level: 1 | 2 = input.level === 1 ? 1 : 2;
-  const { familiar, targets } = selectForWitness(model, level);
+  const { familiar, targets } = selectForWitness(model, level, input.focusLearnables ?? []);
   const systemPrompt = buildConversationPrompt(familiar, targets, undefined, input.role);
   const e2 = getE2();
   if (!e2.witness) {

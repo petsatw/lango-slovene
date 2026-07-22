@@ -9,8 +9,16 @@ import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { applyCredit, presentObjective, statusOf, THRESHOLD } from "../mastery";
-import type { LearnableProgress, LearnerModel, Objective } from "../types";
+import {
+  applyCredit,
+  creditFromEvidence,
+  presentObjective,
+  selectForWitness,
+  statusOf,
+  THRESHOLD,
+  WITNESS_TARGET_CAP,
+} from "../mastery";
+import type { LearnableProgress, LearnerModel, Objective, WitnessResult } from "../types";
 
 let failures = 0;
 function check(name: string, cond: boolean, detail = ""): void {
@@ -117,6 +125,60 @@ console.log("presentObjective:");
   // objective without learnables → null (back-compat, prompt falls back to today)
   const legacy: Objective = { id: "x", label: "X", targetSL: "T", hintEN: "H" };
   check("objective without learnables → null presentation", presentObjective(legacy, fresh()) === null);
+}
+
+// ---- unit: selectForWitness focus set — the rehearsal→free-chat handoff bias (roadmap 12b) ---------
+console.log("selectForWitness (focus set):");
+{
+  // A learner who has touched `kava` once — so `familiar` is non-empty and level-1 adds no generic edge,
+  // isolating the focus behaviour. voda/caj are UNSEEN (never touched).
+  const model = credit(fresh(), "kava", "attempt", 1);
+
+  // Focus ids lead the target list, and unseen focus items are force-included.
+  let s = selectForWitness(model, 1, ["voda", "caj"]);
+  check("focus ids lead the targets, in order", s.targets[0]?.id === "voda" && s.targets[1]?.id === "caj",
+    s.targets.map((t) => t.id).join());
+  check("unseen focus items are force-included as targets", s.targets.some((t) => t.id === "voda") && s.targets.some((t) => t.id === "caj"));
+  check("the ripe working item still rides along after the focus set", s.targets.some((t) => t.id === "kava"));
+
+  // Dedup: a focus id that is also a working item appears once, at the front.
+  s = selectForWitness(model, 1, ["kava", "voda"]);
+  check("focus id also in working is deduped to one entry", s.targets.filter((t) => t.id === "kava").length === 1);
+  check("the deduped focus id still leads", s.targets[0]?.id === "kava");
+
+  // Cap: more focus ids than the cap → sliced to the cap, focus order preserved.
+  const many = ["kava", "voda", "caj", "prosim", "hvala", "ja", "ne", "dober_dan", "zacnemo"]; // 9 > cap(8)
+  s = selectForWitness(model, 1, many);
+  check("targets are clamped to WITNESS_TARGET_CAP", s.targets.length === WITNESS_TARGET_CAP);
+  check("clamp keeps the leading focus ids", s.targets.slice(0, 3).map((t) => t.id).join() === "kava,voda,caj");
+}
+
+// ---- unit: the credit FIREWALL holds under a focus set — biasing WHAT is in play never widens credit -
+console.log("focus set + credit firewall:");
+{
+  const model = credit(fresh(), "kava", "attempt", 1);
+  const { targets } = selectForWitness(model, 1, ["voda"]); // voda is unseen but now a target
+
+  const wit = (t: Partial<WitnessResult>): WitnessResult => ({
+    reply: "", replyGloss: "", transcriptVerbatim: "", userGloss: "", utteranceLang: "sl",
+    targets: [], observed: [], ...t,
+  });
+
+  // An UNSEEN focus target, produced correctly in Slovene with a matching span → earns a real success.
+  const c1 = creditFromEvidence(model, wit({
+    transcriptVerbatim: "voda",
+    targets: [{ id: "voda", produced: true, said: "voda", saidLang: "sl", correct: true, confidence: 1 }],
+  }), targets);
+  check("unseen focus target produced correctly → a real success", c1.model.learnables.voda?.successes === 1,
+    JSON.stringify(c1.progress));
+
+  // A Slovene item the learner produced that is NOT in the target set → NOT credited (firewall). Focus
+  // biases the in-play set; it does not make off-target Slovene claimable as a success.
+  const c2 = creditFromEvidence(model, wit({
+    transcriptVerbatim: "hvala",
+    targets: [{ id: "hvala", produced: true, said: "hvala", saidLang: "sl", correct: true, confidence: 1 }],
+  }), targets);
+  check("a non-target Slovene claim earns no success (firewall)", !c2.model.learnables.hvala);
 }
 
 // ---- integration: the learner store round-trips through a real temp file ----------------------------

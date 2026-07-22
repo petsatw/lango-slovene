@@ -213,6 +213,7 @@ export interface WitnessSelection {
 export function selectForWitness(
   model: LearnerModel,
   level: 1 | 2,
+  focusIds: string[] = [],
   threshold = THRESHOLD,
 ): WitnessSelection {
   const { familiar, working, newItems } = selectForConversation(model, level, threshold);
@@ -221,8 +222,23 @@ export function selectForWitness(
       (model.learnables[b.id]?.successes ?? 0) - (model.learnables[a.id]?.successes ?? 0) ||
       Number(!!b.core) - Number(!!a.core),
   );
-  const targets = [...orderedWorking, ...newItems].slice(0, WITNESS_TARGET_CAP);
-  return { familiar, targets };
+
+  // The rehearsal→free-chat handoff (roadmap 12b) hands in the just-introduced learnable set. Those
+  // FOCUS items LEAD the target list — the reinforce half of introduce-then-reinforce — and are
+  // force-included even if the learner has never touched them (a freshly-introduced item is unseen but
+  // must still be creditable so producing it live earns a success). Then the ripest working items, then
+  // the generic edge; dedup by id and cap. The credit firewall is unchanged: only `targets` can earn a
+  // success (creditFromEvidence gates on this set), so biasing WHAT is in play never widens the surface.
+  const focus = focusIds.map((id) => LEARNABLES[id]).filter(Boolean) as Learnable[];
+  const seen = new Set<string>();
+  const targets: Learnable[] = [];
+  for (const l of [...focus, ...orderedWorking, ...newItems]) {
+    if (!seen.has(l.id)) {
+      seen.add(l.id);
+      targets.push(l);
+    }
+  }
+  return { familiar, targets: targets.slice(0, WITNESS_TARGET_CAP) };
 }
 
 /** Normalize a Slovene surface for catalog lookup: lowercase, drop punctuation, collapse whitespace. */
