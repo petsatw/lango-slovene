@@ -49,5 +49,143 @@
     "core": true,
     "rank": 3,
     "predictableError": "wrong gender form ('rad' vs 'rada') for the speaker"
+  },
+
+  "en_masacc": {
+    "kind": "pattern",
+    "sl": "En ___, prosim.",
+    "gloss": "one ___, please (masc.)",
+    "predictableError": "using feminine 'eno' with a masculine noun ('eno kruh') instead of 'en kruh'"
+  },
+  "dve_dualacc": {
+    "kind": "pattern",
+    "sl": "Dve ___, prosim.",
+    "gloss": "two ___, please (dual)",
+    "predictableError": "plural instead of the dual ('dve žemlje' instead of 'dve žemlji'), or masculine 'dva' for a feminine noun"
+  },
+  "kruh": { "kind": "vocabulary", "sl": "kruh", "gloss": "bread; loaf" },
+  "zemlja": { "kind": "vocabulary", "sl": "žemlja", "gloss": "bread roll" },
+  "rogljicek": { "kind": "vocabulary", "sl": "rogljiček", "gloss": "croissant" },
+  "placam_s_kartico": {
+    "kind": "chunk",
+    "sl": "Lahko plačam s kartico?",
+    "gloss": "can I pay by card?",
+    "predictableError": "'s kartico' — using nominative 'kartica' instead of the instrumental after 's'"
+  },
+
+  "ali_imate": {
+    "kind": "pattern",
+    "sl": "Ali imate ___?",
+    "gloss": "do you have ___?",
+    "predictableError": "calquing English 'do you have' with an extra auxiliary; it's just 'Ali imate ___?', and the object stays accusative"
+  },
+  "pol_kilograma": {
+    "kind": "chunk",
+    "sl": "Pol kilograma, prosim.",
+    "gloss": "half a kilo, please",
+    "predictableError": "'pol kilogram' — dropping the genitive 'kilograma' after 'pol'"
+  },
+  "dekagram": {
+    "kind": "vocabulary",
+    "sl": "dekagram",
+    "gloss": "decagram (10 g; colloq. 'deka')",
+    "predictableError": "genitive plural after numerals 5+ ('dvajset dekagramov'), not 'dekagrami'"
+  },
+  "raje": {
+    "kind": "pattern",
+    "sl": "Raje ___.",
+    "gloss": "I'd rather (have) ___",
+    "predictableError": "rendering 'rather' as a whole clause instead of the one-word 'raje' + the item, and forgetting to decline the following demonstrative/adjective ('raje tisti beli')"
+  },
+  "tisti": {
+    "kind": "vocabulary",
+    "sl": "tisti",
+    "gloss": "that (one) — distal demonstrative",
+    "predictableError": "leaving the demonstrative uninflected; it agrees in case+gender ('tega belega' in the accusative)"
+  },
+  "svez": {
+    "kind": "vocabulary",
+    "sl": "svež",
+    "gloss": "fresh",
+    "predictableError": "'svež štručka' instead of the agreed 'sveža štručka' — not agreeing the adjective to the noun's gender"
+  },
+  "topel": {
+    "kind": "vocabulary",
+    "sl": "topel",
+    "gloss": "warm",
+    "predictableError": "'topel' drops the -e- when inflected: topla, toplo ('eno toplo štručko')"
+  },
+  "koliko_sem_dolzna": {
+    "kind": "chunk",
+    "sl": "Koliko sem dolžen / dolžna?",
+    "gloss": "how much do I owe?",
+    "predictableError": "gender of the adjective — a man says 'dolžen', a woman 'dolžna'"
+  },
+
+  "torta": {
+    "kind": "vocabulary",
+    "sl": "torta",
+    "gloss": "cake",
+    "predictableError": "accusative 'torto' as the object ('Rada bi torto'), not 'torta'"
+  },
+  "narociti": {
+    "kind": "vocabulary",
+    "sl": "naročiti",
+    "gloss": "to order / book (ahead)",
+    "predictableError": "gender on the l-participle after 'bi' ('naročila' fem. / 'naročil' masc.)"
+  },
+  "za_osebe": {
+    "kind": "pattern",
+    "sl": "za ___ osebe",
+    "gloss": "for ___ people",
+    "predictableError": "genitive plural for 5+ ('za pet oseb') vs. 'za štiri osebe'"
+  },
+  "katera_bolj": {
+    "kind": "pattern",
+    "sl": "Katera je bolj ___?",
+    "gloss": "which one is more ___?",
+    "predictableError": "using analytic 'bolj' with adjectives that take a synthetic comparative ('cenejša', not 'bolj poceni')"
+  },
+  "ker": {
+    "kind": "pattern",
+    "sl": "___, ker ___.",
+    "gloss": "___, because ___",
+    "predictableError": "confusing 'ker' (because — gives a cause) with 'zato' (so — gives a result)"
+  },
+  "vsebuje": {
+    "kind": "pattern",
+    "sl": "Ali vsebuje ___?",
+    "gloss": "does it contain ___?",
+    "predictableError": "the ingredient stays accusative ('Ali vsebuje sezam / oreške?'); one verb 'vsebuje', don't add 'ima'"
+  },
+  "alergicen_na": {
+    "kind": "chunk",
+    "sl": "Sem alergična na ___.",
+    "gloss": "I'm allergic to ___",
+    "predictableError": "gender ('alergičen' masc. / 'alergična' fem.) and 'na' + accusative ('na sezam'), not 'za'"
+  },
+  "namesto": {
+    "kind": "pattern",
+    "sl": "namesto ___",
+    "gloss": "instead of ___",
+    "predictableError": "genitive after 'namesto' ('namesto tega'), not nominative 'namesto to'"
+  },
+  "je_tako_prav": {
+    "kind": "chunk",
+    "sl": "Je tako prav?",
+    "gloss": "is that right?",
+    "predictableError": "use the set 'Je tako prav?'; don't calque 'Is it correct?' with 'pravilno'"
+  },
+  "oprostite": {
+    "kind": "vocabulary",
+    "sl": "oprostite",
+    "gloss": "sorry / excuse me (vi)",
+    "predictableError": "'oprostite' is for apology/getting attention; not 'žal mi je' (which is regret/condolence)"
+  },
+  "lepo_vreme": {
+    "kind": "chunk",
+    "sl": "Lepo vreme, kajne?",
+    "gloss": "nice weather, isn't it?",
+    "predictableError": "the tag is 'kajne?' (isn't it?), not an English-style 'ni res?' calque"
   }
 }
