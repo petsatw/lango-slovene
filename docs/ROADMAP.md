@@ -38,8 +38,10 @@ run and open enough to spread. Each requirement maps to one piece below.
 
 Also built — a lighter third conversation surface: **rehearsal decision-tree dialogues.** Pre-authored
 branching exchanges paired with a scenario at ascending competency levels, with pregenerated per-speaker
-audio and optional delivery-note voice direction. Comprehensible-input *preview* (no mic, no credit);
-[rehearsal-dialogues.md](rehearsal-dialogues.md). The plan for what this becomes is item 12.
+audio and optional delivery-note voice direction. Comprehensible-input *introduction* (no mic, no credit
+from the tree), now tied to catalog learnables and wired to hand the learner into a biased free chat that
+reinforces them — the introduce-then-reinforce loop; [rehearsal-dialogues.md](rehearsal-dialogues.md).
+Item 12 (a+b) is built; what remains is auto-selecting which dialogue comes next (item 5).
 
 **To build — in dependency order**
 
@@ -115,12 +117,19 @@ audio and optional delivery-note voice direction. Comprehensible-input *preview*
     learner first *meets* new vocabulary/patterns by clicking through a branching exchange that uses
     them (comprehensible input, hear-and-read, no pressure), then is **handed off into free chat to
     reinforce** those same items toward mastery. The division of labour that the iterations surfaced —
-    **click-through introduces, free chat reinforces.** Requires: (a) tying each dialogue's introduced
-    items to catalog **learnables** (so "what was just introduced" is a concrete set); (b) a handoff
-    from the rehearsal overlay into a **free-chat session seeded/biased toward those items** (reusing
-    the seed + situation-first selection machinery); and (c) selection of *which* dialogue/level to
-    introduce next from the learner model — which is the item-5 "tutor that leads" surface. Until then
-    the rehearsal dialogue stays a standalone preview and credits nothing.
+    **click-through introduces, free chat reinforces.** Sub-parts:
+    - **(a) tie each dialogue level to catalog learnables — ✅ BUILT.** An `introduces: string[]` on the
+      dialogue references catalog **learnables**, so "what was just introduced" is a concrete set. The
+      learnables are *derived from the dialogue's own approved lines* through a gated authoring step
+      (author emits a catalog delta → critic → `npm run lint:dialogue` reconciles, dedup by canonical
+      `sl`) — a repeatable process, not a one-off. Mechanics: [rehearsal-dialogues.md](rehearsal-dialogues.md).
+    - **(b) hand off into a biased free chat — ✅ BUILT.** A "try it for real" button drops the learner
+      from the tree into a free-chat session whose in-play target set is biased toward the introduced
+      learnables (`selectForWitness` focus set), where the *existing* witness crediting earns mastery.
+      The credit firewall is unchanged — biasing what's in play never widens what counts.
+    - **(c) select *which* dialogue/level next — deferred to item 5** (the "tutor that leads"). Today the
+      learner/operator picks the level.
+    Rehearsal itself still credits nothing; mastery is only earned on the live mic.
 
 ## The critical path
 

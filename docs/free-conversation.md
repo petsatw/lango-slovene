@@ -89,6 +89,8 @@ By default the tutor is a **plain language tutor with no setting**. But when the
 
 **The "tutor that leads" (deferred) owns the *taste*:** the genuinely hard "which situation, which few of hundreds, and when" — real spaced scheduling, reading what the learner cares about, composing or generating fresh situations. This runs **off the clock** (between sessions, never in the live turn), and it plugs into the *same* selection seam the mastery loop exposes. The dumb version ships a good tutor; the smart version makes it great — but it is an optimization on top of an already-correct pick, not a prerequisite.
 
+**A caller may hand in a focus set.** The selection seam (`selectForWitness`) accepts an optional set of learnable ids to **bias this session toward** — used by the [rehearsal→free-chat handoff](rehearsal-dialogues.md#the-handoff--introduce-then-reinforce) to reinforce exactly the items a click-through dialogue just introduced. The focus ids lead the in-play target set and are force-included even if unseen (a freshly-introduced item must be immediately creditable). This biases *what is put in play*; it does **not** touch the firewall — only the target set can earn a success, so a richer or steered in-play set never widens what counts. It is the same "bound the credit surface, steer the input" dial as the level ceiling, just aimed at a named set instead of ripeness order.
+
 ---
 
 ## Failure modes this design exists to prevent
