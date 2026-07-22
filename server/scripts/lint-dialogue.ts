@@ -1,0 +1,77 @@
+// Deterministic integrity gate for the dialogue→catalog seam (the reconcile step of the repeatable
+// authoring procedure — docs/rehearsal-dialogues.md). The per-file loader (dialogues.ts) already
+// validates that every `introduces` id resolves; this lint adds the CROSS-catalog checks the loader
+// can't, so the catalog stays DRY as dialogues grow into the hundreds:
+//
+//   - dup canonical `sl`: no two learnables share a normalized surface (a word is minted ONCE and
+//     referenced by id everywhere; two "kruh"s would split crediting and is an authoring mistake).
+//   - referential integrity: every `introduces` id resolves in the catalog (restated cleanly here).
+//   - coverage report: which dialogue introduces which ids, and which catalog learnables are introduced
+//     by no dialogue (informational — the seed or a scenario may still own them).
+//
+//   npm run lint:dialogue
+//
+// Exit code 0 = pass, 1 = at least one integrity error (so the authoring procedure can gate on it).
+
+/** Normalize a Slovene surface for dedup: lowercase, drop punctuation + the slot marker, collapse space. */
+function normSurface(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/___/g, "")
+    .replace(/[.,!?¿¡;:"'()«»/]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function main() {
+  const errors: string[] = [];
+
+  // Loading the modules runs their startup validation. A hard schema/id error throws here — surface it
+  // as a lint failure rather than an uncaught stack.
+  let LEARNABLES: Record<string, { id: string; kind: string; sl: string }>;
+  let DIALOGUES: Record<string, Array<{ id: string; introduces: string[] }>>;
+  try {
+    ({ LEARNABLES } = await import("../learnables"));
+    ({ DIALOGUES } = await import("../dialogues"));
+  } catch (err: any) {
+    console.error(`❌ failed to load catalog/dialogues: ${err?.message}`);
+    process.exit(1);
+  }
+
+  // 1. Dup canonical sl across the whole learnable catalog.
+  const bySurface = new Map<string, string[]>();
+  for (const l of Object.values(LEARNABLES)) {
+    const n = normSurface(l.sl);
+    (bySurface.get(n) ?? bySurface.set(n, []).get(n)!).push(l.id);
+  }
+  for (const [surface, ids] of bySurface) {
+    if (ids.length > 1) errors.push(`duplicate canonical sl "${surface}" shared by learnables: ${ids.join(", ")}`);
+  }
+
+  // 2. Referential integrity + 3. coverage.
+  const dialogues = Object.values(DIALOGUES).flat();
+  const introducedBy = new Map<string, string[]>();
+  console.log("=== dialogue → introduced learnables ===");
+  for (const d of dialogues) {
+    for (const id of d.introduces) {
+      if (!LEARNABLES[id]) errors.push(`dialogue "${d.id}" introduces unknown learnable "${id}"`);
+      (introducedBy.get(id) ?? introducedBy.set(id, []).get(id)!).push(d.id);
+    }
+    console.log(`  ${d.id.padEnd(12)} introduces ${d.introduces.length}: ${d.introduces.join(", ") || "(none)"}`);
+  }
+
+  const orphans = Object.keys(LEARNABLES).filter((id) => !introducedBy.has(id));
+  console.log(`\n=== coverage ===`);
+  console.log(`  ${introducedBy.size}/${Object.keys(LEARNABLES).length} learnables are introduced by a dialogue.`);
+  console.log(`  not introduced by any dialogue (may be owned by the seed/scenarios): ${orphans.join(", ") || "none"}`);
+
+  if (errors.length) {
+    console.log(`\n=== ${errors.length} integrity error${errors.length === 1 ? "" : "s"} ===`);
+    for (const e of errors) console.log(`  ❌ ${e}`);
+    process.exit(1);
+  }
+  console.log(`\n✅ PASS — dialogue↔catalog integrity clean.`);
+  process.exit(0);
+}
+
+main();

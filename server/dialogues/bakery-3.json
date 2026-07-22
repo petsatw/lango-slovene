@@ -38,6 +38,19 @@
       "descriptorEN": "Make brief weather small talk and close the exchange warmly."
     }
   ],
+  "introduces": [
+    "katera_bolj",
+    "ker",
+    "vsebuje",
+    "namesto",
+    "alergicen_na",
+    "je_tako_prav",
+    "narociti",
+    "za_osebe",
+    "oprostite",
+    "lepo_vreme",
+    "torta"
+  ],
   "audio": "ready",
   "voices": {
     "baker": "shop-assistant",

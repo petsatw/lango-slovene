@@ -30,6 +30,16 @@
       "descriptorEN": "State a payment method and ask/understand the spoken price."
     }
   ],
+  "introduces": [
+    "ali_imate",
+    "raje",
+    "tisti",
+    "svez",
+    "topel",
+    "pol_kilograma",
+    "dekagram",
+    "koliko_sem_dolzna"
+  ],
   "audio": "ready",
   "voices": {
     "baker": "shop-assistant",

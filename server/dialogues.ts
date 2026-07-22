@@ -15,6 +15,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { CATALOG } from "./catalog";
+import { LEARNABLES } from "./learnables";
 
 export type DialogueSpeaker = "baker" | "client";
 export type DialogueAudioState = "pending" | "ready";
@@ -51,6 +52,11 @@ export interface Dialogue {
   title: string;
   /** What this level demonstrates — display only, drives the level's objective list. */
   objectives: DialogueObjective[];
+  /** The catalog learnable ids this level INTRODUCES — the concrete "what was just introduced" set that
+   *  the rehearsal→free-chat handoff biases free conversation toward (roadmap 12a). Every id must resolve
+   *  in the learnable catalog; a word is minted in the catalog ONCE and referenced by id here (and by any
+   *  other dialogue that reuses it). May be empty for a pure-review level that introduces nothing new. */
+  introduces: string[];
   /** "pending" until per-speaker audio is pregenerated; the client hides play buttons while pending so a
    *  preview click-through can't bill a live synthesis. Flip to "ready" only after `build:dialogue-assets`. */
   audio: DialogueAudioState;
@@ -92,6 +98,11 @@ export function validateDialogue(file: string, raw: any): Dialogue {
   for (const o of raw.objectives) {
     asString(file, o, "label", "objective");
     asString(file, o, "descriptorEN", "objective");
+  }
+  if (!Array.isArray(raw.introduces)) fail(file, `"introduces" must be an array of learnable ids`);
+  for (const id of raw.introduces) {
+    if (typeof id !== "string" || !LEARNABLES[id])
+      fail(file, `introduces: learnable "${id}" is not in the catalog`);
   }
   if (raw.audio !== "pending" && raw.audio !== "ready") fail(file, `"audio" must be "pending" | "ready"`);
   if (!raw.voices || typeof raw.voices !== "object") fail(file, `"voices" must be an object`);

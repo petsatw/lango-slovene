@@ -26,6 +26,14 @@
       "descriptorEN": "Close the transaction and say goodbye."
     }
   ],
+  "introduces": [
+    "kruh",
+    "en_masacc",
+    "zemlja",
+    "dve_dualacc",
+    "rogljicek",
+    "placam_s_kartico"
+  ],
   "audio": "ready",
   "voices": {
     "baker": "shop-assistant",
