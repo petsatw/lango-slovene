@@ -122,10 +122,11 @@ The next session will see legacy code that **contradicts the MVP intent**. These
 Marked **[OPERATOR]** (needs the product owner) or **[SESSION]** (the building session may default).
 Recommended default in **bold**.
 
-- **[OPERATOR] MVP content: Restaurant or Bakery?** The shipped, audio-ready content today is **bakery**
-  (3 levels, 74 clips, 25 learnables). "Restaurant" was used as the example. **Default: demo/build the
-  app on bakery now; author restaurant next via the retained tooling.** If restaurant must ship in the
-  MVP, that's added content-authoring scope (author+critic+lint+audio).
+- **[RESOLVED] MVP content: bakery + restaurant.** Bakery is built + audio-ready. **Restaurant is in
+  scope**, three levels derived from the operator's "Zmaj Slavko v restavraciji" infographic — full
+  authoring brief in **[restaurant-scenario.md](restaurant-scenario.md)** (panel→level mapping, voices
+  npc=`female-speaker`/client=`male-speaker`, the `baker`→`npc` speaker-enum generalization, per-level
+  concepts). Author via the gated procedure; audio is operator-triggered.
 - **[OPERATOR] Seed onboarding content.** The current seed teaches café-survival phrases. **Default: keep
   it as the tutor-interaction tutorial for the MVP** (its job is teaching *how to talk to the tutor*),
   revisit its content later.
@@ -180,6 +181,7 @@ verified headlessly).
 
 - Product ethos: [free-conversation.md](free-conversation.md) · rehearsal mode:
   [rehearsal-dialogues.md](rehearsal-dialogues.md) · mastery: [learnable-subsystem-spec.md](learnable-subsystem-spec.md)
+- MVP content brief: [restaurant-scenario.md](restaurant-scenario.md) (the second canned scenario)
 - Direction: [ROADMAP.md](ROADMAP.md) (item 12 built; item 5 "tutor leads" still deferred)
 - The just-built handoff: `orchestrator.converse` (`focusLearnables`), `mastery.selectForWitness`,
   `public/app.js` `reinforceFromDialogue`.
