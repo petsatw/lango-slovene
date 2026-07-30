@@ -4,12 +4,21 @@
   "title": "At the bakery (pekarna)",
   "status": "active",
   "character": "a friendly baker at a small neighbourhood bakery (pekarna) in Ljubljana",
+  "role": "prodajalka v pekarni",
   "characterRef": "baker",
   "setup": "You are a friendly baker at a small neighbourhood pekarna in Ljubljana. A foreigner who is just starting to learn Slovenian has come in to buy bread. They live here and want to practice.",
   "opening": "Dober dan! Kaj bo dobrega?",
-  "register": { "form": "vi", "variety": "pogovorni" },
+  "register": {
+    "form": "vi",
+    "variety": "pogovorni"
+  },
   "objectives": [
-    { "id": "greet", "label": "Greet", "targetSL": "Dober dan.", "hintEN": "Return the greeting." },
+    {
+      "id": "greet",
+      "label": "Greet",
+      "targetSL": "Dober dan.",
+      "hintEN": "Return the greeting."
+    },
     {
       "id": "order_bread",
       "label": "Order bread",
@@ -37,14 +46,30 @@
   ],
   "scene": {
     "assets": [
-      { "ref": "bakery" },
-      { "ref": "baker" },
-      { "ref": "customer" },
-      { "ref": "doorway" },
-      { "ref": "loaf" },
-      { "ref": "rolls" },
-      { "ref": "price_tag" },
-      { "ref": "euro_coins" }
+      {
+        "ref": "bakery"
+      },
+      {
+        "ref": "baker"
+      },
+      {
+        "ref": "customer"
+      },
+      {
+        "ref": "doorway"
+      },
+      {
+        "ref": "loaf"
+      },
+      {
+        "ref": "rolls"
+      },
+      {
+        "ref": "price_tag"
+      },
+      {
+        "ref": "euro_coins"
+      }
     ],
     "story": {
       "sentences": [

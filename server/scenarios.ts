@@ -50,6 +50,10 @@ export interface Scenario {
   status: "active" | "planned";
   /** Who the tutor plays (free-text role — drives the tutor prompt). */
   character: string;
+  /** Short Slovene role noun the LIVE tutor adopts when the learner arrives from this scenario's
+   *  rehearsal handoff (e.g. "natakarica", "prodajalka v pekarni"). Persona awareness only — never a
+   *  voice id (free chat is always the teacher voice). Absent → the tutor decides its own role. */
+  role?: string;
   /** Optional catalog character id — bundles the character's visual identity + VOICE PROFILE. Its
    *  voiceProfile voices in-scene character lines (opening + live tutor reply); its visual is the
    *  canonical look. Absent → in-scene lines use the teacher voice (back-compat). */
@@ -125,6 +129,8 @@ export function validateScenario(file: string, raw: any): Scenario {
   asString(file, raw, "character");
   asString(file, raw, "setup");
   asString(file, raw, "opening");
+  if (raw.role !== undefined && (typeof raw.role !== "string" || !raw.role.length))
+    fail(file, `"role", if present, must be a non-empty string`);
   if (raw.characterRef !== undefined) {
     if (typeof raw.characterRef !== "string" || !CATALOG.characters[raw.characterRef]) {
       fail(file, `characterRef "${raw.characterRef}" is not a known catalog character`);

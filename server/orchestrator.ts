@@ -8,7 +8,7 @@ import * as learner from "./assets/learner";
 import * as turnlog from "./assets/turnlog";
 import * as candidates from "./assets/candidates";
 import { applyCredit, creditFromEvidence, presentObjectives, selectForWitness } from "./mastery";
-import { buildSystemPrompt, buildConversationPrompt } from "./prompt";
+import { buildSystemPrompt, buildConversationPrompt, type ScenarioContext } from "./prompt";
 import { getLearnable } from "./learnables";
 import { getScenario, freshSession, characterVoiceProfile, type Scenario } from "./scenarios";
 import { getSeed } from "./seeds";
@@ -132,6 +132,7 @@ export async function converse(input: {
   begin?: boolean; // return the opening line, credit nothing (seed step 0, or free chat's "Začnemo?")
   role?: string | null; // free chat: the pinned role the client carries back each turn (null = decide)
   focusLearnables?: string[]; // rehearsal→free-chat handoff: bias this turn's targets toward these ids
+  context?: ScenarioContext | null; // rehearsal→free-chat handoff: the scene + practiced objectives (English priming)
 }): Promise<ConverseResult> {
   const model = learner.load();
 
@@ -186,7 +187,7 @@ export async function converse(input: {
   if (!input.audioBase64 || !input.mimeType) throw new Error("converse requires audio");
   const level: 1 | 2 = input.level === 1 ? 1 : 2;
   const { familiar, targets } = selectForWitness(model, level, input.focusLearnables ?? []);
-  const systemPrompt = buildConversationPrompt(familiar, targets, undefined, input.role);
+  const systemPrompt = buildConversationPrompt(familiar, targets, undefined, input.role, input.context);
   const e2 = getE2();
   if (!e2.witness) {
     throw new Error(`E2 provider "${e2.name}" does not support free-conversation witness turns`);

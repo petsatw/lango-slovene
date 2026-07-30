@@ -26,6 +26,7 @@ let learnerStarted = false;  // has the learner produced anything yet? (from /ap
 let seedActive = false;      // the zero-state tutorial is running through the same chat surface
 let chatRole = null;         // free chat: the role the tutor pinned this session (carried back each turn)
 let chatFocus = [];          // free chat: learnable ids to bias this session toward (set by a rehearsal handoff)
+let chatContext = null;      // free chat: the scene the learner arrived from (situation + practiced objectives)
 
 // ---- Screen router — one screen visible at a time; the tree + obs are overlays on top. ----
 const SCREENS = ["home", "practice", "levels", "tutor", "replays", "a1"];
@@ -211,7 +212,7 @@ async function stopRecordingAndSend() {
     const res = await fetch("/api/converse", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ audioBase64, mimeType: "audio/wav", history, level: CHAT_LEVEL, role: chatRole, focusLearnables: chatFocus }),
+      body: JSON.stringify({ audioBase64, mimeType: "audio/wav", history, level: CHAT_LEVEL, role: chatRole, focusLearnables: chatFocus, context: chatContext }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
@@ -238,6 +239,7 @@ async function stopRecordingAndSend() {
 // ---- ① Practice scenarios: list → variant/level selector → the rehearsal tree ----
 let dialogues = [];    // the open scenario's levels: [{ level, levelLabel, title, objectives, audio, voices, root, nodes, scenarioId }]
 let dialogue = null;   // the level currently open in the tree overlay
+let currentScenario = null; // the scenario meta {id, name, role, dialogues} whose levels are open
 
 async function loadPractice() {
   const el = $("scenario-list");
@@ -266,6 +268,7 @@ async function loadPractice() {
 // The crisp variant selector: one big card per level — number, label, and what it teaches — not a row
 // of ambiguous tabs. Tap a level → its rehearsal tree.
 function openScenario(s) {
+  currentScenario = s;
   dialogues = s.dialogues;
   $("levels-title").textContent = s.name;
   const list = $("level-list");
@@ -419,14 +422,21 @@ function closeDialogue() { stopDialogueAudio(); $("dialogue").hidden = true; }
 // learnables THIS level introduced. Rehearsal credits nothing; the live chat is where mastery accrues.
 function reinforceFromDialogue() {
   const focus = (dialogue && dialogue.introduces) || [];
+  // Carry the scene into the live chat: the tutor pins the scenario's role and is told the situation +
+  // the objectives this level rehearsed, so it keeps the scene alive while still tutoring.
+  const scene = currentScenario ? (currentScenario.name || currentScenario.title) : null;
+  const practiced = (dialogue && dialogue.objectives) ? dialogue.objectives.map((o) => o.descriptorEN) : [];
+  const context = scene ? { scene: `${scene} — ${dialogue.title}`, practiced } : null;
+  const role = currentScenario ? (currentScenario.role || null) : null;
   closeDialogue();
-  openTutor({ focus });
+  openTutor({ focus, role, context });
 }
 
 // ---- ② Live AI tutor: the single live surface. Zero-state → seed; otherwise → free chat. ----
 function openTutor(opts = {}) {
   chatFocus = opts.focus || [];
-  chatRole = null;
+  chatRole = opts.role || null;
+  chatContext = opts.context || null;
   showScreen("tutor");
   startTutorSession();
 }
@@ -446,7 +456,7 @@ function startTutorSession() {
 // Free chat opens with the tutor speaking first — a static Slovene "Začnemo?" (the learner knows it from
 // the tutorial). No learner audio, no model call, no credit; it just seeds the thread.
 async function beginFreeChat() {
-  chatRole = null;
+  // Do NOT reset chatRole here — a rehearsal handoff may have pinned the scenario's role already.
   obs.state("free conversation");
   try {
     const res = await fetch("/api/converse", {

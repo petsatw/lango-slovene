@@ -135,11 +135,20 @@ export function buildSystemPrompt(
 const DEFAULT_DIRECTIVE =
   "Have a relaxed, everyday chat — like a quick, friendly exchange.";
 
+/** Where the learner arrived from — set when they tap "Now try it for real" in a rehearsal tree. Pure
+ *  ENGLISH priming (situation + what they just practiced); it does NOT hand the model authored Slovene
+ *  lines (never-freehand holds — the tutor builds its own Slovene from the palette + targets). */
+export interface ScenarioContext {
+  scene: string; // the situation, e.g. "a restaurant — ordering dinner"
+  practiced: string[]; // the level's objective descriptors the learner just rehearsed
+}
+
 export function buildConversationPrompt(
   familiar: Learnable[],
   targets: Learnable[],
   directive: string = DEFAULT_DIRECTIVE,
   role?: string | null,
+  context?: ScenarioContext | null,
 ): string {
   const knows = familiar.length
     ? familiar.map((l) => `  "${l.sl}" — ${l.gloss}`)
@@ -174,10 +183,26 @@ export function buildConversationPrompt(
         "- If the targets don't clearly converge on one, stay the plain tutor and say NOTHING about a role.",
       ];
 
+  // Scene block (only when arrived from a rehearsal): prime the tutor with the situation the learner
+  // just practiced so it keeps the scene alive and hands them natural openings to use the targets for
+  // real. English priming — the tutor still speaks its own Slovene (never-freehand holds).
+  const sceneBlock = context
+    ? [
+        "THE SCENE (the learner just rehearsed this exact situation and tapped “now try it for real”):",
+        `- Situation: ${context.scene}.`,
+        context.practiced.length
+          ? `- They just practiced: ${context.practiced.join("; ")}. Give them natural openings to say these for real.`
+          : "",
+        "- Stay in that situation, play the role below, and still help them like a tutor (answer “how do you say…?”).",
+        "",
+      ].filter(Boolean)
+    : [];
+
   return [
     "You are a warm, patient Slovene tutor having a quick, friendly chat in Slovenian with someone who",
     "has just started learning the language and lives in Slovenia. Keep it real and natural.",
     "",
+    ...sceneBlock,
     ...roleBlock,
     "",
     "HOW TO TALK",
