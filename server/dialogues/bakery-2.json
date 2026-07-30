@@ -42,13 +42,13 @@
   ],
   "audio": "ready",
   "voices": {
-    "baker": "shop-assistant",
+    "npc": "shop-assistant",
     "client": "female-speaker"
   },
   "root": "b1",
   "nodes": {
     "b1": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Dober dan! Izvolite?",
       "en": "Good day! What can I get you?",
       "next": [
@@ -74,7 +74,7 @@
       ]
     },
     "b2": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Ja, imamo. Bel ali polnozrnat?",
       "en": "Yes, we do. White or wholegrain?",
       "next": [
@@ -100,7 +100,7 @@
       ]
     },
     "b3": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Koliko kruha želite?",
       "en": "How much bread would you like?",
       "next": [
@@ -126,7 +126,7 @@
       ]
     },
     "b4": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Izvolite, sveže narezan. Boste še kaj?",
       "en": "Here you go, freshly sliced. Anything else?",
       "next": [
@@ -152,7 +152,7 @@
       ]
     },
     "b5": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Izvolite. Bi še kakšno sladko pecivo?",
       "en": "Here you are. Would you like some sweet pastry too?",
       "next": [
@@ -178,7 +178,7 @@
       ]
     },
     "b6a": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Daniša s čokolado žal ni več, imamo pa pirin s sirom. Bi enega?",
       "en": "I'm afraid there's no chocolate danish left, but we do have the spelt pastry with cheese. Would you like one?",
       "next": [
@@ -188,7 +188,7 @@
       "deliverySL": "[hesitant and a little apathetic] Daniša s čokolado žal ni več, imamo pa pirin s sirom. Bi enega?"
     },
     "b6b": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Ja, seveda, pirin s sirom Tolminec. Bi enega?",
       "en": "Yes, of course, the spelt pastry with Tolminec cheese. Would you like one?",
       "next": [
@@ -214,7 +214,7 @@
       ]
     },
     "b7": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Prav. To bi bilo vse. Kako boste plačali?",
       "en": "Alright. That's everything. How will you pay?",
       "next": [
@@ -240,7 +240,7 @@
       ]
     },
     "b8": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Štiri evre in petdeset centov. Boste rabili vrečko?",
       "en": "Four euros fifty. Will you need a bag?",
       "next": [
@@ -266,7 +266,7 @@
       ]
     },
     "b9": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Izvolite. Lep dan še naprej, nasvidenje!",
       "en": "Here you go. Have a nice day, goodbye!",
       "next": [],

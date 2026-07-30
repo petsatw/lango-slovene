@@ -49,7 +49,7 @@ const e3 = getE3();
 let hits = 0, made = 0, failures = 0;
 
 for (const { file, d } of files) {
-  console.log(`\n▶ ${file}  L${d.level} ${d.levelLabel}  e3=${e3.name}  baker=${d.voices.baker} client=${d.voices.client}`);
+  console.log(`\n▶ ${file}  L${d.level} ${d.levelLabel}  e3=${e3.name}  npc=${d.voices.npc} client=${d.voices.client}`);
   let levelFailures = 0;
 
   for (const [id, node] of Object.entries(d.nodes) as [string, Dialogue["nodes"][string]][]) {

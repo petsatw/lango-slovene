@@ -1,7 +1,7 @@
 // DIALOGUE framework — predetermined BRANCHING rehearsal dialogues paired with a scenario.
 //
-// A dialogue is a fully authored decision tree: an NPC ("baker") speaks, the learner picks among a few
-// canned client replies, the NPC responds, and so on. It is REHEARSAL ONLY — exposure before the live
+// A dialogue is a fully authored decision tree: an NPC (waiter, baker, …) speaks, the learner picks
+// among a few canned client replies, the NPC responds, and so on. It is REHEARSAL ONLY — exposure before the live
 // mic. Nothing here credits mastery (contrast the seed, which plants attempts): the learner clicks
 // through to see/hear/translate a typical exchange, then produces it for real in the live tutor.
 //
@@ -17,7 +17,7 @@ import path from "node:path";
 import { CATALOG } from "./catalog";
 import { LEARNABLES } from "./learnables";
 
-export type DialogueSpeaker = "baker" | "client";
+export type DialogueSpeaker = "npc" | "client";
 export type DialogueAudioState = "pending" | "ready";
 
 export interface DialogueNode {
@@ -30,8 +30,8 @@ export interface DialogueNode {
    *  is what gets SYNTHESIZED, while `sl` stays the clean caption + cache key — so the tags steer the
    *  voice without ever showing on screen or changing the key. Null/absent → synthesize `sl` plainly. */
   deliverySL?: string;
-  /** Next node ids. On a baker node: the client-reply choices the learner picks between. On a client
-   *  node: the baker's response (one id). Empty = end of the dialogue. */
+  /** Next node ids. On an npc node: the client-reply choices the learner picks between. On a client
+   *  node: the npc's response (one id). Empty = end of the dialogue. */
   next: string[];
 }
 
@@ -106,17 +106,17 @@ export function validateDialogue(file: string, raw: any): Dialogue {
   }
   if (raw.audio !== "pending" && raw.audio !== "ready") fail(file, `"audio" must be "pending" | "ready"`);
   if (!raw.voices || typeof raw.voices !== "object") fail(file, `"voices" must be an object`);
-  asProfile(file, raw.voices, "baker", "voices");
+  asProfile(file, raw.voices, "npc", "voices");
   asProfile(file, raw.voices, "client", "voices");
   if (!raw.nodes || typeof raw.nodes !== "object" || !Object.keys(raw.nodes).length)
     fail(file, `"nodes" must be a non-empty object`);
   const ids = new Set(Object.keys(raw.nodes));
   asString(file, raw, "root", "dialogue");
   if (!ids.has(raw.root)) fail(file, `root "${raw.root}" is not a node`);
-  if (raw.nodes[raw.root].speaker !== "baker") fail(file, `root node "${raw.root}" must be spoken by the baker`);
+  if (raw.nodes[raw.root].speaker !== "npc") fail(file, `root node "${raw.root}" must be spoken by the npc`);
   for (const [nid, n] of Object.entries<any>(raw.nodes)) {
     const where = `node "${nid}"`;
-    if (n?.speaker !== "baker" && n?.speaker !== "client") fail(file, `${where}: speaker must be "baker" | "client"`);
+    if (n?.speaker !== "npc" && n?.speaker !== "client") fail(file, `${where}: speaker must be "npc" | "client"`);
     asString(file, n, "sl", where);
     asString(file, n, "en", where);
     if (n.deliverySL !== undefined) asString(file, n, "deliverySL", where);

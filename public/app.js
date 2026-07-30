@@ -483,10 +483,10 @@ function playDialogueLine(node) {
   });
 }
 
-// Render one node as a chat bubble in the dialogue card. Baker → tutor (left), client → user (right).
+// Render one node as a chat bubble in the dialogue card. Npc → tutor (left), client → user (right).
 function dialogueBubble(node) {
   const div = document.createElement("div");
-  div.className = `bubble ${node.speaker === "baker" ? "tutor" : "user"}`;
+  div.className = `bubble ${node.speaker === "npc" ? "tutor" : "user"}`;
 
   const span = document.createElement("span");
   span.className = "bubble-text";

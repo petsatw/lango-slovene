@@ -36,13 +36,13 @@
   ],
   "audio": "ready",
   "voices": {
-    "baker": "shop-assistant",
+    "npc": "shop-assistant",
     "client": "female-speaker"
   },
   "root": "b1",
   "nodes": {
     "b1": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Dober dan, izvolite?",
       "en": "Good day, what can I get you?",
       "next": [
@@ -68,7 +68,7 @@
       ]
     },
     "b2": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Izvolite. Še kaj?",
       "en": "Here you are. Anything else?",
       "next": [
@@ -94,7 +94,7 @@
       ]
     },
     "b3": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Rogljički so danes sveži. Boste enega?",
       "en": "The croissants are fresh today. Would you like one?",
       "next": [
@@ -120,7 +120,7 @@
       ]
     },
     "b4": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Izvolite, dam v vrečko.",
       "en": "Here you go, I'll put it in a bag.",
       "next": [
@@ -146,7 +146,7 @@
       ]
     },
     "b5": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Vse skupaj štiri evre deset. Izvolite.",
       "en": "Four euros ten altogether. Here you are.",
       "next": [
@@ -155,7 +155,7 @@
       "deliverySL": "[hesitant and a little apathetic] Vse skupaj štiri evre deset. Izvolite."
     },
     "b5card": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Ja, seveda, lahko. Vse skupaj štiri evre deset.",
       "en": "Yes, of course you can. Four euros ten altogether.",
       "next": [
@@ -172,7 +172,7 @@
       ]
     },
     "b6": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Hvala enako, nasvidenje!",
       "en": "Thank you too, goodbye!",
       "next": [],

@@ -53,13 +53,13 @@
   ],
   "audio": "ready",
   "voices": {
-    "baker": "shop-assistant",
+    "npc": "shop-assistant",
     "client": "female-speaker"
   },
   "root": "b1",
   "nodes": {
     "b1": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Dober dan, izvolite?",
       "en": "Good day, what can I get you?",
       "next": [
@@ -85,7 +85,7 @@
       ]
     },
     "b2": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Izvolite. Še kaj?",
       "en": "Here you go. Anything else?",
       "next": [
@@ -111,7 +111,7 @@
       ]
     },
     "b3": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Seveda. Za kdaj in za koliko oseb?",
       "en": "Of course. For when and for how many people?",
       "next": [
@@ -137,7 +137,7 @@
       ]
     },
     "b4": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Prav. Katero torto želite? Imamo čokoladno in sadno.",
       "en": "Alright. Which cake would you like? We have chocolate and fruit.",
       "next": [
@@ -163,7 +163,7 @@
       ]
     },
     "b5": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Obe sta sveži, danes pečeni. Sadna je malenkost cenejša.",
       "en": "Both are fresh, baked today. The fruit one is a touch cheaper.",
       "next": [
@@ -189,7 +189,7 @@
       ]
     },
     "b6": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Odlična izbira. Vas zanima kaj glede sestavin ali alergenov?",
       "en": "Excellent choice. Would you like to know anything about ingredients or allergens?",
       "next": [
@@ -215,7 +215,7 @@
       ]
     },
     "b7": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Oreškov ne dodajamo, lahko pa vsebuje sledove oreškov in sezama.",
       "en": "We don't add nuts, but it may contain traces of nuts and sesame.",
       "next": [
@@ -241,7 +241,7 @@
       ]
     },
     "b8": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Bomo dodali še kaj svežega? Priporočam danish s čokolado in pistacijami.",
       "en": "Shall we add something fresh? I recommend the chocolate-pistachio danish.",
       "next": [
@@ -267,7 +267,7 @@
       ]
     },
     "b9": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Joj, danish s pistacijami je pošel, nimamo ga več. Imamo pa navadne s čokolado. Bi te?",
       "en": "Oh, the pistachio danish is sold out, we don't have any more. But we have plain chocolate ones. Would you like those?",
       "next": [
@@ -293,7 +293,7 @@
       ]
     },
     "b10": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "V redu. Je to vse?",
       "en": "Okay. Is that everything?",
       "next": [
@@ -319,7 +319,7 @@
       ]
     },
     "b11": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Tako je. Skupaj bo osem evrov in petdeset, prosim.",
       "en": "That's right. Altogether it'll be eight fifty, please.",
       "next": [
@@ -345,7 +345,7 @@
       ]
     },
     "b12": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Oprostite, imate prav. Sedem evrov in petdeset, ne osem.",
       "en": "Sorry, you're right. Seven fifty, not eight.",
       "next": [
@@ -371,7 +371,7 @@
       ]
     },
     "b12b": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Sedem evrov in petdeset, prosim.",
       "en": "Seven fifty, please.",
       "next": [
@@ -388,7 +388,7 @@
       ]
     },
     "b13": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Hvala. Vam dam vrečko?",
       "en": "Thank you. Shall I give you a bag?",
       "next": [
@@ -414,7 +414,7 @@
       ]
     },
     "b14": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Torta bo pa jutri pripravljena. Samo trenutek, vam še natisnem potrdilo za torto.",
       "en": "The cake will be ready tomorrow. Just a moment, I'll print you the confirmation for the cake.",
       "next": [
@@ -440,7 +440,7 @@
       ]
     },
     "b15": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Oprostite za trenutek, tiskalnik je danes malo počasen.",
       "en": "Sorry, just a moment, the printer is a bit slow today.",
       "next": [
@@ -466,7 +466,7 @@
       ]
     },
     "b16a": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Res je, čudovit dan. Tako, zdaj je natisnjeno, izvolite potrdilo.",
       "en": "It really is, a wonderful day. There, now it's printed, here's your confirmation.",
       "next": [
@@ -476,7 +476,7 @@
       "deliverySL": "[hesitant and a little apathetic] Res je, čudovit dan. Tako, zdaj je natisnjeno, izvolite potrdilo."
     },
     "b16b": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Hvala za potrpljenje. Tako, zdaj je natisnjeno, izvolite potrdilo.",
       "en": "Thanks for your patience. There, now it's printed, here's your confirmation.",
       "next": [
@@ -502,7 +502,7 @@
       ]
     },
     "b17": {
-      "speaker": "baker",
+      "speaker": "npc",
       "sl": "Hvala enako, lep dan še naprej in nasvidenje!",
       "en": "Thank you likewise, have a nice day and goodbye!",
       "next": [],
