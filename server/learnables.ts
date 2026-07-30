@@ -12,6 +12,22 @@ import path from "node:path";
 
 export type LearnableKind = "vocabulary" | "chunk" | "pattern";
 
+/** The A1 "Pareto set" categories — the highest-ROI stems/frames/glue that unlock most exam tasks
+ *  (docs/a1-pareto-set.md). A learnable in the Pareto set carries one or more of these AND is `core: true`;
+ *  the tag extends the existing core/rank high-leverage signal (which drives selection in mastery.ts)
+ *  rather than adding a parallel one. Many-to-many: a stem can serve more than one category. */
+export type ParetoCategory =
+  | "identity"
+  | "question"
+  | "transaction"
+  | "location_time"
+  | "social_glue"
+  | "verb_core";
+
+const PARETO_CATEGORIES: ParetoCategory[] = [
+  "identity", "question", "transaction", "location_time", "social_glue", "verb_core",
+];
+
 export interface Learnable {
   id: string;
   kind: LearnableKind;
@@ -22,6 +38,7 @@ export interface Learnable {
   core?: boolean; // high-leverage (US-15); default false
   rank?: number; // leverage rank from the core pattern library; consulted only for core patterns
   predictableError?: string; // the one predictable beginner error, surfaced by presentation
+  paretoCategory?: ParetoCategory[]; // A1 Pareto-set membership (implies high-leverage); see ParetoCategory
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -50,6 +67,13 @@ export function loadLearnables(): Record<string, Learnable> {
     if (l.rank !== undefined && typeof l.rank !== "number") fail(`learnable "${id}": rank must be a number`);
     if (l.predictableError !== undefined && typeof l.predictableError !== "string")
       fail(`learnable "${id}": predictableError must be a string`);
+    if (l.paretoCategory !== undefined) {
+      if (!Array.isArray(l.paretoCategory) || !l.paretoCategory.length)
+        fail(`learnable "${id}": paretoCategory must be a non-empty array`);
+      for (const c of l.paretoCategory)
+        if (!PARETO_CATEGORIES.includes(c)) fail(`learnable "${id}": unknown paretoCategory "${c}" (known: ${PARETO_CATEGORIES.join(", ")})`);
+      if (l.core !== true) fail(`learnable "${id}": a paretoCategory member must be core:true (the Pareto set extends core)`);
+    }
     out[id] = {
       id,
       kind,
@@ -58,6 +82,7 @@ export function loadLearnables(): Record<string, Learnable> {
       ...(l.core !== undefined ? { core: l.core } : {}),
       ...(l.rank !== undefined ? { rank: l.rank } : {}),
       ...(l.predictableError !== undefined ? { predictableError: l.predictableError } : {}),
+      ...(l.paretoCategory !== undefined ? { paretoCategory: l.paretoCategory } : {}),
     };
   }
   return out;

@@ -4,7 +4,10 @@
     "sl": "Dober dan.",
     "gloss": "good day (greeting)",
     "core": true,
-    "rank": 19
+    "rank": 19,
+    "paretoCategory": [
+      "social_glue"
+    ]
   },
   "zacnemo": {
     "kind": "chunk",
@@ -14,7 +17,12 @@
   "govorim_slovensko": {
     "kind": "chunk",
     "sl": "Govorim slovensko.",
-    "gloss": "I speak Slovene."
+    "gloss": "I speak Slovene.",
+    "core": true,
+    "paretoCategory": [
+      "identity",
+      "verb_core"
+    ]
   },
   "eno_femacc": {
     "kind": "pattern",
@@ -22,7 +30,10 @@
     "gloss": "one ___, please",
     "core": true,
     "rank": 13,
-    "predictableError": "nominative 'ena kava' instead of the accusative 'eno kavo' the frame requires"
+    "predictableError": "nominative 'ena kava' instead of the accusative 'eno kavo' the frame requires",
+    "paretoCategory": [
+      "transaction"
+    ]
   },
   "kava": {
     "kind": "vocabulary",
@@ -50,7 +61,11 @@
     "sl": "Koliko stane?",
     "gloss": "how much is it?",
     "core": true,
-    "rank": 14
+    "rank": 14,
+    "paretoCategory": [
+      "question",
+      "transaction"
+    ]
   },
   "hvala_nasvidenje": {
     "kind": "chunk",
@@ -62,49 +77,71 @@
     "sl": "Ne razumem.",
     "gloss": "I don't understand",
     "core": true,
-    "rank": 8
+    "rank": 8,
+    "paretoCategory": [
+      "social_glue"
+    ]
   },
   "se_enkrat": {
     "kind": "chunk",
     "sl": "Še enkrat, prosim.",
     "gloss": "again, please",
     "core": true,
-    "rank": 10
+    "rank": 10,
+    "paretoCategory": [
+      "social_glue"
+    ]
   },
   "kako_se_rece": {
     "kind": "pattern",
     "sl": "Kako se reče ___?",
     "gloss": "how do you say ___?",
     "core": true,
-    "rank": 7
+    "rank": 7,
+    "paretoCategory": [
+      "social_glue"
+    ]
   },
   "prosim": {
     "kind": "vocabulary",
     "sl": "prosim",
     "gloss": "please",
     "core": true,
-    "rank": 19
+    "rank": 19,
+    "paretoCategory": [
+      "transaction",
+      "social_glue"
+    ]
   },
   "hvala": {
     "kind": "vocabulary",
     "sl": "hvala",
     "gloss": "thank you",
     "core": true,
-    "rank": 19
+    "rank": 19,
+    "paretoCategory": [
+      "social_glue"
+    ]
   },
   "ja": {
     "kind": "vocabulary",
     "sl": "ja",
     "gloss": "yes",
     "core": true,
-    "rank": 20
+    "rank": 20,
+    "paretoCategory": [
+      "social_glue"
+    ]
   },
   "ne": {
     "kind": "vocabulary",
     "sl": "ne",
     "gloss": "no",
     "core": true,
-    "rank": 20
+    "rank": 20,
+    "paretoCategory": [
+      "social_glue"
+    ]
   },
   "moram_inf": {
     "kind": "pattern",
@@ -120,19 +157,30 @@
     "gloss": "I'd like ___",
     "core": true,
     "rank": 3,
-    "predictableError": "wrong gender form ('rad' vs 'rada') for the speaker"
+    "predictableError": "wrong gender form ('rad' vs 'rada') for the speaker",
+    "paretoCategory": [
+      "transaction"
+    ]
   },
   "en_masacc": {
     "kind": "pattern",
     "sl": "En ___, prosim.",
     "gloss": "one ___, please (masc.)",
-    "predictableError": "using feminine 'eno' with a masculine noun ('eno kruh') instead of 'en kruh'"
+    "predictableError": "using feminine 'eno' with a masculine noun ('eno kruh') instead of 'en kruh'",
+    "core": true,
+    "paretoCategory": [
+      "transaction"
+    ]
   },
   "dve_dualacc": {
     "kind": "pattern",
     "sl": "Dve ___, prosim.",
     "gloss": "two ___, please (dual)",
-    "predictableError": "plural instead of the dual ('dve žemlje' instead of 'dve žemlji'), or masculine 'dva' for a feminine noun"
+    "predictableError": "plural instead of the dual ('dve žemlje' instead of 'dve žemlji'), or masculine 'dva' for a feminine noun",
+    "core": true,
+    "paretoCategory": [
+      "transaction"
+    ]
   },
   "kruh": {
     "kind": "vocabulary",
@@ -153,13 +201,22 @@
     "kind": "chunk",
     "sl": "Lahko plačam s kartico?",
     "gloss": "can I pay by card?",
-    "predictableError": "'s kartico' — using nominative 'kartica' instead of the instrumental after 's'"
+    "predictableError": "'s kartico' — using nominative 'kartica' instead of the instrumental after 's'",
+    "core": true,
+    "paretoCategory": [
+      "transaction"
+    ]
   },
   "ali_imate": {
     "kind": "pattern",
     "sl": "Ali imate ___?",
     "gloss": "do you have ___?",
-    "predictableError": "calquing English 'do you have' with an extra auxiliary; it's just 'Ali imate ___?', and the object stays accusative"
+    "predictableError": "calquing English 'do you have' with an extra auxiliary; it's just 'Ali imate ___?', and the object stays accusative",
+    "core": true,
+    "paretoCategory": [
+      "question",
+      "transaction"
+    ]
   },
   "pol_kilograma": {
     "kind": "chunk",
@@ -261,7 +318,11 @@
     "kind": "vocabulary",
     "sl": "oprostite",
     "gloss": "sorry / excuse me (vi)",
-    "predictableError": "'oprostite' is for apology/getting attention; not 'žal mi je' (which is regret/condolence)"
+    "predictableError": "'oprostite' is for apology/getting attention; not 'žal mi je' (which is regret/condolence)",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
   },
   "lepo_vreme": {
     "kind": "chunk",
@@ -412,5 +473,688 @@
     "sl": "Hvala za čudovit večer.",
     "gloss": "Thank you for a wonderful evening.",
     "predictableError": "'za' takes the accusative — 'za čudovit večer'."
+  },
+  "sem_ime": {
+    "kind": "pattern",
+    "sl": "Sem ___.",
+    "gloss": "I am ___ (introducing yourself)",
+    "predictableError": "the 'Moje ime je ___' calque instead of the natural 'Sem ___'; jaz is usually dropped",
+    "core": true,
+    "paretoCategory": [
+      "identity",
+      "verb_core"
+    ]
+  },
+  "pisem_se": {
+    "kind": "pattern",
+    "sl": "Pišem se ___.",
+    "gloss": "my surname is ___",
+    "predictableError": "calquing 'moje ime je' for the surname; dropping the reflexive 'se'",
+    "core": true,
+    "paretoCategory": [
+      "identity"
+    ]
+  },
+  "zivim_v": {
+    "kind": "pattern",
+    "sl": "Živim v ___.",
+    "gloss": "I live in ___",
+    "predictableError": "locative after 'v' ('v Ljubljani', not 'v Ljubljana')",
+    "core": true,
+    "paretoCategory": [
+      "identity",
+      "verb_core"
+    ]
+  },
+  "sem_iz": {
+    "kind": "pattern",
+    "sl": "Sem iz ___.",
+    "gloss": "I am from ___",
+    "predictableError": "genitive after 'iz' ('iz Amerike', not 'iz Amerika')",
+    "core": true,
+    "paretoCategory": [
+      "identity"
+    ]
+  },
+  "star_sem_let": {
+    "kind": "pattern",
+    "sl": "Star / Stara sem ___ let.",
+    "gloss": "I am ___ years old",
+    "predictableError": "gender ('star' masc. / 'stara' fem.); genitive plural 'let' after 5+",
+    "core": true,
+    "paretoCategory": [
+      "identity"
+    ]
+  },
+  "imam": {
+    "kind": "pattern",
+    "sl": "Imam ___.",
+    "gloss": "I have ___",
+    "predictableError": "accusative object; negation is 'nimam', not 'ne imam'",
+    "core": true,
+    "paretoCategory": [
+      "identity",
+      "verb_core"
+    ]
+  },
+  "delam_kot": {
+    "kind": "pattern",
+    "sl": "Delam kot ___.",
+    "gloss": "I work as ___",
+    "predictableError": "'kot' + nominative profession; gender of the profession noun",
+    "core": true,
+    "paretoCategory": [
+      "identity",
+      "verb_core"
+    ]
+  },
+  "kdo": {
+    "kind": "vocabulary",
+    "sl": "kdo",
+    "gloss": "who",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "kaj": {
+    "kind": "vocabulary",
+    "sl": "kaj",
+    "gloss": "what",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "kje": {
+    "kind": "vocabulary",
+    "sl": "kje",
+    "gloss": "where (location)",
+    "predictableError": "'kje' (where at) vs 'kam' (where to)",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "kdaj": {
+    "kind": "vocabulary",
+    "sl": "kdaj",
+    "gloss": "when",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "kako": {
+    "kind": "vocabulary",
+    "sl": "kako",
+    "gloss": "how",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "koliko": {
+    "kind": "vocabulary",
+    "sl": "koliko",
+    "gloss": "how much / how many",
+    "predictableError": "genitive after 'koliko' ('koliko ljudi')",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "od_kod": {
+    "kind": "chunk",
+    "sl": "od kod",
+    "gloss": "from where",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "kam": {
+    "kind": "vocabulary",
+    "sl": "kam",
+    "gloss": "where (direction)",
+    "predictableError": "'kam' (where to) vs 'kje' (where at)",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "zakaj": {
+    "kind": "vocabulary",
+    "sl": "zakaj",
+    "gloss": "why",
+    "predictableError": "'zakaj' (why) vs 'zato' (therefore)",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "kako_ime": {
+    "kind": "chunk",
+    "sl": "Kako vam je ime?",
+    "gloss": "what's your name? (vi)",
+    "predictableError": "informal is 'Kako ti je ime?'; set phrase, not a 'what is your name' calque",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "od_kod_ste": {
+    "kind": "chunk",
+    "sl": "Od kod ste?",
+    "gloss": "where are you from? (vi)",
+    "predictableError": "informal 'Od kod si?'",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "koliko_star": {
+    "kind": "chunk",
+    "sl": "Koliko ste stari?",
+    "gloss": "how old are you? (vi)",
+    "predictableError": "informal 'Koliko si star/stara?'; gender star/stara",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "kje_je": {
+    "kind": "pattern",
+    "sl": "Kje je ___?",
+    "gloss": "where is ___?",
+    "predictableError": "keep the subject nominative ('Kje je postaja?')",
+    "core": true,
+    "paretoCategory": [
+      "question",
+      "location_time"
+    ]
+  },
+  "kje_zivite": {
+    "kind": "chunk",
+    "sl": "Kje živite?",
+    "gloss": "where do you live? (vi)",
+    "predictableError": "informal 'Kje živiš?'",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "kaj_delate": {
+    "kind": "chunk",
+    "sl": "Kaj delate?",
+    "gloss": "what do you do? (vi)",
+    "predictableError": "informal 'Kaj delaš?'; means your job or your current activity",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "kaj_je_to": {
+    "kind": "chunk",
+    "sl": "Kaj je to?",
+    "gloss": "what is this?",
+    "core": true,
+    "paretoCategory": [
+      "question"
+    ]
+  },
+  "ob_kateri_uri": {
+    "kind": "pattern",
+    "sl": "Ob kateri uri ___?",
+    "gloss": "at what time ___?",
+    "predictableError": "'ob' + locative 'uri'",
+    "core": true,
+    "paretoCategory": [
+      "question",
+      "location_time"
+    ]
+  },
+  "kako_pridem_do": {
+    "kind": "pattern",
+    "sl": "Kako pridem do ___?",
+    "gloss": "how do I get to ___?",
+    "predictableError": "genitive after 'do' ('do postaje')",
+    "core": true,
+    "paretoCategory": [
+      "question",
+      "location_time"
+    ]
+  },
+  "govorite_anglesko": {
+    "kind": "chunk",
+    "sl": "Ali govorite angleško?",
+    "gloss": "do you speak English? (vi)",
+    "predictableError": "adverb 'angleško', not the noun 'angleščino'; informal 'Ali govoriš angleško?'",
+    "core": true,
+    "paretoCategory": [
+      "question",
+      "social_glue"
+    ]
+  },
+  "koliko_je_ura": {
+    "kind": "chunk",
+    "sl": "Koliko je ura?",
+    "gloss": "what time is it?",
+    "core": true,
+    "paretoCategory": [
+      "question",
+      "location_time"
+    ]
+  },
+  "kako_ste": {
+    "kind": "chunk",
+    "sl": "Kako ste?",
+    "gloss": "how are you? (vi)",
+    "predictableError": "informal 'Kako si?'; 'kako' + copula, not a 'how are you doing' calque",
+    "core": true,
+    "paretoCategory": [
+      "social_glue",
+      "question"
+    ]
+  },
+  "lahko_dobim": {
+    "kind": "pattern",
+    "sl": "Lahko dobim ___?",
+    "gloss": "can I get ___? (everyday request)",
+    "predictableError": "accusative object ('Lahko dobim kavo?'); 'lahko' + 1sg present is the whole request — no extra 'imam/želim'",
+    "core": true,
+    "paretoCategory": [
+      "transaction"
+    ]
+  },
+  "zelim": {
+    "kind": "pattern",
+    "sl": "Želim ___.",
+    "gloss": "I would like ___ (formal request)",
+    "predictableError": "formal register — at a counter use 'rad bi' / 'lahko dobim', not 'želim'; accusative object",
+    "core": true,
+    "paretoCategory": [
+      "transaction"
+    ]
+  },
+  "z_gotovino": {
+    "kind": "chunk",
+    "sl": "Z gotovino.",
+    "gloss": "with cash",
+    "predictableError": "instrumental 'z gotovino', not 'z gotovina'",
+    "core": true,
+    "paretoCategory": [
+      "transaction"
+    ]
+  },
+  "grem_v": {
+    "kind": "pattern",
+    "sl": "Grem v / na ___.",
+    "gloss": "I'm going to ___",
+    "predictableError": "'v' vs 'na'; accusative of direction ('grem na pošto')",
+    "core": true,
+    "paretoCategory": [
+      "location_time",
+      "verb_core"
+    ]
+  },
+  "avtobus_gre": {
+    "kind": "pattern",
+    "sl": "Avtobus gre ob ___.",
+    "gloss": "the bus goes at ___",
+    "predictableError": "'gre' and 'pelje' both natural; clock time is 'ob' + locative number ('ob petih')",
+    "core": true,
+    "paretoCategory": [
+      "location_time"
+    ]
+  },
+  "ob_uri": {
+    "kind": "pattern",
+    "sl": "ob ___",
+    "gloss": "at ___ o'clock",
+    "predictableError": "clock time is 'ob' + LOCATIVE of the number ('ob petih', 'ob treh'), not 'ob ___ uri'",
+    "core": true,
+    "paretoCategory": [
+      "location_time"
+    ]
+  },
+  "zjutraj": {
+    "kind": "vocabulary",
+    "sl": "zjutraj",
+    "gloss": "in the morning",
+    "core": true,
+    "paretoCategory": [
+      "location_time"
+    ]
+  },
+  "popoldne": {
+    "kind": "vocabulary",
+    "sl": "popoldne",
+    "gloss": "in the afternoon",
+    "core": true,
+    "paretoCategory": [
+      "location_time"
+    ]
+  },
+  "zvecer": {
+    "kind": "vocabulary",
+    "sl": "zvečer",
+    "gloss": "in the evening",
+    "core": true,
+    "paretoCategory": [
+      "location_time"
+    ]
+  },
+  "jutri": {
+    "kind": "vocabulary",
+    "sl": "jutri",
+    "gloss": "tomorrow",
+    "core": true,
+    "paretoCategory": [
+      "location_time"
+    ]
+  },
+  "danes": {
+    "kind": "vocabulary",
+    "sl": "danes",
+    "gloss": "today",
+    "core": true,
+    "paretoCategory": [
+      "location_time"
+    ]
+  },
+  "stevilo_nic": {
+    "kind": "vocabulary",
+    "sl": "nič",
+    "gloss": "zero"
+  },
+  "stevilo_ena": {
+    "kind": "vocabulary",
+    "sl": "ena",
+    "gloss": "one (fem.; masc. 'en', neut. 'eno')",
+    "predictableError": "gender: 'en' masc / 'ena' fem / 'eno' neut"
+  },
+  "stevilo_dva": {
+    "kind": "vocabulary",
+    "sl": "dva",
+    "gloss": "two (masc.; fem./neut. 'dve')",
+    "predictableError": "'dva' masc / 'dve' fem+neut (dual)"
+  },
+  "stevilo_tri": {
+    "kind": "vocabulary",
+    "sl": "tri",
+    "gloss": "three"
+  },
+  "stevilo_stiri": {
+    "kind": "vocabulary",
+    "sl": "štiri",
+    "gloss": "four"
+  },
+  "stevilo_pet": {
+    "kind": "vocabulary",
+    "sl": "pet",
+    "gloss": "five",
+    "predictableError": "numbers 5+ take the genitive plural ('pet evrov')"
+  },
+  "stevilo_sest": {
+    "kind": "vocabulary",
+    "sl": "šest",
+    "gloss": "six"
+  },
+  "stevilo_sedem": {
+    "kind": "vocabulary",
+    "sl": "sedem",
+    "gloss": "seven"
+  },
+  "stevilo_osem": {
+    "kind": "vocabulary",
+    "sl": "osem",
+    "gloss": "eight"
+  },
+  "stevilo_devet": {
+    "kind": "vocabulary",
+    "sl": "devet",
+    "gloss": "nine"
+  },
+  "stevilo_deset": {
+    "kind": "vocabulary",
+    "sl": "deset",
+    "gloss": "ten"
+  },
+  "stevilo_dvajset": {
+    "kind": "vocabulary",
+    "sl": "dvajset",
+    "gloss": "twenty"
+  },
+  "stevilo_trideset": {
+    "kind": "vocabulary",
+    "sl": "trideset",
+    "gloss": "thirty"
+  },
+  "stevilo_stirideset": {
+    "kind": "vocabulary",
+    "sl": "štirideset",
+    "gloss": "forty"
+  },
+  "stevilo_petdeset": {
+    "kind": "vocabulary",
+    "sl": "petdeset",
+    "gloss": "fifty"
+  },
+  "stevilo_sto": {
+    "kind": "vocabulary",
+    "sl": "sto",
+    "gloss": "hundred"
+  },
+  "zivjo": {
+    "kind": "vocabulary",
+    "sl": "Živjo",
+    "gloss": "hi / bye (informal)",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "zdravo": {
+    "kind": "vocabulary",
+    "sl": "Zdravo",
+    "gloss": "hi / bye (informal)",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "adijo": {
+    "kind": "vocabulary",
+    "sl": "Adijo",
+    "gloss": "bye (informal)",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "hej": {
+    "kind": "vocabulary",
+    "sl": "Hej",
+    "gloss": "hi (informal)",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "cau": {
+    "kind": "vocabulary",
+    "sl": "Čau",
+    "gloss": "hi / bye (casual)",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "lahko_noc": {
+    "kind": "chunk",
+    "sl": "Lahko noč.",
+    "gloss": "good night",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "nasvidenje": {
+    "kind": "vocabulary",
+    "sl": "Nasvidenje",
+    "gloss": "goodbye",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "ponovite_prosim": {
+    "kind": "chunk",
+    "sl": "Ponovite, prosim.",
+    "gloss": "please repeat (vi)",
+    "predictableError": "informal 'Ponovi, prosim.'; distinct from 'Še enkrat, prosim.' (repeat vs again)",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "pocasi_prosim": {
+    "kind": "chunk",
+    "sl": "Počasi, prosim.",
+    "gloss": "slowly, please",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "da": {
+    "kind": "vocabulary",
+    "sl": "da",
+    "gloss": "yes (affirmation)",
+    "predictableError": "'da' is the more formal/emphatic 'yes'; the colloquial default is 'ja' — both are used",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "vsec_mi_je": {
+    "kind": "pattern",
+    "sl": "Všeč mi je ___.",
+    "gloss": "I like ___",
+    "predictableError": "dative 'mi'; a plural liked-thing takes 'všeč so mi'",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "ni_mi_vsec": {
+    "kind": "chunk",
+    "sl": "Ni mi všeč.",
+    "gloss": "I don't like it",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "oprosti": {
+    "kind": "vocabulary",
+    "sl": "Oprosti",
+    "gloss": "sorry / excuse me (ti)",
+    "predictableError": "the 'ti' form; 'oprostite' is the 'vi' form — both used",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "hvala_lepa": {
+    "kind": "chunk",
+    "sl": "Hvala lepa.",
+    "gloss": "thank you very much",
+    "predictableError": "'lepa' agrees with fem. 'hvala' — the slip is 'hvala lepo'",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "me_veseli": {
+    "kind": "chunk",
+    "sl": "Me veseli.",
+    "gloss": "nice to meet you",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "ne_vem": {
+    "kind": "chunk",
+    "sl": "Ne vem.",
+    "gloss": "I don't know",
+    "predictableError": "distinct from 'Ne razumem.' (don't know vs don't understand)",
+    "core": true,
+    "paretoCategory": [
+      "verb_core"
+    ]
+  },
+  "jem": {
+    "kind": "pattern",
+    "sl": "Jem ___.",
+    "gloss": "I eat ___",
+    "predictableError": "accusative object ('jem juho')",
+    "core": true,
+    "paretoCategory": [
+      "verb_core"
+    ]
+  },
+  "pijem": {
+    "kind": "pattern",
+    "sl": "Pijem ___.",
+    "gloss": "I drink ___",
+    "predictableError": "accusative object ('pijem vodo')",
+    "core": true,
+    "paretoCategory": [
+      "verb_core"
+    ]
+  },
+  "gledam": {
+    "kind": "pattern",
+    "sl": "Gledam ___.",
+    "gloss": "I watch / look at ___",
+    "predictableError": "accusative object",
+    "core": true,
+    "paretoCategory": [
+      "verb_core"
+    ]
+  },
+  "kupim": {
+    "kind": "pattern",
+    "sl": "Rad bi kupil / kupila ___.",
+    "gloss": "I'd like to buy ___",
+    "predictableError": "bare 'kupim' reads future/generic; use 'rad bi kupil' / 'kupil bom'; gender on the l-participle + accusative object",
+    "core": true,
+    "paretoCategory": [
+      "verb_core",
+      "transaction"
+    ]
+  },
+  "ne_govorim_dobro": {
+    "kind": "chunk",
+    "sl": "Ne govorim dobro slovensko.",
+    "gloss": "I don't speak Slovene well",
+    "predictableError": "adverb 'dobro'; 'slovensko' (adv.), not the noun 'slovenščino'",
+    "core": true,
+    "paretoCategory": [
+      "social_glue"
+    ]
+  },
+  "hocem": {
+    "kind": "pattern",
+    "sl": "Hočem ___.",
+    "gloss": "I want ___",
+    "predictableError": "'hočem' is blunt for a request — use 'rad bi' / 'lahko dobim' politely; accusative object",
+    "core": true,
+    "paretoCategory": [
+      "verb_core"
+    ]
   }
 }

@@ -17,7 +17,25 @@
         "dve_dualacc",
         "pol_kilograma",
         "dekagram",
-        "za_osebe"
+        "za_osebe",
+        "koliko",
+        "star_sem_let",
+        "stevilo_nic",
+        "stevilo_ena",
+        "stevilo_dva",
+        "stevilo_tri",
+        "stevilo_stiri",
+        "stevilo_pet",
+        "stevilo_sest",
+        "stevilo_sedem",
+        "stevilo_osem",
+        "stevilo_devet",
+        "stevilo_deset",
+        "stevilo_dvajset",
+        "stevilo_trideset",
+        "stevilo_stirideset",
+        "stevilo_petdeset",
+        "stevilo_sto"
       ],
       "scenarios": [
         {
@@ -68,7 +86,17 @@
         "to_bo_vse",
         "glavna_jed",
         "postrezba_odlicna",
-        "hvala_za_vecer"
+        "hvala_za_vecer",
+        "kdo",
+        "kaj",
+        "kje",
+        "kdaj",
+        "kako",
+        "koliko",
+        "od_kod",
+        "kam",
+        "zakaj",
+        "hocem"
       ],
       "scenarios": [
         {
@@ -121,7 +149,17 @@
         "dober_dan",
         "dober_vecer",
         "hvala_nasvidenje",
-        "priporocate"
+        "priporocate",
+        "kaj_je_to",
+        "govorite_anglesko",
+        "kako_ste",
+        "ponovite_prosim",
+        "pocasi_prosim",
+        "da",
+        "vsec_mi_je",
+        "ni_mi_vsec",
+        "ne_vem",
+        "ne_govorim_dobro"
       ],
       "scenarios": [
         {
@@ -153,7 +191,21 @@
         "Kako vam je ime?"
       ],
       "learnables": [
-        "govorim_slovensko"
+        "govorim_slovensko",
+        "sem_ime",
+        "pisem_se",
+        "zivim_v",
+        "sem_iz",
+        "star_sem_let",
+        "imam",
+        "delam_kot",
+        "kako_ime",
+        "od_kod_ste",
+        "koliko_star",
+        "kje_zivite",
+        "kaj_delate",
+        "govorite_anglesko",
+        "ne_govorim_dobro"
       ],
       "scenarios": []
     },
@@ -171,7 +223,8 @@
         "Živim v stanovanju."
       ],
       "learnables": [
-        "lepo_vreme"
+        "lepo_vreme",
+        "zivim_v"
       ],
       "scenarios": [
         {
@@ -259,7 +312,10 @@
         "narociti",
         "za_osebe",
         "super_izbira",
-        "alergicen_na"
+        "alergicen_na",
+        "lahko_dobim",
+        "jem",
+        "pijem"
       ],
       "scenarios": [
         {
@@ -301,7 +357,17 @@
         "Zjutraj… / Zvečer…",
         "V prostem času grem na sprehod."
       ],
-      "learnables": [],
+      "learnables": [
+        "ob_kateri_uri",
+        "koliko_je_ura",
+        "ob_uri",
+        "zjutraj",
+        "popoldne",
+        "zvecer",
+        "jutri",
+        "danes",
+        "gledam"
+      ],
       "scenarios": []
     },
     {
@@ -327,7 +393,11 @@
         "placam_s_kartico",
         "ali_imate",
         "pol_kilograma",
-        "dekagram"
+        "dekagram",
+        "lahko_dobim",
+        "zelim",
+        "z_gotovino",
+        "kupim"
       ],
       "scenarios": [
         {
@@ -373,7 +443,18 @@
         "postrezba_odlicna",
         "hvala_za_vecer",
         "lepo_vreme",
-        "je_tako_prav"
+        "je_tako_prav",
+        "kako_ste",
+        "zivjo",
+        "zdravo",
+        "adijo",
+        "hej",
+        "cau",
+        "lahko_noc",
+        "nasvidenje",
+        "oprosti",
+        "hvala_lepa",
+        "me_veseli"
       ],
       "scenarios": [
         {
@@ -418,7 +499,10 @@
         "Delam kot…",
         "Delam v…"
       ],
-      "learnables": [],
+      "learnables": [
+        "delam_kot",
+        "kaj_delate"
+      ],
       "scenarios": []
     },
     {
@@ -436,7 +520,12 @@
         "Kako pridem do…?",
         "Ena vozovnica, prosim."
       ],
-      "learnables": [],
+      "learnables": [
+        "kje_je",
+        "kako_pridem_do",
+        "grem_v",
+        "avtobus_gre"
+      ],
       "scenarios": []
     }
   ],
