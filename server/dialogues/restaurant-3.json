@@ -39,7 +39,7 @@
     "na_tebe",
     "hvala_za_vecer"
   ],
-  "audio": "pending",
+  "audio": "ready",
   "voices": {
     "npc": "female-speaker",
     "client": "male-speaker"

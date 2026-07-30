@@ -35,7 +35,7 @@
     "racun",
     "placam_s_kartico"
   ],
-  "audio": "pending",
+  "audio": "ready",
   "voices": {
     "npc": "female-speaker",
     "client": "male-speaker"
