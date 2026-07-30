@@ -62,6 +62,10 @@ export interface Dialogue {
   audio: DialogueAudioState;
   /** Per-speaker voice profile id (catalog voices.json) — the tag pregenerated audio is keyed on. */
   voices: Record<DialogueSpeaker, string>;
+  /** Optional portrait background image for this level's rehearsal — a filename under public/backgrounds/
+   *  (e.g. "restaurant-1.jpg"). The conversation scrolls over it while the image stays fixed. Absent →
+   *  the plain panel background. */
+  background?: string;
   root: string;
   nodes: Record<string, DialogueNode>;
 }
@@ -108,6 +112,7 @@ export function validateDialogue(file: string, raw: any): Dialogue {
   if (!raw.voices || typeof raw.voices !== "object") fail(file, `"voices" must be an object`);
   asProfile(file, raw.voices, "npc", "voices");
   asProfile(file, raw.voices, "client", "voices");
+  if (raw.background !== undefined) asString(file, raw, "background", "dialogue");
   if (!raw.nodes || typeof raw.nodes !== "object" || !Object.keys(raw.nodes).length)
     fail(file, `"nodes" must be a non-empty object`);
   const ids = new Set(Object.keys(raw.nodes));
