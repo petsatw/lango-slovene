@@ -18,6 +18,7 @@ import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
 import { CATALOG } from "./catalog";
 import { getDialoguesForScenario } from "./dialogues";
+import { getLearnable } from "./learnables";
 import { buildGalleryHtml } from "./scripts/gallery";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -170,7 +171,7 @@ app.post("/api/turn", async (req, res) => {
 // One free-conversation turn (E2 only) — scenario-less, bounded by the durable learner model. Audio is
 // fetched from /api/speak exactly like /api/turn (voice=character is irrelevant here → teacher voice).
 app.post("/api/converse", async (req, res) => {
-  const { audioBase64, mimeType, history, level, seedId, begin, role, focusLearnables, context } = req.body ?? {};
+  const { audioBase64, mimeType, history, level, seedId, begin, role, focusLearnables, context, runId } = req.body ?? {};
   // Every turn needs audio EXCEPT an opening (begin): the seed's step 0 or free chat's "Začnemo?" line
   // is the tutor speaking first, with no learner audio yet.
   if (!begin && (!audioBase64 || !mimeType)) {
@@ -199,6 +200,37 @@ app.post("/api/converse", async (req, res) => {
             }
           : null,
     });
+
+    // M6-for-free-chat (MVP Phase 3): capture the live session so Replays can play it back. Legacy
+    // capture only ran on /api/turn; free chat wrote nothing — that's the gap this closes. Best-effort:
+    // never fail a turn because the record couldn't be written. Skip the seed (its own tutorial) and the
+    // static opening (no learner audio). One record per runId = one continuous free chat until exit.
+    if (runId && !seedId && !begin) {
+      try {
+        const e3 = getE3();
+        const teacherTag = e3.voiceTagFor(undefined); // free-chat replies are the teacher voice
+        const tutorKey = (text: string) => store.audioKey(e3.name, teacherTag, text);
+        // On the first turn, seed the record with the opening "Začnemo?" the tutor spoke first.
+        const opening = getLearnable("zacnemo").sl;
+        const seedTurns = sessions.load(String(runId))
+          ? undefined
+          : [{ role: "tutor" as const, text: opening, audioKey: tutorKey(opening) }];
+        sessions.appendTurns({
+          id: String(runId),
+          scenarioId: "free-chat",
+          seedTurns,
+          turns: [
+            { role: "student", text: result.userSaid, userVerbatim: result.userVerbatim },
+            { role: "tutor", text: result.tutorReply, audioKey: tutorKey(result.tutorReply) },
+          ],
+          finalObjectives: [], // free chat has no objectives; the engine stays invisible here
+          complete: false, // a free chat is never "complete" — it stays open until the learner exits
+        });
+      } catch (capErr: any) {
+        console.error("[converse capture] failed:", capErr?.message);
+      }
+    }
+
     res.json(result);
   } catch (err: any) {
     console.error("[converse] failed:", err?.message);

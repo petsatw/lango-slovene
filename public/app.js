@@ -27,6 +27,7 @@ let seedActive = false;      // the zero-state tutorial is running through the s
 let chatRole = null;         // free chat: the role the tutor pinned this session (carried back each turn)
 let chatFocus = [];          // free chat: learnable ids to bias this session toward (set by a rehearsal handoff)
 let chatContext = null;      // free chat: the scene the learner arrived from (situation + practiced objectives)
+let runId = null;            // unique id for THIS free-chat session — groups its turns into one replayable record
 
 // ---- Screen router — one screen visible at a time; the tree + obs are overlays on top. ----
 const SCREENS = ["home", "practice", "levels", "tutor", "replays", "a1"];
@@ -45,6 +46,14 @@ function openReplays() { showScreen("replays"); loadRuns(); }
 function openA1() { showScreen("a1"); renderA1(); }
 
 function stopAllAudio() { stopDialogueAudio(); }
+
+// A readable, filesystem-safe run id: <prefix>-<timestamp>-<rand>. One run per tutor session, so leaving
+// and re-entering the live tutor starts a fresh replayable record.
+function newRunId(prefix) {
+  const ts = new Date().toISOString().replace(/[:.]/g, "-");
+  const rand = Math.random().toString(36).slice(2, 8);
+  return `${prefix || "free-chat"}-${ts}-${rand}`;
+}
 
 function pickMimeType() {
   const candidates = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/aac"];
@@ -212,7 +221,7 @@ async function stopRecordingAndSend() {
     const res = await fetch("/api/converse", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ audioBase64, mimeType: "audio/wav", history, level: CHAT_LEVEL, role: chatRole, focusLearnables: chatFocus, context: chatContext }),
+      body: JSON.stringify({ audioBase64, mimeType: "audio/wav", history, level: CHAT_LEVEL, role: chatRole, focusLearnables: chatFocus, context: chatContext, runId }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
@@ -446,6 +455,7 @@ function startTutorSession() {
   $("transcript").innerHTML = "";
   history.length = 0;
   seedActive = false;
+  runId = newRunId("free-chat"); // a fresh replayable session record for this sitting
   $("play-fallback").hidden = true;
   $("talk").disabled = false;
   obs.state("idle");
