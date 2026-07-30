@@ -418,6 +418,11 @@ async function chooseClient(clientNodeId) {
 function startDialogueTree() {
   stopDialogueAudio();
   $("dialogue-title").textContent = dialogue.title;
+  // Optional scene background: the whole card becomes a fixed mobile-portrait frame the image fills;
+  // the convo scrolls over it while the image stays put.
+  const card = $("dialogue-convo").closest(".dialogue-card");
+  card.style.setProperty("--bg", dialogue.background ? `url("/backgrounds/${dialogue.background}")` : "none");
+  card.classList.toggle("has-bg", !!dialogue.background);
   $("dialogue-convo").innerHTML = "";
   $("dialogue-choices").innerHTML = "";
   // Offer the "try it for real" handoff whenever this level ties itself to catalog learnables.

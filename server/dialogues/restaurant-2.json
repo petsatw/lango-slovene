@@ -42,6 +42,7 @@
     "npc": "female-speaker",
     "client": "male-speaker"
   },
+  "background": "restaurant-2.jpg",
   "root": "m1",
   "nodes": {
     "m1": {

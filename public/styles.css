@@ -304,6 +304,20 @@ main {
   padding: 8px 2px; margin: 6px 0;
   min-height: 28dvh; max-height: 52dvh;
 }
+/* With a scene background, the whole card becomes a fixed mobile-portrait frame the image fills
+ * (background-size: cover, pinned to the card). The convo grows to fill the remaining height and
+ * scrolls over the image while the frame — and the image — stay put. A gradient scrim keeps the
+ * title, hint and bubbles legible. */
+.dialogue-card.has-bg {
+  height: 82dvh; max-height: 82dvh;
+  background-image: linear-gradient(rgba(15, 17, 21, 0.5), rgba(15, 17, 21, 0.5)), var(--bg, none);
+  background-size: cover; background-position: center;
+  background-repeat: no-repeat;
+}
+.dialogue-card.has-bg .dialogue-convo { max-height: none; } /* frame is fixed; convo fills + scrolls */
+.dialogue-card.has-bg #dialogue-title,
+.dialogue-card.has-bg .dialogue-hint { color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
+.dialogue-card.has-bg .bubble.user { background: rgba(42, 47, 58, 0.92); }
 .dialogue-choices { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
 .dialogue-choice {
   width: 100%; text-align: left;
