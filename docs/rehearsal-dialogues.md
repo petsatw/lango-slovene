@@ -139,12 +139,14 @@ of the [asset pipeline](asset-pipeline.md) — a line identical in the same voic
 
 ## Authoring
 
-Rehearsal dialogues do **not** go through the full scenario engine. They use a **lightweight
-author + critic pass**: the orchestrator specs the tree (situation, per-level objectives mapped to
+Rehearsal dialogues are authored by the **`create-dialogue`** skill — the `dialogue` surface of the shared
+authoring engine (**docs/authoring-pipeline.md**). It mirrors create-scenario's shape for the branching-tree
+surface: the orchestrator specs the tree (situation, per-level objectives mapped to
 [CEFR/Slovenian A1](https://centerslo.si/izpiti/izpiti-iz-znanja-slovenscine/izpit-na-vstopni-ravni)
-competencies, sizing, register), the **`slovenian-author`** agent writes the native Slovene per node,
-and the **`scenario-critic`** agent signs off on naturalness, register consistency, grammar targets, and
-branch coherence (its recurring catch is a convergence node that only makes sense on one incoming path).
+competencies — see docs/a1-taxonomy.md — sizing, register), the **`slovenian-author`** agent (dialogue mode)
+writes the native Slovene per node + the catalog delta, and the **`scenario-critic`** agent (dialogue mode)
+signs off on naturalness, register consistency, grammar targets, and branch coherence (its recurring catch is
+a convergence node that only makes sense on one incoming path), returning **structured, addressed fixes**.
 Objectives are distinct across a scenario's levels and each is demonstrated on a reachable path. The
 `never freehand Slovene` rule still holds — the author writes the language, not the orchestrator.
 
@@ -160,16 +162,77 @@ learnables is a **gated step of the authoring pass**, a byproduct of writing the
    item; it mints a new id only for genuinely new language.
 2. **Critic reviews the delta too.** `scenario-critic` judges the delta on the same axes as the tree —
    canonical form correct, gloss accurate, the predictable error real and correctly described, native not
-   textbook, no duplicate of an existing entry.
-3. **Reconcile deterministically.** Merge the approved new entries into `learnables.json`, set the
-   level's `introduces` to the union of reused + new ids, and run **`npm run lint:dialogue`** — the gate
-   that enforces the DRY invariant (no two learnables share a canonical `sl`), restates referential
-   integrity, and prints coverage. It must exit 0.
+   textbook, and no **re-mint of an item already in the catalog** (same lexical item modulo inflection —
+   NOT a distinct lexeme that merely shares a function; `Živjo`/`Zdravo` and `ja`/`da` both coexist).
+3. **Reconcile deterministically.** `npm run reconcile:dialogue -- <reconcile-input.json>` merges the new
+   entries into `learnables.json` (skip existing ids; **fail loud** on a duplicate canonical `sl`; normalize
+   `kind`), assigns each level's `introduces` = union(reused + new), applies the critic's exact fixes, writes
+   the dialogue files + the manifest, and emits candidate A1 mappings. Then the gates must all exit 0:
+   **`lint:dialogue`** (the DRY invariant + `introduces` integrity + coverage), **`lint:tree`** (tree
+   structure + manifest consistency), **`lint:a1`** (every learnable mapped or excluded), **`test:dialogue`**.
 
-The same three-part shape as the scenario engine (author → critic → deterministic lint), extended to grow
-the catalog. Because a word is minted once and referenced by id (step 1's reuse rule + step 3's dedup),
-the catalog stays coherent as dialogues multiply — every later dialogue that uses *kruh* credits the same
-`kruh` the learner has been building all along.
+The same three-part shape as the scenario engine (author → critic → deterministic reconcile + lint), extended
+to grow the catalog. Because a word is minted once and referenced by id (step 1's reuse rule + the reconcile's
+dedup), the catalog stays coherent as dialogues multiply — every later dialogue that uses *kruh* credits the
+same `kruh` the learner has been building all along.
+
+### The tree template + sizing (calibrated to bakery/restaurant)
+
+- **Sizing:** L1 Survival ≈ **16 nodes**, L2 Basic-A1 ≈ **26**, L3 Full-A1 ≈ **52**.
+- **Spine:** an `npc` node → **2 client-reply choices** → each client node's single `next` is the npc's
+  response → branches **re-converge** onto shared later nodes so the tree stays finite. `root` **must be an
+  `npc` node**; every path ends at `next: []`.
+- **`deliverySL`:** optional, **npc lines only** — the same line with **one** eleven_v3 delivery tag matching
+  the character (the restaurant waiter uses a warm `[warmly] …`; the bakery uses `[hesitant]`). **Client
+  lines carry no `deliverySL`** (the learner's own voice needs no direction).
+- **Register + voices:** hold the declared register across every line (a toast among friends is naturally
+  `ti` and is not a break). Match the client lines to the **learner's gender** (the restaurant client Slavko
+  is male: `rad bi`, `vzel bom`, `zame`).
+- **Convergence coherence** is the one thing a script can't judge: a shared `next` target must read on **every**
+  incoming path. `lint:tree` LISTS every multi-parent node as a review candidate — eyeball each; the critic is
+  the real check.
+
+### The minting rubric (what becomes a catalog learnable)
+
+- **Mint a learnable iff the LEARNER is expected to PRODUCE it.** Candidates come from the **client** lines.
+  NPC-only receptive lines (`Izvolite`, `Še kaj?`, `Dober tek!`) are **not** learnables — never mint them.
+- **Reuse an existing id** only when it is the **same lexical item** — the same lemma/frame/phrase, just
+  inflected/cased/spelled differently (`kavo`→`kava`, `Rada bi`→`rad_bi`). **Mint a new one** for genuinely
+  new language, INCLUDING a distinct lexeme that merely shares a function with an existing one — those
+  coexist, never collapse them (`Živjo` and `Zdravo`; `ja` and `da`; `to_bo_vse` *To bo vse.* is distinct
+  from *To je vse.*). Reuse is by lexical identity, never by "same communicative job."
+- Mint in **citation form** — vocabulary = nom. sg. lemma; pattern = a frame with `___`; chunk = the fixed
+  phrase — with a `gloss` and the **one predictable beginner error**. Propose a snake_case id; the reconcile
+  owns final id assignment.
+
+### Register a new scenario — the checklist
+
+1. **Pick the situation + register + role + voices.** Choose or add the `npc`/`client` voice profiles (a new
+   voice = one `server/catalog/voices.json` profile + one `PROFILE_ENV` row in the E3 adapter + the id in
+   `.env` — see [SECRETS.md](SECRETS.md)).
+2. **Run `create-dialogue`** — spec the levels (label, title, objectives, sizing), author via the agents,
+   reconcile, pass the four gates, present PR-style, get approval.
+3. **Confirm the A1 candidates** the reconcile emitted; fold them into `server/catalog/a1-map.json`; re-run
+   `lint:a1`.
+4. **Operator: generate audio** — `npm run build:dialogue-assets -- <id>` (preflight-gated; flips levels to
+   `audio: "ready"`).
+5. **Restart the server** — new JSON loads only at startup.
+
+### Voices + env matrix, and the preflight
+
+Each speaker maps to a catalog voice profile, bound to a concrete ElevenLabs voice id via an env var:
+
+| voice profile | env var | used by |
+|---|---|---|
+| `female-speaker` | `ELEVENLABS_VOICE_ID` | teacher/narration; restaurant `npc`; bakery `client` |
+| `male-speaker` | `ELEVENLABS_VOICE_ID_MALE` | restaurant `client` (Slavko) |
+| `shop-assistant` | `ELEVENLABS_VOICE_ID_SHOP_ASSISTANT` | bakery `npc` |
+
+`build:dialogue-assets` runs a **preflight** before synthesizing: every voice profile the target references
+must resolve to a configured voice id, and the API key must be set — otherwise it **fails fast**, listing
+every missing binding, so a run can't half-complete (as a quota stop once did). The build is **idempotent**
+and **free on re-run** (disk hits); it bills only for newly-synthesized clips, synthesizes `deliverySL ?? sl`,
+keys on the clean `sl`, and flips a completed level from `audio: "pending"` to `"ready"`.
 
 ## What is deliberately not here (yet)
 

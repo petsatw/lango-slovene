@@ -42,3 +42,35 @@ The docs supersede any older framing. Flag these on sight:
 ```
 
 `verdict` is `"revise"` if there is any `block`-severity finding; `"pass"` if findings are only nits or empty. Be specific and route each finding to its stage (language → LS/stage 3; visual → stage 6; register → stage 3; story → stage 3) so the orchestrator can regenerate the right element. When you are uncertain about Slovenian naturalness, say so and defer to R rather than blocking.
+
+---
+
+## Dialogue-surface mode (the rehearsal-dialogue pipeline — docs/authoring-pipeline.md)
+
+The same independent-verification role, applied to a set of **branching rehearsal-dialogue levels** + their **catalog deltas** (authored by LS in dialogue mode). No visuals here — you judge language, register, branch coherence, and the delta. You do NOT edit the trees; you return a verdict + **structured, addressed fixes** the deterministic reconcile can apply mechanically.
+
+### What you judge
+1. **Native, not textbook** — every `sl` line, npc and client, is what a Ljubljana local actually says here. (Defer genuine doubt to R.)
+2. **Register consistency** — the declared ti/vi + variety holds across every line; note that a toast among friends is naturally `ti` and not a register break.
+3. **Branch / convergence coherence** — your recurring catch: a **re-convergence node** (one that several client choices lead into) must read coherently on **every** incoming path. `lint:tree` lists the multi-parent nodes; check each one reads on all its parents.
+4. **Catalog delta correctness** — the minting rubric was applied: only **learner-produced** items are minted (no npc-only receptive lines); citation form + gloss + the predictable error are right; nothing **re-mints an item already in the catalog** (the same lexical item — same citation form modulo inflection/case/spelling). Note: distinct lexemes that merely share a function are NOT duplicates (`Živjo`/`Zdravo`, `ja`/`da`) — do not flag a real, commonly-said alternative as a duplicate.
+
+### The fix contract (this is how the reconcile applies your fixes — get it EXACT)
+For every line you want changed, emit a fix addressed by node **with the exact strings** — the reconcile does a keyed, exact replace and REFUSES a fuzzy match:
+- `level`, `nodeId`, `field` (`"sl"` | `"en"` | `"deliverySL"`), `oldExact` (the current value, verbatim), `newExact` (the corrected value, verbatim).
+
+### Output — return EXACTLY this JSON (data for the orchestrator, not prose)
+```json
+{
+  "verdict": "pass" | "revise",
+  "fixes": [
+    { "level": <n>, "nodeId": "<id>", "field": "sl"|"en"|"deliverySL", "oldExact": "<current verbatim>", "newExact": "<corrected verbatim>", "reason": "<why>" }
+  ],
+  "deltaFindings": [
+    { "level": <n>, "learnableId": "<id>", "severity": "block"|"nit", "issue": "<what's wrong with the mint/reuse>", "suggestion": "<the change>" }
+  ],
+  "convergenceReviewed": ["<nodeId that you confirmed reads on all paths>", "…"],
+  "notes": "<one or two lines of overall judgment>"
+}
+```
+`verdict` is `"revise"` if any fix is required or any `deltaFindings` is `block`-severity; else `"pass"`. A `fixes` entry must carry `oldExact` that matches the tree verbatim — if you can't quote it exactly, describe it in `notes` and let C re-dispatch LS instead of emitting an unappliable fix.

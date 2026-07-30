@@ -11,5 +11,19 @@
     "form": "vi",
     "variety": "pogovorni"
   },
+  "surfaces": {
+    "dialogue": {
+      "voices": {
+        "npc": "female-speaker",
+        "client": "male-speaker"
+      },
+      "levels": [
+        { "level": 1, "levelLabel": "Survival" },
+        { "level": 2, "levelLabel": "Basic A1" },
+        { "level": 3, "levelLabel": "Full A1" }
+      ]
+    },
+    "a1": true
+  },
   "objectives": []
 }

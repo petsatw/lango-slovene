@@ -42,6 +42,30 @@ export interface Register {
   variety: "pogovorni" | "knjizni"; // colloquial vs standard/bookish
 }
 
+/** One rehearsal level the scenario package declares (the manifest's view of a dialogue file). The
+ *  per-level `server/dialogues/<id>-<level>.json` is the RENDERED surface; this is the manifest's
+ *  DECLARATION of it. `lint:tree` checks the two agree (level + label + voices). */
+export interface DialogueSurfaceLevel {
+  level: number;
+  levelLabel: string;
+}
+
+/** The `dialogue` surface of a scenario package: the shared per-speaker voice profiles + the levels the
+ *  manifest declares. The dialogue JSON files are keyed to this (D2 — manifest as source of truth). */
+export interface DialogueSurface {
+  voices: { npc: string; client: string };
+  levels: DialogueSurfaceLevel[];
+}
+
+/** The surfaces a scenario package renders from its one canonical spine (D1/D2). Optional + additive:
+ *  legacy scenarios that predate the manifest simply omit it. Today only `dialogue` is materialized;
+ *  `a1: true` marks that this package's levels are referenced by the A1 coverage map. Future surfaces
+ *  (guided-live, visual) slot in here without touching the loader. */
+export interface ScenarioSurfaces {
+  dialogue?: DialogueSurface;
+  a1?: boolean;
+}
+
 export interface Scenario {
   id: string;
   /** Short label for the picker dropdown (e.g. "Café"). Falls back to title if absent. */
@@ -64,6 +88,10 @@ export interface Scenario {
   opening: string;
   /** The register the tutor holds across the scenario (ti/vi + pogovorni/knjizni). */
   register?: Register;
+  /** The surfaces this package renders (D1/D2 — the manifest's declaration of what exists). Optional +
+   *  additive; legacy scenarios omit it. `lint:tree` checks the `dialogue` surface agrees with the
+   *  per-level dialogue files. */
+  surfaces?: ScenarioSurfaces;
   objectives: Objective[];
   /** Visual story layer (M3/M4) — narrated opener, one frame per objective, one final all-in scene. */
   scene?: {
@@ -166,6 +194,29 @@ export function validateScenario(file: string, raw: any): Scenario {
     if (raw.register.variety !== "pogovorni" && raw.register.variety !== "knjizni") {
       fail(file, `register.variety must be "pogovorni" | "knjizni"`);
     }
+  }
+  if (raw.surfaces !== undefined) {
+    if (typeof raw.surfaces !== "object" || Array.isArray(raw.surfaces)) fail(file, `"surfaces" must be an object`);
+    const dlg = raw.surfaces.dialogue;
+    if (dlg !== undefined) {
+      if (typeof dlg !== "object" || Array.isArray(dlg)) fail(file, `surfaces.dialogue must be an object`);
+      if (!dlg.voices || typeof dlg.voices !== "object") fail(file, `surfaces.dialogue.voices must be an object`);
+      for (const speaker of ["npc", "client"] as const) {
+        const p = asString(file, dlg.voices, speaker);
+        if (!CATALOG.voiceProfiles[p]) fail(file, `surfaces.dialogue.voices.${speaker}: voice profile "${p}" is not in the catalog`);
+      }
+      if (!Array.isArray(dlg.levels) || !dlg.levels.length) fail(file, `surfaces.dialogue.levels must be a non-empty array`);
+      const seen = new Set<number>();
+      for (const lv of dlg.levels) {
+        if (typeof lv.level !== "number" || !Number.isInteger(lv.level) || lv.level < 1)
+          fail(file, `surfaces.dialogue.levels: each "level" must be a positive integer`);
+        if (seen.has(lv.level)) fail(file, `surfaces.dialogue.levels: duplicate level ${lv.level}`);
+        seen.add(lv.level);
+        asString(file, lv, "levelLabel");
+      }
+    }
+    if (raw.surfaces.a1 !== undefined && typeof raw.surfaces.a1 !== "boolean")
+      fail(file, `surfaces.a1 must be a boolean`);
   }
   if (raw.scene) {
     // Resolve every scene asset (inline or shared `{ ref }`) to a concrete AssetDef in place, so all

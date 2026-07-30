@@ -46,6 +46,35 @@ if (!files.length) {
 }
 
 const e3 = getE3();
+
+// D7ii — VOICE/ENV PREFLIGHT. Synthesis is billed and a run that stops half-way (a missing voice binding,
+// a quota stop) leaves a level's audio partially generated. So before touching the provider, verify every
+// voice profile the target files reference actually resolves to a configured voice id — and fail fast,
+// listing every problem at once, rather than discovering it mid-run on the Nth clip.
+{
+  const profiles = new Set<string>();
+  for (const { d } of files) { profiles.add(d.voices.npc); profiles.add(d.voices.client); }
+  const problems: string[] = [];
+  for (const p of profiles) {
+    let voiceId = "";
+    try {
+      voiceId = e3.voiceTagFor(p).split(":")[0] ?? ""; // tag = `${voiceId}:${modelId}`
+    } catch (err: any) {
+      problems.push(`voice profile "${p}": ${err?.message}`); // unknown profile (no binding row)
+      continue;
+    }
+    if (!voiceId) problems.push(`voice profile "${p}": no voice id configured — set its env binding (see docs/SECRETS.md)`);
+  }
+  if (e3.name === "elevenlabs" && !process.env.ELEVENLABS_API_KEY) problems.push(`ELEVENLABS_API_KEY is not set (see docs/SECRETS.md)`);
+  if (problems.length) {
+    console.error(`\n❌ preflight failed for "${scenarioId}" — nothing synthesized (would half-complete otherwise):`);
+    for (const p of problems) console.error(`   • ${p}`);
+    console.error(`\n   Set the missing binding(s) in .env, then re-run. build:dialogue-assets is idempotent — already-built clips are free.\n`);
+    process.exit(1);
+  }
+  console.log(`\n✓ preflight ok — ${profiles.size} voice profile(s) bound: ${[...profiles].join(", ")}`);
+}
+
 let hits = 0, made = 0, failures = 0;
 
 for (const { file, d } of files) {

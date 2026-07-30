@@ -13,15 +13,7 @@
 //
 // Exit code 0 = pass, 1 = at least one integrity error (so the authoring procedure can gate on it).
 
-/** Normalize a Slovene surface for dedup: lowercase, drop punctuation + the slot marker, collapse space. */
-function normSurface(s: string): string {
-  return s
-    .toLowerCase()
-    .replace(/___/g, "")
-    .replace(/[.,!?¿¡;:"'()«»/]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+import { normSurface } from "./dialogue-lib";
 
 async function main() {
   const errors: string[] = [];
