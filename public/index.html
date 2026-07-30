@@ -11,98 +11,87 @@
 </head>
 <body>
   <header>
+    <button id="back" class="back" type="button" hidden>‹ Home</button>
     <h1>Govori 🇸🇮</h1>
-    <p id="scenario-row" class="scenario-row">
-      <select id="scenario-select" class="scenario-select" aria-label="Choose a scenario"></select>
-      <span id="scenario-desc" class="scenario-desc">…</span>
-    </p>
-    <!-- Objectives collapse behind a bar so the dialogue owns the screen; tap to slide the card down. -->
-    <div id="objectives-bar" class="objectives-bar">
-      <button id="objectives-toggle" class="objectives-toggle" type="button" aria-expanded="false" aria-controls="objectives">
-        <span>Learning objectives</span>
-        <span class="objectives-caret" aria-hidden="true">▾</span>
-      </button>
-      <div id="objectives" class="objectives"></div>
-    </div>
-    <div class="header-actions">
-      <button id="dialogue-open" class="story-open" type="button" hidden>🎭 Rehearse the dialogue</button>
-      <button id="story-open" class="story-open" type="button" hidden>📖 Play the story</button>
-      <button id="practice-open" class="story-open" type="button" hidden>🎧 Practice</button>
-      <button id="freechat-toggle" class="story-open" type="button" aria-pressed="false">💬 Free chat: off</button>
-    </div>
   </header>
 
-  <main>
-    <div id="transcript" class="transcript" aria-live="polite"></div>
-    <div id="takeaway" class="takeaway" hidden></div>
+  <!-- HOME — the four learner destinations. One tap to each; everything else is one level in. -->
+  <main id="home" class="home">
+    <div class="tiles">
+      <button class="tile" type="button" data-go="practice">
+        <span class="tile-emoji">🎭</span>
+        <span class="tile-title">Practice scenarios</span>
+        <span class="tile-sub">Rehearse a real situation, line by line</span>
+      </button>
+      <button class="tile" type="button" data-go="tutor">
+        <span class="tile-emoji">💬</span>
+        <span class="tile-title">Live AI tutor</span>
+        <span class="tile-sub">Talk out loud — the tutor replies in Slovene</span>
+      </button>
+      <button class="tile" type="button" data-go="replays">
+        <span class="tile-emoji">↺</span>
+        <span class="tile-title">Replays</span>
+        <span class="tile-sub">Hear back what the tutor said</span>
+      </button>
+      <button class="tile" type="button" data-go="a1">
+        <span class="tile-emoji">📊</span>
+        <span class="tile-title">A1 Readiness</span>
+        <span class="tile-sub">See what moves you toward A1</span>
+      </button>
+    </div>
+  </main>
 
+  <!-- ① PRACTICE — scenario list. Tap a scenario → its levels. -->
+  <main id="practice" class="screen" hidden>
+    <h2 class="screen-title">Practice scenarios</h2>
+    <div id="scenario-list" class="scenario-list"></div>
+  </main>
+
+  <!-- ① PRACTICE — variant/level selector for one scenario. Tap a level → the rehearsal tree. -->
+  <main id="levels" class="screen" hidden>
+    <h2 id="levels-title" class="screen-title">—</h2>
+    <div id="level-list" class="level-list"></div>
+  </main>
+
+  <!-- ② LIVE AI TUTOR — the single live surface. Push-to-talk; Slovene in/out; crediting is invisible. -->
+  <main id="tutor" class="screen tutor" hidden>
+    <div id="transcript" class="transcript" aria-live="polite"></div>
     <button id="talk" class="talk" disabled>
       <span id="talk-label">Hold to speak</span>
     </button>
     <p class="hint">Hold the button, speak (English + Slovenian is fine), then release.</p>
-
-    <!-- Fallback if the browser blocks autoplay of the tutor's reply -->
     <button id="play-fallback" class="play-fallback" hidden>▶ Tap to hear the tutor</button>
   </main>
 
-  <!-- Story player (M4): step through one frame per objective, ending on the all-in scene. -->
-  <div id="story" class="story-overlay" hidden>
-    <div class="story-card">
-      <button id="story-close" class="story-close" type="button" aria-label="Close">✕</button>
-      <div id="story-imgwrap" class="story-imgwrap"><img id="story-img" class="story-img" alt="" /></div>
-      <p id="story-line" class="story-line">—</p>
-      <div class="story-controls">
-        <button id="story-prev" class="story-nav" type="button" aria-label="Previous">‹</button>
-        <span id="story-progress" class="story-progress"></span>
-        <button id="story-next" class="story-nav" type="button" aria-label="Next">›</button>
-      </div>
-    </div>
-  </div>
+  <!-- ③ REPLAYS — play back a past live session, tutor lines from the store (free). -->
+  <main id="replays" class="screen" hidden>
+    <h2 class="screen-title">Replays</h2>
+    <div id="runs-panel" class="runs-panel"></div>
+  </main>
 
-  <!-- Rehearsal: click through the predetermined branching dialogue. Tap a line to reveal English;
-       play buttons appear only once its audio is built. No mic, no server turn, no mastery credit. -->
+  <!-- ④ A1 READINESS — the coverage map (mockup). The ONLY place progress is visible. -->
+  <main id="a1" class="screen" hidden>
+    <h2 class="screen-title">A1 Readiness</h2>
+    <div id="a1-body" class="a1-body"></div>
+  </main>
+
+  <!-- Rehearsal tree overlay: click through the predetermined branching dialogue. Tap a line to reveal
+       English; play buttons appear only once its audio is built. No mic, no server turn, no credit. -->
   <div id="dialogue" class="story-overlay" hidden>
     <div class="story-card dialogue-card">
       <button id="dialogue-close" class="story-close" type="button" aria-label="Close">✕</button>
-      <div id="dialogue-levels" class="dialogue-levels"></div>
       <p id="dialogue-title" class="practice-label">—</p>
       <div id="dialogue-convo" class="dialogue-convo" aria-live="polite"></div>
       <div id="dialogue-choices" class="dialogue-choices"></div>
       <p class="dialogue-hint">Pick your line. Tap any line to see the English.</p>
-      <!-- Introduce→reinforce handoff (roadmap 12b): drop from the rehearsed tree straight into a free
-           chat biased toward exactly the learnables this level introduced, where mastery is earned. -->
+      <!-- Introduce→reinforce handoff: drop from the rehearsed tree straight into a live chat biased
+           toward exactly the learnables this level introduced, where mastery is earned. -->
       <button id="dialogue-handoff" class="dialogue-handoff" type="button" hidden>💬 Now try it for real →</button>
     </div>
   </div>
 
-  <!-- Free practice mode (M5): hear the canonical phrase, record your own try, compare. Zero API cost. -->
-  <div id="practice" class="story-overlay" hidden>
-    <div class="story-card">
-      <button id="practice-close" class="story-close" type="button" aria-label="Close">✕</button>
-      <p id="practice-label" class="practice-label">—</p>
-      <p id="practice-target" class="story-line">—</p>
-      <div class="practice-actions">
-        <button id="practice-hear" class="practice-btn" type="button">▶ Hear it</button>
-        <button id="practice-record" class="practice-btn record" type="button">🎤 Hold to try</button>
-        <button id="practice-playback" class="practice-btn" type="button" hidden>▶ Your try</button>
-      </div>
-      <p id="practice-hint" class="practice-hint">Listen, then hold the mic and repeat. Play yours back to compare.</p>
-      <div class="story-controls">
-        <button id="practice-prev" class="story-nav" type="button" aria-label="Previous">‹</button>
-        <span id="practice-progress" class="story-progress"></span>
-        <button id="practice-next" class="story-nav" type="button" aria-label="Next">›</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Past runs — replay a captured session turn-by-turn for free (M6). -->
-  <section id="runs" class="runs">
-    <button id="runs-toggle" class="runs-toggle" type="button" aria-expanded="false">↺ Past runs</button>
-    <div id="runs-panel" class="runs-panel" hidden></div>
-  </section>
-
-  <!-- Observability overlay — shows each stage live so failures are visible, not mysterious. -->
-  <section id="obs" class="obs">
+  <!-- Observability overlay — dev only; shown on the live-tutor screen so pipeline failures are visible. -->
+  <section id="obs" class="obs" hidden>
     <div class="obs-row"><span>state</span><b id="obs-state">idle</b></div>
     <div class="obs-row"><span>providers</span><b id="obs-providers">—</b></div>
     <div class="obs-row"><span>heard</span><b id="obs-heard">—</b></div>

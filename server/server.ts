@@ -93,6 +93,22 @@ app.get("/api/config", (req, res) => {
 });
 
 
+// Practice scenarios (MVP destination ①): every scenario that has authored rehearsal dialogues, with
+// its full level trees inline (each tree is client-side data — the click-through runs with no server
+// turn). Scenarios without dialogues (café, planned stubs) are omitted — this list IS the picker.
+// `started` drives the live-tutor zero-state (empty learner → seed) so the home can route without a
+// second call.
+app.get("/api/practice", (_req, res) => {
+  const scenarios = SCENARIOS.map((s) => ({ s, dialogues: getDialoguesForScenario(s.id) }))
+    .filter(({ dialogues }) => dialogues.length > 0)
+    .map(({ s, dialogues }) => ({ id: s.id, name: s.name ?? s.title, title: s.title, dialogues }));
+  res.json({
+    scenarios,
+    providers: { e2: getE2().name, e3: getE3().name },
+    started: Object.keys(learner.load().learnables).length > 0,
+  });
+});
+
 // Liveness only. Does not touch providers or keys.
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 

@@ -24,9 +24,87 @@ body {
   flex-direction: column;
 }
 
-header { padding: 24px 20px 8px; text-align: center; }
+header { position: relative; padding: 24px 20px 8px; text-align: center; }
 header h1 { margin: 0; font-size: 28px; }
 header p { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
+
+/* Back to home — top-left, present on every non-home screen. */
+.back {
+  position: absolute; left: 12px; top: 24px;
+  background: transparent; color: var(--muted);
+  border: 1px solid #2b2f38; border-radius: 999px;
+  padding: 6px 14px; font-size: 14px; cursor: pointer;
+}
+.back:hover { color: var(--text); border-color: var(--green); }
+
+.muted { color: var(--muted); font-size: 14px; text-align: center; margin: 24px 8px; }
+
+/* Screens: top-aligned, scrollable. The live tutor overrides this to keep the button at the bottom. */
+main.screen, main.home {
+  justify-content: flex-start;
+  overflow-y: auto;
+}
+.screen-title { font-size: 20px; font-weight: 700; margin: 4px 0 14px; width: 100%; max-width: 520px; text-align: left; }
+
+/* HOME — four big, obvious destination tiles. */
+.tiles {
+  width: 100%; max-width: 520px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-top: 8px;
+}
+.tile {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  text-align: left;
+  background: var(--panel); color: var(--text);
+  border: 1px solid #2b2f38; border-radius: 18px;
+  padding: 18px 16px; min-height: 132px; cursor: pointer;
+  transition: border-color 0.12s ease, transform 0.08s ease;
+}
+.tile:hover { border-color: var(--green); }
+.tile:active { transform: scale(0.98); }
+.tile-emoji { font-size: 26px; }
+.tile-title { font-size: 16px; font-weight: 600; }
+.tile-sub { font-size: 12px; color: var(--muted); line-height: 1.3; }
+
+/* PRACTICE — scenario list. */
+.scenario-list, .level-list { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 10px; }
+.scenario-card {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--panel); color: var(--text);
+  border: 1px solid #2b2f38; border-radius: 14px;
+  padding: 16px 18px; cursor: pointer; text-align: left;
+  transition: border-color 0.12s ease;
+}
+.scenario-card:hover { border-color: var(--green); }
+.scenario-name { font-size: 18px; font-weight: 600; flex: 1; }
+.scenario-meta { color: var(--muted); font-size: 13px; }
+
+/* PRACTICE — the crisp variant/level selector: number + label + what it teaches. */
+.level-card {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--panel); color: var(--text);
+  border: 1px solid #2b2f38; border-radius: 14px;
+  padding: 14px 16px; cursor: pointer; text-align: left;
+  transition: border-color 0.12s ease;
+}
+.level-card:hover { border-color: var(--green); }
+.level-badge {
+  flex-shrink: 0;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--green); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700;
+}
+.level-main { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.level-label { font-size: 16px; font-weight: 600; }
+.level-title { font-size: 13px; color: var(--muted); }
+.level-chevron { color: var(--muted); font-size: 22px; flex-shrink: 0; }
+
+/* Live tutor screen: keep the talk button anchored at the bottom (override the screen top-align). */
+main.tutor { justify-content: flex-end; }
+
+/* Replays list lives directly on its screen now (no collapsible section chrome). */
+.runs-panel { width: 100%; max-width: 520px; background: transparent; padding: 0; }
 
 /* Scenario picker: dropdown of the chosen scenario + its one-line description. */
 .scenario-row { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
