@@ -624,10 +624,90 @@ async function replayRun(id) {
   obs.state("idle");
 }
 
-// ---- ④ A1 Readiness — the coverage map (mockup this cycle; the only place progress is visible). ----
-function renderA1() {
+// ---- ④ A1 Readiness — the coverage map (the only place progress is visible). A hand-authored
+// competency → scenarios mapping; progress read from the durable learner model. List → drill-down. ----
+let a1Competencies = [];
+
+async function renderA1() {
   const el = $("a1-body");
-  el.innerHTML = "<p class='muted'>Coming soon.</p>";
+  el.innerHTML = "<p class='muted'>Loading…</p>";
+  try {
+    const { competencies } = await (await fetch("/api/a1")).json();
+    a1Competencies = competencies;
+    if (!competencies.length) { el.innerHTML = "<p class='muted'>No competencies yet.</p>"; return; }
+    el.innerHTML = "<p class='a1-intro'>How far each everyday skill has come — and where to go next.</p>";
+    for (const c of competencies) {
+      const pct = c.total ? Math.round((c.mastered / c.total) * 100) : 0;
+      const card = document.createElement("button");
+      card.className = "a1-card";
+      card.type = "button";
+      card.innerHTML =
+        `<div class="a1-card-head"><span class="a1-label">${c.label}</span>` +
+        `<span class="a1-count">${c.mastered}/${c.total}</span></div>` +
+        `<div class="a1-bar"><div class="a1-bar-fill" style="width:${pct}%"></div></div>`;
+      card.addEventListener("click", () => openCompetency(c.id));
+      el.appendChild(card);
+    }
+  } catch (err) {
+    el.innerHTML = `<p class='muted'>Failed: ${err.message}</p>`;
+  }
+}
+
+// Drill into one competency: its descriptor, the scenarios/levels that move it forward (tap → practice
+// that level), and the learnables with their owned/shaky/unseen status.
+function openCompetency(id) {
+  const c = a1Competencies.find((x) => x.id === id);
+  if (!c) return;
+  const el = $("a1-body");
+  const back = document.createElement("button");
+  back.className = "a1-back";
+  back.type = "button";
+  back.textContent = "‹ All skills";
+  back.addEventListener("click", renderA1);
+
+  const sym = { mastered: "●", attempted: "◐", unseen: "○" };
+  const scnRows = c.scenarios
+    .map(
+      (s) =>
+        `<button class="a1-scenario" data-sc="${s.scenarioId}" data-lv="${s.level}">` +
+        `<span class="level-badge">${s.level}</span>` +
+        `<span class="level-main"><span class="level-label">${s.name} · ${s.levelLabel}</span>` +
+        `<span class="level-title">${s.title}</span></span><span class="level-chevron">›</span></button>`,
+    )
+    .join("");
+  const itemRows = c.items
+    .map((i) => `<div class="a1-item a1-${i.status}"><span>${sym[i.status]}</span> ${i.sl} <em>${i.gloss}</em></div>`)
+    .join("");
+
+  el.innerHTML = "";
+  el.appendChild(back);
+  const body = document.createElement("div");
+  body.innerHTML =
+    `<h3 class="a1-detail-title">${c.label}</h3>` +
+    `<p class="a1-descriptor">${c.descriptor}</p>` +
+    `<p class="a1-section">Practice these to move forward</p>` +
+    `<div class="level-list">${scnRows}</div>` +
+    `<p class="a1-section">What it covers</p>` +
+    `<div class="a1-items">${itemRows}</div>`;
+  el.appendChild(body);
+  // Tapping a scenario level jumps straight into that rehearsal tree.
+  body.querySelectorAll(".a1-scenario").forEach((b) =>
+    b.addEventListener("click", () => jumpToLevel(b.dataset.sc, Number(b.dataset.lv))),
+  );
+}
+
+// From A1, open a specific scenario level's rehearsal tree (fetches the practice list, finds the scenario).
+async function jumpToLevel(scenarioId, level) {
+  try {
+    const { scenarios } = await (await fetch("/api/practice")).json();
+    const s = scenarios.find((x) => x.id === scenarioId);
+    if (!s) return;
+    openScenario(s);
+    const idx = s.dialogues.findIndex((d) => d.level === level);
+    if (idx >= 0) openLevel(idx);
+  } catch (err) {
+    obs.error(`a1 jump: ${err.message}`);
+  }
 }
 
 async function init() {

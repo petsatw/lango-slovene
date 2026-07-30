@@ -13,12 +13,13 @@ import { getE2, getE3, getE4 } from "./adapters/index";
 import * as store from "./assets/store";
 import * as sessions from "./assets/sessions";
 import * as learner from "./assets/learner";
-import { inspect } from "./mastery";
+import { inspect, statusOf } from "./mastery";
+import { A1_MAP } from "./a1";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
 import { CATALOG } from "./catalog";
 import { getDialoguesForScenario } from "./dialogues";
-import { getLearnable } from "./learnables";
+import { getLearnable, LEARNABLES } from "./learnables";
 import { buildGalleryHtml } from "./scripts/gallery";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -108,6 +109,41 @@ app.get("/api/practice", (_req, res) => {
     providers: { e2: getE2().name, e3: getE3().name },
     started: Object.keys(learner.load().learnables).length > 0,
   });
+});
+
+// A1 Readiness (MVP destination ④) — the coverage map. Each competency carries REAL progress read from
+// the durable learner model (mastered / attempted counts over its learnables) + the scenario levels that
+// advance it, resolved to display labels. This is the only place progress is visible to the learner.
+app.get("/api/a1", (_req, res) => {
+  const model = learner.load();
+  const competencies = A1_MAP.map((c) => {
+    const ids = c.learnables.filter((id) => LEARNABLES[id]);
+    const status = (id: string) => statusOf(model.learnables[id]);
+    const mastered = ids.filter((id) => status(id) === "mastered").length;
+    const attempted = ids.filter((id) => status(id) === "attempted").length;
+    const scenarios = c.scenarios.map((s) => {
+      const scn = SCENARIOS.find((x) => x.id === s.scenarioId);
+      const dlg = getDialoguesForScenario(s.scenarioId).find((d) => d.level === s.level);
+      return {
+        scenarioId: s.scenarioId,
+        name: scn?.name ?? scn?.title ?? s.scenarioId,
+        level: s.level,
+        levelLabel: dlg?.levelLabel ?? `Level ${s.level}`,
+        title: dlg?.title ?? "",
+      };
+    });
+    return {
+      id: c.id,
+      label: c.label,
+      descriptor: c.descriptor,
+      total: ids.length,
+      mastered,
+      attempted,
+      scenarios,
+      items: ids.map((id) => ({ id, sl: LEARNABLES[id]!.sl, gloss: LEARNABLES[id]!.gloss, status: status(id) })),
+    };
+  });
+  res.json({ competencies });
 });
 
 // Liveness only. Does not touch providers or keys.

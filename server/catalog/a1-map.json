@@ -1,0 +1,74 @@
+{
+  "_note": "MVP mockup mapping (Phase 4): A1 competency → the catalog learnables that evidence it + the scenario levels that advance it. Hand-authored placeholder covering the shipped scenarios (bakery, restaurant); replace with the real Slovenian-A1 taxonomy (centerslo) when the team's materials arrive. Progress is read from the durable learner model — this is the ONLY learner-visible progress surface.",
+  "competencies": [
+    {
+      "id": "greetings_courtesy",
+      "label": "Greetings & everyday courtesy",
+      "descriptor": "Greet at the right time of day, say please and thank you, close and leave politely, raise a toast.",
+      "learnables": ["dober_dan", "dober_vecer", "prosim", "hvala", "hvala_nasvidenje", "na_zdravje", "na_tebe"],
+      "scenarios": [
+        { "scenarioId": "bakery", "level": 1 },
+        { "scenarioId": "restaurant", "level": 1 },
+        { "scenarioId": "restaurant", "level": 2 },
+        { "scenarioId": "restaurant", "level": 3 }
+      ]
+    },
+    {
+      "id": "order_food_drink",
+      "label": "Ordering food & drink",
+      "descriptor": "Ask for what you want with 'Rad bi ___', 'Za mene ___', 'Jaz bom ___', 'Vzel bom ___' in the accusative.",
+      "learnables": ["rad_bi", "za_mene", "jaz_bom", "vzel_bom", "eno_femacc", "en_masacc", "kava", "caj", "voda", "sok", "pica", "pivo", "sendvic"],
+      "scenarios": [
+        { "scenarioId": "bakery", "level": 1 },
+        { "scenarioId": "restaurant", "level": 1 },
+        { "scenarioId": "restaurant", "level": 2 },
+        { "scenarioId": "restaurant", "level": 3 }
+      ]
+    },
+    {
+      "id": "quantities_numbers",
+      "label": "Quantities & numbers",
+      "descriptor": "Order by count and by weight — one, two (dual), half a kilo, decagrams.",
+      "learnables": ["en_masacc", "dve_dualacc", "pol_kilograma", "dekagram"],
+      "scenarios": [
+        { "scenarioId": "bakery", "level": 1 },
+        { "scenarioId": "bakery", "level": 2 }
+      ]
+    },
+    {
+      "id": "paying",
+      "label": "Asking the price & paying",
+      "descriptor": "Ask how much it costs, ask for the bill, and pay — by card or catching the spoken total.",
+      "learnables": ["koliko_stane", "koliko_sem_dolzna", "racun", "placam_s_kartico"],
+      "scenarios": [
+        { "scenarioId": "bakery", "level": 1 },
+        { "scenarioId": "bakery", "level": 2 },
+        { "scenarioId": "restaurant", "level": 1 },
+        { "scenarioId": "restaurant", "level": 3 }
+      ]
+    },
+    {
+      "id": "choosing_preferences",
+      "label": "Choosing & preferences",
+      "descriptor": "Express a preference, point to what you want, ask for a recommendation, and compare options.",
+      "learnables": ["raje", "tisti", "katera_bolj", "priporocate", "pizza_variety", "namesto"],
+      "scenarios": [
+        { "scenarioId": "bakery", "level": 2 },
+        { "scenarioId": "bakery", "level": 3 },
+        { "scenarioId": "restaurant", "level": 2 },
+        { "scenarioId": "restaurant", "level": 3 }
+      ]
+    },
+    {
+      "id": "describing_reacting",
+      "label": "Describing & reacting",
+      "descriptor": "Attach a describing word with correct agreement, react warmly, and close an order.",
+      "learnables": ["svez", "topel", "super_izbira", "postrezba_odlicna", "to_bo_vse"],
+      "scenarios": [
+        { "scenarioId": "bakery", "level": 2 },
+        { "scenarioId": "restaurant", "level": 2 },
+        { "scenarioId": "restaurant", "level": 3 }
+      ]
+    }
+  ]
+}

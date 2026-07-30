@@ -106,6 +106,49 @@ main.tutor { justify-content: flex-end; }
 /* Replays list lives directly on its screen now (no collapsible section chrome). */
 .runs-panel { width: 100%; max-width: 520px; background: transparent; padding: 0; }
 
+/* ④ A1 Readiness — the coverage map. The only place progress is visible. */
+.a1-body { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 10px; }
+.a1-intro { color: var(--muted); font-size: 13px; margin: 0 0 4px; }
+.a1-card {
+  background: var(--panel); color: var(--text);
+  border: 1px solid #2b2f38; border-radius: 14px;
+  padding: 14px 16px; cursor: pointer; text-align: left;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: border-color 0.12s ease;
+}
+.a1-card:hover { border-color: var(--green); }
+.a1-card-head { display: flex; align-items: center; justify-content: space-between; }
+.a1-label { font-size: 16px; font-weight: 600; }
+.a1-count { color: var(--muted); font-size: 13px; }
+.a1-bar { height: 8px; background: #20242c; border-radius: 999px; overflow: hidden; }
+.a1-bar-fill { height: 100%; background: var(--green); border-radius: 999px; transition: width 0.3s ease; }
+
+.a1-back {
+  align-self: flex-start;
+  background: transparent; color: var(--muted);
+  border: none; padding: 4px 0; font-size: 14px; cursor: pointer;
+}
+.a1-back:hover { color: var(--text); }
+.a1-detail-title { font-size: 20px; font-weight: 700; margin: 6px 0 4px; }
+.a1-descriptor { color: var(--muted); font-size: 14px; margin: 0 0 12px; line-height: 1.4; }
+.a1-section { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 16px 0 8px; }
+.a1-scenario {
+  width: 100%;
+  display: flex; align-items: center; gap: 14px;
+  background: var(--panel); color: var(--text);
+  border: 1px solid #2b2f38; border-radius: 14px;
+  padding: 12px 14px; cursor: pointer; text-align: left;
+  transition: border-color 0.12s ease;
+}
+.a1-scenario:hover { border-color: var(--green); }
+.a1-items { display: flex; flex-direction: column; gap: 4px; }
+.a1-item { font-size: 14px; padding: 6px 10px; border-radius: 8px; background: #181b21; color: var(--muted); }
+.a1-item em { color: #6b727e; font-style: normal; font-size: 12px; }
+.a1-item.a1-mastered { color: #fff; }
+.a1-item.a1-mastered span { color: var(--green); }
+.a1-item.a1-attempted span { color: #ffd479; }
+.a1-item.a1-unseen span { color: #4b515c; }
+
 /* Scenario picker: dropdown of the chosen scenario + its one-line description. */
 .scenario-row { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
 .scenario-select {
