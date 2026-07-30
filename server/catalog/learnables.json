@@ -1,7 +1,21 @@
 {
-  "dober_dan": { "kind": "chunk", "sl": "Dober dan.", "gloss": "good day (greeting)", "core": true, "rank": 19 },
-  "zacnemo": { "kind": "chunk", "sl": "Začnemo?", "gloss": "shall we begin?" },
-  "govorim_slovensko": { "kind": "chunk", "sl": "Govorim slovensko.", "gloss": "I speak Slovene." },
+  "dober_dan": {
+    "kind": "chunk",
+    "sl": "Dober dan.",
+    "gloss": "good day (greeting)",
+    "core": true,
+    "rank": 19
+  },
+  "zacnemo": {
+    "kind": "chunk",
+    "sl": "Začnemo?",
+    "gloss": "shall we begin?"
+  },
+  "govorim_slovensko": {
+    "kind": "chunk",
+    "sl": "Govorim slovensko.",
+    "gloss": "I speak Slovene."
+  },
   "eno_femacc": {
     "kind": "pattern",
     "sl": "Eno ___, prosim.",
@@ -10,19 +24,53 @@
     "rank": 13,
     "predictableError": "nominative 'ena kava' instead of the accusative 'eno kavo' the frame requires"
   },
-  "kava": { "kind": "vocabulary", "sl": "kava", "gloss": "coffee" },
-  "voda": { "kind": "vocabulary", "sl": "voda", "gloss": "water" },
-  "caj": { "kind": "vocabulary", "sl": "čaj", "gloss": "tea" },
+  "kava": {
+    "kind": "vocabulary",
+    "sl": "kava",
+    "gloss": "coffee"
+  },
+  "voda": {
+    "kind": "vocabulary",
+    "sl": "voda",
+    "gloss": "water"
+  },
+  "caj": {
+    "kind": "vocabulary",
+    "sl": "čaj",
+    "gloss": "tea"
+  },
   "z_mlekom": {
     "kind": "chunk",
     "sl": "Z mlekom, prosim.",
     "gloss": "with milk, please",
     "predictableError": "'z mleko' instead of the instrumental 'z mlekom'"
   },
-  "koliko_stane": { "kind": "chunk", "sl": "Koliko stane?", "gloss": "how much is it?", "core": true, "rank": 14 },
-  "hvala_nasvidenje": { "kind": "chunk", "sl": "Hvala, nasvidenje.", "gloss": "thanks, goodbye" },
-  "ne_razumem": { "kind": "chunk", "sl": "Ne razumem.", "gloss": "I don't understand", "core": true, "rank": 8 },
-  "se_enkrat": { "kind": "chunk", "sl": "Še enkrat, prosim.", "gloss": "again, please", "core": true, "rank": 10 },
+  "koliko_stane": {
+    "kind": "chunk",
+    "sl": "Koliko stane?",
+    "gloss": "how much is it?",
+    "core": true,
+    "rank": 14
+  },
+  "hvala_nasvidenje": {
+    "kind": "chunk",
+    "sl": "Hvala, nasvidenje.",
+    "gloss": "thanks, goodbye"
+  },
+  "ne_razumem": {
+    "kind": "chunk",
+    "sl": "Ne razumem.",
+    "gloss": "I don't understand",
+    "core": true,
+    "rank": 8
+  },
+  "se_enkrat": {
+    "kind": "chunk",
+    "sl": "Še enkrat, prosim.",
+    "gloss": "again, please",
+    "core": true,
+    "rank": 10
+  },
   "kako_se_rece": {
     "kind": "pattern",
     "sl": "Kako se reče ___?",
@@ -30,10 +78,34 @@
     "core": true,
     "rank": 7
   },
-  "prosim": { "kind": "vocabulary", "sl": "prosim", "gloss": "please", "core": true, "rank": 19 },
-  "hvala": { "kind": "vocabulary", "sl": "hvala", "gloss": "thank you", "core": true, "rank": 19 },
-  "ja": { "kind": "vocabulary", "sl": "ja", "gloss": "yes", "core": true, "rank": 20 },
-  "ne": { "kind": "vocabulary", "sl": "ne", "gloss": "no", "core": true, "rank": 20 },
+  "prosim": {
+    "kind": "vocabulary",
+    "sl": "prosim",
+    "gloss": "please",
+    "core": true,
+    "rank": 19
+  },
+  "hvala": {
+    "kind": "vocabulary",
+    "sl": "hvala",
+    "gloss": "thank you",
+    "core": true,
+    "rank": 19
+  },
+  "ja": {
+    "kind": "vocabulary",
+    "sl": "ja",
+    "gloss": "yes",
+    "core": true,
+    "rank": 20
+  },
+  "ne": {
+    "kind": "vocabulary",
+    "sl": "ne",
+    "gloss": "no",
+    "core": true,
+    "rank": 20
+  },
   "moram_inf": {
     "kind": "pattern",
     "sl": "Moram ___.",
@@ -50,7 +122,6 @@
     "rank": 3,
     "predictableError": "wrong gender form ('rad' vs 'rada') for the speaker"
   },
-
   "en_masacc": {
     "kind": "pattern",
     "sl": "En ___, prosim.",
@@ -63,16 +134,27 @@
     "gloss": "two ___, please (dual)",
     "predictableError": "plural instead of the dual ('dve žemlje' instead of 'dve žemlji'), or masculine 'dva' for a feminine noun"
   },
-  "kruh": { "kind": "vocabulary", "sl": "kruh", "gloss": "bread; loaf" },
-  "zemlja": { "kind": "vocabulary", "sl": "žemlja", "gloss": "bread roll" },
-  "rogljicek": { "kind": "vocabulary", "sl": "rogljiček", "gloss": "croissant" },
+  "kruh": {
+    "kind": "vocabulary",
+    "sl": "kruh",
+    "gloss": "bread; loaf"
+  },
+  "zemlja": {
+    "kind": "vocabulary",
+    "sl": "žemlja",
+    "gloss": "bread roll"
+  },
+  "rogljicek": {
+    "kind": "vocabulary",
+    "sl": "rogljiček",
+    "gloss": "croissant"
+  },
   "placam_s_kartico": {
     "kind": "chunk",
     "sl": "Lahko plačam s kartico?",
     "gloss": "can I pay by card?",
     "predictableError": "'s kartico' — using nominative 'kartica' instead of the instrumental after 's'"
   },
-
   "ali_imate": {
     "kind": "pattern",
     "sl": "Ali imate ___?",
@@ -121,7 +203,6 @@
     "gloss": "how much do I owe?",
     "predictableError": "gender of the adjective — a man says 'dolžen', a woman 'dolžna'"
   },
-
   "torta": {
     "kind": "vocabulary",
     "sl": "torta",
@@ -187,5 +268,149 @@
     "sl": "Lepo vreme, kajne?",
     "gloss": "nice weather, isn't it?",
     "predictableError": "the tag is 'kajne?' (isn't it?), not an English-style 'ni res?' calque"
+  },
+  "za_mene": {
+    "kind": "pattern",
+    "sl": "Za mene ___, prosim.",
+    "gloss": "For me ___, please (placing an order).",
+    "predictableError": "leaving the item in the nominative — 'Za mene voda' instead of accusative 'vodo'."
+  },
+  "racun": {
+    "kind": "chunk",
+    "sl": "Račun, prosim.",
+    "gloss": "The bill, please.",
+    "predictableError": "reaching for a verb ('I want to pay') instead of the bare noun request locals use."
+  },
+  "sok": {
+    "kind": "vocabulary",
+    "sl": "sok",
+    "gloss": "juice"
+  },
+  "sendvic": {
+    "kind": "vocabulary",
+    "sl": "sendvič",
+    "gloss": "sandwich",
+    "predictableError": "dropping the č → English-style 'sendvic/sandwich'."
+  },
+  "to_bo_vse": {
+    "kind": "chunk",
+    "sl": "To bo vse.",
+    "gloss": "That'll be all.",
+    "predictableError": "using the present 'To je vse' where closing an order takes the future 'bo'."
+  },
+  "jaz_bom": {
+    "kind": "pattern",
+    "sl": "Jaz bom ___.",
+    "gloss": "I'll have ___ (first-person choice; the slot takes the accusative).",
+    "predictableError": "leaving the noun nominative — 'Jaz bom pikantna pica' — it must be accusative: 'Jaz bom pikantno pico.'"
+  },
+  "pizza_variety": {
+    "kind": "pattern",
+    "sl": "___ pico",
+    "gloss": "a ___ pizza — the adjective agrees with feminine 'pica' in the accusative (vegansko/pikantno/klasično pico).",
+    "predictableError": "both the adjective AND the noun take feminine accusative -o: 'vegansko pico', not 'veganska pico' or 'pikantno pica'."
+  },
+  "stirje_siri": {
+    "kind": "chunk",
+    "sl": "pico s štirimi siri",
+    "gloss": "a four-cheese pizza (instrumental after 's').",
+    "predictableError": "beginners say 's štiri sire'; after 's' it must be instrumental plural: 's štirimi siri'."
+  },
+  "pica": {
+    "kind": "vocabulary",
+    "sl": "pica",
+    "gloss": "pizza (fem.; acc. 'pico')"
+  },
+  "pivo": {
+    "kind": "vocabulary",
+    "sl": "pivo",
+    "gloss": "beer (neut.; acc. 'pivo')"
+  },
+  "solata": {
+    "kind": "vocabulary",
+    "sl": "solata",
+    "gloss": "salad (fem.; acc. 'solato')"
+  },
+  "super_izbira": {
+    "kind": "chunk",
+    "sl": "Super izbira!",
+    "gloss": "Great choice! (approving someone's pick)"
+  },
+  "na_zdravje": {
+    "kind": "chunk",
+    "sl": "Na zdravje!",
+    "gloss": "Cheers! (a toast; lit. 'to health')"
+  },
+  "dober_vecer": {
+    "kind": "chunk",
+    "sl": "Dober večer!",
+    "gloss": "Good evening! (evening greeting)",
+    "predictableError": "beginners reuse the daytime 'Dober dan' all evening; the evening slot needs 'Dober večer'."
+  },
+  "vzel_bom": {
+    "kind": "pattern",
+    "sl": "Vzel / Vzela bom ___.",
+    "gloss": "I'll take ___. (near-future order: l-participle + accusative)",
+    "predictableError": "English speakers say present 'vzamem' or 'bom vzeti' and leave the object nominative ('juha' not 'juho', 'brancin' not 'brancina')."
+  },
+  "priporocate": {
+    "kind": "pattern",
+    "sl": "Kaj priporočate za ___?",
+    "gloss": "What do you recommend for ___? (formal vi)",
+    "predictableError": "using the ti-form 'priporočaš' to a waiter, or 'priporočate mi' instead of 'za + accusative' (za predjed / za glavno jed)."
+  },
+  "predjed": {
+    "kind": "vocabulary",
+    "sl": "predjed",
+    "gloss": "starter (fem.)",
+    "predictableError": "treated as masculine; it is feminine — 'za predjed', 'ste izbrali predjed'."
+  },
+  "glavna_jed": {
+    "kind": "chunk",
+    "sl": "glavna jed",
+    "gloss": "main course (fem.)",
+    "predictableError": "'za glavno jed' / 'k glavni jedi' — beginners freeze the phrase in the nominative instead of declining it."
+  },
+  "juha": {
+    "kind": "vocabulary",
+    "sl": "juha",
+    "gloss": "soup (fem.)",
+    "predictableError": "the accusative after 'vzel bom' is 'juho', not 'juha'."
+  },
+  "riba": {
+    "kind": "vocabulary",
+    "sl": "riba",
+    "gloss": "fish (fem.)",
+    "predictableError": "the accusative is 'ribo', not 'riba'."
+  },
+  "govedina": {
+    "kind": "vocabulary",
+    "sl": "govedina",
+    "gloss": "beef (fem.)",
+    "predictableError": "the accusative after an order is 'govedino', not 'govedina'; don't confuse it with 'goveji file'."
+  },
+  "sladica": {
+    "kind": "vocabulary",
+    "sl": "sladica",
+    "gloss": "dessert (fem.)",
+    "predictableError": "feminine agreement — 'čokoladno torto', 'bi vas zamikala sladica'."
+  },
+  "postrezba_odlicna": {
+    "kind": "chunk",
+    "sl": "Postrežba je odlična!",
+    "gloss": "The service is excellent! (compliment)",
+    "predictableError": "beginners say the calque 'servis' and misgender the adjective as 'odličen'; it is fem. 'odlična'."
+  },
+  "na_tebe": {
+    "kind": "chunk",
+    "sl": "Na tebe!",
+    "gloss": "To you! (a toast to a friend, ti)",
+    "predictableError": "English speakers say 'za tebe' instead of the fixed toast preposition 'na'."
+  },
+  "hvala_za_vecer": {
+    "kind": "chunk",
+    "sl": "Hvala za čudovit večer.",
+    "gloss": "Thank you for a wonderful evening.",
+    "predictableError": "'za' takes the accusative — 'za čudovit večer'."
   }
 }

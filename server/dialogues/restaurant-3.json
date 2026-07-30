@@ -1,0 +1,457 @@
+{
+  "id": "restaurant-l3",
+  "scenarioId": "restaurant",
+  "level": 3,
+  "levelLabel": "Full A1",
+  "title": "Dinner with recommendations",
+  "objectives": [
+    {
+      "label": "Open in the evening",
+      "descriptorEN": "Open in the evening register with 'Dober večer!'"
+    },
+    {
+      "label": "Ask a recommendation",
+      "descriptorEN": "Ask for a recommendation with 'Kaj priporočate za ___?' (formal vi)."
+    },
+    {
+      "label": "Choose a course",
+      "descriptorEN": "Choose a course with 'Vzel bom ___' in the accusative."
+    },
+    {
+      "label": "Order across courses",
+      "descriptorEN": "Order a starter then a main (predjed → glavna jed)."
+    },
+    {
+      "label": "Compliment & toast",
+      "descriptorEN": "Compliment with 'Postrežba je odlična!' and toast 'Na tebe!'"
+    }
+  ],
+  "introduces": [
+    "vzel_bom",
+    "priporocate",
+    "predjed",
+    "glavna_jed",
+    "juha",
+    "riba",
+    "govedina",
+    "sladica",
+    "postrezba_odlicna",
+    "na_tebe",
+    "hvala_za_vecer"
+  ],
+  "audio": "pending",
+  "voices": {
+    "npc": "female-speaker",
+    "client": "male-speaker"
+  },
+  "root": "d1",
+  "nodes": {
+    "d1": {
+      "speaker": "npc",
+      "sl": "Dober večer, dobrodošli! Miza za dva?",
+      "en": "Good evening, welcome! A table for two?",
+      "deliverySL": "[warmly] Dober večer, dobrodošli! Miza za dva?",
+      "next": [
+        "e1a",
+        "e1b"
+      ]
+    },
+    "e1a": {
+      "speaker": "client",
+      "sl": "Dober večer, ja, mizo ob oknu, prosim.",
+      "en": "Good evening, yes, a table by the window, please.",
+      "next": [
+        "d2"
+      ]
+    },
+    "e1b": {
+      "speaker": "client",
+      "sl": "Dober večer, imamo rezervacijo na ime Slavko. Lep lokal imate.",
+      "en": "Good evening, we have a reservation under the name Slavko. You have a lovely place.",
+      "next": [
+        "d2"
+      ]
+    },
+    "d2": {
+      "speaker": "npc",
+      "sl": "Izvolite meni. Bi najprej kaj za piti?",
+      "en": "Here's the menu. Would you like something to drink first?",
+      "deliverySL": "[warmly] Izvolite meni. Bi najprej kaj za piti?",
+      "next": [
+        "e2a",
+        "e2b"
+      ]
+    },
+    "e2a": {
+      "speaker": "client",
+      "sl": "Kozarec rdečega vina, prosim.",
+      "en": "A glass of red wine, please.",
+      "next": [
+        "d3"
+      ]
+    },
+    "e2b": {
+      "speaker": "client",
+      "sl": "Za zdaj samo vodo, hvala.",
+      "en": "Just water for now, thank you.",
+      "next": [
+        "d3"
+      ]
+    },
+    "d3": {
+      "speaker": "npc",
+      "sl": "Ste že izbrali predjed, ali vam kaj priporočim?",
+      "en": "Have you already chosen a starter, or shall I recommend something?",
+      "deliverySL": "[warmly] Ste že izbrali predjed, ali vam kaj priporočim?",
+      "next": [
+        "e3a",
+        "e3b"
+      ]
+    },
+    "e3a": {
+      "speaker": "client",
+      "sl": "Kaj priporočate za predjed?",
+      "en": "What do you recommend for a starter?",
+      "next": [
+        "d4"
+      ]
+    },
+    "e3b": {
+      "speaker": "client",
+      "sl": "Kaj je pa danes dobro?",
+      "en": "What's good today, then?",
+      "next": [
+        "d4"
+      ]
+    },
+    "d4": {
+      "speaker": "npc",
+      "sl": "Priporočam carpaccio ali juho dneva — oboje je odlično.",
+      "en": "I recommend the carpaccio or the soup of the day — both are excellent.",
+      "deliverySL": "[warmly] Priporočam carpaccio ali juho dneva — oboje je odlično.",
+      "next": [
+        "e4a",
+        "e4b"
+      ]
+    },
+    "e4a": {
+      "speaker": "client",
+      "sl": "Vzel bom carpaccio, prosim.",
+      "en": "I'll take the carpaccio, please.",
+      "next": [
+        "d5"
+      ]
+    },
+    "e4b": {
+      "speaker": "client",
+      "sl": "Vzel bom juho.",
+      "en": "I'll take the soup.",
+      "next": [
+        "d5"
+      ]
+    },
+    "d5": {
+      "speaker": "npc",
+      "sl": "Odlična izbira. In za glavno jed?",
+      "en": "Excellent choice. And for the main course?",
+      "deliverySL": "[warmly] Odlična izbira. In za glavno jed?",
+      "next": [
+        "e5a",
+        "e5b"
+      ]
+    },
+    "e5a": {
+      "speaker": "client",
+      "sl": "Kaj priporočate za glavno jed?",
+      "en": "What do you recommend as a main course?",
+      "next": [
+        "d6"
+      ]
+    },
+    "e5b": {
+      "speaker": "client",
+      "sl": "Že vem — vzel bom ribo.",
+      "en": "I already know — I'll take the fish.",
+      "next": [
+        "d7"
+      ]
+    },
+    "d6": {
+      "speaker": "npc",
+      "sl": "Brancin ali goveji file — oboje je izvrstno.",
+      "en": "The sea bass or the beef fillet — both are excellent.",
+      "deliverySL": "[warmly] Brancin ali goveji file — oboje je izvrstno.",
+      "next": [
+        "e6a",
+        "e6b"
+      ]
+    },
+    "e6a": {
+      "speaker": "client",
+      "sl": "Vzel bom brancina.",
+      "en": "I'll take the sea bass.",
+      "next": [
+        "d7"
+      ]
+    },
+    "e6b": {
+      "speaker": "client",
+      "sl": "Zame govedino, prosim.",
+      "en": "The beef for me, please.",
+      "next": [
+        "d7"
+      ]
+    },
+    "d7": {
+      "speaker": "npc",
+      "sl": "Odlično. Bi k glavni jedi kaj za piti? Imamo odličen domači rdeči.",
+      "en": "Excellent. Something to drink with the main? We have an excellent local red.",
+      "deliverySL": "[warmly] Odlično. Bi k glavni jedi kaj za piti? Imamo odličen domači rdeči.",
+      "next": [
+        "e7a",
+        "e7b"
+      ]
+    },
+    "e7a": {
+      "speaker": "client",
+      "sl": "Ja, kozarec domačega rdečega, prosim.",
+      "en": "Yes, a glass of the local red, please.",
+      "next": [
+        "d8"
+      ]
+    },
+    "e7b": {
+      "speaker": "client",
+      "sl": "Voda je čisto v redu, hvala.",
+      "en": "Water is fine, thank you.",
+      "next": [
+        "d8"
+      ]
+    },
+    "d8": {
+      "speaker": "npc",
+      "sl": "Takoj prinesem. Uživajte v večeru. Izvolite predjed.",
+      "en": "Coming right up. Enjoy your evening. Here's your starter.",
+      "deliverySL": "[warmly] Takoj prinesem. Uživajte v večeru. Izvolite predjed.",
+      "next": [
+        "e8a",
+        "e8b"
+      ]
+    },
+    "e8a": {
+      "speaker": "client",
+      "sl": "To pa izgleda čudovito.",
+      "en": "This looks wonderful.",
+      "next": [
+        "d9"
+      ]
+    },
+    "e8b": {
+      "speaker": "client",
+      "sl": "Hvala, čudovito diši.",
+      "en": "Thank you, it smells amazing.",
+      "next": [
+        "d9"
+      ]
+    },
+    "d9": {
+      "speaker": "npc",
+      "sl": "Izvolite glavno jed. Dober tek!",
+      "en": "Here is your main course. Enjoy your meal!",
+      "deliverySL": "[warmly] Izvolite glavno jed. Dober tek!",
+      "next": [
+        "e9a",
+        "e9b"
+      ]
+    },
+    "e9a": {
+      "speaker": "client",
+      "sl": "Hrana je odlična.",
+      "en": "The food is excellent.",
+      "next": [
+        "d10"
+      ]
+    },
+    "e9b": {
+      "speaker": "client",
+      "sl": "Postrežba je odlična!",
+      "en": "The service is excellent!",
+      "next": [
+        "d10"
+      ]
+    },
+    "d10": {
+      "speaker": "npc",
+      "sl": "Zelo me veseli. Bi vas zamikala še sladica? Imamo čokoladno torto ali panna cotta.",
+      "en": "So glad. Could I tempt you with dessert? We have chocolate cake or panna cotta.",
+      "deliverySL": "[warmly] Zelo me veseli. Bi vas zamikala še sladica? Imamo čokoladno torto ali panna cotta.",
+      "next": [
+        "e10a",
+        "e10b"
+      ]
+    },
+    "e10a": {
+      "speaker": "client",
+      "sl": "Vzel bom čokoladno torto, prosim.",
+      "en": "I'll take the chocolate cake, please.",
+      "next": [
+        "d11"
+      ]
+    },
+    "e10b": {
+      "speaker": "client",
+      "sl": "Ne, hvala, siti smo.",
+      "en": "No, thank you, we're full.",
+      "next": [
+        "d12"
+      ]
+    },
+    "d11": {
+      "speaker": "npc",
+      "sl": "Odlično. Praznujete kaj posebnega?",
+      "en": "Excellent. Are you celebrating something special?",
+      "deliverySL": "[warmly] Odlično. Praznujete kaj posebnega?",
+      "next": [
+        "e11a",
+        "e11b"
+      ]
+    },
+    "e11a": {
+      "speaker": "client",
+      "sl": "Ja, prijatelj ima rojstni dan.",
+      "en": "Yes, my friend has a birthday.",
+      "next": [
+        "d12toast"
+      ]
+    },
+    "e11b": {
+      "speaker": "client",
+      "sl": "Ne, samo lep večer zunaj.",
+      "en": "No, just a lovely evening out.",
+      "next": [
+        "d12"
+      ]
+    },
+    "d12": {
+      "speaker": "npc",
+      "sl": "Želite še kaj, ali vam prinesem račun?",
+      "en": "Would you like anything else, or shall I bring the bill?",
+      "deliverySL": "[warmly] Želite še kaj, ali vam prinesem račun?",
+      "next": [
+        "e12a",
+        "e12b"
+      ]
+    },
+    "e12a": {
+      "speaker": "client",
+      "sl": "Račun, prosim.",
+      "en": "The bill, please.",
+      "next": [
+        "d13"
+      ]
+    },
+    "e12b": {
+      "speaker": "client",
+      "sl": "Lahko plačam s kartico?",
+      "en": "Can I pay by card?",
+      "next": [
+        "d13"
+      ]
+    },
+    "d12toast": {
+      "speaker": "npc",
+      "sl": "Rojstni dan! Sladica je na račun hiše. Prinesem nekaj za nazdraviti.",
+      "en": "A birthday! The dessert's on the house. Let me bring something to toast with.",
+      "deliverySL": "[warmly] Rojstni dan! Sladica je na račun hiše. Prinesem nekaj za nazdraviti.",
+      "next": [
+        "e11c",
+        "e11d"
+      ]
+    },
+    "e11c": {
+      "speaker": "client",
+      "sl": "Na tebe!",
+      "en": "To you!",
+      "next": [
+        "d12b"
+      ]
+    },
+    "e11d": {
+      "speaker": "client",
+      "sl": "Na zdravje, hvala!",
+      "en": "Cheers, thank you!",
+      "next": [
+        "d12b"
+      ]
+    },
+    "d12b": {
+      "speaker": "npc",
+      "sl": "Na zdravje! Naj vam zdaj prinesem račun?",
+      "en": "Cheers! Now, shall I bring you the bill?",
+      "deliverySL": "[warmly] Na zdravje! Naj vam zdaj prinesem račun?",
+      "next": [
+        "e12a",
+        "e12b"
+      ]
+    },
+    "d13": {
+      "speaker": "npc",
+      "sl": "Izvolite račun. S kartico seveda lahko. Skupaj je oseminsedemdeset evrov.",
+      "en": "Here's the bill. By card is of course fine. That's seventy-eight euros in total.",
+      "deliverySL": "[warmly] Izvolite račun. S kartico seveda lahko. Skupaj je oseminsedemdeset evrov.",
+      "next": [
+        "e13a",
+        "e13b"
+      ]
+    },
+    "e13a": {
+      "speaker": "client",
+      "sl": "Izvolite, hvala.",
+      "en": "Here you are, thank you.",
+      "next": [
+        "d14"
+      ]
+    },
+    "e13b": {
+      "speaker": "client",
+      "sl": "Hvala, drobiž obdržite.",
+      "en": "Thank you, keep the change.",
+      "next": [
+        "d14"
+      ]
+    },
+    "d14": {
+      "speaker": "npc",
+      "sl": "Hvala, ker ste nas obiskali. Želim vam čudovit večer!",
+      "en": "Thank you for coming. I wish you a wonderful evening!",
+      "deliverySL": "[warmly] Hvala, ker ste nas obiskali. Želim vam čudovit večer!",
+      "next": [
+        "e14a",
+        "e14b"
+      ]
+    },
+    "e14a": {
+      "speaker": "client",
+      "sl": "Hvala za čudovit večer.",
+      "en": "Thank you for a wonderful evening.",
+      "next": [
+        "d15"
+      ]
+    },
+    "e14b": {
+      "speaker": "client",
+      "sl": "Vse je bilo odlično — nasvidenje!",
+      "en": "Everything was excellent — goodbye!",
+      "next": [
+        "d15"
+      ]
+    },
+    "d15": {
+      "speaker": "npc",
+      "sl": "Nasvidenje, pridite spet kmalu!",
+      "en": "Goodbye, come again soon!",
+      "deliverySL": "[warmly] Nasvidenje, pridite spet kmalu!",
+      "next": []
+    }
+  }
+}

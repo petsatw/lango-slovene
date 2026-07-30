@@ -1,0 +1,183 @@
+{
+  "id": "restaurant-l1",
+  "scenarioId": "restaurant",
+  "level": 1,
+  "levelLabel": "Survival",
+  "title": "Order & pay — a first visit",
+  "objectives": [
+    {
+      "label": "Greet & order a drink",
+      "descriptorEN": "Greet the waiter and order a drink with 'Rad bi ___' in the accusative."
+    },
+    {
+      "label": "Order a dish / decline",
+      "descriptorEN": "Order a simple dish, or decline food politely."
+    },
+    {
+      "label": "Close the order",
+      "descriptorEN": "Close the order with 'To bo vse.'"
+    },
+    {
+      "label": "Ask for the bill",
+      "descriptorEN": "Ask for the bill with 'Račun, prosim.'"
+    },
+    {
+      "label": "Pay by card & leave",
+      "descriptorEN": "Ask to pay by card and thank the waiter."
+    }
+  ],
+  "introduces": [
+    "rad_bi",
+    "za_mene",
+    "sendvic",
+    "sok",
+    "to_bo_vse",
+    "racun",
+    "placam_s_kartico"
+  ],
+  "audio": "pending",
+  "voices": {
+    "npc": "female-speaker",
+    "client": "male-speaker"
+  },
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Dober dan, izvolite?",
+      "en": "Hello, what can I get you?",
+      "deliverySL": "[warmly] Dober dan, izvolite?",
+      "next": [
+        "c1a",
+        "c1b"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Dober dan. Rad bi kavo.",
+      "en": "Hello. I'd like a coffee.",
+      "next": [
+        "n2"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Dober dan. Za mene vodo, prosim.",
+      "en": "Hello. Water for me, please.",
+      "next": [
+        "n2"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Boste kaj jedli?",
+      "en": "Will you eat anything?",
+      "deliverySL": "[warmly] Boste kaj jedli?",
+      "next": [
+        "c2a",
+        "c2b"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Ja, rad bi sendvič.",
+      "en": "Yes, I'd like a sandwich.",
+      "next": [
+        "n3"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "Ne, hvala, samo pijačo.",
+      "en": "No thanks, just the drink.",
+      "next": [
+        "n3"
+      ]
+    },
+    "n3": {
+      "speaker": "npc",
+      "sl": "Še kaj?",
+      "en": "Anything else?",
+      "deliverySL": "[warmly] Še kaj?",
+      "next": [
+        "c3a",
+        "c3b"
+      ]
+    },
+    "c3a": {
+      "speaker": "client",
+      "sl": "Ja, še en sok, prosim.",
+      "en": "Yes, one more juice, please.",
+      "next": [
+        "n4"
+      ]
+    },
+    "c3b": {
+      "speaker": "client",
+      "sl": "Ne, to bo vse.",
+      "en": "No, that'll be all.",
+      "next": [
+        "n4"
+      ]
+    },
+    "n4": {
+      "speaker": "npc",
+      "sl": "Izvolite, dober tek! Je to vse?",
+      "en": "Here you are, enjoy! Is that everything?",
+      "deliverySL": "[warmly] Izvolite, dober tek! Je to vse?",
+      "next": [
+        "c4a",
+        "c4b"
+      ]
+    },
+    "c4a": {
+      "speaker": "client",
+      "sl": "Račun, prosim.",
+      "en": "The bill, please.",
+      "next": [
+        "n5"
+      ]
+    },
+    "c4b": {
+      "speaker": "client",
+      "sl": "Lahko plačam s kartico?",
+      "en": "Can I pay by card?",
+      "next": [
+        "n5"
+      ]
+    },
+    "n5": {
+      "speaker": "npc",
+      "sl": "Seveda. Skupaj osem evrov.",
+      "en": "Of course. Eight euros altogether.",
+      "deliverySL": "[warmly] Seveda. Skupaj osem evrov.",
+      "next": [
+        "c5a",
+        "c5b"
+      ]
+    },
+    "c5a": {
+      "speaker": "client",
+      "sl": "Izvolite, hvala.",
+      "en": "Here you are, thank you.",
+      "next": [
+        "n6"
+      ]
+    },
+    "c5b": {
+      "speaker": "client",
+      "sl": "Hvala, nasvidenje.",
+      "en": "Thank you, goodbye.",
+      "next": [
+        "n6"
+      ]
+    },
+    "n6": {
+      "speaker": "npc",
+      "sl": "Hvala, nasvidenje, pridite spet!",
+      "en": "Thank you, goodbye, come again!",
+      "deliverySL": "[warmly] Hvala, nasvidenje, pridite spet!",
+      "next": []
+    }
+  }
+}

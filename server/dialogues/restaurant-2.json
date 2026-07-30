@@ -1,0 +1,263 @@
+{
+  "id": "restaurant-l2",
+  "scenarioId": "restaurant",
+  "level": 2,
+  "levelLabel": "Basic A1",
+  "title": "Pizza with friends",
+  "objectives": [
+    {
+      "label": "State your own choice",
+      "descriptorEN": "State a first-person choice with 'Jaz bom + accusative'."
+    },
+    {
+      "label": "Name a pizza variety",
+      "descriptorEN": "Name a pizza with correct adjective agreement (vegansko pico, pikantno pico)."
+    },
+    {
+      "label": "Order the four-cheese",
+      "descriptorEN": "Order 'pico s štirimi siri' with the instrumental."
+    },
+    {
+      "label": "React to a choice",
+      "descriptorEN": "Approve a choice with 'Super izbira!'"
+    },
+    {
+      "label": "Toast",
+      "descriptorEN": "Raise a toast with 'Na zdravje!'"
+    }
+  ],
+  "introduces": [
+    "dober_vecer",
+    "jaz_bom",
+    "pica",
+    "pizza_variety",
+    "stirje_siri",
+    "pivo",
+    "solata",
+    "super_izbira",
+    "na_zdravje"
+  ],
+  "audio": "pending",
+  "voices": {
+    "npc": "female-speaker",
+    "client": "male-speaker"
+  },
+  "root": "m1",
+  "nodes": {
+    "m1": {
+      "speaker": "npc",
+      "sl": "Dober večer! Ste se že odločili?",
+      "en": "Good evening! Have you decided yet?",
+      "deliverySL": "[warmly] Dober večer! Ste se že odločili?",
+      "next": [
+        "c1a",
+        "c1b"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Hmm, kaj naj vzamem? Še razmišljam.",
+      "en": "Hmm, what should I have? I'm still thinking.",
+      "next": [
+        "m2"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Jaz bom pikantno pico.",
+      "en": "I'll have a spicy pizza.",
+      "next": [
+        "m2b"
+      ]
+    },
+    "m2": {
+      "speaker": "npc",
+      "sl": "Imamo vegansko, margarito, pikantno, pa pico s štirimi siri. Katero bi želeli?",
+      "en": "We have vegan, margherita, spicy, and a four-cheese pizza. Which would you like?",
+      "deliverySL": "[warmly] Imamo vegansko, margarito, pikantno, pa pico s štirimi siri. Katero bi želeli?",
+      "next": [
+        "c2a",
+        "c2b"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Jaz bom vegansko pico.",
+      "en": "I'll have a vegan pizza.",
+      "next": [
+        "m3"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "Jaz bom pico s štirimi siri.",
+      "en": "I'll have the four-cheese pizza.",
+      "next": [
+        "m3"
+      ]
+    },
+    "m2b": {
+      "speaker": "npc",
+      "sl": "Pikantno, odlična izbira! Bi bolj blago ali pošteno pekočo?",
+      "en": "Spicy, great choice! Would you like it milder or really hot?",
+      "deliverySL": "[warmly] Pikantno, odlična izbira! Bi bolj blago ali pošteno pekočo?",
+      "next": [
+        "c2c",
+        "c2d"
+      ]
+    },
+    "c2c": {
+      "speaker": "client",
+      "sl": "Srednje, prosim.",
+      "en": "Medium, please.",
+      "next": [
+        "m3"
+      ]
+    },
+    "c2d": {
+      "speaker": "client",
+      "sl": "Čim bolj pekočo!",
+      "en": "As hot as possible!",
+      "next": [
+        "m3"
+      ]
+    },
+    "m3": {
+      "speaker": "npc",
+      "sl": "Odlično. In kaj bodo vzeli vaši prijatelji?",
+      "en": "Perfect. And what will your friends have?",
+      "deliverySL": "[warmly] Odlično. In kaj bodo vzeli vaši prijatelji?",
+      "next": [
+        "c3a",
+        "c3b"
+      ]
+    },
+    "c3a": {
+      "speaker": "client",
+      "sl": "Ana bo margarito, Marko pa pikantno.",
+      "en": "Ana will have a margherita, and Marko a spicy one.",
+      "next": [
+        "m4"
+      ]
+    },
+    "c3b": {
+      "speaker": "client",
+      "sl": "Mi bomo kar vsi pico!",
+      "en": "We'll all just have pizza!",
+      "next": [
+        "m4"
+      ]
+    },
+    "m4": {
+      "speaker": "npc",
+      "sl": "Same odlične izbire. Bi še kaj za piti?",
+      "en": "All great choices. Anything to drink?",
+      "deliverySL": "[warmly] Same odlične izbire. Bi še kaj za piti?",
+      "next": [
+        "c4a",
+        "c4b"
+      ]
+    },
+    "c4a": {
+      "speaker": "client",
+      "sl": "Za mene pivo, prosim.",
+      "en": "A beer for me, please.",
+      "next": [
+        "m5"
+      ]
+    },
+    "c4b": {
+      "speaker": "client",
+      "sl": "Pa eno vodo, prosim.",
+      "en": "And a water, please.",
+      "next": [
+        "m5"
+      ]
+    },
+    "m5": {
+      "speaker": "npc",
+      "sl": "Takoj bo. Bi medtem eno solato za na sredino?",
+      "en": "Coming right up. Would you like a salad to share in the meantime?",
+      "deliverySL": "[warmly] Takoj bo. Bi medtem eno solato za na sredino?",
+      "next": [
+        "c5a",
+        "c5b"
+      ]
+    },
+    "c5a": {
+      "speaker": "client",
+      "sl": "Ja, eno solato za na sredino.",
+      "en": "Yes, a salad to share.",
+      "next": [
+        "m6"
+      ]
+    },
+    "c5b": {
+      "speaker": "client",
+      "sl": "Ne, hvala, samo pice.",
+      "en": "No thanks, just the pizzas.",
+      "next": [
+        "m6"
+      ]
+    },
+    "m6": {
+      "speaker": "npc",
+      "sl": "Izvolite, dober tek!",
+      "en": "Here you are, enjoy your meal!",
+      "deliverySL": "[warmly] Izvolite, dober tek!",
+      "next": [
+        "c6a",
+        "c6b"
+      ]
+    },
+    "c6a": {
+      "speaker": "client",
+      "sl": "Mmm, super izbira!",
+      "en": "Mmm, super choice!",
+      "next": [
+        "m7"
+      ]
+    },
+    "c6b": {
+      "speaker": "client",
+      "sl": "To pa izgleda odlično!",
+      "en": "This looks amazing!",
+      "next": [
+        "m7"
+      ]
+    },
+    "m7": {
+      "speaker": "npc",
+      "sl": "Vidim, da praznujete! Naj prinesem kaj za nazdraviti?",
+      "en": "I see you're celebrating! Shall I bring something to toast with?",
+      "deliverySL": "[warmly] Vidim, da praznujete! Naj prinesem kaj za nazdraviti?",
+      "next": [
+        "c7a",
+        "c7b"
+      ]
+    },
+    "c7a": {
+      "speaker": "client",
+      "sl": "Na zdravje!",
+      "en": "Cheers!",
+      "next": [
+        "m8"
+      ]
+    },
+    "c7b": {
+      "speaker": "client",
+      "sl": "Na nas!",
+      "en": "To us!",
+      "next": [
+        "m8"
+      ]
+    },
+    "m8": {
+      "speaker": "npc",
+      "sl": "Na zdravje in lep večer še naprej!",
+      "en": "Cheers, and enjoy the rest of your evening!",
+      "deliverySL": "[warmly] Na zdravje in lep večer še naprej!",
+      "next": []
+    }
+  }
+}
