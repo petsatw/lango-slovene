@@ -1,74 +1,444 @@
 {
-  "_note": "MVP mockup mapping (Phase 4): A1 competency → the catalog learnables that evidence it + the scenario levels that advance it. Hand-authored placeholder covering the shipped scenarios (bakery, restaurant); replace with the real Slovenian-A1 taxonomy (centerslo) when the team's materials arrive. Progress is read from the durable learner model — this is the ONLY learner-visible progress surface.",
+  "_note": "A1 coverage map — competency → the catalog learnables that evidence it + the scenario levels that advance it. GROUNDED in docs/a1-taxonomy.md: 3 foundational layers (1.1 phonology/numbers · 1.2 morphosyntax · 1.4 pragmatics) + the 10 thematic domains (3.1–3.10). learnable→competency is many-to-many. A bucket may be EMPTY (a domain the shipped scenarios don't reach yet — the readiness frontier); that is legitimate, surfaced by lint:a1 coverage, not an error. Progress is read from the durable learner model. lint:a1 requires every catalog learnable to be mapped here OR on `excluded`.",
+  "_modes": "The MVP exercises 3 of the 4 A1 skill modes — Speaking, Listening, Reading (every audio clip is paired with its text). Writing is out of scope by design. No weighted cross-mode scoring engine is built (deferred to ROADMAP item 5).",
   "competencies": [
     {
-      "id": "greetings_courtesy",
-      "label": "Greetings & everyday courtesy",
-      "descriptor": "Greet at the right time of day, say please and thank you, close and leave politely, raise a toast.",
-      "learnables": ["dober_dan", "dober_vecer", "prosim", "hvala", "hvala_nasvidenje", "na_zdravje", "na_tebe"],
+      "id": "phonology_numbers",
+      "kind": "foundational",
+      "label": "Numbers, quantities & spelling",
+      "descriptor": "Numbers, the dual, weights and prices — say and understand how many, how much, how heavy.",
+      "functions": [
+        "count and use the dual",
+        "order by weight (pol kilograma, dekagrami)",
+        "understand a spoken price"
+      ],
+      "learnables": [
+        "koliko_stane",
+        "dve_dualacc",
+        "pol_kilograma",
+        "dekagram",
+        "za_osebe"
+      ],
       "scenarios": [
-        { "scenarioId": "bakery", "level": 1 },
-        { "scenarioId": "restaurant", "level": 1 },
-        { "scenarioId": "restaurant", "level": 2 },
-        { "scenarioId": "restaurant", "level": 3 }
+        {
+          "scenarioId": "bakery",
+          "level": 1
+        },
+        {
+          "scenarioId": "bakery",
+          "level": 2
+        },
+        {
+          "scenarioId": "bakery",
+          "level": 3
+        }
       ]
     },
     {
-      "id": "order_food_drink",
-      "label": "Ordering food & drink",
-      "descriptor": "Ask for what you want with 'Rad bi ___', 'Za mene ___', 'Jaz bom ___', 'Vzel bom ___' in the accusative.",
-      "learnables": ["rad_bi", "za_mene", "jaz_bom", "vzel_bom", "eno_femacc", "en_masacc", "kava", "caj", "voda", "sok", "pica", "pivo", "sendvic"],
+      "id": "morphosyntax",
+      "kind": "foundational",
+      "label": "Case, gender & agreement",
+      "descriptor": "The formulaic grammar that carries meaning — accusative for the thing ordered, gender agreement, the near-future, common prepositions.",
+      "functions": [
+        "put the ordered item in the accusative",
+        "agree gender/number on adjectives & demonstratives",
+        "form the near-future order (bom / rad bi)"
+      ],
+      "learnables": [
+        "eno_femacc",
+        "en_masacc",
+        "dve_dualacc",
+        "rad_bi",
+        "za_mene",
+        "jaz_bom",
+        "vzel_bom",
+        "z_mlekom",
+        "placam_s_kartico",
+        "ali_imate",
+        "moram_inf",
+        "raje",
+        "tisti",
+        "svez",
+        "topel",
+        "katera_bolj",
+        "ker",
+        "namesto",
+        "pizza_variety",
+        "stirje_siri",
+        "to_bo_vse",
+        "glavna_jed",
+        "postrezba_odlicna",
+        "hvala_za_vecer"
+      ],
       "scenarios": [
-        { "scenarioId": "bakery", "level": 1 },
-        { "scenarioId": "restaurant", "level": 1 },
-        { "scenarioId": "restaurant", "level": 2 },
-        { "scenarioId": "restaurant", "level": 3 }
+        {
+          "scenarioId": "bakery",
+          "level": 1
+        },
+        {
+          "scenarioId": "bakery",
+          "level": 2
+        },
+        {
+          "scenarioId": "bakery",
+          "level": 3
+        },
+        {
+          "scenarioId": "restaurant",
+          "level": 1
+        },
+        {
+          "scenarioId": "restaurant",
+          "level": 2
+        },
+        {
+          "scenarioId": "restaurant",
+          "level": 3
+        }
       ]
     },
     {
-      "id": "quantities_numbers",
-      "label": "Quantities & numbers",
-      "descriptor": "Order by count and by weight — one, two (dual), half a kilo, decagrams.",
-      "learnables": ["en_masacc", "dve_dualacc", "pol_kilograma", "dekagram"],
+      "id": "pragmatics",
+      "kind": "foundational",
+      "label": "Politeness, register & repair",
+      "descriptor": "Please and thank you, greeting by time of day, checking understanding, confirming, and holding the formal register.",
+      "functions": [
+        "greet & thank appropriately",
+        "signal non-understanding and ask for repetition",
+        "confirm / hold vikanje"
+      ],
+      "learnables": [
+        "prosim",
+        "hvala",
+        "ja",
+        "ne",
+        "ne_razumem",
+        "se_enkrat",
+        "kako_se_rece",
+        "zacnemo",
+        "je_tako_prav",
+        "oprostite",
+        "dober_dan",
+        "dober_vecer",
+        "hvala_nasvidenje",
+        "priporocate"
+      ],
       "scenarios": [
-        { "scenarioId": "bakery", "level": 1 },
-        { "scenarioId": "bakery", "level": 2 }
+        {
+          "scenarioId": "bakery",
+          "level": 3
+        },
+        {
+          "scenarioId": "restaurant",
+          "level": 2
+        },
+        {
+          "scenarioId": "restaurant",
+          "level": 3
+        }
       ]
     },
     {
-      "id": "paying",
-      "label": "Asking the price & paying",
-      "descriptor": "Ask how much it costs, ask for the bill, and pay — by card or catching the spoken total.",
-      "learnables": ["koliko_stane", "koliko_sem_dolzna", "racun", "placam_s_kartico"],
+      "id": "personal_identity",
+      "kind": "thematic",
+      "label": "Personal identity",
+      "descriptor": "Give basic personal data — name, origin, languages spoken; understand questions about yourself.",
+      "functions": [
+        "state which languages you speak",
+        "introduce yourself"
+      ],
+      "exponents": [
+        "Govorim slovensko.",
+        "Sem iz…",
+        "Kako vam je ime?"
+      ],
+      "learnables": [
+        "govorim_slovensko"
+      ],
+      "scenarios": []
+    },
+    {
+      "id": "housing_environment",
+      "kind": "thematic",
+      "label": "Housing, living & environment",
+      "descriptor": "Describe where you live and make small talk about the weather and surroundings.",
+      "functions": [
+        "make weather small talk",
+        "describe your dwelling"
+      ],
+      "exponents": [
+        "Lepo vreme, kajne?",
+        "Živim v stanovanju."
+      ],
+      "learnables": [
+        "lepo_vreme"
+      ],
       "scenarios": [
-        { "scenarioId": "bakery", "level": 1 },
-        { "scenarioId": "bakery", "level": 2 },
-        { "scenarioId": "restaurant", "level": 1 },
-        { "scenarioId": "restaurant", "level": 3 }
+        {
+          "scenarioId": "bakery",
+          "level": 3
+        }
       ]
     },
     {
-      "id": "choosing_preferences",
-      "label": "Choosing & preferences",
-      "descriptor": "Express a preference, point to what you want, ask for a recommendation, and compare options.",
-      "learnables": ["raje", "tisti", "katera_bolj", "priporocate", "pizza_variety", "namesto"],
+      "id": "body_health",
+      "kind": "thematic",
+      "label": "Body & health",
+      "descriptor": "Say how you feel, flag an allergy, and handle a pharmacy / doctor exchange.",
+      "functions": [
+        "state an allergy",
+        "say how you feel",
+        "ask for medicine"
+      ],
+      "exponents": [
+        "Sem alergična na ___.",
+        "Glava me boli.",
+        "Potrebujem zdravilo."
+      ],
+      "learnables": [
+        "alergicen_na"
+      ],
       "scenarios": [
-        { "scenarioId": "bakery", "level": 2 },
-        { "scenarioId": "bakery", "level": 3 },
-        { "scenarioId": "restaurant", "level": 2 },
-        { "scenarioId": "restaurant", "level": 3 }
+        {
+          "scenarioId": "bakery",
+          "level": 3
+        }
       ]
     },
     {
-      "id": "describing_reacting",
-      "label": "Describing & reacting",
-      "descriptor": "Attach a describing word with correct agreement, react warmly, and close an order.",
-      "learnables": ["svez", "topel", "super_izbira", "postrezba_odlicna", "to_bo_vse"],
+      "id": "food_drink",
+      "kind": "thematic",
+      "label": "Food & drink",
+      "descriptor": "Order food and drink, express preferences, ask what's in a dish, and close the order.",
+      "functions": [
+        "order a drink and a dish",
+        "express a preference / ask a recommendation",
+        "ask what a dish contains",
+        "close the order"
+      ],
+      "exponents": [
+        "Rad bi ___.",
+        "Za mene ___, prosim.",
+        "Kaj priporočate za ___?",
+        "To bo vse."
+      ],
+      "learnables": [
+        "kava",
+        "voda",
+        "caj",
+        "sok",
+        "sendvic",
+        "kruh",
+        "zemlja",
+        "rogljicek",
+        "pica",
+        "pivo",
+        "solata",
+        "torta",
+        "juha",
+        "riba",
+        "govedina",
+        "sladica",
+        "predjed",
+        "glavna_jed",
+        "z_mlekom",
+        "eno_femacc",
+        "en_masacc",
+        "rad_bi",
+        "za_mene",
+        "jaz_bom",
+        "vzel_bom",
+        "to_bo_vse",
+        "raje",
+        "svez",
+        "topel",
+        "pizza_variety",
+        "stirje_siri",
+        "vsebuje",
+        "priporocate",
+        "narociti",
+        "za_osebe",
+        "super_izbira",
+        "alergicen_na"
+      ],
       "scenarios": [
-        { "scenarioId": "bakery", "level": 2 },
-        { "scenarioId": "restaurant", "level": 2 },
-        { "scenarioId": "restaurant", "level": 3 }
+        {
+          "scenarioId": "bakery",
+          "level": 1
+        },
+        {
+          "scenarioId": "bakery",
+          "level": 2
+        },
+        {
+          "scenarioId": "bakery",
+          "level": 3
+        },
+        {
+          "scenarioId": "restaurant",
+          "level": 1
+        },
+        {
+          "scenarioId": "restaurant",
+          "level": 2
+        },
+        {
+          "scenarioId": "restaurant",
+          "level": 3
+        }
       ]
+    },
+    {
+      "id": "everyday_free_time",
+      "kind": "thematic",
+      "label": "Everyday life & free time",
+      "descriptor": "Talk about your daily routine and free-time activities; understand simple timetables.",
+      "functions": [
+        "describe a daily routine",
+        "talk about free-time activities"
+      ],
+      "exponents": [
+        "Zjutraj… / Zvečer…",
+        "V prostem času grem na sprehod."
+      ],
+      "learnables": [],
+      "scenarios": []
+    },
+    {
+      "id": "shopping_services",
+      "kind": "thematic",
+      "label": "Shopping & services",
+      "descriptor": "Buy goods, ask the price and what you owe, ask if they have something, and pay.",
+      "functions": [
+        "ask the price / what you owe",
+        "ask if they stock something",
+        "ask for the bill and pay"
+      ],
+      "exponents": [
+        "Koliko stane?",
+        "Ali imate ___?",
+        "Račun, prosim.",
+        "Lahko plačam s kartico?"
+      ],
+      "learnables": [
+        "koliko_stane",
+        "koliko_sem_dolzna",
+        "racun",
+        "placam_s_kartico",
+        "ali_imate",
+        "pol_kilograma",
+        "dekagram"
+      ],
+      "scenarios": [
+        {
+          "scenarioId": "bakery",
+          "level": 1
+        },
+        {
+          "scenarioId": "bakery",
+          "level": 2
+        },
+        {
+          "scenarioId": "restaurant",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "id": "personal_relations",
+      "kind": "thematic",
+      "label": "Personal relations & social formulas",
+      "descriptor": "Open and close social contact — greet, thank, apologise, compliment, and raise a toast.",
+      "functions": [
+        "greet & take leave",
+        "apologise / get attention",
+        "compliment & toast"
+      ],
+      "exponents": [
+        "Dober dan. / Dober večer!",
+        "Oprostite.",
+        "Super izbira!",
+        "Na zdravje!"
+      ],
+      "learnables": [
+        "dober_dan",
+        "dober_vecer",
+        "prosim",
+        "hvala",
+        "hvala_nasvidenje",
+        "oprostite",
+        "na_zdravje",
+        "na_tebe",
+        "super_izbira",
+        "postrezba_odlicna",
+        "hvala_za_vecer",
+        "lepo_vreme",
+        "je_tako_prav"
+      ],
+      "scenarios": [
+        {
+          "scenarioId": "bakery",
+          "level": 3
+        },
+        {
+          "scenarioId": "restaurant",
+          "level": 2
+        },
+        {
+          "scenarioId": "restaurant",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "id": "education",
+      "kind": "thematic",
+      "label": "Education",
+      "descriptor": "Talk about your studies or course and understand basic course information.",
+      "functions": [
+        "say what you study / which course you attend",
+        "understand a course announcement"
+      ],
+      "exponents": [
+        "Hodim na tečaj…",
+        "Študiram…"
+      ],
+      "learnables": [],
+      "scenarios": []
+    },
+    {
+      "id": "work_profession",
+      "kind": "thematic",
+      "label": "Work & profession",
+      "descriptor": "State your occupation and workplace; understand simple job-related questions.",
+      "functions": [
+        "state your occupation and workplace"
+      ],
+      "exponents": [
+        "Delam kot…",
+        "Delam v…"
+      ],
+      "learnables": [],
+      "scenarios": []
+    },
+    {
+      "id": "transport_orientation",
+      "kind": "thematic",
+      "label": "Transport, travel & orientation",
+      "descriptor": "Ask for and give simple directions, buy a ticket, and understand transport announcements.",
+      "functions": [
+        "ask for directions",
+        "buy a ticket",
+        "understand a transport announcement"
+      ],
+      "exponents": [
+        "Kje je…?",
+        "Kako pridem do…?",
+        "Ena vozovnica, prosim."
+      ],
+      "learnables": [],
+      "scenarios": []
     }
-  ]
+  ],
+  "excluded": []
 }
