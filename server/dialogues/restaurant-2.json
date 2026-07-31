@@ -43,7 +43,11 @@
     "client": "male-speaker"
   },
   "background": "restaurant-2.jpg",
-  "intro": "restaurant-2.mp3",
+  "intro": {
+    "audio": "restaurant-2.mp3",
+    "text": "[hungry, restless] O, super, tukaj se da jesti. [stomach growls] ...ojoj, umiram od lakote. [laughs self-consciously] Cel dan nisem nič jedel. Rad bi eno veliko pikantno pico, pa hladno pivo. [dramatic pause] Dobro — gremo noter, preden pojem enega od teh turistov.",
+    "en": "Oh, great — you can eat here. …oh no, I'm starving. I haven't eaten all day. I'd like one big spicy pizza, and a cold beer. Alright — let's go in, before I eat one of these tourists."
+  },
   "root": "m1",
   "nodes": {
     "m1": {

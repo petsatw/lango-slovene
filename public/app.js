@@ -352,7 +352,7 @@ function runIntro() {
     if (introTimer) { clearTimeout(introTimer); introTimer = null; }
     setIntroButton(btn, "skip", () => { localStorage.setItem(introSkipKey(dialogue), "1"); finish(); });
     stopIntro();
-    const audio = new Audio(`/intros/${dialogue.intro}`);
+    const audio = new Audio(`/intros/${dialogue.intro.audio}`);
     introAudio = audio;
     const done = () => { if (introAudio === audio) introAudio = null; finish(); };
     audio.onended = done;

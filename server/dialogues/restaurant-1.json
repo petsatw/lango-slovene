@@ -41,6 +41,11 @@
     "client": "male-speaker"
   },
   "background": "restaurant-1.jpg",
+  "intro": {
+    "audio": "restaurant-1.mp3",
+    "text": "[yawning] Uf… dobro jutro. [sleepy] Joj, kako sem zaspan. [sheepish chuckle] Sinoči sem bil na zabavi… hočem reči — učil sem se. Do treh zjutraj. [tired sigh] Zdaj pa komaj držim oči odprte. Nujno rabim eno veliko, močno kavo. [perking up] Dobro — gremo noter, preden zaspim kar tukaj na pločniku.",
+    "en": "Ugh… good morning. Gosh, I'm so sleepy. Last night I was at a party… I mean — I was studying. Until three in the morning. And now I can barely keep my eyes open. I badly need one big, strong coffee. Right — let's go in before I fall asleep right here on the sidewalk."
+  },
   "root": "n1",
   "nodes": {
     "n1": {

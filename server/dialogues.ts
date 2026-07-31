@@ -42,6 +42,16 @@ export interface DialogueObjective {
   descriptorEN: string;
 }
 
+/** An optional audio "story" that plays over the background before a level's tree begins. */
+export interface DialogueIntro {
+  /** Filename under public/intros/ (e.g. "restaurant-1.mp3"). */
+  audio: string;
+  /** The exact text sent to TTS, including inline v3 delivery tags — the source of truth for the audio. */
+  text?: string;
+  /** Plain-English translation of the intro, for display. */
+  en?: string;
+}
+
 export interface Dialogue {
   id: string;
   scenarioId: string;
@@ -66,10 +76,10 @@ export interface Dialogue {
    *  (e.g. "restaurant-1.jpg"). The conversation scrolls over it while the image stays fixed. Absent →
    *  the plain panel background. */
   background?: string;
-  /** Optional audio intro for this level — a filename under public/intros/ (e.g. "restaurant-1.mp3").
-   *  Played over the background (full picture, no bubbles yet) before the tree begins; the learner can
-   *  skip it, and a skip is remembered so it won't auto-play again. Absent → the tree starts immediately. */
-  intro?: string;
+  /** Optional audio intro for this level, played over the background (full picture, no bubbles yet)
+   *  before the tree begins; the learner can skip it, and a skip is remembered so it won't auto-play
+   *  again. Absent → the tree starts immediately. */
+  intro?: DialogueIntro;
   root: string;
   nodes: Record<string, DialogueNode>;
 }
@@ -117,7 +127,12 @@ export function validateDialogue(file: string, raw: any): Dialogue {
   asProfile(file, raw.voices, "npc", "voices");
   asProfile(file, raw.voices, "client", "voices");
   if (raw.background !== undefined) asString(file, raw, "background", "dialogue");
-  if (raw.intro !== undefined) asString(file, raw, "intro", "dialogue");
+  if (raw.intro !== undefined) {
+    if (!raw.intro || typeof raw.intro !== "object") fail(file, `"intro" must be an object { audio, text?, en? }`);
+    asString(file, raw.intro, "audio", "intro");
+    if (raw.intro.text !== undefined) asString(file, raw.intro, "text", "intro");
+    if (raw.intro.en !== undefined) asString(file, raw.intro, "en", "intro");
+  }
   if (!raw.nodes || typeof raw.nodes !== "object" || !Object.keys(raw.nodes).length)
     fail(file, `"nodes" must be a non-empty object`);
   const ids = new Set(Object.keys(raw.nodes));
