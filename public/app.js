@@ -301,7 +301,78 @@ function openScenario(s) {
 
 function openLevel(i) {
   dialogue = dialogues[i];
+  applyDialogueBackground(); // apply the scene background first so the intro can show it alone
   $("dialogue").hidden = false;
+  if (dialogue.intro) runIntro();
+  else startDialogueTree();
+}
+
+// The optional scene background makes the whole card a fixed mobile-portrait frame the image fills.
+// Applied once on open (before the intro), so the picture is fully visible while the intro audio plays.
+function applyDialogueBackground() {
+  const card = $("dialogue-convo").closest(".dialogue-card");
+  card.style.setProperty("--bg", dialogue.background ? `url("/backgrounds/${dialogue.background}")` : "none");
+  card.classList.toggle("has-bg", !!dialogue.background);
+}
+
+// ---- Intro phase: a brief audio "story" over the full background before the tree begins ----
+let introAudio = null;    // the intro clip (separate channel from dialogue lines)
+let introTimer = null;    // the "play intro" linger timer for a returning (skipped-before) learner
+const INTRO_PROMPT_MS = 2500; // how long "play intro" lingers before auto-continuing
+const introSkipKey = (d) => `introSkipped:${d.id}`;
+
+function stopIntro() {
+  if (introTimer) { clearTimeout(introTimer); introTimer = null; }
+  if (introAudio) { try { introAudio.pause(); } catch {} introAudio = null; }
+}
+
+function setIntroButton(btn, kind, onClick) {
+  btn.textContent = kind === "skip" ? "Skip ›››" : "▶ Play intro";
+  btn.onclick = onClick;
+}
+
+// Show only the background + one control. First visit: auto-play the audio with a "skip" control.
+// Returning after a skip: offer "play intro" briefly, auto-continuing if it's not taken.
+function runIntro() {
+  const card = $("dialogue-convo").closest(".dialogue-card");
+  const btn = $("dialogue-intro");
+  card.classList.add("intro-active"); // hides the conversation interface until the intro resolves
+  btn.classList.remove("fade-out");
+  btn.hidden = false;
+
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    stopIntro();
+    endIntro(card, btn);
+  };
+
+  const playNow = () => {
+    if (introTimer) { clearTimeout(introTimer); introTimer = null; }
+    setIntroButton(btn, "skip", () => { localStorage.setItem(introSkipKey(dialogue), "1"); finish(); });
+    stopIntro();
+    const audio = new Audio(`/intros/${dialogue.intro}`);
+    introAudio = audio;
+    const done = () => { if (introAudio === audio) introAudio = null; finish(); };
+    audio.onended = done;
+    audio.onerror = done;
+    audio.play().catch(done);
+  };
+
+  if (localStorage.getItem(introSkipKey(dialogue)) === "1") {
+    setIntroButton(btn, "play", playNow);
+    introTimer = setTimeout(finish, INTRO_PROMPT_MS);
+  } else {
+    playNow();
+  }
+}
+
+// Fade the intro control out (≤0.5s) while the conversation interface fades in (~1s), then start the tree.
+function endIntro(card, btn) {
+  btn.classList.add("fade-out");
+  setTimeout(() => { btn.hidden = true; btn.classList.remove("fade-out"); }, 500);
+  card.classList.remove("intro-active");
   startDialogueTree();
 }
 
@@ -418,11 +489,6 @@ async function chooseClient(clientNodeId) {
 function startDialogueTree() {
   stopDialogueAudio();
   $("dialogue-title").textContent = dialogue.title;
-  // Optional scene background: the whole card becomes a fixed mobile-portrait frame the image fills;
-  // the convo scrolls over it while the image stays put.
-  const card = $("dialogue-convo").closest(".dialogue-card");
-  card.style.setProperty("--bg", dialogue.background ? `url("/backgrounds/${dialogue.background}")` : "none");
-  card.classList.toggle("has-bg", !!dialogue.background);
   $("dialogue-convo").innerHTML = "";
   $("dialogue-choices").innerHTML = "";
   // Offer the "try it for real" handoff whenever this level ties itself to catalog learnables.
@@ -430,7 +496,14 @@ function startDialogueTree() {
   presentNpcNode(dialogue.root);
 }
 
-function closeDialogue() { stopDialogueAudio(); $("dialogue").hidden = true; }
+function closeDialogue() {
+  stopIntro();
+  stopDialogueAudio();
+  const card = $("dialogue-convo").closest(".dialogue-card");
+  card.classList.remove("intro-active");
+  $("dialogue-intro").hidden = true;
+  $("dialogue").hidden = true;
+}
 
 // Introduce→reinforce handoff: leave the rehearsed tree and open a live chat biased toward exactly the
 // learnables THIS level introduced. Rehearsal credits nothing; the live chat is where mastery accrues.

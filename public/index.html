@@ -82,6 +82,10 @@
       <button id="dialogue-close" class="story-close" type="button" aria-label="Close">✕</button>
       <p id="dialogue-title" class="practice-label">—</p>
       <div id="dialogue-convo" class="dialogue-convo" aria-live="polite"></div>
+      <!-- Intro phase: while the audio "story" plays over the full background, this is the only control
+           shown ("skip >>>", or "play intro" for a learner who skipped before). It fades out and the
+           conversation fades in when the intro ends or is skipped. -->
+      <button id="dialogue-intro" class="dialogue-intro" type="button" hidden></button>
       <div id="dialogue-choices" class="dialogue-choices"></div>
       <p class="dialogue-hint">Pick your line. Tap any line to see the English.</p>
       <!-- Introduce→reinforce handoff: drop from the rehearsed tree straight into a live chat biased

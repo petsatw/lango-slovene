@@ -41,6 +41,7 @@
     "client": "male-speaker"
   },
   "background": "restaurant-1.jpg",
+  "intro": "restaurant-1.mp3",
   "root": "n1",
   "nodes": {
     "n1": {
