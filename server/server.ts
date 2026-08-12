@@ -373,9 +373,18 @@ app.get("/api/image", (req, res) => {
 });
 
 // M6 — captured session records (replay + versioning). All read from assets/sessions/.
+//
+// These records hold `userVerbatim` (exact learner speech) and are UNSCOPED — any caller sees every
+// run. On a public deploy with no auth that is a cross-user PII leak (audit #3), so the whole surface
+// is OFF unless OPERATOR_TOOLS=1. Fails CLOSED: a forgotten flag exposes nothing. Set it locally to
+// use the Replays view. (Records are never written on Railway anyway — capture sits behind the E2 key,
+// which the alpha doesn't set — this gate just guarantees the read path can't leak if that changes.)
+const OPERATOR_TOOLS = process.env.OPERATOR_TOOLS === "1";
 
 // List runs (newest first) with a lightweight summary for a "my runs" view.
 app.get("/api/sessions", (_req, res) => {
+  // Gated off → an empty list, so the client's Replays panel shows its normal "no sessions yet" state.
+  if (!OPERATOR_TOOLS) return res.json({ sessions: [] });
   const summary = sessions.list().map((r) => ({
     id: r.id,
     scenarioId: r.scenarioId,
@@ -392,6 +401,7 @@ app.get("/api/sessions", (_req, res) => {
 
 // Full record for one run — the ordered turns the replay UI steps through.
 app.get("/api/sessions/:id", (req, res) => {
+  if (!OPERATOR_TOOLS) return res.status(404).json({ error: "no such session" });
   const rec = sessions.load(req.params.id);
   if (!rec) return res.status(404).json({ error: "no such session" });
   res.json(rec);
@@ -399,6 +409,7 @@ app.get("/api/sessions/:id", (req, res) => {
 
 // Promote a run: set a human label and/or mark it favorite (UC3).
 app.post("/api/sessions/:id/meta", (req, res) => {
+  if (!OPERATOR_TOOLS) return res.status(404).json({ error: "no such session" });
   const { label, favorite } = req.body ?? {};
   try {
     res.json(sessions.setMeta(req.params.id, { label, favorite }));
