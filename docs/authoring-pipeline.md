@@ -30,7 +30,8 @@ skill. Both run the same shape; they differ only in what they render.
 - **L — Logic:** id assignment, catalog merge, key computation, file writes, deterministic lints. **Scripts**
   (`reconcile-dialogue`, `lint:dialogue`, `lint:tree`, `lint:a1`), never by hand.
 - **G — Generation:** TTS/image bytes from finished content. `build:dialogue-assets` / `build:assets` —
-  **operator-run, on approval only**.
+  **operator-run, on approval only**. Generated audio lands in the gitignored `assets/` store — to *ship and
+  serve* it on a deploy, see [DEPLOY.md](DEPLOY.md).
 
 ### Where determinism ends and LLM judgment begins (D4)
 
