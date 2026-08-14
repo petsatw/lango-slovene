@@ -1,0 +1,186 @@
+{
+  "id": "library-l5",
+  "scenarioId": "library",
+  "level": 5,
+  "levelLabel": "Advanced A1",
+  "title": "Reserve & pick up",
+  "objectives": [
+    {
+      "label": "Ask for a specific book",
+      "descriptorEN": "Ask for a book with 'Ali imate to knjigo?' / 'Rad bi to knjigo.'"
+    },
+    {
+      "label": "Decide to reserve or not",
+      "descriptorEN": "Choose yes ('Da, prosim.') or no ('Ne, hvala. Pridem drugič.')."
+    },
+    {
+      "label": "Give your name",
+      "descriptorEN": "Give your name with 'Ime mi je ___.' (dative)."
+    },
+    {
+      "label": "Ask when it'll be ready",
+      "descriptorEN": "Ask availability with 'Kdaj bo na voljo?'"
+    },
+    {
+      "label": "Close",
+      "descriptorEN": "Close with 'Hvala, nasvidenje.'"
+    }
+  ],
+  "introduces": [
+    "ali_imate",
+    "da",
+    "dober_dan",
+    "hvala",
+    "hvala_nasvidenje",
+    "ime_mi_je",
+    "kdaj",
+    "kdaj_bo_na_voljo",
+    "knjiga",
+    "nasvidenje",
+    "ne",
+    "pridem_drugic",
+    "prosim",
+    "rad_bi"
+  ],
+  "audio": "ready",
+  "voices": {
+    "npc": "female-speaker",
+    "client": "male-speaker"
+  },
+  "background": "library-computer.jpg",
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Dober dan, izvolite?",
+      "en": "Hello, can I help you?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan, izvolite?",
+      "next": [
+        "c1a",
+        "c1b"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Dober dan. Ali imate to knjigo?",
+      "en": "Hello. Do you have this book?",
+      "next": [
+        "n2"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Dober dan. Rad bi to knjigo, prosim.",
+      "en": "Hello. I'd like this book, please.",
+      "next": [
+        "n2"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Trenutek, preverim... Žal je trenutno ni. Želite, da vam jo rezerviram?",
+      "en": "One moment, I'll check... Unfortunately it's not here right now. Would you like me to reserve it for you?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Trenutek, preverim... Žal je trenutno ni. Želite, da vam jo rezerviram?",
+      "next": [
+        "c2a",
+        "c2b"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Da, prosim.",
+      "en": "Yes, please.",
+      "next": [
+        "n3"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "Ne, hvala. Pridem drugič.",
+      "en": "No, thanks. I'll come another time.",
+      "next": [
+        "n6"
+      ]
+    },
+    "n3": {
+      "speaker": "npc",
+      "sl": "V redu. Kako vam je ime?",
+      "en": "Alright. What's your name?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] V redu. Kako vam je ime?",
+      "next": [
+        "c3a",
+        "c3b"
+      ]
+    },
+    "c3a": {
+      "speaker": "client",
+      "sl": "Slavko.",
+      "en": "Slavko.",
+      "next": [
+        "n4"
+      ]
+    },
+    "c3b": {
+      "speaker": "client",
+      "sl": "Ime mi je Slavko.",
+      "en": "My name is Slavko.",
+      "next": [
+        "n4"
+      ]
+    },
+    "n4": {
+      "speaker": "npc",
+      "sl": "Hvala. Ko bo knjiga tu, vas pokličemo.",
+      "en": "Thanks. When the book is here, we'll call you.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Hvala. Ko bo knjiga tu, vas pokličemo.",
+      "next": [
+        "c4a",
+        "c4b"
+      ]
+    },
+    "c4a": {
+      "speaker": "client",
+      "sl": "Odlično, hvala. Nasvidenje.",
+      "en": "Great, thanks. Goodbye.",
+      "next": []
+    },
+    "c4b": {
+      "speaker": "client",
+      "sl": "Kdaj bo na voljo?",
+      "en": "When will it be available?",
+      "next": [
+        "n5"
+      ]
+    },
+    "n5": {
+      "speaker": "npc",
+      "sl": "Predvidoma čez teden dni.",
+      "en": "In about a week.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Predvidoma čez teden dni.",
+      "next": [
+        "c5"
+      ]
+    },
+    "c5": {
+      "speaker": "client",
+      "sl": "Hvala, nasvidenje.",
+      "en": "Thanks, goodbye.",
+      "next": []
+    },
+    "n6": {
+      "speaker": "npc",
+      "sl": "V redu, nasvidenje.",
+      "en": "Alright, goodbye.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] V redu, nasvidenje.",
+      "next": [
+        "c6"
+      ]
+    },
+    "c6": {
+      "speaker": "client",
+      "sl": "Nasvidenje.",
+      "en": "Goodbye.",
+      "next": []
+    }
+  }
+}

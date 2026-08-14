@@ -1,0 +1,165 @@
+{
+  "id": "library-l3",
+  "scenarioId": "library",
+  "level": 3,
+  "levelLabel": "Basic A1",
+  "title": "Computer & WiFi",
+  "objectives": [
+    {
+      "label": "Ask permission to use a computer",
+      "descriptorEN": "Ask permission with 'Ali lahko ___?' + a present-tense verb."
+    },
+    {
+      "label": "Ask whether to reserve",
+      "descriptorEN": "Ask a yes/no follow-up with 'Ali moram rezervirati?'"
+    },
+    {
+      "label": "Ask about WiFi",
+      "descriptorEN": "Ask whether they also have WiFi with 'Ali imate tudi ___?'"
+    },
+    {
+      "label": "Ask for the password",
+      "descriptorEN": "Ask for the password with 'Kakšno je geslo?'"
+    },
+    {
+      "label": "Thank & close",
+      "descriptorEN": "Close warmly with 'Hvala lepa, nasvidenje.'"
+    }
+  ],
+  "introduces": [
+    "ali_imate",
+    "ali_lahko",
+    "ali_moram",
+    "dober_dan",
+    "geslo",
+    "hvala",
+    "hvala_lepa",
+    "kaksno_je",
+    "kje_je",
+    "nasvidenje",
+    "racunalnik",
+    "rad_bi",
+    "rezervirati",
+    "tudi",
+    "v_redu"
+  ],
+  "audio": "ready",
+  "voices": {
+    "npc": "female-speaker",
+    "client": "male-speaker"
+  },
+  "background": "library-wifi.jpg",
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Dober dan, izvolite?",
+      "en": "Hello, how can I help you?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan, izvolite?",
+      "next": [
+        "c1a",
+        "c1b"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Dober dan. Ali lahko uporabljam računalnik?",
+      "en": "Hello. May I use a computer?",
+      "next": [
+        "n2"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Dober dan. Rad bi uporabljal računalnik.",
+      "en": "Hello. I'd like to use a computer.",
+      "next": [
+        "n2"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Seveda. Računalniki so v prvem nadstropju.",
+      "en": "Of course. The computers are on the first floor.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Seveda. Računalniki so v prvem nadstropju.",
+      "next": [
+        "c2a",
+        "c2b"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Ali moram rezervirati?",
+      "en": "Do I have to reserve one?",
+      "next": [
+        "n3"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "Ali imate tudi WiFi?",
+      "en": "Do you also have WiFi?",
+      "next": [
+        "n4"
+      ]
+    },
+    "n3": {
+      "speaker": "npc",
+      "sl": "Ne. Rezervacija ni potrebna. Če je kakšen prost, ga lahko uporabite.",
+      "en": "No. No reservation needed. If one is free, you can use it.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Ne. Rezervacija ni potrebna. Če je kakšen prost, ga lahko uporabite.",
+      "next": [
+        "c3"
+      ]
+    },
+    "c3": {
+      "speaker": "client",
+      "sl": "V redu, hvala. Ali imate tudi WiFi?",
+      "en": "Alright, thanks. Do you also have WiFi?",
+      "next": [
+        "n4"
+      ]
+    },
+    "n4": {
+      "speaker": "npc",
+      "sl": "Da, seveda.",
+      "en": "Yes, of course.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Da, seveda.",
+      "next": [
+        "c4a",
+        "c4b"
+      ]
+    },
+    "c4a": {
+      "speaker": "client",
+      "sl": "Kakšno je geslo?",
+      "en": "What is the password?",
+      "next": [
+        "n5"
+      ]
+    },
+    "c4b": {
+      "speaker": "client",
+      "sl": "Kje je geslo?",
+      "en": "Where is the password?",
+      "next": [
+        "n5"
+      ]
+    },
+    "n5": {
+      "speaker": "npc",
+      "sl": "Geslo je na nalepki pri vhodu.",
+      "en": "The password is on a sticker by the entrance.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Geslo je na nalepki pri vhodu.",
+      "next": [
+        "c5"
+      ]
+    },
+    "c5": {
+      "speaker": "client",
+      "sl": "Hvala lepa, nasvidenje.",
+      "en": "Thank you very much, goodbye.",
+      "next": []
+    }
+  }
+}

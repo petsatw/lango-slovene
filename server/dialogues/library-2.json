@@ -1,0 +1,127 @@
+{
+  "id": "library-l2",
+  "scenarioId": "library",
+  "level": 2,
+  "levelLabel": "Beginning A1",
+  "title": "Return a book",
+  "objectives": [
+    {
+      "label": "Say you're returning a book",
+      "descriptorEN": "Say you'd like to return this book with 'Rad bi vrnil ___' in the accusative."
+    },
+    {
+      "label": "Apologize for lateness",
+      "descriptorEN": "Apologize with 'Oprostite.'"
+    },
+    {
+      "label": "Choose how to settle the fee",
+      "descriptorEN": "Pay now ('Plačam takoj.') or ask to pay tomorrow ('Lahko plačam jutri?')."
+    },
+    {
+      "label": "Handle the fee & timing",
+      "descriptorEN": "Handle a small €2 fee and the word 'jutri' (tomorrow)."
+    },
+    {
+      "label": "Close",
+      "descriptorEN": "Close with 'Hvala, nasvidenje.'"
+    }
+  ],
+  "introduces": [
+    "ali_lahko",
+    "dober_dan",
+    "hvala_nasvidenje",
+    "jutri",
+    "knjiga",
+    "oprostite",
+    "placati",
+    "prosim",
+    "rad_bi",
+    "takoj",
+    "vrniti"
+  ],
+  "audio": "ready",
+  "voices": {
+    "npc": "female-speaker",
+    "client": "male-speaker"
+  },
+  "background": "library-books.jpg",
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Dober dan, izvolite?",
+      "en": "Good day, how can I help?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan, izvolite?",
+      "next": [
+        "c1a",
+        "c1b"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Dober dan. Rad bi vrnil to knjigo.",
+      "en": "Good day. I'd like to return this book.",
+      "next": [
+        "n2"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Dober dan. To knjigo bi vrnil, prosim.",
+      "en": "Good day. I'd like to return this book, please.",
+      "next": [
+        "n2"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Vidim, da ste malo zamudili. Plačilo je dva evra.",
+      "en": "I see you're a little late. The fee is two euros.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Vidim, da ste malo zamudili. Plačilo je dva evra.",
+      "next": [
+        "c2a",
+        "c2b"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Oprostite. Plačam takoj.",
+      "en": "Sorry. I'll pay right now.",
+      "next": [
+        "n3a"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "Oprostite. Lahko plačam jutri?",
+      "en": "Sorry. Can I pay tomorrow?",
+      "next": [
+        "n3b"
+      ]
+    },
+    "n3a": {
+      "speaker": "npc",
+      "sl": "Hvala. Tukaj je potrdilo. Nasvidenje!",
+      "en": "Thank you. Here's the receipt. Goodbye!",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Hvala. Tukaj je potrdilo. Nasvidenje!",
+      "next": [
+        "c3"
+      ]
+    },
+    "n3b": {
+      "speaker": "npc",
+      "sl": "V redu. Prosim, plačajte jutri. Nasvidenje!",
+      "en": "Alright. Please pay tomorrow. Goodbye!",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] V redu. Prosim, plačajte jutri. Nasvidenje!",
+      "next": [
+        "c3"
+      ]
+    },
+    "c3": {
+      "speaker": "client",
+      "sl": "Hvala, nasvidenje.",
+      "en": "Thanks, goodbye.",
+      "next": []
+    }
+  }
+}

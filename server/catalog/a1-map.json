@@ -96,7 +96,12 @@
         "od_kod",
         "kam",
         "zakaj",
-        "hocem"
+        "hocem",
+        "ali_lahko",
+        "ali_moram",
+        "tudi",
+        "kaksno_je",
+        "nimam"
       ],
       "scenarios": [
         {
@@ -122,6 +127,18 @@
         {
           "scenarioId": "restaurant",
           "level": 3
+        },
+        {
+          "scenarioId": "library",
+          "level": 2
+        },
+        {
+          "scenarioId": "library",
+          "level": 3
+        },
+        {
+          "scenarioId": "library",
+          "level": 4
         }
       ]
     },
@@ -159,7 +176,11 @@
         "vsec_mi_je",
         "ni_mi_vsec",
         "ne_vem",
-        "ne_govorim_dobro"
+        "ne_govorim_dobro",
+        "izvolite",
+        "tukaj_imate",
+        "najlepsa_hvala",
+        "v_redu"
       ],
       "scenarios": [
         {
@@ -172,6 +193,14 @@
         },
         {
           "scenarioId": "restaurant",
+          "level": 3
+        },
+        {
+          "scenarioId": "library",
+          "level": 1
+        },
+        {
+          "scenarioId": "library",
           "level": 3
         }
       ]
@@ -205,9 +234,15 @@
         "kje_zivite",
         "kaj_delate",
         "govorite_anglesko",
-        "ne_govorim_dobro"
+        "ne_govorim_dobro",
+        "ime_mi_je"
       ],
-      "scenarios": []
+      "scenarios": [
+        {
+          "scenarioId": "library",
+          "level": 5
+        }
+      ]
     },
     {
       "id": "housing_environment",
@@ -366,9 +401,26 @@
         "zvecer",
         "jutri",
         "danes",
-        "gledam"
+        "gledam",
+        "takoj",
+        "racunalnik",
+        "geslo",
+        "pridem_drugic"
       ],
-      "scenarios": []
+      "scenarios": [
+        {
+          "scenarioId": "library",
+          "level": 2
+        },
+        {
+          "scenarioId": "library",
+          "level": 3
+        },
+        {
+          "scenarioId": "library",
+          "level": 5
+        }
+      ]
     },
     {
       "id": "shopping_services",
@@ -397,7 +449,9 @@
         "lahko_dobim",
         "zelim",
         "z_gotovino",
-        "kupim"
+        "kupim",
+        "placati",
+        "kdaj_bo_na_voljo"
       ],
       "scenarios": [
         {
@@ -411,6 +465,14 @@
         {
           "scenarioId": "restaurant",
           "level": 1
+        },
+        {
+          "scenarioId": "library",
+          "level": 2
+        },
+        {
+          "scenarioId": "library",
+          "level": 5
         }
       ]
     },
@@ -484,8 +546,33 @@
         "Hodim na tečaj…",
         "Študiram…"
       ],
-      "learnables": [],
-      "scenarios": []
+      "learnables": [
+        "izposoditi_si",
+        "knjiga",
+        "vrniti",
+        "rezervirati",
+        "vpisati_se",
+        "izkaznica",
+        "knjiznica"
+      ],
+      "scenarios": [
+        {
+          "scenarioId": "library",
+          "level": 1
+        },
+        {
+          "scenarioId": "library",
+          "level": 2
+        },
+        {
+          "scenarioId": "library",
+          "level": 3
+        },
+        {
+          "scenarioId": "library",
+          "level": 4
+        }
+      ]
     },
     {
       "id": "work_profession",

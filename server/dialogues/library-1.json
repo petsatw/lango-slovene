@@ -1,0 +1,124 @@
+{
+  "id": "library-l1",
+  "scenarioId": "library",
+  "level": 1,
+  "levelLabel": "Beginning A1",
+  "title": "Borrow a book",
+  "objectives": [
+    {
+      "label": "Greet the librarian",
+      "descriptorEN": "Return the librarian's greeting."
+    },
+    {
+      "label": "Ask to borrow a book",
+      "descriptorEN": "Say you'd like to borrow this book with 'Rad bi si izposodil ___' in the accusative."
+    },
+    {
+      "label": "Hand over your card",
+      "descriptorEN": "Hand over your library card with the fixed 'Izvolite.'"
+    },
+    {
+      "label": "Take in the due date",
+      "descriptorEN": "Understand the spoken 30-day return date (receptive)."
+    },
+    {
+      "label": "Close politely",
+      "descriptorEN": "Close with 'Hvala, nasvidenje.'"
+    }
+  ],
+  "introduces": [
+    "ali_imate",
+    "dober_dan",
+    "hvala_nasvidenje",
+    "izposoditi_si",
+    "izvolite",
+    "knjiga",
+    "najlepsa_hvala",
+    "nasvidenje",
+    "rad_bi",
+    "tukaj_imate"
+  ],
+  "audio": "ready",
+  "voices": {
+    "npc": "female-speaker",
+    "client": "male-speaker"
+  },
+  "background": "library-computer.jpg",
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Dober dan, izvolite?",
+      "en": "Good day, how can I help you?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan, izvolite?",
+      "next": [
+        "c1a",
+        "c1b"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Dober dan. Rad bi si izposodil to knjigo.",
+      "en": "Good day. I'd like to borrow this book.",
+      "next": [
+        "n2"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Dober dan. Ali imate to knjigo?",
+      "en": "Good day. Do you have this book?",
+      "next": [
+        "n2"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Seveda, prosim izkaznico.",
+      "en": "Of course, your card please.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Seveda, prosim izkaznico.",
+      "next": [
+        "c2a",
+        "c2b"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Izvolite.",
+      "en": "Here you are.",
+      "next": [
+        "n3"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "Tukaj imate.",
+      "en": "Here you go.",
+      "next": [
+        "n3"
+      ]
+    },
+    "n3": {
+      "speaker": "npc",
+      "sl": "Izvolite. Rok vračila knjige je 30 dni. Prijetno branje!",
+      "en": "Here you are. The return date is 30 days. Enjoy your reading!",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Izvolite. Rok vračila knjige je 30 dni. Prijetno branje!",
+      "next": [
+        "c3a",
+        "c3b"
+      ]
+    },
+    "c3a": {
+      "speaker": "client",
+      "sl": "Hvala, nasvidenje.",
+      "en": "Thank you, goodbye.",
+      "next": []
+    },
+    "c3b": {
+      "speaker": "client",
+      "sl": "Najlepša hvala. Nasvidenje!",
+      "en": "Thank you very much. Goodbye!",
+      "next": []
+    }
+  }
+}

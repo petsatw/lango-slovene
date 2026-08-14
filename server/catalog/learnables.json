@@ -1156,5 +1156,143 @@
     "paretoCategory": [
       "verb_core"
     ]
+  },
+  "izposoditi_si": {
+    "kind": "vocabulary",
+    "sl": "izposoditi si",
+    "gloss": "to borrow (for oneself)",
+    "predictableError": "dropping the reflexive 'si' (saying 'rad bi izposodil' instead of 'rad bi si izposodil')"
+  },
+  "knjiga": {
+    "kind": "vocabulary",
+    "sl": "knjiga",
+    "gloss": "book (fem.)",
+    "predictableError": "leaving it nominative after the verb ('to knjiga') instead of the accusative 'to knjigo'"
+  },
+  "izvolite": {
+    "kind": "chunk",
+    "sl": "Izvolite.",
+    "gloss": "Here you are. / Go ahead.",
+    "predictableError": "reaching for 'tukaj je' or a literal 'here' instead of the ready-made 'Izvolite'"
+  },
+  "tukaj_imate": {
+    "kind": "chunk",
+    "sl": "Tukaj imate.",
+    "gloss": "Here you go.",
+    "predictableError": "using 'tukaj si' or singular 'imaš', breaking the formal vi and the fixed phrase"
+  },
+  "najlepsa_hvala": {
+    "kind": "chunk",
+    "sl": "Najlepša hvala.",
+    "gloss": "Thank you very much.",
+    "predictableError": "mangling the superlative to 'najlepša hvala lepa' or 'zelo hvala' instead of the set phrase"
+  },
+  "vrniti": {
+    "kind": "vocabulary",
+    "sl": "vrniti",
+    "gloss": "to return (something)",
+    "predictableError": "gender on the l-participle after 'bi' — a man says 'vrnil', not 'vrnila'; and the object stays accusative ('vrnil knjigo', not 'vrnil knjiga')"
+  },
+  "placati": {
+    "kind": "vocabulary",
+    "sl": "plačati",
+    "gloss": "to pay",
+    "predictableError": "calquing English 'pay for' with a preposition — it's just 'plačam' + the thing; and 'plačam' (1sg present) already reads as 'I'll pay now', no extra 'bom'"
+  },
+  "takoj": {
+    "kind": "vocabulary",
+    "sl": "takoj",
+    "gloss": "right away / immediately",
+    "predictableError": "reaching for 'zdaj' (now) or 'sedaj'; the set 'pay at once' reply is 'takoj'"
+  },
+  "ali_lahko": {
+    "kind": "pattern",
+    "sl": "Ali lahko ___?",
+    "gloss": "May I / can I ___? (asking permission; 'ali' is often dropped in speech)",
+    "predictableError": "keeping the English modal+infinitive ('lahko plačati'); after '(ali) lahko' it takes the finite 1sg present — 'Lahko plačam jutri?'"
+  },
+  "racunalnik": {
+    "kind": "vocabulary",
+    "sl": "računalnik",
+    "gloss": "computer",
+    "predictableError": "Adding an animate accusative ending ('uporabljam računalnika') though this inanimate masculine noun keeps the nominative form in the accusative singular."
+  },
+  "ali_moram": {
+    "kind": "pattern",
+    "sl": "Ali moram ___?",
+    "gloss": "Do I have to ___?",
+    "predictableError": "Conjugating the second verb ('Ali moram rezerviram') instead of leaving it in the infinitive after 'moram'."
+  },
+  "rezervirati": {
+    "kind": "vocabulary",
+    "sl": "rezervirati",
+    "gloss": "to reserve / book",
+    "predictableError": "Anglicised spelling 'reservirati' or using a present-tense form where the infinitive is required."
+  },
+  "tudi": {
+    "kind": "vocabulary",
+    "sl": "tudi",
+    "gloss": "also / too",
+    "predictableError": "Placing 'tudi' at the very end like English 'too' (Ali imate WiFi tudi) instead of directly before the item it scopes over ('tudi WiFi')."
+  },
+  "v_redu": {
+    "kind": "chunk",
+    "sl": "V redu.",
+    "gloss": "Alright. / OK.",
+    "predictableError": "Writing it as one word 'vredu' instead of the two-word 'v redu'."
+  },
+  "kaksno_je": {
+    "kind": "pattern",
+    "sl": "Kakšno je ___?",
+    "gloss": "What is ___? (asking the nature/value of a neuter noun)",
+    "predictableError": "Failing to make 'kakšen' agree with the neuter noun — saying 'Kakšen/Kakšna je geslo' instead of neuter 'Kakšno'."
+  },
+  "geslo": {
+    "kind": "vocabulary",
+    "sl": "geslo",
+    "gloss": "password",
+    "predictableError": "Treating it as masculine (it is neuter), giving wrong adjective/pronoun agreement."
+  },
+  "vpisati_se": {
+    "kind": "vocabulary",
+    "sl": "vpisati se",
+    "gloss": "to register / enrol (oneself)",
+    "predictableError": "dropping the reflexive 'se' — saying 'rad bi vpisal' as if it were a plain transitive verb like English 'register'"
+  },
+  "izkaznica": {
+    "kind": "vocabulary",
+    "sl": "izkaznica",
+    "gloss": "(membership/ID) card",
+    "predictableError": "leaving it nominative 'izkaznica' after 'rad bi' instead of the accusative 'izkaznico' (feminine noun, not masculine)"
+  },
+  "nimam": {
+    "kind": "vocabulary",
+    "sl": "nimam",
+    "gloss": "I don't have (it)",
+    "predictableError": "splitting it into two words 'ne imam' instead of the fused negative 'nimam' (and forgetting the object goes genitive: 'ga')"
+  },
+  "knjiznica": {
+    "kind": "vocabulary",
+    "sl": "knjižnica",
+    "gloss": "library (fem.)",
+    "predictableError": "accusative of direction after 'v' — 'v knjižnico', not locative 'v knjižnici' or nominative 'knjižnica'"
+  },
+  "ime_mi_je": {
+    "kind": "pattern",
+    "sl": "Ime mi je ___.",
+    "gloss": "My name is ___.",
+    "predictableError": "Calquing English as 'Moje ime je ___' (nominative possessive) instead of the natural dative 'Ime mi je ___' — dropping or omitting the dative clitic 'mi'."
+  },
+  "kdaj_bo_na_voljo": {
+    "kind": "chunk",
+    "sl": "Kdaj bo na voljo?",
+    "gloss": "When will it be available?",
+    "predictableError": "Wrong preposition/case in 'na voljo' (e.g. 'v voljo', 'na volji') or dropping the future 'bo' and saying 'Kdaj je na voljo?'."
+  },
+  "pridem_drugic": {
+    "kind": "chunk",
+    "sl": "Pridem drugič.",
+    "gloss": "I'll come another time.",
+    "predictableError": "calquing a future 'bom prišel drugič' instead of the natural present 'Pridem drugič'; or 'drugi čas' for the adverb 'drugič'"
   }
 }

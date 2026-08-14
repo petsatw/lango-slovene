@@ -1,0 +1,126 @@
+{
+  "id": "library-l4",
+  "scenarioId": "library",
+  "level": 4,
+  "levelLabel": "Basic A1",
+  "title": "Register for a card",
+  "objectives": [
+    {
+      "label": "Ask to register",
+      "descriptorEN": "Say you'd like to register with the reflexive 'Rad bi se vpisal ___.'"
+    },
+    {
+      "label": "Answer the ID request",
+      "descriptorEN": "Say whether you have your ID — 'Ja, izvolite.' or 'Ne, nimam ...'."
+    },
+    {
+      "label": "Explain you don't have it",
+      "descriptorEN": "Handle the negative 'nimam ga pri sebi' (negation + genitive)."
+    },
+    {
+      "label": "Take in the instruction",
+      "descriptorEN": "Understand the conditional 'come back with a document' (receptive)."
+    },
+    {
+      "label": "Close",
+      "descriptorEN": "Close with 'Hvala, nasvidenje.'"
+    }
+  ],
+  "introduces": [
+    "dober_dan",
+    "hvala_nasvidenje",
+    "izkaznica",
+    "izvolite",
+    "ja",
+    "knjiznica",
+    "ne",
+    "nimam",
+    "rad_bi",
+    "vpisati_se"
+  ],
+  "audio": "ready",
+  "voices": {
+    "npc": "female-speaker",
+    "client": "male-speaker"
+  },
+  "background": "library-card.jpg",
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Dober dan, izvolite?",
+      "en": "Hello, how can I help you?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan, izvolite?",
+      "next": [
+        "c1a",
+        "c1b"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Dober dan. Rad bi se vpisal v knjižnico.",
+      "en": "Hello. I'd like to register at the library.",
+      "next": [
+        "n2"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Dober dan. Rad bi člansko izkaznico.",
+      "en": "Hello. I'd like a membership card.",
+      "next": [
+        "n2"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Ali imate s sabo osebni dokument?",
+      "en": "Do you have an ID document with you?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Ali imate s sabo osebni dokument?",
+      "next": [
+        "c2a",
+        "c2b"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Ja, izvolite.",
+      "en": "Yes, here you are.",
+      "next": [
+        "n3a"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "Ne, nimam ga pri sebi.",
+      "en": "No, I don't have it on me.",
+      "next": [
+        "n3b"
+      ]
+    },
+    "n3a": {
+      "speaker": "npc",
+      "sl": "Odlično. Tukaj je vaša izkaznica. Dobrodošli!",
+      "en": "Excellent. Here is your card. Welcome!",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Odlično. Tukaj je vaša izkaznica. Dobrodošli!",
+      "next": [
+        "c3"
+      ]
+    },
+    "n3b": {
+      "speaker": "npc",
+      "sl": "Brez dokumenta vas ne morem vpisati. Prosim, vrnite se z dokumentom.",
+      "en": "Without a document I can't register you. Please come back with it.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Brez dokumenta vas ne morem vpisati. Prosim, vrnite se z dokumentom.",
+      "next": [
+        "c3"
+      ]
+    },
+    "c3": {
+      "speaker": "client",
+      "sl": "Hvala, nasvidenje.",
+      "en": "Thank you, goodbye.",
+      "next": []
+    }
+  }
+}
