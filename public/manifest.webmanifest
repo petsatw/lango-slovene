@@ -1,6 +1,6 @@
 {
-  "name": "Govori — Slovenian tutor",
-  "short_name": "Govori",
+  "name": "vadi — Learn Slovenian",
+  "short_name": "vadi",
   "description": "Practice real spoken Slovenian for life in Slovenia.",
   "start_url": "/",
   "display": "standalone",

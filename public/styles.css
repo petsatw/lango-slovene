@@ -1,6 +1,7 @@
 :root {
   --green: #0b6e4f;
   --green-press: #08573e;
+  --brand-green: #3ecf8e;   /* the brighter "vadi" flyer green — wordmark accent only */
   --amber: #e0a336;        /* "your turn": the live-choice accent — a hue no other element uses */
   --bg: #0f1115;
   --panel: #181b21;
@@ -25,8 +26,20 @@ body {
   flex-direction: column;
 }
 
-header { position: relative; padding: 24px 20px 8px; text-align: center; }
+header { position: relative; padding: 24px 20px 10px; text-align: center; }
 header h1 { margin: 0; font-size: 28px; }
+/* "vadi" wordmark — lowercase, heavy, white with a short green accent stroke (flyer style). */
+.wordmark {
+  display: inline-block; position: relative;
+  font-size: 38px; font-weight: 800; letter-spacing: -0.03em;
+  text-transform: lowercase; color: var(--text);
+}
+.wordmark::after {
+  content: ""; display: block;
+  width: 32px; height: 3px; border-radius: 2px;
+  margin: 5px auto 0; background: var(--brand-green);
+}
+.tagline { margin: 9px 0 0; color: var(--muted); font-size: 14px; }
 header p { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
 
 /* Back to home — top-left, present on every non-home screen. */
