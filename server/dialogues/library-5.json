@@ -31,7 +31,6 @@
     "da",
     "dober_dan",
     "hvala",
-    "hvala_nasvidenje",
     "ime_mi_je",
     "kdaj",
     "kdaj_bo_na_voljo",
@@ -40,7 +39,8 @@
     "ne",
     "pridem_drugic",
     "prosim",
-    "rad_bi"
+    "rad_bi",
+    "v_redu"
   ],
   "audio": "ready",
   "voices": {
@@ -52,9 +52,9 @@
   "nodes": {
     "n1": {
       "speaker": "npc",
-      "sl": "Dober dan, izvolite?",
-      "en": "Hello, can I help you?",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan, izvolite?",
+      "sl": "Dober dan! Kaj pa iščete danes?",
+      "en": "Good day! What are you looking for today?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan! Kaj pa iščete danes?",
       "next": [
         "c1a",
         "c1b"
@@ -163,8 +163,8 @@
     },
     "c5": {
       "speaker": "client",
-      "sl": "Hvala, nasvidenje.",
-      "en": "Thanks, goodbye.",
+      "sl": "V redu, hvala. Nasvidenje.",
+      "en": "Alright, thanks. Goodbye.",
       "next": []
     },
     "n6": {

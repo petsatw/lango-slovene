@@ -28,11 +28,11 @@
   ],
   "introduces": [
     "dober_dan",
-    "hvala_nasvidenje",
     "izkaznica",
     "izvolite",
     "ja",
     "knjiznica",
+    "najlepsa_hvala",
     "ne",
     "nimam",
     "rad_bi",
@@ -48,9 +48,9 @@
   "nodes": {
     "n1": {
       "speaker": "npc",
-      "sl": "Dober dan, izvolite?",
-      "en": "Hello, how can I help you?",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan, izvolite?",
+      "sl": "Lep pozdrav! Vam lahko kako pomagam?",
+      "en": "Warm greetings! Can I help you with anything?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Lep pozdrav! Vam lahko kako pomagam?",
       "next": [
         "c1a",
         "c1b"
@@ -118,8 +118,8 @@
     },
     "c3": {
       "speaker": "client",
-      "sl": "Hvala, nasvidenje.",
-      "en": "Thank you, goodbye.",
+      "sl": "Najlepša hvala.",
+      "en": "Thank you so much.",
       "next": []
     }
   }

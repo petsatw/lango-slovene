@@ -29,7 +29,7 @@
   "introduces": [
     "ali_lahko",
     "dober_dan",
-    "hvala_nasvidenje",
+    "hvala_lepa",
     "jutri",
     "knjiga",
     "oprostite",
@@ -49,9 +49,9 @@
   "nodes": {
     "n1": {
       "speaker": "npc",
-      "sl": "Dober dan, izvolite?",
-      "en": "Good day, how can I help?",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan, izvolite?",
+      "sl": "Pozdravljeni! Kako vam lahko pomagam?",
+      "en": "Hello there! How can I help you?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Pozdravljeni! Kako vam lahko pomagam?",
       "next": [
         "c1a",
         "c1b"
@@ -119,8 +119,8 @@
     },
     "c3": {
       "speaker": "client",
-      "sl": "Hvala, nasvidenje.",
-      "en": "Thanks, goodbye.",
+      "sl": "Hvala lepa.",
+      "en": "Thank you very much.",
       "next": []
     }
   }

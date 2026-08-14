@@ -53,9 +53,9 @@
   "nodes": {
     "n1": {
       "speaker": "npc",
-      "sl": "Dober dan, izvolite?",
-      "en": "Hello, how can I help you?",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan, izvolite?",
+      "sl": "Dober dan! Kar povejte.",
+      "en": "Good day! Go ahead, tell me.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan! Kar povejte.",
       "next": [
         "c1a",
         "c1b"
