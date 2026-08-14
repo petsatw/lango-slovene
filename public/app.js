@@ -274,8 +274,19 @@ async function loadPractice() {
   }
 }
 
-// The crisp variant selector: one big card per level — number, label, and what it teaches — not a row
-// of ambiguous tabs. Tap a level → its rehearsal tree.
+// The scenario TASK is the headline; difficulty is a glanceable chip, not encoded jargon. Every dialogue
+// in the MVP is A1, so the CEFR band is constant noise — we collapse the (inconsistent) authored labels
+// ("Survival"/"Beginning A1"/"Basic A1"/"Advanced A1"/"Full A1") into one plain 3-tier ladder.
+const DIFFICULTY_TIERS = { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" };
+function difficultyTier(levelLabel) {
+  const l = (levelLabel || "").toLowerCase();
+  if (l.includes("advanced") || l.includes("full")) return "advanced";
+  if (l.includes("basic")) return "intermediate";
+  return "beginner"; // "Survival", "Beginning", and anything unrecognized read as the entry rung
+}
+
+// The crisp variant selector: one big card per level — the TASK up front, a difficulty chip beside it,
+// a quiet ordinal — not a row of ambiguous tabs. Tap a level → its rehearsal tree.
 function openScenario(s) {
   currentScenario = s;
   dialogues = s.dialogues;
@@ -286,11 +297,12 @@ function openScenario(s) {
     const card = document.createElement("button");
     card.className = "level-card";
     card.type = "button";
+    const tier = difficultyTier(d.levelLabel);
     card.innerHTML =
-      `<span class="level-badge">${d.level}</span>` +
+      `<span class="level-ordinal">${d.level}</span>` +
       `<span class="level-main">` +
-        `<span class="level-label">${d.levelLabel}</span>` +
         `<span class="level-title">${d.title}</span>` +
+        `<span class="level-chip chip-${tier}">${DIFFICULTY_TIERS[tier]}</span>` +
       `</span>` +
       `<span class="level-chevron">›</span>`;
     card.addEventListener("click", () => openLevel(i));
