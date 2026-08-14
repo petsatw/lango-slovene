@@ -10,9 +10,14 @@
 // client starts showing play buttons for it. Idempotent + FREE on re-run (disk hits). Bills only on new
 // lines. Use --regen to force a re-roll (e.g. after changing a delivery note).
 //
-//   npm run build:dialogue-assets -- <scenarioId> [--level <n>] [--regen]
+//   npm run build:dialogue-assets -- <scenarioId> [--level <n>] [--nodes <id,id,…>] [--regen]
 //   npm run build:dialogue-assets -- bakery --level 1            # just the Survival level
 //   npm run build:dialogue-assets -- bakery --level 1 --regen    # re-synthesize it (delivery changed)
+//   npm run build:dialogue-assets -- bakery --level 1 --nodes n1,c1a,c1b   # AUDITION a few lines only
+//
+// --nodes is an AUDITION: it synthesizes just those node ids (a cheap pre-approval spot-check of a voice
+// or a delivery tag) and does NOT flip the level's `audio` to "ready". Clips land in the shared store, so a
+// later full build reuses them free. Pair it with --level to scope the ids to one level.
 
 import "dotenv/config";
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -23,9 +28,14 @@ import * as store from "../assets/store";
 import { validateDialogue, type Dialogue } from "../dialogues";
 
 const args = process.argv.slice(2);
-const scenarioId = args.find((a) => !a.startsWith("--") && args[args.indexOf(a) - 1] !== "--level");
+const scenarioId = args.find(
+  (a) => !a.startsWith("--") && args[args.indexOf(a) - 1] !== "--level" && args[args.indexOf(a) - 1] !== "--nodes",
+);
 const levelIdx = args.indexOf("--level");
 const onlyLevel = levelIdx >= 0 ? Number(args[levelIdx + 1]) : undefined;
+const nodesIdx = args.indexOf("--nodes");
+const auditionNodes =
+  nodesIdx >= 0 ? new Set((args[nodesIdx + 1] ?? "").split(",").map((s) => s.trim()).filter(Boolean)) : undefined;
 const regen = args.includes("--regen");
 
 if (!scenarioId) {
@@ -77,11 +87,14 @@ const e3 = getE3();
 
 let hits = 0, made = 0, failures = 0;
 
+if (auditionNodes) console.log(`\n♪ audition mode — synthesizing only [${[...auditionNodes].join(", ")}]; audio state left unchanged`);
+
 for (const { file, d } of files) {
   console.log(`\n▶ ${file}  L${d.level} ${d.levelLabel}  e3=${e3.name}  npc=${d.voices.npc} client=${d.voices.client}`);
   let levelFailures = 0;
 
   for (const [id, node] of Object.entries(d.nodes) as [string, Dialogue["nodes"][string]][]) {
+    if (auditionNodes && !auditionNodes.has(id)) continue;
     const voiceProfile = d.voices[node.speaker];
     const voiceTag = e3.voiceTagFor(voiceProfile);
     const key = store.audioKey(e3.name, voiceTag, node.sl); // KEY on the clean display line
@@ -106,7 +119,7 @@ for (const { file, d } of files) {
     }
   }
 
-  if (levelFailures === 0 && d.audio !== "ready") {
+  if (!auditionNodes && levelFailures === 0 && d.audio !== "ready") {
     d.audio = "ready";
     writeFileSync(path.join(DIALOGUES_DIR, file), JSON.stringify(d, null, 2) + "\n");
     console.log(`   ✓ ${file} audio → ready`);

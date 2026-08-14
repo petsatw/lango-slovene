@@ -51,6 +51,7 @@ the feature is optional per scenario.
                                     // catalog; may be [] for a pure-review level. See "The catalog link".
   "audio": "pending",               // "pending" | "ready" — gates the client's play affordance
   "voices": { "npc": "shop-assistant", "client": "female-speaker" },  // per-speaker catalog voice profile
+  "background": "bakery-1.jpg",     // optional portrait scene image under public/backgrounds/ (see below)
   "root": "b1",                     // must be an npc node
   "nodes": {
     "b1":  { "speaker": "npc",  "sl": "Dober dan, izvolite?", "en": "Good day, what can I get you?",
@@ -68,9 +69,20 @@ the feature is optional per scenario.
   (e.g. `[hesitant]`, `[apologetic]`, `[warmly]`). When present it is what gets **synthesized**, while
   `sl` stays the caption and the key — so delivery direction steers the voice without ever showing on
   screen or changing the cache key. Absent → the clean `sl` is synthesized plainly.
+  - **Delivery collides on shared lines (author around it).** Because the tag is *not* in the key, two nodes
+    with the same `sl` in the same voice profile are **one clip** — the first built wins, and any different
+    `deliverySL` on the others is never heard. So a character's delivery only lands on lines whose `sl` is
+    unique to that voice. If a character must sound distinct on an otherwise-common line (a greeting, a
+    closing), make the line **textually distinct**. `npm run lint:dialogue` emits a warning for every such
+    collision (same voice + `sl`, differing delivery) so it is visible before you generate.
 - **`voices`** maps each speaker to a catalog voice profile id (`server/catalog/voices.json`), so the two
   speakers get distinct voices. Adding a voice = one `voices.json` profile + one `PROFILE_ENV` row in the
   E3 adapter + the concrete voice id in `.env` (see [SECRETS.md](SECRETS.md)).
+- **`background`** (optional) is a portrait (9:16) image filename served from `public/backgrounds/`. With it
+  the whole card becomes a fixed mobile-portrait frame the image fills; the conversation scrolls over it.
+  Backgrounds are **operator-supplied** art (there is no generator for them) named `<scenario>-<level>.jpg`
+  or a descriptive name, committed under `public/backgrounds/` (a git-tracked path — they ship normally).
+  It is a per-level field on the reconcile input and is **preserved across reconcile re-runs**.
 - **`introduces`** is the list of catalog **learnable** ids this level introduces — the concrete
   "what was just introduced" set. It is the seam that makes the click-through the *primary intro path*:
   the learner meets these items in the tree, then the [handoff](#the-handoff--introduce-then-reinforce)
@@ -124,8 +136,12 @@ that every `introduces` id resolves, and reports which dialogue introduces which
 Pregenerate with:
 
 ```bash
-npm run build:dialogue-assets -- <scenarioId> [--level <n>] [--regen]
+npm run build:dialogue-assets -- <scenarioId> [--level <n>] [--nodes <id,id,…>] [--regen]
 ```
+
+`--nodes` is an **audition**: it synthesizes only those node ids (a cheap pre-approval spot-check of a voice
+or a delivery tag) and does **not** flip the level's `audio` to `"ready"`. The clips land in the shared store,
+so a later full build reuses them free.
 
 [`server/scripts/build-dialogue-assets.ts`](../server/scripts/build-dialogue-assets.ts) walks every node,
 synthesizes the speaker's line in that speaker's voice profile, and **keys on the clean `sl`** while
@@ -191,6 +207,11 @@ same `kruh` the learner has been building all along.
 - **Convergence coherence** is the one thing a script can't judge: a shared `next` target must read on **every**
   incoming path. `lint:tree` LISTS every multi-parent node as a review candidate — eyeball each; the critic is
   the real check.
+- **Vary across levels.** A scenario's levels each get their own opener and closer — do **not** reuse one
+  greeting (`Dober dan, izvolite?`) as every level's `n1`, or one closing (`Hvala, nasvidenje.`) as every
+  terminal client line. Identical openers/closers read monotonously *and* collapse to a single audio clip
+  (losing per-line delivery). Give each level a distinct, natural variant; recombine existing catalog
+  closing chunks rather than minting near-duplicates. The critic reviews cross-level variety.
 
 ### The minting rubric (what becomes a catalog learnable)
 

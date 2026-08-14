@@ -45,7 +45,7 @@ function die(msg: string): never {
 // {
 //   scenario: { id, name?, title, status?, character, role?, setup, opening, register?:{form,variety} },
 //   dialogueVoices: { npc, client },                       // shared across the scenario's levels
-//   levels: [ { level, levelLabel, title, objectives:[{label,descriptorEN}], root, nodes:{…},
+//   levels: [ { level, levelLabel, title, objectives:[{label,descriptorEN}], root, nodes:{…}, background?,
 //              catalog: { reuse:[id…], new:[{id,kind,sl,gloss,predictableError?,core?,rank?}…] } } ],
 //   criticFixes?: [ { level, nodeId, field:"sl"|"en"|"deliverySL", oldExact, newExact } ],
 //   a1Candidates?: [ { learnableId, competencyId, note? } ]
@@ -198,6 +198,18 @@ function existingAudioState(file: string): "pending" | "ready" {
   }
 }
 
+function existingBackground(file: string): string | undefined {
+  // A level's scene background lives on the file, not in the reconcile input by default — preserve it on
+  // re-run so re-authoring never silently strips a wired-in background. An input `level.background` wins.
+  if (!existsSync(file)) return undefined;
+  try {
+    const bg = JSON.parse(readFileSync(file, "utf8")).background;
+    return typeof bg === "string" && bg ? bg : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 const writes: Array<{ path: string; label: string }> = [];
 for (const lvl of input.levels) {
   if (typeof lvl.levelLabel !== "string" || !lvl.levelLabel) die(`level ${lvl.level}: "levelLabel" required`);
@@ -207,6 +219,8 @@ for (const lvl of input.levels) {
   selfCheckTree(lvl.level, lvl.root, lvl.nodes);
 
   const file = path.join(DIALOGUES_DIR, `${scenarioId}-${lvl.level}.json`);
+  const background = (typeof lvl.background === "string" && lvl.background ? lvl.background : undefined)
+    ?? existingBackground(file);
   const dialogue = {
     id: `${scenarioId}-l${lvl.level}`,
     scenarioId,
@@ -217,6 +231,7 @@ for (const lvl of input.levels) {
     introduces: introducesByLevel.get(lvl.level)!,
     audio: existingAudioState(file),
     voices: { npc: voices.npc, client: voices.client },
+    ...(background ? { background } : {}),
     root: lvl.root,
     nodes: lvl.nodes,
   };

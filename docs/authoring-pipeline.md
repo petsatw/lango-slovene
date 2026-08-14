@@ -82,7 +82,7 @@ The orchestrator assembles ONE bundle at `.scratch/dialogue-drafts/<scenarioId>/
                 "register?": { "form", "variety" } },
   "dialogueVoices": { "npc": "<voice profile>", "client": "<voice profile>" },
   "levels": [
-    { "level": 1, "levelLabel": "Survival", "title": "…",
+    { "level": 1, "levelLabel": "Survival", "title": "…", "background?": "cafe-1.jpg",
       "objectives": [ { "label", "descriptorEN" } ],
       "root": "n1",
       "nodes": { "n1": { "speaker": "npc", "sl": "…", "en": "…", "deliverySL?": "[warmly] …", "next": ["c1a","c1b"] } },
@@ -95,7 +95,15 @@ The orchestrator assembles ONE bundle at `.scratch/dialogue-drafts/<scenarioId>/
 ```
 
 The reconcile is **idempotent**: already-merged learnables are skipped by id, an already-applied critic fix is
-detected and skipped, and an existing level's built `audio: "ready"` state is preserved rather than reset.
+detected and skipped, and an existing level's built `audio: "ready"` state and its `background` are preserved
+rather than reset (a level's `background` also comes from the input if given). The reconcile input is the
+**source of truth** for a level's nodes — a re-run rewrites the dialogue file from it, so post-hoc hand-edits
+to `server/dialogues/*.json` are overwritten on the next reconcile. Make node changes in the input and re-run.
+
+**A learnable is `new` in exactly one level — the first that introduces it — and `reuse` everywhere after.**
+Listing the same id under `new` on two levels is a duplicate-surface error the reconcile refuses (the second
+mint collides with the now-existing catalog entry). Across a scenario's levels the author/critic split shared
+items accordingly: mint at first use, reuse thereafter.
 
 ### The tree is the canonical scene-script (D3)
 
