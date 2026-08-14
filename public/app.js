@@ -436,20 +436,26 @@ function dialogueBubble(node) {
   convo.scrollTo({ top: convo.scrollHeight, behavior: "smooth" });
 }
 
-// Show an npc node, then offer its client-reply choices (or a restart if it's terminal).
-function presentNpcNode(nodeId) {
+// Show an npc node, then offer its client-reply choices (or a restart if it's terminal). The choices +
+// hint are held back until the shopkeeper's line finishes playing, so the student listens/reads the
+// dialogue first instead of jumping to the buttons. (No audio → nothing to wait on; show immediately.)
+async function presentNpcNode(nodeId) {
   const node = dialogue.nodes[nodeId];
   if (!node) return;
   dialogueBubble(node);
-  if (dialogue.audio === "ready") playDialogueLine(node);
+  if (dialogue.audio === "ready") await playDialogueLine(node);
   renderChoices(node);
 }
 
 function renderChoices(npcNode) {
   const wrap = $("dialogue-choices");
   wrap.innerHTML = "";
-  const choices = npcNode.next || [];
+  // Keep each choice's id (nodes are keyed by id but don't carry it) alongside the node for its text/voice.
+  const choiceIds = (npcNode.next || []).filter((cid) => dialogue.nodes[cid]);
+  const choices = choiceIds.map((cid) => dialogue.nodes[cid]);
+
   if (!choices.length) {
+    wrap.classList.add("is-terminal"); // drop the panel chrome — a lone restart button, no hint
     const btn = document.createElement("button");
     btn.className = "dialogue-choice restart";
     btn.type = "button";
@@ -458,21 +464,66 @@ function renderChoices(npcNode) {
     wrap.appendChild(btn);
     return;
   }
-  for (const cid of choices) {
-    const cn = dialogue.nodes[cid];
+  wrap.classList.remove("is-terminal");
+
+  const list = document.createElement("div");
+  list.className = "choice-list";
+  const buttons = [];
+  choiceIds.forEach((cid, idx) => {
+    const cn = choices[idx];
     const btn = document.createElement("button");
     btn.className = "dialogue-choice";
     btn.type = "button";
-    btn.textContent = cn.sl;
+    const num = document.createElement("span"); // leading "1"/"2" badge: unmistakably "pick one of these"
+    num.className = "choice-num";
+    num.textContent = String(idx + 1);
+    num.setAttribute("aria-hidden", "true");
+    btn.appendChild(num);
+    const body = document.createElement("span");
+    body.className = "choice-body";
+    const sl = document.createElement("span");
+    sl.className = "choice-sl";
+    sl.textContent = cn.sl;
+    body.appendChild(sl);
+    if (cn.en) {
+      const en = document.createElement("span");
+      en.className = "choice-en";
+      en.textContent = cn.en;
+      body.appendChild(en);
+    }
+    btn.appendChild(body);
     btn.addEventListener("click", () => chooseClient(cid));
-    wrap.appendChild(btn);
+    list.appendChild(btn);
+    buttons.push(btn);
+  });
+
+  // Hint control: a centered chevron pill above the choices. Down = Slovene only; tapping reveals the
+  // English for every option at once (an explicit, reversible peek), chevron flips up. Tapping again hides.
+  if (choices.some((c) => c.en)) {
+    const hint = document.createElement("button");
+    hint.className = "hint-btn";
+    hint.type = "button";
+    hint.innerHTML = `<span class="hint-label">hint</span><span class="chev">▾</span>`;
+    hint.addEventListener("click", () => {
+      const show = !hint.classList.contains("expanded");
+      hint.classList.toggle("expanded", show);
+      buttons.forEach((b) => b.classList.toggle("reveal", show));
+    });
+    const row = document.createElement("div");
+    row.className = "hint-row";
+    row.appendChild(hint);
+    wrap.appendChild(row);
   }
+
+  wrap.appendChild(list);
 }
 
 // The learner picks a client line: show it and (with audio) let the client speak first, THEN present
 // the npc's response so the two voices play in turn, not on top of each other.
 async function chooseClient(clientNodeId) {
   const cn = dialogue.nodes[clientNodeId];
+  // Clear the choices (the hint vanishes with them — nothing to do during the reply). The panel keeps its
+  // fixed height, so the hint reappears in the exact same spot when the next fork renders.
   $("dialogue-choices").innerHTML = "";
   dialogueBubble(cn);
   const nextNpc = (cn.next || [])[0];
