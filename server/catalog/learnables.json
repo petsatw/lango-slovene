@@ -1294,5 +1294,125 @@
     "sl": "Pridem drugič.",
     "gloss": "I'll come another time.",
     "predictableError": "calquing a future 'bom prišel drugič' instead of the natural present 'Pridem drugič'; or 'drugi čas' for the adverb 'drugič'"
+  },
+  "oddati_vlogo": {
+    "kind": "chunk",
+    "sl": "oddati vlogo",
+    "gloss": "to submit an application",
+    "predictableError": "leaving the noun nominative ('oddal vloga') instead of the accusative 'vlogo'"
+  },
+  "dovoljenje_za_prebivanje": {
+    "kind": "chunk",
+    "sl": "dovoljenje za prebivanje",
+    "gloss": "residence permit",
+    "predictableError": "dropping 'za' or genitivizing it ('dovoljenje prebivanja') on the model of English 'residence permit'"
+  },
+  "narocen_sem": {
+    "kind": "chunk",
+    "sl": "naročen sem",
+    "gloss": "I have an appointment / I'm booked in",
+    "predictableError": "translating 'I have an appointment' literally as 'imam termin', or dropping the masculine ending ('naročena sem')"
+  },
+  "termin": {
+    "kind": "vocabulary",
+    "sl": "termin",
+    "gloss": "appointment (slot)",
+    "predictableError": "failing to put it in the genitive after 'nimam' ('nimam termin' instead of 'nimam termina')"
+  },
+  "potni_list": {
+    "kind": "vocabulary",
+    "sl": "potni list",
+    "gloss": "passport",
+    "predictableError": "adding an animate accusative -a ('potni lista'); it is inanimate, so accusative = nominative 'potni list'"
+  },
+  "pogodba_o_zaposlitvi": {
+    "kind": "chunk",
+    "sl": "pogodba o zaposlitvi",
+    "gloss": "employment contract",
+    "predictableError": "using the wrong preposition/case ('pogodba za zaposlitev') instead of the locative 'o zaposlitvi'"
+  },
+  "fotografija": {
+    "kind": "vocabulary",
+    "sl": "fotografija",
+    "gloss": "photograph",
+    "predictableError": "substituting the English-shaped 'foto' / 'slika', or misdeclining it in the list"
+  },
+  "dokazilo_o_zdravstvenem_zavarovanju": {
+    "kind": "chunk",
+    "sl": "dokazilo o zdravstvenem zavarovanju",
+    "gloss": "proof of health insurance",
+    "predictableError": "leaving the complement nominative ('o zdravstveno zavarovanje') instead of the locative 'o zdravstvenem zavarovanju'"
+  },
+  "obrazec": {
+    "kind": "vocabulary",
+    "sl": "obrazec",
+    "gloss": "(application) form",
+    "predictableError": "confusing it with 'vloga', or dropping the masculine agreement in 'izpolnjen obrazec'"
+  },
+  "najemna_pogodba": {
+    "kind": "chunk",
+    "sl": "najemna pogodba",
+    "gloss": "rental agreement",
+    "predictableError": "leaving it nominative after 'imam' ('imam najemna pogodba') instead of the accusative 'najemno pogodbo'"
+  },
+  "ali_je_to_dovolj": {
+    "kind": "chunk",
+    "sl": "Ali je to dovolj?",
+    "gloss": "Is that enough?",
+    "predictableError": "omitting 'to' ('Ali je dovolj?') or a literal word order 'Je to dovolj?'; the natural yes/no check keeps 'Ali je to dovolj?'"
+  },
+  "koliko_casa_traja": {
+    "kind": "pattern",
+    "sl": "Koliko časa traja ___?",
+    "gloss": "How long does ___ take?",
+    "predictableError": "using nominative 'čas' instead of the genitive 'časa' after 'koliko' ('koliko časa', not 'koliko čas')"
+  },
+  "kako_dolgo": {
+    "kind": "chunk",
+    "sl": "Kako dolgo bo trajalo?",
+    "gloss": "How long will it take?",
+    "predictableError": "calquing 'how long' as the adjective 'kako dolg' instead of the adverb 'dolgo'"
+  },
+  "postopek": {
+    "kind": "vocabulary",
+    "sl": "postopek",
+    "gloss": "procedure, process",
+    "predictableError": "keeping the fleeting -e- when declining (genitive is 'postopka', not 'postopeka')"
+  },
+  "dovoljenje": {
+    "kind": "vocabulary",
+    "sl": "dovoljenje",
+    "gloss": "permit, authorisation",
+    "predictableError": "treating the neuter noun as masculine ('ta dovoljenje' instead of 'to dovoljenje')"
+  },
+  "obvestiti": {
+    "kind": "vocabulary",
+    "sl": "obvestiti",
+    "gloss": "to notify, to inform",
+    "predictableError": "using the imperfective 'obveščati' for the one-off future act, or the wrong object case ('me boste obvestili')"
+  },
+  "upravna_taksa": {
+    "kind": "chunk",
+    "sl": "upravna taksa",
+    "gloss": "administrative fee",
+    "predictableError": "failing to agree the feminine adjective ('upravni/upravno taksa' instead of 'upravna taksa')"
+  },
+  "koliko_znasa": {
+    "kind": "pattern",
+    "sl": "Koliko znaša ___?",
+    "gloss": "How much is ___? (amount/sum)",
+    "predictableError": "conjugating as 'koliko znaši', or confusing it with 'koliko stane'; the amount stays a nominative subject"
+  },
+  "razumem": {
+    "kind": "vocabulary",
+    "sl": "razumeti",
+    "gloss": "to understand (razumem = I understand)",
+    "predictableError": "regularising the 1sg as 'razumam' instead of 'razumem'"
+  },
+  "hvala_za_pomoc": {
+    "kind": "chunk",
+    "sl": "Hvala za pomoč.",
+    "gloss": "Thank you for your help.",
+    "predictableError": "using the dative 'hvala pomoči' (calquing 'thanks to') instead of 'za' + accusative 'pomoč'"
   }
 }

@@ -1,0 +1,212 @@
+{
+  "id": "upravna-enota-l2",
+  "scenarioId": "upravna-enota",
+  "level": 2,
+  "levelLabel": "A2",
+  "title": "Fee & notification",
+  "objectives": [
+    {
+      "label": "Ask how long it takes",
+      "descriptorEN": "Ask the procedure's duration with 'Koliko časa traja postopek?' or 'Kako dolgo bo trajalo?'"
+    },
+    {
+      "label": "Ask how you'll be notified",
+      "descriptorEN": "Ask how you'll learn the permit is ready ('Kako bom izvedel, da je dovoljenje pripravljeno?' / 'kako me boste obvestili?')."
+    },
+    {
+      "label": "Ask the fee",
+      "descriptorEN": "Ask the administrative fee with 'Koliko znaša upravna taksa?' (or 'Koliko stane ...?')."
+    },
+    {
+      "label": "Choose how to pay",
+      "descriptorEN": "Ask to pay by card ('Ali lahko plačam s kartico?') or in cash ('Ali lahko plačam z gotovino?')."
+    },
+    {
+      "label": "Thank and close",
+      "descriptorEN": "Thank her for her help ('Hvala za pomoč.') and close with 'Nasvidenje.'"
+    }
+  ],
+  "introduces": [
+    "ali_lahko",
+    "dober_dan",
+    "dovoljenje",
+    "hvala",
+    "hvala_za_pomoc",
+    "ja",
+    "kako_dolgo",
+    "koliko",
+    "koliko_casa_traja",
+    "koliko_stane",
+    "koliko_znasa",
+    "najlepsa_hvala",
+    "nasvidenje",
+    "obvestiti",
+    "placam_s_kartico",
+    "postopek",
+    "razumem",
+    "upravna_taksa",
+    "v_redu",
+    "z_gotovino"
+  ],
+  "audio": "ready",
+  "voices": {
+    "npc": "female-speaker",
+    "client": "male-speaker"
+  },
+  "background": "upravna-enota.jpg",
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Dober dan. Vašo vlogo sem sprejela. Imate še kakšno vprašanje?",
+      "en": "Good day. I've accepted your application. Do you have any more questions?",
+      "deliverySL": "[brisk, courteous civil servant] Dober dan. Vašo vlogo sem sprejela. Imate še kakšno vprašanje?",
+      "next": [
+        "c1a",
+        "c1b"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Ja. Koliko časa traja postopek?",
+      "en": "Yes. How long does the procedure take?",
+      "next": [
+        "n2"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Ja. Kako dolgo bo trajalo?",
+      "en": "Yes. How long will it take?",
+      "next": [
+        "n2"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Običajno približno en mesec.",
+      "en": "Usually about one month.",
+      "deliverySL": "[brisk, courteous civil servant] Običajno približno en mesec.",
+      "next": [
+        "c2a",
+        "c2b"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Kako bom izvedel, da je dovoljenje pripravljeno?",
+      "en": "How will I know when the permit is ready?",
+      "next": [
+        "n3"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "In kako me boste obvestili?",
+      "en": "And how will you notify me?",
+      "next": [
+        "n3"
+      ]
+    },
+    "n3": {
+      "speaker": "npc",
+      "sl": "Poslali vam bomo obvestilo po pošti ali po elektronski pošti.",
+      "en": "We'll send you a notification by mail or by email.",
+      "deliverySL": "[brisk, courteous civil servant] Poslali vam bomo obvestilo po pošti ali po elektronski pošti.",
+      "next": [
+        "c3a",
+        "c3b"
+      ]
+    },
+    "c3a": {
+      "speaker": "client",
+      "sl": "V redu, hvala. Koliko znaša upravna taksa?",
+      "en": "Alright, thank you. How much is the administrative fee?",
+      "next": [
+        "n4"
+      ]
+    },
+    "c3b": {
+      "speaker": "client",
+      "sl": "Razumem. Koliko stane upravna taksa?",
+      "en": "I understand. How much does the administrative fee cost?",
+      "next": [
+        "n4"
+      ]
+    },
+    "n4": {
+      "speaker": "npc",
+      "sl": "Upravna taksa znaša sedemdeset evrov.",
+      "en": "The administrative fee is seventy euros.",
+      "deliverySL": "[brisk, courteous civil servant] Upravna taksa znaša sedemdeset evrov.",
+      "next": [
+        "c4a",
+        "c4b"
+      ]
+    },
+    "c4a": {
+      "speaker": "client",
+      "sl": "Ali lahko plačam s kartico?",
+      "en": "Can I pay by card?",
+      "next": [
+        "n5a"
+      ]
+    },
+    "c4b": {
+      "speaker": "client",
+      "sl": "Ali lahko plačam z gotovino?",
+      "en": "Can I pay in cash?",
+      "next": [
+        "n5b"
+      ]
+    },
+    "n5a": {
+      "speaker": "npc",
+      "sl": "Seveda, sprejemamo kartice.",
+      "en": "Of course, we accept cards.",
+      "deliverySL": "[brisk, courteous civil servant] Seveda, sprejemamo kartice.",
+      "next": [
+        "c5"
+      ]
+    },
+    "n5b": {
+      "speaker": "npc",
+      "sl": "Seveda, sprejemamo tudi gotovino.",
+      "en": "Of course, we accept cash too.",
+      "deliverySL": "[brisk, courteous civil servant] Seveda, sprejemamo tudi gotovino.",
+      "next": [
+        "c5"
+      ]
+    },
+    "c5": {
+      "speaker": "client",
+      "sl": "Hvala za pomoč.",
+      "en": "Thank you for your help.",
+      "next": [
+        "n6"
+      ]
+    },
+    "n6": {
+      "speaker": "npc",
+      "sl": "Ni za kaj. Vse bo pripravljeno v približno enem mesecu. Nasvidenje in lep dan!",
+      "en": "You're welcome. Everything will be ready in about a month. Goodbye and have a nice day!",
+      "deliverySL": "[brisk, courteous civil servant] Ni za kaj. Vse bo pripravljeno v približno enem mesecu. Nasvidenje in lep dan!",
+      "next": [
+        "c6a",
+        "c6b"
+      ]
+    },
+    "c6a": {
+      "speaker": "client",
+      "sl": "Nasvidenje.",
+      "en": "Goodbye.",
+      "next": []
+    },
+    "c6b": {
+      "speaker": "client",
+      "sl": "Najlepša hvala. Nasvidenje.",
+      "en": "Thank you very much. Goodbye.",
+      "next": []
+    }
+  }
+}

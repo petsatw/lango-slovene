@@ -35,7 +35,8 @@
         "stevilo_trideset",
         "stevilo_stirideset",
         "stevilo_petdeset",
-        "stevilo_sto"
+        "stevilo_sto",
+        "koliko_znasa"
       ],
       "scenarios": [
         {
@@ -180,7 +181,10 @@
         "izvolite",
         "tukaj_imate",
         "najlepsa_hvala",
-        "v_redu"
+        "v_redu",
+        "ali_je_to_dovolj",
+        "hvala_za_pomoc",
+        "razumem"
       ],
       "scenarios": [
         {
@@ -235,7 +239,9 @@
         "kaj_delate",
         "govorite_anglesko",
         "ne_govorim_dobro",
-        "ime_mi_je"
+        "ime_mi_je",
+        "potni_list",
+        "fotografija"
       ],
       "scenarios": [
         {
@@ -259,7 +265,8 @@
       ],
       "learnables": [
         "lepo_vreme",
-        "zivim_v"
+        "zivim_v",
+        "najemna_pogodba"
       ],
       "scenarios": [
         {
@@ -284,7 +291,8 @@
         "Potrebujem zdravilo."
       ],
       "learnables": [
-        "alergicen_na"
+        "alergicen_na",
+        "dokazilo_o_zdravstvenem_zavarovanju"
       ],
       "scenarios": [
         {
@@ -405,7 +413,9 @@
         "takoj",
         "racunalnik",
         "geslo",
-        "pridem_drugic"
+        "pridem_drugic",
+        "koliko_casa_traja",
+        "kako_dolgo"
       ],
       "scenarios": [
         {
@@ -451,7 +461,11 @@
         "z_gotovino",
         "kupim",
         "placati",
-        "kdaj_bo_na_voljo"
+        "kdaj_bo_na_voljo",
+        "termin",
+        "narocen_sem",
+        "upravna_taksa",
+        "obvestiti"
       ],
       "scenarios": [
         {
@@ -588,7 +602,8 @@
       ],
       "learnables": [
         "delam_kot",
-        "kaj_delate"
+        "kaj_delate",
+        "pogodba_o_zaposlitvi"
       ],
       "scenarios": []
     },
@@ -616,5 +631,11 @@
       "scenarios": []
     }
   ],
-  "excluded": []
+  "excluded": [
+    "oddati_vlogo",
+    "dovoljenje_za_prebivanje",
+    "dovoljenje",
+    "obrazec",
+    "postopek"
+  ]
 }
