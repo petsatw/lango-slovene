@@ -264,7 +264,7 @@ async function loadPractice() {
       const n = s.dialogues.length;
       card.innerHTML =
         `<span class="scenario-name">${s.name}</span>` +
-        `<span class="scenario-meta">${n} level${n === 1 ? "" : "s"}</span>` +
+        `<span class="scenario-meta">${n} lesson${n === 1 ? "" : "s"}</span>` +
         `<span class="level-chevron">›</span>`;
       card.addEventListener("click", () => openScenario(s));
       el.appendChild(card);
