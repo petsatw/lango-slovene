@@ -56,6 +56,7 @@
     "npc": "shop-assistant",
     "client": "female-speaker"
   },
+  "background": "bakery.jpg",
   "root": "b1",
   "nodes": {
     "b1": {
