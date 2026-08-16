@@ -184,7 +184,9 @@
         "v_redu",
         "ali_je_to_dovolj",
         "hvala_za_pomoc",
-        "razumem"
+        "razumem",
+        "bom_poskusil",
+        "seveda"
       ],
       "scenarios": [
         {
@@ -241,7 +243,8 @@
         "ne_govorim_dobro",
         "ime_mi_je",
         "potni_list",
-        "fotografija"
+        "fotografija",
+        "naslov"
       ],
       "scenarios": [
         {
@@ -266,7 +269,8 @@
       "learnables": [
         "lepo_vreme",
         "zivim_v",
-        "najemna_pogodba"
+        "najemna_pogodba",
+        "stranisce"
       ],
       "scenarios": [
         {
@@ -415,7 +419,14 @@
         "geslo",
         "pridem_drugic",
         "koliko_casa_traja",
-        "kako_dolgo"
+        "kako_dolgo",
+        "zdaj",
+        "kmalu",
+        "uporabljati",
+        "usesti_se",
+        "prost",
+        "prvic",
+        "bom_pogledal"
       ],
       "scenarios": [
         {
@@ -465,7 +476,10 @@
         "termin",
         "narocen_sem",
         "upravna_taksa",
-        "obvestiti"
+        "obvestiti",
+        "ali_ste_odprti",
+        "potrebovati",
+        "brezplacen"
       ],
       "scenarios": [
         {
@@ -626,7 +640,11 @@
         "kje_je",
         "kako_pridem_do",
         "grem_v",
-        "avtobus_gre"
+        "avtobus_gre",
+        "tukaj",
+        "tam",
+        "kje_zacnem",
+        "kje_lahko_sedim"
       ],
       "scenarios": []
     }

@@ -30,8 +30,13 @@ export interface DialogueNode {
    *  is what gets SYNTHESIZED, while `sl` stays the clean caption + cache key — so the tags steer the
    *  voice without ever showing on screen or changing the key. Null/absent → synthesize `sl` plainly. */
   deliverySL?: string;
-  /** Next node ids. On an npc node: the client-reply choices the learner picks between. On a client
-   *  node: the npc's response (one id). Empty = end of the dialogue. */
+  /** Optional short parenthetical CONTEXT for a client choice (docs/dialogue-difficulty-model.md §5) —
+   *  the situation that choice selects when one branch depends on context the line itself can't carry
+   *  (e.g. "if the book is damaged", "no ID on you"). Rendered as a muted "(…)" tag on the choice, never
+   *  spoken. Absent → a plain choice. */
+  context?: string;
+  /** Next node ids. On an npc node: the client-reply choices the learner picks between (may be more than
+   *  two — the renderer scrolls). On a client node: the npc's response (one id). Empty = end. */
   next: string[];
 }
 
@@ -145,6 +150,10 @@ export function validateDialogue(file: string, raw: any): Dialogue {
     asString(file, n, "sl", where);
     asString(file, n, "en", where);
     if (n.deliverySL !== undefined) asString(file, n, "deliverySL", where);
+    if (n.context !== undefined) {
+      asString(file, n, "context", where);
+      if (n.speaker !== "client") fail(file, `${where}: "context" is only valid on a client choice`);
+    }
     if (!Array.isArray(n.next)) fail(file, `${where}: next must be an array of node ids`);
     for (const id of n.next) {
       if (typeof id !== "string" || !ids.has(id)) fail(file, `${where}: next references unknown node "${id}"`);

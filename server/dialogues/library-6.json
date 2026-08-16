@@ -1,0 +1,370 @@
+{
+  "id": "library-l6",
+  "scenarioId": "library",
+  "level": 6,
+  "levelLabel": "Advanced",
+  "title": "Registration & membership",
+  "objectives": [
+    {
+      "label": "State your membership errand",
+      "descriptorEN": "Open at the counter and say why you've come: register, renew an expired card, or report a lost one."
+    },
+    {
+      "label": "Handle the ID check",
+      "descriptorEN": "Confirm you have your ID on you ('Tukaj imate'), or explain you don't ('Žal ga nimam pri sebi')."
+    },
+    {
+      "label": "Deal with an unpaid fine",
+      "descriptorEN": "Ask what you owe ('Koliko dolgujem?') and offer to settle the fine so your membership can be renewed."
+    },
+    {
+      "label": "Pay a fee for a new card",
+      "descriptorEN": "Accept the ~€2 fee and hand it over to get a replacement card."
+    },
+    {
+      "label": "Close on success or setback",
+      "descriptorEN": "Thank the librarian and say goodbye — whether you leave with a card or must come back."
+    }
+  ],
+  "introduces": [
+    "da",
+    "dober_dan",
+    "dolgovati",
+    "enako_kot_prej",
+    "hvala",
+    "hvala_za_pomoc",
+    "izdati",
+    "izgubiti",
+    "izkaznica",
+    "ja",
+    "kaj_naj_naredim",
+    "knjiznica",
+    "koliko",
+    "najlepsa_hvala",
+    "naslednjic",
+    "naslov",
+    "nasvidenje",
+    "nimam",
+    "placati",
+    "poravnati",
+    "poteci",
+    "pridem_drugic",
+    "prosim",
+    "rad_bi",
+    "razumem",
+    "seveda",
+    "takoj",
+    "taksa",
+    "tukaj_imate",
+    "urediti",
+    "v_redu",
+    "vpisati_se",
+    "zal"
+  ],
+  "audio": "pending",
+  "voices": {
+    "npc": "female-speaker",
+    "client": "male-speaker"
+  },
+  "background": "library-card.jpg",
+  "intro": {
+    "audio": "library-6.mp3",
+    "text": "[yawning] Uf, dober dan… [waking up a little] Danes moram nujno urediti člansko izkaznico. [sheepish chuckle] Nekje sem jo zafrknil — ali mi je potekla, ali sem jo izgubil, sam ne vem več. [determined] Samo da spet lahko berem svoje knjige. [perking up] Dobro — gremo noter, knjižničarka bo že vedela, kaj naj naredim.",
+    "en": "Ugh, good day… Today I really have to sort out my library card. Somewhere I messed it up — either it expired, or I lost it, I honestly don't know anymore. As long as I can read my books again. Right — let's go in, the librarian will know what I should do."
+  },
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Dober dan! S čim vam lahko pomagam?",
+      "en": "Good day! What can I help you with?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan! S čim vam lahko pomagam?",
+      "next": [
+        "c1a",
+        "c1b",
+        "c1c"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Dober dan. Rad bi se vpisal v knjižnico.",
+      "en": "Good day. I'd like to register at the library.",
+      "next": [
+        "n2reg"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Dober dan. Izkaznica mi je potekla.",
+      "en": "Good day. My card has expired.",
+      "next": [
+        "n2ren"
+      ]
+    },
+    "c1c": {
+      "speaker": "client",
+      "sl": "Dober dan. Izgubil sem izkaznico, kaj naj naredim?",
+      "en": "Good day. I've lost my card, what should I do?",
+      "next": [
+        "n2lost"
+      ]
+    },
+    "n2reg": {
+      "speaker": "npc",
+      "sl": "Seveda. Ali imate s sabo osebni dokument?",
+      "en": "Of course. Do you have your ID with you?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Seveda. Ali imate s sabo osebni dokument?",
+      "next": [
+        "c2r1",
+        "c2r2"
+      ]
+    },
+    "c2r1": {
+      "speaker": "client",
+      "sl": "Ja, tukaj imate.",
+      "en": "Yes, here you are.",
+      "context": "his ID is in hand",
+      "next": [
+        "n3ok"
+      ]
+    },
+    "c2r2": {
+      "speaker": "client",
+      "sl": "Žal ga nimam pri sebi.",
+      "en": "Unfortunately I don't have it on me.",
+      "context": "he has no ID with him",
+      "next": [
+        "n3noid"
+      ]
+    },
+    "n3ok": {
+      "speaker": "npc",
+      "sl": "Odlično, vse je v redu. Tukaj je vaša nova izkaznica. Dobrodošli!",
+      "en": "Excellent, all in order. Here is your new card. Welcome!",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Odlično, vse je v redu. Tukaj je vaša nova izkaznica. Dobrodošli!",
+      "next": [
+        "cz1",
+        "cz2"
+      ]
+    },
+    "n3noid": {
+      "speaker": "npc",
+      "sl": "Žal vas brez osebnega dokumenta ne morem vpisati. Ko boste imeli dokument s sabo, se vrnite.",
+      "en": "I'm sorry, I can't register you without an ID. Come back when you have your document with you.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Žal vas brez osebnega dokumenta ne morem vpisati. Ko boste imeli dokument s sabo, se vrnite.",
+      "next": [
+        "czBad1",
+        "czBad2"
+      ]
+    },
+    "n2ren": {
+      "speaker": "npc",
+      "sl": "Preverimo... res je, potekla je. Želite podaljšati?",
+      "en": "Let's check... indeed, it has expired. Would you like to renew it?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Preverimo... res je, potekla je. Želite podaljšati?",
+      "next": [
+        "c2n1",
+        "c2n2"
+      ]
+    },
+    "c2n1": {
+      "speaker": "client",
+      "sl": "Da, prosim.",
+      "en": "Yes, please.",
+      "context": "his account is clear",
+      "next": [
+        "n3renok"
+      ]
+    },
+    "c2n2": {
+      "speaker": "client",
+      "sl": "Da. Ali kaj dolgujem?",
+      "en": "Yes. Do I owe anything?",
+      "context": "there's an unpaid late fine",
+      "next": [
+        "n3fine"
+      ]
+    },
+    "n3renok": {
+      "speaker": "npc",
+      "sl": "Samo potrdite mi vaš trenutni naslov, prosim.",
+      "en": "Just confirm your current address for me, please.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Samo potrdite mi vaš trenutni naslov, prosim.",
+      "next": [
+        "c3a1",
+        "c3a2"
+      ]
+    },
+    "c3a1": {
+      "speaker": "client",
+      "sl": "Naslov je enak kot prej.",
+      "en": "The address is the same as before.",
+      "next": [
+        "n4ren"
+      ]
+    },
+    "c3a2": {
+      "speaker": "client",
+      "sl": "Ja, Slovenska cesta pet, enako kot prej.",
+      "en": "Yes, Slovenska cesta 5, the same as before.",
+      "next": [
+        "n4ren"
+      ]
+    },
+    "n4ren": {
+      "speaker": "npc",
+      "sl": "Odlično, izkaznica je podaljšana za eno leto.",
+      "en": "Excellent, the card is renewed for one year.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Odlično, izkaznica je podaljšana za eno leto.",
+      "next": [
+        "cz1",
+        "cz2"
+      ]
+    },
+    "n3fine": {
+      "speaker": "npc",
+      "sl": "Imate neporavnano zamudnino, dva evra. Ko jo poravnate, vam podaljšamo članstvo.",
+      "en": "You have an unpaid fine, two euros. Once you settle it, we'll renew your membership.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Imate neporavnano zamudnino, dva evra. Ko jo poravnate, vam podaljšamo članstvo.",
+      "next": [
+        "c3f1",
+        "c3f2"
+      ]
+    },
+    "c3f1": {
+      "speaker": "client",
+      "sl": "Seveda, takoj poravnam.",
+      "en": "Of course, I'll settle it right away.",
+      "next": [
+        "n4ren"
+      ]
+    },
+    "c3f2": {
+      "speaker": "client",
+      "sl": "Koliko pa dolgujem?",
+      "en": "And how much do I owe?",
+      "next": [
+        "n4fineamt"
+      ]
+    },
+    "n4fineamt": {
+      "speaker": "npc",
+      "sl": "Zamudnina znaša dva evra. Ko poravnate, vam članstvo podaljšamo.",
+      "en": "The fine is two euros. Once paid, we'll renew your membership.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Zamudnina znaša dva evra. Ko poravnate, vam članstvo podaljšamo.",
+      "next": [
+        "c4f1",
+        "c4f2"
+      ]
+    },
+    "c4f1": {
+      "speaker": "client",
+      "sl": "V redu, plačam takoj.",
+      "en": "Alright, I'll pay right now.",
+      "next": [
+        "n4ren"
+      ]
+    },
+    "c4f2": {
+      "speaker": "client",
+      "sl": "Plačam naslednjič.",
+      "en": "I'll pay next time.",
+      "context": "he leaves the fine unpaid",
+      "next": [
+        "n4later"
+      ]
+    },
+    "n4later": {
+      "speaker": "npc",
+      "sl": "V redu, a izkaznica ostane potekla, dokler zamudnina ni poravnana.",
+      "en": "Alright, but the card stays expired until the fine is settled.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] V redu, a izkaznica ostane potekla, dokler zamudnina ni poravnana.",
+      "next": [
+        "czBad1",
+        "czBad2"
+      ]
+    },
+    "n2lost": {
+      "speaker": "npc",
+      "sl": "Ni problema, izdamo vam novo. Taksa je okoli dva evra.",
+      "en": "No problem, we'll issue you a new one. The fee is about two euros.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Ni problema, izdamo vam novo. Taksa je okoli dva evra.",
+      "next": [
+        "c2l1",
+        "c2l2"
+      ]
+    },
+    "c2l1": {
+      "speaker": "client",
+      "sl": "V redu, tukaj je taksa.",
+      "en": "Alright, here's the fee.",
+      "next": [
+        "n3lost"
+      ]
+    },
+    "c2l2": {
+      "speaker": "client",
+      "sl": "V redu, prosim, izdajte mi novo.",
+      "en": "Alright, please issue me a new one.",
+      "next": [
+        "n3lost"
+      ]
+    },
+    "n3lost": {
+      "speaker": "npc",
+      "sl": "Hvala, tukaj je vaša nova izkaznica. Stara je zdaj neveljavna.",
+      "en": "Thank you, here is your new card. The old one is now invalid.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Hvala, tukaj je vaša nova izkaznica. Stara je zdaj neveljavna.",
+      "next": [
+        "cz1",
+        "cz2"
+      ]
+    },
+    "cz1": {
+      "speaker": "client",
+      "sl": "Najlepša hvala. Nasvidenje.",
+      "en": "Thank you very much. Goodbye.",
+      "next": [
+        "nBye"
+      ]
+    },
+    "cz2": {
+      "speaker": "client",
+      "sl": "Hvala za pomoč. Nasvidenje.",
+      "en": "Thanks for your help. Goodbye.",
+      "next": [
+        "nBye"
+      ]
+    },
+    "nBye": {
+      "speaker": "npc",
+      "sl": "Nasvidenje in dobrodošli v knjižnici!",
+      "en": "Goodbye and welcome to the library!",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Nasvidenje in dobrodošli v knjižnici!",
+      "next": []
+    },
+    "czBad1": {
+      "speaker": "client",
+      "sl": "Razumem, pridem drugič. Hvala.",
+      "en": "I understand, I'll come another time. Thank you.",
+      "next": [
+        "nByeBad"
+      ]
+    },
+    "czBad2": {
+      "speaker": "client",
+      "sl": "V redu, bom uredil. Nasvidenje.",
+      "en": "Alright, I'll sort it out. Goodbye.",
+      "next": [
+        "nByeBad"
+      ]
+    },
+    "nByeBad": {
+      "speaker": "npc",
+      "sl": "Se vidimo kmalu, pazite nase!",
+      "en": "See you soon, take care!",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Se vidimo kmalu, pazite nase!",
+      "next": []
+    }
+  }
+}

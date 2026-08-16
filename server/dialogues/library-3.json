@@ -2,60 +2,78 @@
   "id": "library-l3",
   "scenarioId": "library",
   "level": 3,
-  "levelLabel": "Basic A1",
-  "title": "Computer & WiFi",
+  "levelLabel": "Advanced",
+  "title": "Returning a book",
   "objectives": [
     {
-      "label": "Ask permission to use a computer",
-      "descriptorEN": "Ask permission with 'Ali lahko ___?' + a present-tense verb."
+      "label": "Return a book",
+      "descriptorEN": "Greet and hand over the book — 'Rad bi vrnil to knjigo' (male l-participle, accusative object)."
     },
     {
-      "label": "Ask whether to reserve",
-      "descriptorEN": "Ask a yes/no follow-up with 'Ali moram rezervirati?'"
+      "label": "Own a late return",
+      "descriptorEN": "Admit you forgot ('Pozabil sem'), ask the fine, and settle it — 'Plačam takoj.'"
     },
     {
-      "label": "Ask about WiFi",
-      "descriptorEN": "Ask whether they also have WiFi with 'Ali imate tudi ___?'"
+      "label": "Report the damage",
+      "descriptorEN": "Say you damaged it ('Poškodoval sem jo') and pick a remedy — pay the replacement or bring an identical copy."
     },
     {
-      "label": "Ask for the password",
-      "descriptorEN": "Ask for the password with 'Kakšno je geslo?'"
+      "label": "Ask what to do now",
+      "descriptorEN": "Ask what happens next — 'Kaj moram narediti?' (infinitive after 'moram')."
     },
     {
-      "label": "Thank & close",
-      "descriptorEN": "Close warmly with 'Hvala lepa, nasvidenje.'"
+      "label": "Close, or accept a block",
+      "descriptorEN": "Thank and leave, or acknowledge that borrowing stays blocked until you settle up."
     }
   ],
   "introduces": [
-    "ali_imate",
     "ali_lahko",
-    "ali_moram",
+    "bojim_se",
     "dober_dan",
-    "geslo",
     "hvala",
-    "hvala_lepa",
-    "kaksno_je",
-    "kje_je",
+    "hvala_za_pomoc",
+    "izvolite",
+    "kaj",
+    "kmalu",
+    "knjiga",
+    "koliko_znasa",
+    "moram_inf",
+    "nadomestilo",
+    "narediti",
+    "naslednjic",
     "nasvidenje",
-    "racunalnik",
+    "oprostite",
+    "placati",
+    "poravnati",
+    "poskodovati",
+    "pozabiti",
+    "prinesti_enak_izvod",
     "rad_bi",
-    "rezervirati",
-    "tudi",
-    "v_redu"
+    "razumem",
+    "takoj",
+    "urediti",
+    "v_redu",
+    "vrniti",
+    "zamudnina",
+    "zdaj"
   ],
   "audio": "ready",
   "voices": {
     "npc": "female-speaker",
     "client": "male-speaker"
   },
-  "background": "library-wifi.jpg",
+  "intro": {
+    "audio": "library-3.mp3",
+    "text": "[sheepish] Uf… no, pa gremo. [nervous chuckle] To knjigo bi moral vrniti že prejšnji teden… [mumbling] ali pa še prej, ne vem točno. [awkward pause] In pa… ja. [sighing] Padla mi je v kad. [sheepish] Zdaj je čisto mokra in malo natrgana. [bracing himself] Upam, da ne bo predrago…",
+    "en": "Ugh… okay, here we go. I was supposed to return this book last week… or even earlier, I'm not sure exactly. And also… yeah. It fell in my bathtub. Now it's all wet and a bit torn. I hope it won't be too expensive…"
+  },
   "root": "n1",
   "nodes": {
     "n1": {
       "speaker": "npc",
-      "sl": "Dober dan! Kar povejte.",
-      "en": "Good day! Go ahead, tell me.",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan! Kar povejte.",
+      "sl": "Pozdravljeni! Izvolite, kako vam lahko pomagam?",
+      "en": "Hello! Go ahead, how can I help you?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Pozdravljeni! Izvolite, kako vam lahko pomagam?",
       "next": [
         "c1a",
         "c1b"
@@ -63,102 +81,248 @@
     },
     "c1a": {
       "speaker": "client",
-      "sl": "Dober dan. Ali lahko uporabljam računalnik?",
-      "en": "Hello. May I use a computer?",
+      "sl": "Dober dan. Rad bi vrnil to knjigo.",
+      "en": "Good day. I'd like to return this book.",
       "next": [
         "n2"
       ]
     },
     "c1b": {
       "speaker": "client",
-      "sl": "Dober dan. Rad bi uporabljal računalnik.",
-      "en": "Hello. I'd like to use a computer.",
+      "sl": "Dober dan. Moram vrniti knjigo, ampak je mogoče težava.",
+      "en": "Good day. I need to return a book, but there may be a problem.",
       "next": [
         "n2"
       ]
     },
     "n2": {
       "speaker": "npc",
-      "sl": "Seveda. Računalniki so v prvem nadstropju.",
-      "en": "Of course. The computers are on the first floor.",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Seveda. Računalniki so v prvem nadstropju.",
+      "sl": "Seveda. Naj jo najprej preverim.",
+      "en": "Of course. Let me check it first.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Seveda. Naj jo najprej preverim.",
       "next": [
         "c2a",
-        "c2b"
+        "c2b",
+        "c2c"
       ]
     },
     "c2a": {
       "speaker": "client",
-      "sl": "Ali moram rezervirati?",
-      "en": "Do I have to reserve one?",
+      "sl": "Izvolite.",
+      "en": "Here it is.",
+      "context": "returned on time",
       "next": [
-        "n3"
+        "n3ok"
       ]
     },
     "c2b": {
       "speaker": "client",
-      "sl": "Ali imate tudi WiFi?",
-      "en": "Do you also have WiFi?",
+      "sl": "Izvolite. Bojim se, da je malo prepozno.",
+      "en": "Here it is. I'm afraid it's a bit late.",
+      "context": "five days overdue",
       "next": [
-        "n4"
+        "n3late"
       ]
     },
-    "n3": {
+    "c2c": {
+      "speaker": "client",
+      "sl": "Izvolite. Poškodoval sem jo, oprostite.",
+      "en": "Here it is. I damaged it, sorry.",
+      "context": "the book is damaged",
+      "next": [
+        "n3dmg"
+      ]
+    },
+    "n3ok": {
       "speaker": "npc",
-      "sl": "Ne. Rezervacija ni potrebna. Če je kakšen prost, ga lahko uporabite.",
-      "en": "No. No reservation needed. If one is free, you can use it.",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Ne. Rezervacija ni potrebna. Če je kakšen prost, ga lahko uporabite.",
+      "sl": "Hvala, vse je v redu.",
+      "en": "Thank you, everything's in order.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Hvala, vse je v redu.",
       "next": [
-        "c3"
+        "cz1",
+        "cz2"
       ]
     },
-    "c3": {
-      "speaker": "client",
-      "sl": "V redu, hvala. Ali imate tudi WiFi?",
-      "en": "Alright, thanks. Do you also have WiFi?",
-      "next": [
-        "n4"
-      ]
-    },
-    "n4": {
+    "n3late": {
       "speaker": "npc",
-      "sl": "Da, seveda.",
-      "en": "Yes, of course.",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Da, seveda.",
+      "sl": "Vidim, da je rok za vračilo potekel pred petimi dnevi.",
+      "en": "I see the return deadline passed five days ago.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Vidim, da je rok za vračilo potekel pred petimi dnevi.",
       "next": [
-        "c4a",
-        "c4b"
+        "c3l1",
+        "c3l2"
       ]
     },
-    "c4a": {
+    "c3l1": {
       "speaker": "client",
-      "sl": "Kakšno je geslo?",
-      "en": "What is the password?",
+      "sl": "Oprostite, pozabil sem.",
+      "en": "Sorry, I forgot.",
       "next": [
-        "n5"
+        "n4late"
       ]
     },
-    "c4b": {
+    "c3l2": {
       "speaker": "client",
-      "sl": "Kje je geslo?",
-      "en": "Where is the password?",
+      "sl": "Oh, koliko znaša zamudnina?",
+      "en": "Oh, how much is the fine?",
       "next": [
-        "n5"
+        "n4late"
       ]
     },
-    "n5": {
+    "n4late": {
       "speaker": "npc",
-      "sl": "Geslo je na nalepki pri vhodu.",
-      "en": "The password is on a sticker by the entrance.",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Geslo je na nalepki pri vhodu.",
+      "sl": "Ni problema. Zamudnina znaša dva evra.",
+      "en": "No problem. The fine is two euros.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Ni problema. Zamudnina znaša dva evra.",
       "next": [
-        "c5"
+        "c4l1",
+        "c4l2"
       ]
     },
-    "c5": {
+    "c4l1": {
       "speaker": "client",
-      "sl": "Hvala lepa, nasvidenje.",
-      "en": "Thank you very much, goodbye.",
+      "sl": "Plačam takoj.",
+      "en": "I'll pay right away.",
+      "next": [
+        "n5paid"
+      ]
+    },
+    "c4l2": {
+      "speaker": "client",
+      "sl": "Lahko plačam naslednjič?",
+      "en": "Can I pay next time?",
+      "next": [
+        "n5block"
+      ]
+    },
+    "n5paid": {
+      "speaker": "npc",
+      "sl": "Hvala, tukaj je vaše potrdilo.",
+      "en": "Thank you, here's your receipt.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Hvala, tukaj je vaše potrdilo.",
+      "next": [
+        "cz1",
+        "cz2"
+      ]
+    },
+    "n5block": {
+      "speaker": "npc",
+      "sl": "Da, a do plačila vam bo onemogočena nadaljnja izposoja.",
+      "en": "Yes, but further borrowing is blocked until you pay.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Da, a do plačila vam bo onemogočena nadaljnja izposoja.",
+      "next": [
+        "czBad1",
+        "czBad2"
+      ]
+    },
+    "n3dmg": {
+      "speaker": "npc",
+      "sl": "Poglejmo... škoda je precejšnja, knjigo bomo obravnavali kot izgubljeno.",
+      "en": "Let's see... the damage is considerable, we'll treat the book as lost.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Poglejmo... škoda je precejšnja, knjigo bomo obravnavali kot izgubljeno.",
+      "next": [
+        "c3d1",
+        "c3d2"
+      ]
+    },
+    "c3d1": {
+      "speaker": "client",
+      "sl": "Oprostite, kaj pa zdaj?",
+      "en": "I'm sorry, what happens now?",
+      "next": [
+        "n4dmg"
+      ]
+    },
+    "c3d2": {
+      "speaker": "client",
+      "sl": "Kaj moram narediti?",
+      "en": "What do I need to do?",
+      "next": [
+        "n4dmg"
+      ]
+    },
+    "n4dmg": {
+      "speaker": "npc",
+      "sl": "Plačati morate nadomestilo, ali pa prinesti enak izvod.",
+      "en": "You have to pay a replacement fee, or bring an identical copy.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Plačati morate nadomestilo, ali pa prinesti enak izvod.",
+      "next": [
+        "c4d1",
+        "c4d2"
+      ]
+    },
+    "c4d1": {
+      "speaker": "client",
+      "sl": "Plačam nadomestilo.",
+      "en": "I'll pay the replacement fee.",
+      "context": "pay the replacement fee",
+      "next": [
+        "n5paid"
+      ]
+    },
+    "c4d2": {
+      "speaker": "client",
+      "sl": "Prinesel bom enak izvod.",
+      "en": "I'll bring an identical copy.",
+      "context": "bring an identical copy",
+      "next": [
+        "n5replace"
+      ]
+    },
+    "n5replace": {
+      "speaker": "npc",
+      "sl": "Odlično. Prinesite ga, ko boste lahko, jaz pa vam to zabeležim na kartico.",
+      "en": "Perfect. Bring it in when you can, and I'll note it on your card.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Odlično. Prinesite ga, ko boste lahko, jaz pa vam to zabeležim na kartico.",
+      "next": [
+        "cz1",
+        "cz2"
+      ]
+    },
+    "cz1": {
+      "speaker": "client",
+      "sl": "Hvala. Nasvidenje.",
+      "en": "Thank you. Goodbye.",
+      "next": [
+        "nBye"
+      ]
+    },
+    "cz2": {
+      "speaker": "client",
+      "sl": "Hvala za pomoč. Nasvidenje.",
+      "en": "Thanks for your help. Goodbye.",
+      "next": [
+        "nBye"
+      ]
+    },
+    "nBye": {
+      "speaker": "npc",
+      "sl": "Nasvidenje, se vidimo prihodnjič!",
+      "en": "Goodbye, see you next time!",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Nasvidenje, se vidimo prihodnjič!",
+      "next": []
+    },
+    "czBad1": {
+      "speaker": "client",
+      "sl": "Razumem, kmalu poravnam. Nasvidenje.",
+      "en": "I understand, I'll settle it soon. Goodbye.",
+      "next": [
+        "nByeBad"
+      ]
+    },
+    "czBad2": {
+      "speaker": "client",
+      "sl": "V redu, bom uredil. Hvala.",
+      "en": "Alright, I'll sort it out. Thank you.",
+      "next": [
+        "nByeBad"
+      ]
+    },
+    "nByeBad": {
+      "speaker": "npc",
+      "sl": "Lepo se imejte, se vidimo kmalu!",
+      "en": "Take care, see you soon!",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Lepo se imejte, se vidimo kmalu!",
       "next": []
     }
   }

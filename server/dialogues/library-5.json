@@ -2,59 +2,67 @@
   "id": "library-l5",
   "scenarioId": "library",
   "level": 5,
-  "levelLabel": "Advanced A1",
-  "title": "Reserve & pick up",
+  "levelLabel": "Advanced",
+  "title": "WiFi & printing",
   "objectives": [
     {
-      "label": "Ask for a specific book",
-      "descriptorEN": "Ask for a book with 'Ali imate to knjigo?' / 'Rad bi to knjigo.'"
+      "label": "Ask about free WiFi",
+      "descriptorEN": "Greet and ask whether the library has free WiFi with 'Ali imate ___?' — the object stays accusative."
     },
     {
-      "label": "Decide to reserve or not",
-      "descriptorEN": "Choose yes ('Da, prosim.') or no ('Ne, hvala. Pridem drugič.')."
+      "label": "Ask for the password",
+      "descriptorEN": "Ask for the WiFi password with the neuter 'Kakšno je geslo?' (geslo is neuter)."
     },
     {
-      "label": "Give your name",
-      "descriptorEN": "Give your name with 'Ime mi je ___.' (dative)."
+      "label": "Ask about printing",
+      "descriptorEN": "Ask whether you can print a document with '(Ali) lahko … natisnem …?' — finite verb after 'lahko', not an infinitive."
     },
     {
-      "label": "Ask when it'll be ready",
-      "descriptorEN": "Ask availability with 'Kdaj bo na voljo?'"
+      "label": "Ask how it works / what you need",
+      "descriptorEN": "Ask how the machine works or whether you need your own paper ('svoj papir', not 'moj')."
     },
     {
-      "label": "Close",
-      "descriptorEN": "Close with 'Hvala, nasvidenje.'"
+      "label": "Thank & sign off",
+      "descriptorEN": "Close politely — 'Hvala, bom poskusil.' / 'Najlepša hvala, nasvidenje.'"
     }
   ],
   "introduces": [
     "ali_imate",
-    "da",
+    "ali_lahko",
+    "ali_potrebujem",
+    "bom_poskusil",
+    "brezplacen",
     "dober_dan",
+    "dokument",
+    "geslo",
     "hvala",
-    "ime_mi_je",
-    "kdaj",
-    "kdaj_bo_na_voljo",
-    "knjiga",
+    "kako_deluje",
+    "kaksno_je",
+    "kje_se_povezem",
+    "najlepsa_hvala",
     "nasvidenje",
-    "ne",
-    "pridem_drugic",
-    "prosim",
-    "rad_bi",
-    "v_redu"
+    "natisniti",
+    "razumem",
+    "svoj_papir",
+    "tukaj"
   ],
   "audio": "ready",
   "voices": {
     "npc": "female-speaker",
     "client": "male-speaker"
   },
-  "background": "library-computer.jpg",
+  "intro": {
+    "audio": "library-5.mp3",
+    "text": "[flustered] Uf, kje je pa zdaj tale knjižnica… [a little breathless] Prinesel sem računalnik, ker moram nujno na internet. [urgent] In natisniti moram en obrazec, še danes. [determined exhale] Dobro — gremo noter, da to čim prej uredim.",
+    "en": "Ugh, now where is this library… I brought my laptop, because I urgently need to get online. And I have to print a form, today. Right — let's go in so I can sort this out as soon as possible."
+  },
   "root": "n1",
   "nodes": {
     "n1": {
       "speaker": "npc",
-      "sl": "Dober dan! Kaj pa iščete danes?",
-      "en": "Good day! What are you looking for today?",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan! Kaj pa iščete danes?",
+      "sl": "Pozdravljeni! Kako vam lahko pomagam?",
+      "en": "Hello! How can I help you?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Pozdravljeni! Kako vam lahko pomagam?",
       "next": [
         "c1a",
         "c1b"
@@ -62,124 +70,113 @@
     },
     "c1a": {
       "speaker": "client",
-      "sl": "Dober dan. Ali imate to knjigo?",
-      "en": "Hello. Do you have this book?",
+      "sl": "Dober dan. Ali imate tukaj brezplačen WiFi?",
+      "en": "Hello. Do you have free WiFi here?",
       "next": [
-        "n2"
+        "n2w"
       ]
     },
     "c1b": {
       "speaker": "client",
-      "sl": "Dober dan. Rad bi to knjigo, prosim.",
-      "en": "Hello. I'd like this book, please.",
+      "sl": "Dober dan. Ali lahko tukaj natisnem dokument?",
+      "en": "Hello. Can I print a document here?",
       "next": [
-        "n2"
+        "n2p"
       ]
     },
-    "n2": {
+    "n2w": {
       "speaker": "npc",
-      "sl": "Trenutek, preverim... Žal je trenutno ni. Želite, da vam jo rezerviram?",
-      "en": "One moment, I'll check... Unfortunately it's not here right now. Would you like me to reserve it for you?",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Trenutek, preverim... Žal je trenutno ni. Želite, da vam jo rezerviram?",
+      "sl": "Da, seveda.",
+      "en": "Yes, of course.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Da, seveda.",
       "next": [
-        "c2a",
-        "c2b"
+        "c2w1",
+        "c2w2"
       ]
     },
-    "c2a": {
+    "c2w1": {
       "speaker": "client",
-      "sl": "Da, prosim.",
-      "en": "Yes, please.",
+      "sl": "Kakšno je geslo?",
+      "en": "What's the password?",
       "next": [
-        "n3"
+        "n3w"
       ]
     },
-    "c2b": {
+    "c2w2": {
       "speaker": "client",
-      "sl": "Ne, hvala. Pridem drugič.",
-      "en": "No, thanks. I'll come another time.",
+      "sl": "Super. Kje se pa povežem?",
+      "en": "Great. So where do I connect?",
       "next": [
-        "n6"
+        "n3w"
       ]
     },
-    "n3": {
+    "n3w": {
       "speaker": "npc",
-      "sl": "V redu. Kako vam je ime?",
-      "en": "Alright. What's your name?",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] V redu. Kako vam je ime?",
+      "sl": "Geslo je napisano na nalepki pri vhodu, lahko pa vam ga tudi povem.",
+      "en": "The password is written on a sticker by the entrance, or I can tell you too.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Geslo je napisano na nalepki pri vhodu, lahko pa vam ga tudi povem.",
       "next": [
-        "c3a",
-        "c3b"
+        "cz1",
+        "cz2"
       ]
     },
-    "c3a": {
-      "speaker": "client",
-      "sl": "Slavko.",
-      "en": "Slavko.",
-      "next": [
-        "n4"
-      ]
-    },
-    "c3b": {
-      "speaker": "client",
-      "sl": "Ime mi je Slavko.",
-      "en": "My name is Slavko.",
-      "next": [
-        "n4"
-      ]
-    },
-    "n4": {
+    "n2p": {
       "speaker": "npc",
-      "sl": "Hvala. Ko bo knjiga tu, vas pokličemo.",
-      "en": "Thanks. When the book is here, we'll call you.",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Hvala. Ko bo knjiga tu, vas pokličemo.",
+      "sl": "Seveda! Pri vhodu imamo avtomat Printbox.",
+      "en": "Of course! We have a Printbox machine by the entrance.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Seveda! Pri vhodu imamo avtomat Printbox.",
       "next": [
-        "c4a",
-        "c4b"
+        "c2p1",
+        "c2p2"
       ]
     },
-    "c4a": {
+    "c2p1": {
       "speaker": "client",
-      "sl": "Odlično, hvala. Nasvidenje.",
-      "en": "Great, thanks. Goodbye.",
-      "next": []
-    },
-    "c4b": {
-      "speaker": "client",
-      "sl": "Kdaj bo na voljo?",
-      "en": "When will it be available?",
+      "sl": "Kako pa to deluje?",
+      "en": "How does that work?",
       "next": [
-        "n5"
+        "n3p"
       ]
     },
-    "n5": {
+    "c2p2": {
+      "speaker": "client",
+      "sl": "Ali potrebujem svoj papir?",
+      "en": "Do I need my own paper?",
+      "next": [
+        "n3p"
+      ]
+    },
+    "n3p": {
       "speaker": "npc",
-      "sl": "Predvidoma čez teden dni.",
-      "en": "In about a week.",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Predvidoma čez teden dni.",
+      "sl": "Dokument lahko naložite prek USB-ključka, e-pošte ali spletne strani Printbox. Nato se na avtomatu le prijavite in natisnete.",
+      "en": "You can upload the document via USB stick, email, or the Printbox website. Then just log in at the machine and print.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dokument lahko naložite prek USB-ključka, e-pošte ali spletne strani Printbox. Nato se na avtomatu le prijavite in natisnete.",
       "next": [
-        "c5"
+        "cz1",
+        "cz2"
       ]
     },
-    "c5": {
+    "cz1": {
       "speaker": "client",
-      "sl": "V redu, hvala. Nasvidenje.",
-      "en": "Alright, thanks. Goodbye.",
-      "next": []
+      "sl": "Aha, razumem. Hvala, bom poskusil.",
+      "en": "Ah, I understand. Thanks, I'll give it a try.",
+      "next": [
+        "nBye"
+      ]
     },
-    "n6": {
+    "cz2": {
+      "speaker": "client",
+      "sl": "Najlepša hvala, nasvidenje.",
+      "en": "Thank you very much, goodbye.",
+      "next": [
+        "nBye"
+      ]
+    },
+    "nBye": {
       "speaker": "npc",
-      "sl": "V redu, nasvidenje.",
-      "en": "Alright, goodbye.",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] V redu, nasvidenje.",
-      "next": [
-        "c6"
-      ]
-    },
-    "c6": {
-      "speaker": "client",
-      "sl": "Nasvidenje.",
-      "en": "Goodbye.",
+      "sl": "Z veseljem! Prijetno delo!",
+      "en": "My pleasure! Enjoy your work!",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Z veseljem! Prijetno delo!",
       "next": []
     }
   }

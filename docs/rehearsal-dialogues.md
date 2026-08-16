@@ -185,12 +185,20 @@ learnables is a **gated step of the authoring pass**, a byproduct of writing the
    `kind`), assigns each level's `introduces` = union(reused + new), applies the critic's exact fixes, writes
    the dialogue files + the manifest, and emits candidate A1 mappings. Then the gates must all exit 0:
    **`lint:dialogue`** (the DRY invariant + `introduces` integrity + coverage), **`lint:tree`** (tree
-   structure + manifest consistency), **`lint:a1`** (every learnable mapped or excluded), **`test:dialogue`**.
+   structure + manifest consistency), **`lint:a1`** (a1-map ref-integrity + a difficulty/coverage readout — the
+   curated Pareto core is never force-filled; a per-learnable `a1` tag is the Tagged-A1 superset), **`test:dialogue`**.
 
 The same three-part shape as the scenario engine (author → critic → deterministic reconcile + lint), extended
 to grow the catalog. Because a word is minted once and referenced by id (step 1's reuse rule + the reconcile's
 dedup), the catalog stays coherent as dialogues multiply — every later dialogue that uses *kruh* credits the
 same `kruh` the learner has been building all along.
+
+> **Adopted direction (not yet implemented) — see [dialogue-difficulty-model.md](dialogue-difficulty-model.md).**
+> Difficulty (`levelLabel`) is a **computed band** (basic/intermediate/advanced) derived from A1-density
+> *after* authoring — the author aims, the classifier labels. `lint:a1` **classifies** difficulty, reading a
+> **catalog A1 tag** (a superset over the narrow `a1-map` core). Trees may offer **more than two client
+> choices**, with a context carried in the choice text or a **parenthetical**, and a scroll indicator when >1
+> option. The template + sizing below describe the 2-choice implementation.
 
 ### The tree template + sizing (calibrated to bakery/restaurant)
 

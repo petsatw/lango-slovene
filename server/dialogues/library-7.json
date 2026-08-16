@@ -1,0 +1,139 @@
+{
+  "id": "library-l7",
+  "scenarioId": "library",
+  "level": 7,
+  "levelLabel": "Advanced",
+  "title": "Opening hours",
+  "objectives": [
+    {
+      "label": "Greet & ask the opening hours",
+      "descriptorEN": "Greet the librarian and politely ask for the opening hours with 'Ali mi lahko poveste, kakšen imate delovni čas?'"
+    },
+    {
+      "label": "Ask if they're open today",
+      "descriptorEN": "Check whether the library is open today with 'Ali ste danes odprti?'"
+    },
+    {
+      "label": "Ask about the summer schedule",
+      "descriptorEN": "Ask whether the same hours hold in the summer holidays: 'Kaj pa med poletnimi počitnicami? Velja enak urnik?'"
+    },
+    {
+      "label": "Thank & mention the website",
+      "descriptorEN": "Close by thanking for the information and saying you'll check the website ('na spletni strani')."
+    }
+  ],
+  "introduces": [
+    "ali_mi_poveste",
+    "ali_ste_odprti",
+    "danes",
+    "delovni_cas",
+    "dober_dan",
+    "hvala",
+    "hvala_za_informacijo",
+    "kaj",
+    "med_pocitnicami",
+    "odlicno",
+    "prosim",
+    "spletna_stran",
+    "velja_enak_urnik"
+  ],
+  "audio": "pending",
+  "voices": {
+    "npc": "female-speaker",
+    "client": "male-speaker"
+  },
+  "intro": {
+    "audio": "library-7.mp3",
+    "text": "[stretching, sleepy] Uf… danes bi rad šel v knjižnico. [thinking aloud] Ampak kdaj so pa sploh odprti? [a little worried] Ne bi rad prišel pred zaprtimi vrati. [perking up, eager] Najbolje, da najprej vprašam za delovni čas – potem pa lepo razporedim popoldne. [determined, brightening] Ja, dobro. Kar grem tja in vprašam.",
+    "en": "Ugh… today I'd like to go to the library. But when on earth are they even open? I wouldn't want to show up in front of locked doors. Best if I first ask about the opening hours — then I'll plan my afternoon nicely. Yes, good. I'll just head over and ask."
+  },
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Dober dan, dobrodošli! Kako vam lahko pomagam?",
+      "en": "Good day, welcome! How can I help you?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan, dobrodošli! Kako vam lahko pomagam?",
+      "next": [
+        "c1a",
+        "c1b"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Dober dan. Ali mi lahko, prosim, poveste, kakšen imate delovni čas?",
+      "en": "Good day. Could you please tell me your opening hours?",
+      "next": [
+        "n2"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Dober dan. Ali ste danes odprti?",
+      "en": "Good day. Are you open today?",
+      "next": [
+        "n2"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Od ponedeljka do petka smo odprti od 8. do 19. ure, ob sobotah pa od 8. do 13. ure.",
+      "en": "Monday to Friday we're open from 8 to 19, and on Saturdays from 8 to 13.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Od ponedeljka do petka smo odprti od 8. do 19. ure, ob sobotah pa od 8. do 13. ure.",
+      "next": [
+        "c2a",
+        "c2b"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Kaj pa med poletnimi počitnicami? Velja enak urnik?",
+      "en": "And during the summer holidays? Is it the same schedule?",
+      "context": "it's summer — he wonders whether the holiday hours differ",
+      "next": [
+        "n3s"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "Odlično, hvala.",
+      "en": "Great, thank you.",
+      "next": [
+        "nBye"
+      ]
+    },
+    "n3s": {
+      "speaker": "npc",
+      "sl": "Poleti imamo prilagojen urnik – ob sredah smo odprti popoldne, ostale dni pa dopoldne. Točen urnik imamo vedno objavljen tudi na naši spletni strani.",
+      "en": "In summer we have an adjusted schedule – on Wednesdays we're open in the afternoon, other days in the morning. The exact schedule is always posted on our website too.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Poleti imamo prilagojen urnik – ob sredah smo odprti popoldne, ostale dni pa dopoldne. Točen urnik imamo vedno objavljen tudi na naši spletni strani.",
+      "next": [
+        "c3a",
+        "c3b"
+      ]
+    },
+    "c3a": {
+      "speaker": "client",
+      "sl": "Odlično, hvala za informacijo!",
+      "en": "Perfect, thanks for the information!",
+      "next": [
+        "nBye"
+      ]
+    },
+    "c3b": {
+      "speaker": "client",
+      "sl": "Potem pa pogledam na spletni strani. Hvala.",
+      "en": "Then I'll check on the website. Thank you.",
+      "next": [
+        "nBye"
+      ]
+    },
+    "nBye": {
+      "speaker": "npc",
+      "sl": "Ni za kaj, lepo se imejte!",
+      "en": "You're welcome, have a lovely day!",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Ni za kaj, lepo se imejte!",
+      "next": []
+    }
+  }
+}

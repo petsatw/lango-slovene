@@ -2,55 +2,69 @@
   "id": "library-l4",
   "scenarioId": "library",
   "level": 4,
-  "levelLabel": "Basic A1",
-  "title": "Register for a card",
+  "levelLabel": "Advanced",
+  "title": "Using the space",
   "objectives": [
     {
-      "label": "Ask to register",
-      "descriptorEN": "Say you'd like to register with the reflexive 'Rad bi se vpisal ___.'"
+      "label": "Sign in to the reading room",
+      "descriptorEN": "Ask to sign in to the reading room with 'Rad bi se prijavil v čitalnico' — reflexive 'se' plus the accusative of direction 'v čitalnico'."
     },
     {
-      "label": "Answer the ID request",
-      "descriptorEN": "Say whether you have your ID — 'Ja, izvolite.' or 'Ne, nimam ...'."
+      "label": "Ask to use a computer",
+      "descriptorEN": "Ask permission to use a computer with 'Ali lahko uporabljam računalnik?'"
     },
     {
-      "label": "Explain you don't have it",
-      "descriptorEN": "Handle the negative 'nimam ga pri sebi' (negation + genitive)."
+      "label": "Ask if you must reserve",
+      "descriptorEN": "Check whether a reservation is required with 'Ali ga moram rezervirati?' (infinitive after 'moram')."
     },
     {
-      "label": "Take in the instruction",
-      "descriptorEN": "Understand the conditional 'come back with a document' (receptive)."
+      "label": "Choose a seat",
+      "descriptorEN": "Name or request a seat, e.g. 'Sedež B2, prosim' or 'Katerikoli miren sedež, prosim.'"
     },
     {
-      "label": "Close",
-      "descriptorEN": "Close with 'Hvala, nasvidenje.'"
+      "label": "Thank and say goodbye",
+      "descriptorEN": "Close politely with 'Hvala za pomoč. Nasvidenje.'"
     }
   ],
   "introduces": [
+    "ali_lahko",
+    "ali_moram",
+    "citalnica",
     "dober_dan",
-    "izkaznica",
-    "izvolite",
-    "ja",
-    "knjiznica",
-    "najlepsa_hvala",
-    "ne",
-    "nimam",
+    "hvala",
+    "hvala_za_pomoc",
+    "katerikoli",
+    "miren",
+    "nasvidenje",
+    "odlicno",
+    "potrebovati",
+    "prijaviti_se",
+    "prosim",
+    "prost",
+    "racunalnik",
     "rad_bi",
-    "vpisati_se"
+    "rezervirati",
+    "sedez",
+    "uporabljati",
+    "usesti_se"
   ],
   "audio": "ready",
   "voices": {
     "npc": "female-speaker",
     "client": "male-speaker"
   },
-  "background": "library-card.jpg",
+  "intro": {
+    "audio": "library-4.mp3",
+    "text": "[yawning] Uf… dober dan. [sleepy] Danes moram nujno v knjižnico. [tired] Rabim en miren kotiček, da se malo učim. [perking up] In pa mogoče računalnik, če imajo kakšnega prostega. [sleepy chuckle] Samo da ne zaspim kar med knjigami.",
+    "en": "Ugh… good day. Today I really have to get to the library. I need a quiet little corner to study a bit. And maybe a computer, if they have a free one. As long as I don't fall asleep right there among the books."
+  },
   "root": "n1",
   "nodes": {
     "n1": {
       "speaker": "npc",
-      "sl": "Lep pozdrav! Vam lahko kako pomagam?",
-      "en": "Warm greetings! Can I help you with anything?",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Lep pozdrav! Vam lahko kako pomagam?",
+      "sl": "Dober dan! Izvolite, kako vam lahko pomagam?",
+      "en": "Good day! Go ahead, how can I help you?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan! Izvolite, kako vam lahko pomagam?",
       "next": [
         "c1a",
         "c1b"
@@ -58,68 +72,151 @@
     },
     "c1a": {
       "speaker": "client",
-      "sl": "Dober dan. Rad bi se vpisal v knjižnico.",
-      "en": "Hello. I'd like to register at the library.",
+      "sl": "Dober dan. Rad bi se prijavil v čitalnico.",
+      "en": "Good day. I'd like to sign in to the reading room.",
       "next": [
-        "n2"
+        "n2r"
       ]
     },
     "c1b": {
       "speaker": "client",
-      "sl": "Dober dan. Rad bi člansko izkaznico.",
-      "en": "Hello. I'd like a membership card.",
+      "sl": "Dober dan. Ali lahko uporabljam računalnik?",
+      "en": "Good day. Can I use a computer?",
       "next": [
-        "n2"
+        "n2c"
       ]
     },
-    "n2": {
+    "n2r": {
       "speaker": "npc",
-      "sl": "Ali imate s sabo osebni dokument?",
-      "en": "Do you have an ID document with you?",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Ali imate s sabo osebni dokument?",
+      "sl": "Seveda. Prosim, pokažite mi člansko izkaznico in izberite sedež.",
+      "en": "Of course. Please show me your library card and choose a seat.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Seveda. Prosim, pokažite mi člansko izkaznico in izberite sedež.",
       "next": [
-        "c2a",
-        "c2b"
+        "c2r1",
+        "c2r2"
       ]
     },
-    "c2a": {
+    "c2r1": {
       "speaker": "client",
-      "sl": "Ja, izvolite.",
-      "en": "Yes, here you are.",
+      "sl": "Sedež B2, prosim.",
+      "en": "Seat B2, please.",
       "next": [
-        "n3a"
+        "n3r"
       ]
     },
-    "c2b": {
+    "c2r2": {
       "speaker": "client",
-      "sl": "Ne, nimam ga pri sebi.",
-      "en": "No, I don't have it on me.",
+      "sl": "Katerikoli miren sedež, prosim.",
+      "en": "Any quiet seat, please.",
       "next": [
-        "n3b"
+        "n3r"
       ]
     },
-    "n3a": {
+    "n3r": {
       "speaker": "npc",
-      "sl": "Odlično. Tukaj je vaša izkaznica. Dobrodošli!",
-      "en": "Excellent. Here is your card. Welcome!",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Odlično. Tukaj je vaša izkaznica. Dobrodošli!",
+      "sl": "Sedež je rezerviran. Ob vstopu se prijavite z izkaznico pri vhodu.",
+      "en": "The seat is reserved. When you go in, check in with your card at the entrance.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Sedež je rezerviran. Ob vstopu se prijavite z izkaznico pri vhodu.",
       "next": [
-        "c3"
+        "cz1",
+        "cz2"
       ]
     },
-    "n3b": {
+    "n2c": {
       "speaker": "npc",
-      "sl": "Brez dokumenta vas ne morem vpisati. Prosim, vrnite se z dokumentom.",
-      "en": "Without a document I can't register you. Please come back with it.",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Brez dokumenta vas ne morem vpisati. Prosim, vrnite se z dokumentom.",
+      "sl": "Seveda. Računalniki so v prvem nadstropju.",
+      "en": "Of course. The computers are on the first floor.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Seveda. Računalniki so v prvem nadstropju.",
       "next": [
-        "c3"
+        "c2c1",
+        "c2c2"
       ]
     },
-    "c3": {
+    "c2c1": {
       "speaker": "client",
-      "sl": "Najlepša hvala.",
-      "en": "Thank you so much.",
+      "sl": "Ali ga moram rezervirati?",
+      "en": "Do I have to reserve one?",
+      "next": [
+        "n3c"
+      ]
+    },
+    "c2c2": {
+      "speaker": "client",
+      "sl": "Hvala. Ali kaj potrebujem?",
+      "en": "Thanks. Is there anything I need?",
+      "next": [
+        "n3c"
+      ]
+    },
+    "n3c": {
+      "speaker": "npc",
+      "sl": "Odvisno od dneva — včasih je treba rezervirati, včasih ne.",
+      "en": "It depends on the day — sometimes you have to reserve, sometimes not.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Odvisno od dneva — včasih je treba rezervirati, včasih ne.",
+      "next": [
+        "c3c1",
+        "c3c2"
+      ]
+    },
+    "c3c1": {
+      "speaker": "client",
+      "sl": "Torej se lahko kar usedem k prostemu?",
+      "en": "So I can just sit down at a free one?",
+      "context": "no reservation needed",
+      "next": [
+        "n4free"
+      ]
+    },
+    "c3c2": {
+      "speaker": "client",
+      "sl": "In če ga moram rezervirati?",
+      "en": "And if I do have to reserve it?",
+      "context": "a reservation is required",
+      "next": [
+        "n4res"
+      ]
+    },
+    "n4free": {
+      "speaker": "npc",
+      "sl": "Točno tako. Rezervacija ni potrebna. Če je kakšen prost, ga lahko uporabite.",
+      "en": "Exactly. No reservation is needed. If one is free, you can use it.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Točno tako. Rezervacija ni potrebna. Če je kakšen prost, ga lahko uporabite.",
+      "next": [
+        "cz1",
+        "cz2"
+      ]
+    },
+    "n4res": {
+      "speaker": "npc",
+      "sl": "Da, rezervacija je potrebna. Za rezervacijo potrebujem vašo člansko izkaznico.",
+      "en": "Yes, a reservation is required. To reserve it I need your library card.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Da, rezervacija je potrebna. Za rezervacijo potrebujem vašo člansko izkaznico.",
+      "next": [
+        "cz1",
+        "cz2"
+      ]
+    },
+    "cz1": {
+      "speaker": "client",
+      "sl": "Odlično, hvala. Nasvidenje.",
+      "en": "Great, thank you. Goodbye.",
+      "next": [
+        "nBye"
+      ]
+    },
+    "cz2": {
+      "speaker": "client",
+      "sl": "Hvala za pomoč. Nasvidenje.",
+      "en": "Thanks for your help. Goodbye.",
+      "next": [
+        "nBye"
+      ]
+    },
+    "nBye": {
+      "speaker": "npc",
+      "sl": "Nasvidenje, prijeten študij!",
+      "en": "Goodbye, enjoy your studying!",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Nasvidenje, prijeten študij!",
       "next": []
     }
   }

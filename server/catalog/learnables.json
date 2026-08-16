@@ -1414,5 +1414,360 @@
     "sl": "Hvala za pomoč.",
     "gloss": "Thank you for your help.",
     "predictableError": "using the dative 'hvala pomoči' (calquing 'thanks to') instead of 'za' + accusative 'pomoč'"
+  },
+  "tukaj": {
+    "kind": "vocabulary",
+    "sl": "tukaj",
+    "gloss": "here (location)",
+    "predictableError": "confusing 'tukaj' (here, static) with 'sem'/'tja' (to here/there, direction)",
+    "a1": true
+  },
+  "natisniti": {
+    "kind": "vocabulary",
+    "sl": "natisniti",
+    "gloss": "to print",
+    "predictableError": "keeping the infinitive after '(ali) lahko' — it takes the finite 1sg 'natisnem', not 'lahko natisniti'"
+  },
+  "dokument": {
+    "kind": "vocabulary",
+    "sl": "dokument",
+    "gloss": "document",
+    "predictableError": "adding an animate accusative -a ('natisnem dokumenta'); it is inanimate, so accusative = nominative 'dokument'"
+  },
+  "kje_se_povezem": {
+    "kind": "chunk",
+    "sl": "Kje se povežem?",
+    "gloss": "Where do I connect?",
+    "predictableError": "dropping the reflexive 'se', or using 'kam' (where to) instead of 'kje' for connecting to a network",
+    "a1": true
+  },
+  "kako_deluje": {
+    "kind": "chunk",
+    "sl": "Kako to deluje?",
+    "gloss": "How does this work?",
+    "predictableError": "calquing with 'dela' (works=labours) instead of 'deluje' (functions/operates)"
+  },
+  "ali_potrebujem": {
+    "kind": "pattern",
+    "sl": "Ali potrebujem ___?",
+    "gloss": "Do I need ___?",
+    "predictableError": "leaving the object nominative — the thing needed stays accusative ('potrebujem papir', 'potrebujem izkaznico')"
+  },
+  "svoj_papir": {
+    "kind": "chunk",
+    "sl": "svoj papir",
+    "gloss": "one's own paper",
+    "predictableError": "using 'moj papir' where the reflexive possessive 'svoj' is required because it refers back to the subject"
+  },
+  "bom_poskusil": {
+    "kind": "chunk",
+    "sl": "Bom poskusil.",
+    "gloss": "I'll give it a try.",
+    "predictableError": "gender on the l-participle — a man says 'poskusil', a woman 'poskusila'",
+    "a1": true
+  },
+  "delovni_cas": {
+    "kind": "chunk",
+    "sl": "delovni čas",
+    "gloss": "opening / working hours",
+    "predictableError": "reaching for a plural 'ure' or the calque 'odprte ure'; it's the fixed masc. phrase 'delovni čas' (and 'kakšen', not 'kakšni', to agree with it)"
+  },
+  "ali_mi_poveste": {
+    "kind": "pattern",
+    "sl": "Ali mi lahko, prosim, poveste ___?",
+    "gloss": "Could you please tell me ___? (vi)",
+    "predictableError": "dropping the dative clitic 'mi' ('Ali lahko poveste'), or using the ti-form 'poveš' to a stranger instead of vi 'poveste'"
+  },
+  "ali_ste_odprti": {
+    "kind": "chunk",
+    "sl": "Ali ste odprti?",
+    "gloss": "Are you open? (vi)",
+    "predictableError": "adjective agreement — the polite vi takes plural 'odprti'; beginners say singular 'Ali ste odprt?'",
+    "a1": true
+  },
+  "med_pocitnicami": {
+    "kind": "chunk",
+    "sl": "med poletnimi počitnicami",
+    "gloss": "during the summer holidays",
+    "predictableError": "'med' takes the instrumental — 'med poletnimi počitnicami', not nominative 'med poletne počitnice'"
+  },
+  "velja_enak_urnik": {
+    "kind": "chunk",
+    "sl": "Velja enak urnik?",
+    "gloss": "Does the same schedule apply?",
+    "predictableError": "confusing 'enak' (the same kind) with 'isti' (the very same one), and calquing 'is' instead of the natural 'velja' (applies/holds)"
+  },
+  "odlicno": {
+    "kind": "vocabulary",
+    "sl": "odlično",
+    "gloss": "excellent, great (as a standalone reaction)",
+    "predictableError": "using the masc. adjective 'odličen' as an exclamation; the standalone 'great!' is the neuter adverb 'odlično'"
+  },
+  "hvala_za_informacijo": {
+    "kind": "chunk",
+    "sl": "Hvala za informacijo.",
+    "gloss": "Thanks for the information.",
+    "predictableError": "using the dative 'hvala informaciji' (calquing 'thanks to') instead of 'za' + accusative 'informacijo'"
+  },
+  "spletna_stran": {
+    "kind": "chunk",
+    "sl": "na spletni strani",
+    "gloss": "on the website",
+    "predictableError": "locative after 'na' for location — 'na spletni strani', not nominative 'na spletna stran' (nor 'na spletno stran', which is direction)"
+  },
+  "prek_spleta": {
+    "kind": "chunk",
+    "sl": "prek spleta",
+    "gloss": "online / over the internet (as a means)",
+    "predictableError": "using locative 'na spletu' (= 'on the web') for the means; the means construction is 'prek' + genitive 'spleta'"
+  },
+  "prisel_sem_prevzeti": {
+    "kind": "chunk",
+    "sl": "Prišel sem prevzeti.",
+    "gloss": "I've come to pick (it) up.",
+    "predictableError": "gender on the l-participle — a man says 'prišel', not 'prišla' — and dropping 'sem'; calquing the present 'pridem prevzeti' instead of the perfect 'prišel sem … prevzeti'"
+  },
+  "seveda": {
+    "kind": "vocabulary",
+    "sl": "seveda",
+    "gloss": "of course / sure",
+    "predictableError": "reaching for a longer 'ja, seveda že' or English-shaped tag; 'seveda' stands alone as the ready affirmation",
+    "a1": true
+  },
+  "prijaviti_se": {
+    "kind": "vocabulary",
+    "sl": "prijaviti se",
+    "gloss": "to sign in / check in (oneself)",
+    "predictableError": "dropping the reflexive 'se', or using locative 'v čitalnici' instead of the accusative of direction 'v čitalnico'"
+  },
+  "citalnica": {
+    "kind": "vocabulary",
+    "sl": "čitalnica",
+    "gloss": "reading room (fem.)",
+    "predictableError": "accusative of direction after 'v' — 'v čitalnico', not locative 'v čitalnici' or nominative 'čitalnica'"
+  },
+  "uporabljati": {
+    "kind": "vocabulary",
+    "sl": "uporabljati",
+    "gloss": "to use",
+    "predictableError": "1sg is 'uporabljam' (not 'uporabljem'); the object is accusative and after 'lahko' it stays finite ('lahko uporabljam'), not an infinitive",
+    "a1": true
+  },
+  "sedez": {
+    "kind": "vocabulary",
+    "sl": "sedež",
+    "gloss": "seat",
+    "predictableError": "masculine inanimate — accusative equals nominative 'sedež'; don't add an animate -a ('rezerviram sedeža')"
+  },
+  "miren": {
+    "kind": "vocabulary",
+    "sl": "miren",
+    "gloss": "quiet, calm, peaceful",
+    "predictableError": "the fleeting -e- drops when inflected: 'mirna', 'mirno', 'mirnega' — not 'mirenega'"
+  },
+  "katerikoli": {
+    "kind": "vocabulary",
+    "sl": "katerikoli",
+    "gloss": "any / whichever",
+    "predictableError": "it declines like 'kateri' + the invariable tag '-koli' ('katerega koli'), not left frozen as one uninflected word"
+  },
+  "potrebovati": {
+    "kind": "vocabulary",
+    "sl": "potrebovati",
+    "gloss": "to need",
+    "predictableError": "1sg is 'potrebujem' (not 'potrebovam'); the object is accusative",
+    "a1": true
+  },
+  "usesti_se": {
+    "kind": "vocabulary",
+    "sl": "usesti se",
+    "gloss": "to sit down (oneself)",
+    "predictableError": "dropping the reflexive 'se' (1sg 'usedem se'); 'sit at' is 'k' + dative ('k prostemu'), not an English-style 'at'",
+    "a1": true
+  },
+  "prost": {
+    "kind": "vocabulary",
+    "sl": "prost",
+    "gloss": "free, vacant, available",
+    "predictableError": "means 'free/vacant', not 'brezplačen' (free of charge); it agrees with its noun ('k prostemu računalniku')",
+    "a1": true
+  },
+  "poteci": {
+    "kind": "vocabulary",
+    "sl": "poteči",
+    "gloss": "to expire (of a document/card)",
+    "predictableError": "gender/agreement on the l-participle — 'izkaznica mi je potekla' (fem., agreeing with izkaznica), plus keeping the dative 'mi'"
+  },
+  "izgubiti": {
+    "kind": "vocabulary",
+    "sl": "izgubiti",
+    "gloss": "to lose (something)",
+    "predictableError": "a man says 'izgubil sem', not 'izgubila'; and the object stays accusative — 'izgubil sem izkaznico', not 'izkaznica'"
+  },
+  "kaj_naj_naredim": {
+    "kind": "chunk",
+    "sl": "Kaj naj naredim?",
+    "gloss": "What should I do?",
+    "predictableError": "calquing 'should' with 'moram' or a modal + infinitive instead of 'naj' + 1sg present ('naj naredim')"
+  },
+  "zal": {
+    "kind": "vocabulary",
+    "sl": "žal",
+    "gloss": "unfortunately / regrettably",
+    "predictableError": "confusing it with the apology 'žal mi je'; here 'žal' is just the sentence adverb 'unfortunately'"
+  },
+  "dolgovati": {
+    "kind": "vocabulary",
+    "sl": "dolgovati",
+    "gloss": "to owe",
+    "predictableError": "reaching for 'moram plačati' instead of 'dolgujem'; 1sg is 'dolgujem', not 'dolgam'"
+  },
+  "naslov": {
+    "kind": "vocabulary",
+    "sl": "naslov",
+    "gloss": "address",
+    "predictableError": "leaving the following demonstrative/adjective uninflected ('naslov je enak', where 'enak' must agree with masculine naslov)",
+    "a1": true
+  },
+  "enako_kot_prej": {
+    "kind": "chunk",
+    "sl": "enako kot prej",
+    "gloss": "the same as before",
+    "predictableError": "using 'kakor'/'kot' interchangeably and failing to agree 'enak' with its noun ('naslov je enak' vs. adverbial 'enako')"
+  },
+  "poravnati": {
+    "kind": "vocabulary",
+    "sl": "poravnati",
+    "gloss": "to settle / pay off (a fine, a debt)",
+    "predictableError": "a man says 'poravnam / bom poravnal', not 'poravnala'; distinct from plain 'plačati' — it means clearing what's outstanding"
+  },
+  "naslednjic": {
+    "kind": "vocabulary",
+    "sl": "naslednjič",
+    "gloss": "next time",
+    "predictableError": "calquing 'next time' as 'naslednji čas' instead of the single adverb 'naslednjič'"
+  },
+  "taksa": {
+    "kind": "vocabulary",
+    "sl": "taksa",
+    "gloss": "fee / charge (administrative)",
+    "predictableError": "confusing it with 'davek' (tax) or 'cena' (price); leaving it uninflected where a case is needed"
+  },
+  "izdati": {
+    "kind": "vocabulary",
+    "sl": "izdati",
+    "gloss": "to issue (a card/document)",
+    "predictableError": "using the wrong imperative form or object case — 'izdajte mi novo (izkaznico)', accusative"
+  },
+  "urediti": {
+    "kind": "vocabulary",
+    "sl": "urediti",
+    "gloss": "to sort out / arrange / take care of",
+    "predictableError": "a man says 'bom uredil', not 'uredila'; and it's perfective 'urediti', not imperfective 'urejati' for the one-off task"
+  },
+  "bojim_se": {
+    "kind": "chunk",
+    "sl": "Bojim se, da …",
+    "gloss": "I'm afraid (that) …",
+    "predictableError": "dropping the reflexive 'se', or calquing 'I'm afraid of' with a preposition — the hedge is 'Bojim se, da' + clause"
+  },
+  "poskodovati": {
+    "kind": "vocabulary",
+    "sl": "poškodovati",
+    "gloss": "to damage",
+    "predictableError": "gender on the l-participle — a man says 'poškodoval', not 'poškodovala'; and the object stays accusative ('poškodoval sem jo')"
+  },
+  "pozabiti": {
+    "kind": "vocabulary",
+    "sl": "pozabiti",
+    "gloss": "to forget (pozabil sem = I forgot)",
+    "predictableError": "gender on the l-participle ('pozabil' masc. / 'pozabila' fem.); don't add an English auxiliary — 'sem' carries the past"
+  },
+  "zamudnina": {
+    "kind": "vocabulary",
+    "sl": "zamudnina",
+    "gloss": "late/overdue fine",
+    "predictableError": "reaching for generic 'kazen' (penalty); after 'znaša' the amount is the subject, 'zamudnina' stays nominative"
+  },
+  "zdaj": {
+    "kind": "vocabulary",
+    "sl": "zdaj",
+    "gloss": "now",
+    "predictableError": "confusing 'zdaj' (now) with 'takoj' (right away/at once)",
+    "a1": true
+  },
+  "kmalu": {
+    "kind": "vocabulary",
+    "sl": "kmalu",
+    "gloss": "soon",
+    "predictableError": "using a full phrase like 'v kratkem času' instead of the one-word adverb 'kmalu'",
+    "a1": true
+  },
+  "narediti": {
+    "kind": "vocabulary",
+    "sl": "narediti",
+    "gloss": "to do / make",
+    "predictableError": "conjugating it after 'moram' ('moram naredim') instead of leaving the infinitive 'narediti'"
+  },
+  "nadomestilo": {
+    "kind": "vocabulary",
+    "sl": "nadomestilo",
+    "gloss": "replacement fee / compensation",
+    "predictableError": "treating this neuter noun as masculine in agreement; accusative equals nominative ('plačam nadomestilo')"
+  },
+  "prinesti_enak_izvod": {
+    "kind": "chunk",
+    "sl": "prinesti enak izvod",
+    "gloss": "to bring an identical copy",
+    "predictableError": "leaving 'enak izvod' nominative or misgendering the future l-participle — a man says 'prinesel bom enak izvod'"
+  },
+  "prvic": {
+    "kind": "vocabulary",
+    "sl": "prvič",
+    "gloss": "for the first time",
+    "predictableError": "reaching for 'prvi krat' / 'prva čas'; it's the single adverb 'prvič' ('prvič sem tukaj')",
+    "a1": true
+  },
+  "tam": {
+    "kind": "vocabulary",
+    "sl": "tam",
+    "gloss": "there (over there, static location)",
+    "predictableError": "confusing 'tam' (there, static) with 'tja' (to there, direction), or over-using 'tukaj'",
+    "a1": true
+  },
+  "stranisce": {
+    "kind": "vocabulary",
+    "sl": "stranišče",
+    "gloss": "toilet",
+    "predictableError": "reaching for 'WC'/'toaleta'; keep it nominative subject after the frame ('Kje je stranišče?'), not 'stranišča'",
+    "a1": true
+  },
+  "kje_zacnem": {
+    "kind": "chunk",
+    "sl": "Kje začnem?",
+    "gloss": "Where do I start?",
+    "predictableError": "calquing 'where do I begin' with the infinitive 'kje začeti' instead of the finite 1sg 'začnem'",
+    "a1": true
+  },
+  "kje_lahko_sedim": {
+    "kind": "chunk",
+    "sl": "Kje lahko sedim?",
+    "gloss": "Where can I sit?",
+    "predictableError": "keeping English modal+infinitive ('kje lahko sedeti'); after 'lahko' it's the finite 1sg 'sedim'",
+    "a1": true
+  },
+  "bom_pogledal": {
+    "kind": "chunk",
+    "sl": "Bom pogledal.",
+    "gloss": "I'll have a look.",
+    "predictableError": "gender on the l-participle — a man says 'pogledal', a woman 'pogledala'",
+    "a1": true
+  },
+  "brezplacen": {
+    "kind": "pattern",
+    "sl": "brezplačen ___",
+    "gloss": "free of charge / gratis (+ noun)",
+    "predictableError": "the adjective must agree with the noun in gender/number (brezplačna kava, brezplačno kosilo), not left masc 'brezplačen kava'; and it means free-of-cost — distinct from 'prost' (free = vacant/available)",
+    "a1": true
   }
 }

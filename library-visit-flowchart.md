@@ -6,9 +6,8 @@
 
 ### Legend
 
-The diagram tags each node with a **CEFR level pill** (the legend's *"A2 = raven CEFR"* chip means
-"the pill shows the CEFR level," using A2 as its example — it is **not** a global level for the whole
-document). Per-node levels range **A1 → B2**.
+The diagram tags **each node** with its own **CEFR level pill** (the legend's *"A2 = raven CEFR"* chip
+explains that the pill shows a node's CEFR level, with A2 as the example). Per-node levels range **A1 → B2**.
 
 | Marker | Meaning |
 |---|---|
