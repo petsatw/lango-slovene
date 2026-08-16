@@ -37,7 +37,7 @@
     "spletna_stran",
     "velja_enak_urnik"
   ],
-  "audio": "pending",
+  "audio": "ready",
   "voices": {
     "npc": "female-speaker",
     "client": "male-speaker"

@@ -61,7 +61,7 @@
     "vpisati_se",
     "zal"
   ],
-  "audio": "pending",
+  "audio": "ready",
   "voices": {
     "npc": "female-speaker",
     "client": "male-speaker"
