@@ -150,6 +150,12 @@ patterns / sample exponents (shared across modes) · mode-specific realisation n
 the current architecture and where the MVP honestly falls short of the full framework. No A1 scoring engine
 is built (guardrail: no A1 engine, no auto-competency-assignment).*
 
+> **Adopted direction (not yet implemented) — see [dialogue-difficulty-model.md](dialogue-difficulty-model.md).**
+> This `a1-map` is the **narrow curated CORE** and stays narrow. A **broader "A1 tag" on catalog learnables**
+> (a superset, CORE ⊆ tagged) is the primary signal `lint:a1` reads, so the lint is a **difficulty yardstick**
+> (basic = ≥80% core · intermediate = ≥80% tagged-A1 · advanced = beyond). New catalog items get a deliberate
+> tag-or-not-A1 decision at mint — judged on merit and tagged when the item is A1 material.
+
 **Competency buckets = 4 foundational layers + 10 thematic domains (14 total).** The `a1-map.json`
 `competencies` list is regrown from the 6 invented placeholders to these 14 grounded buckets. Each carries
 a `kind: "foundational" | "thematic"` so the readiness UI can group them. Thematic buckets carry their

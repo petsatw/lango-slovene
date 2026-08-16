@@ -373,10 +373,27 @@ main {
  * fills to it, the exit sits below it, and neither moves when the number of choices changes. The hint may
  * vanish between forks (nothing to do mid-reply); it reappears in the same spot. Choices scroll within. */
 .dialogue-choices {
+  position: relative; /* anchor the scroll cue */
   display: flex; flex-direction: column; flex: none;
   margin-top: 8px; height: clamp(190px, 26dvh, 244px);
 }
 .dialogue-choices.is-terminal { height: auto; } /* lone restart button — no fixed box */
+
+/* Scroll cue: a bottom fade + a bouncing chevron, shown only when the choice list overflows and isn't yet
+ * scrolled to the end (a >2-choice fork). Purely a hint — pointer-events off so it never eats a tap. */
+.choice-scroll-cue {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 34px;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 2px; font-size: 16px; line-height: 1; color: var(--amber);
+  background: linear-gradient(to top, rgba(15, 18, 23, 0.92), rgba(15, 18, 23, 0));
+  border-radius: 0 0 14px 14px;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+}
+.dialogue-choices.has-scroll .choice-scroll-cue { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .dialogue-choices.has-scroll .choice-scroll-cue { animation: cue-bounce 1.4s ease-in-out infinite; }
+}
+@keyframes cue-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
 .hint-row { display: flex; justify-content: center; margin-bottom: 10px; }
 /* Hint: a raised, obviously-pressable pill. Reveals the English on every option at once. */
@@ -420,6 +437,9 @@ main {
   background: var(--amber); color: #1a1206; font-size: 14px; font-weight: 800;
 }
 .choice-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+/* Parenthetical context (e.g. "(the book is damaged)") — a muted signpost above the Slovene line for a
+ * branch whose meaning depends on a situation the line can't carry. Always visible, never spoken. */
+.choice-context { font-size: 12px; font-style: italic; color: #b7a98c; line-height: 1.3; margin-bottom: 3px; }
 .choice-sl { font-size: 17px; font-weight: 600; line-height: 1.3; }
 /* English stays collapsed until hint reveals it — animate height + opacity so it eases in per choice. */
 .choice-en {

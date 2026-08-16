@@ -280,9 +280,12 @@ async function loadPractice() {
 const DIFFICULTY_TIERS = { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" };
 function difficultyTier(levelLabel) {
   const l = (levelLabel || "").toLowerCase();
+  // Handles both the computed bands (Basic/Intermediate/Advanced — docs/dialogue-difficulty-model.md)
+  // and legacy authored labels (Survival / Beginning A1 / Basic A1 / Full A1 / A2).
   if (l.includes("advanced") || l.includes("full")) return "advanced";
-  if (l.includes("basic")) return "intermediate";
-  return "beginner"; // "Survival", "Beginning", and anything unrecognized read as the entry rung
+  if (l.includes("intermediate") || l.includes("basic a1")) return "intermediate"; // computed "Intermediate"; legacy "Basic A1" = middle rung
+  if (l === "basic") return "beginner"; // computed entry band
+  return "beginner"; // "Survival", "Beginning A1", "A2", and anything unrecognized read as the entry rung
 }
 
 // The crisp variant selector: one big card per level — the TASK up front, a difficulty chip beside it,
@@ -493,6 +496,14 @@ function renderChoices(npcNode) {
     btn.appendChild(num);
     const body = document.createElement("span");
     body.className = "choice-body";
+    if (cn.context) {
+      // A muted parenthetical: the situation this branch selects when the context can't ride on the line
+      // itself (e.g. "the book is damaged"). Shown always — it's the signpost for picking this option.
+      const ctx = document.createElement("span");
+      ctx.className = "choice-context";
+      ctx.textContent = `(${cn.context})`;
+      body.appendChild(ctx);
+    }
     const sl = document.createElement("span");
     sl.className = "choice-sl";
     sl.textContent = cn.sl;
@@ -528,6 +539,21 @@ function renderChoices(npcNode) {
   }
 
   wrap.appendChild(list);
+
+  // Scroll cue: a fork may offer more than two choices (a complication branch), overflowing the
+  // fixed-height panel. Show a downward chevron while there's more below; hide it once scrolled to the end.
+  const cue = document.createElement("div");
+  cue.className = "choice-scroll-cue";
+  cue.setAttribute("aria-hidden", "true");
+  cue.textContent = "⌄";
+  wrap.appendChild(cue);
+  const updateCue = () => {
+    const overflow = list.scrollHeight - list.clientHeight > 4;
+    const atBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 4;
+    wrap.classList.toggle("has-scroll", overflow && !atBottom);
+  };
+  list.addEventListener("scroll", updateCue);
+  requestAnimationFrame(updateCue);
 }
 
 // The learner picks a client line: show it and (with audio) let the client speak first, THEN present

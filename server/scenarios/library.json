@@ -20,23 +20,31 @@
       "levels": [
         {
           "level": 1,
-          "levelLabel": "Beginning A1"
+          "levelLabel": "Basic"
         },
         {
           "level": 2,
-          "levelLabel": "Beginning A1"
+          "levelLabel": "Intermediate"
         },
         {
           "level": 3,
-          "levelLabel": "Basic A1"
+          "levelLabel": "Advanced"
         },
         {
           "level": 4,
-          "levelLabel": "Basic A1"
+          "levelLabel": "Advanced"
         },
         {
           "level": 5,
-          "levelLabel": "Advanced A1"
+          "levelLabel": "Advanced"
+        },
+        {
+          "level": 6,
+          "levelLabel": "Advanced"
+        },
+        {
+          "level": 7,
+          "levelLabel": "Advanced"
         }
       ]
     },

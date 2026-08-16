@@ -9,8 +9,10 @@
 // ERRORS (exit 1): root not npc · unreachable nodes · a path that never ends (cycle/dead spur) · manifest
 //   disagreement (a declared level with no file, a dialogue file the manifest doesn't declare, a
 //   level-label or voices mismatch).
-// REVIEW / WARN (exit 0): multi-parent convergence nodes (eyeball each for path coherence) · npc nodes
-//   that don't offer exactly 2 client choices.
+// REVIEW / WARN (exit 0): multi-parent convergence nodes (eyeball each for path coherence) · an npc node
+//   that offers a single client choice (degenerate — no real decision). Trees may offer MORE than two
+//   choices (docs/dialogue-difficulty-model.md §5 — a complication carried as an extra branch); that is a
+//   supported shape, not a warning.
 
 import { DIALOGUES } from "../dialogues";
 import { SCENARIOS } from "../scenarios";
@@ -41,10 +43,11 @@ for (const d of allDialogues) {
   const multi = [...inDegrees(nodes).entries()].filter(([, deg]) => deg > 1).map(([id]) => id);
   if (multi.length) reviews.push(`${where}: convergence node(s) ${multi.join(", ")} — verify each reads on all incoming paths`);
 
-  // Spine convention: an npc node offers exactly 2 client-reply choices. Not a hard rule → warn.
+  // A fork should offer a real decision: ≥2 client choices (or 0 = a terminal / a single npc→npc beat).
+  // >2 is a supported shape (a complication branch), so only a lone single choice is worth a warning.
   for (const [nid, n] of Object.entries(nodes)) {
-    if (n.speaker === "npc" && n.next.length !== 0 && n.next.length !== 2)
-      warns.push(`${where}: npc node "${nid}" offers ${n.next.length} choice(s), not the usual 2`);
+    if (n.speaker === "npc" && n.next.length === 1)
+      warns.push(`${where}: npc node "${nid}" offers a single choice — a fork should present ≥2 (no real decision otherwise)`);
   }
 }
 

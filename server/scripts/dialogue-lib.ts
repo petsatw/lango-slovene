@@ -96,3 +96,60 @@ export function canReachTerminal(nodes: TreeNodes): Set<string> {
   }
   return ok;
 }
+
+// ---- Difficulty band classification (docs/dialogue-difficulty-model.md) ---------------------------
+// Difficulty is COMPUTED after authoring, not authored. A dialogue's band is measured over its PRODUCED
+// (client) learnables — its `introduces` set — against two A1 tiers:
+//   - CORE      = the curated a1-map mappings (narrow, high-frequency survival core).
+//   - Tagged-A1 = the superset "also A1 material" (CORE ⊆ Tagged-A1). A learnable is Tagged-A1 iff it is
+//                 CORE or carries the catalog `a1` tag.
+// Both callers (reconcile — the writer; lint:a1 — the yardstick) share this one function so the band a
+// level ships with is byte-identical to the band the lint reports. Pure: callers pass the two id sets in.
+
+export type DialogueBand = "basic" | "intermediate" | "advanced";
+
+/** Basic is reserved for "short & simple" trees (docs §"Open specifics"): a node ceiling (~the L1 sizing)
+ *  with no deep nesting. We use total node count as the practical proxy. */
+export const BASIC_NODE_CEILING = 16;
+/** The A1-density threshold both A1-focused bands clear (docs §3). */
+export const A1_DENSITY_THRESHOLD = 0.8;
+
+export interface BandInputs {
+  /** The level's produced/client learnable ids (its `introduces` — the measurement basis). */
+  introduces: string[];
+  /** Total node count in the tree (the "short & simple" proxy for the basic gate). */
+  nodeCount: number;
+  /** Learnable ids that are CORE (mapped by ≥1 a1-map competency). */
+  coreIds: Set<string>;
+  /** Learnable ids that are Tagged-A1 (CORE OR carrying the `a1` tag). */
+  taggedA1Ids: Set<string>;
+}
+
+/** Classify a dialogue into basic/intermediate/advanced. A level that produces nothing measurable
+ *  (introduces == []) is treated as fully-A1 (ratios = 1), so a pure-review short tree lands basic. */
+export function classifyBand({ introduces, nodeCount, coreIds, taggedA1Ids }: BandInputs): DialogueBand {
+  const n = introduces.length;
+  const coreRatio = n === 0 ? 1 : introduces.filter((id) => coreIds.has(id)).length / n;
+  const taggedRatio = n === 0 ? 1 : introduces.filter((id) => taggedA1Ids.has(id)).length / n;
+  if (nodeCount <= BASIC_NODE_CEILING && coreRatio >= A1_DENSITY_THRESHOLD) return "basic";
+  if (taggedRatio >= A1_DENSITY_THRESHOLD) return "intermediate";
+  return "advanced";
+}
+
+const BAND_LABELS: Record<DialogueBand, string> = {
+  basic: "Basic",
+  intermediate: "Intermediate",
+  advanced: "Advanced",
+};
+
+/** The human `levelLabel` written onto the dialogue + manifest, derived from the computed band. */
+export function bandToLabel(band: DialogueBand): string {
+  return BAND_LABELS[band];
+}
+
+const BAND_ORDER: Record<DialogueBand, number> = { basic: 0, intermediate: 1, advanced: 2 };
+
+/** Ordinal rank of a band (basic < intermediate < advanced) — for the ascending-order check. */
+export function bandRank(band: DialogueBand): number {
+  return BAND_ORDER[band];
+}

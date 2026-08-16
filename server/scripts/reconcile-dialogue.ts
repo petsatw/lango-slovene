@@ -27,7 +27,10 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { normSurface, normalizeKind, inDegrees, reachableFrom, canReachTerminal } from "./dialogue-lib";
+import {
+  normSurface, normalizeKind, inDegrees, reachableFrom, canReachTerminal,
+  classifyBand, bandToLabel, bandRank, type DialogueBand,
+} from "./dialogue-lib";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..", "..");
@@ -45,8 +48,10 @@ function die(msg: string): never {
 // {
 //   scenario: { id, name?, title, status?, character, role?, setup, opening, register?:{form,variety} },
 //   dialogueVoices: { npc, client },                       // shared across the scenario's levels
-//   levels: [ { level, levelLabel, title, objectives:[{label,descriptorEN}], root, nodes:{…}, background?,
-//              catalog: { reuse:[id…], new:[{id,kind,sl,gloss,predictableError?,core?,rank?}…] } } ],
+//   levels: [ { level, levelLabel /* author TARGET; the written label is the COMPUTED band */, title,
+//              objectives:[{label,descriptorEN}], root, nodes:{ <id>:{ speaker, sl, en, deliverySL?,
+//              context? /* parenthetical on a client choice */, next } }, background?, intro?:{audio,text?,en?},
+//              catalog: { reuse:[id…], new:[{id,kind,sl,gloss,predictableError?,core?,a1?,rank?}…] } } ],
 //   criticFixes?: [ { level, nodeId, field:"sl"|"en"|"deliverySL", oldExact, newExact } ],
 //   a1Candidates?: [ { learnableId, competencyId, note? } ]
 // }
@@ -131,6 +136,7 @@ for (const lvl of input.levels) {
     const cleaned: any = { kind, sl: entry.sl, gloss: entry.gloss };
     if (typeof entry.predictableError === "string" && entry.predictableError) cleaned.predictableError = entry.predictableError;
     if (typeof entry.core === "boolean") cleaned.core = entry.core;
+    if (typeof entry.a1 === "boolean") cleaned.a1 = entry.a1; // Tagged-A1 decision, made at mint (docs §2)
     if (typeof entry.rank === "number") cleaned.rank = entry.rank;
     toMint[entry.id] = cleaned;
     mintedIds.add(entry.id);
@@ -148,6 +154,27 @@ for (const lvl of input.levels) {
   for (const id of ids) if (!knownAfterMerge.has(id))
     die(`level ${lvl.level}: introduces id "${id}" is neither in the catalog nor minted this run`);
   introducesByLevel.set(lvl.level, ids);
+}
+
+// ---- Difficulty bands (docs/dialogue-difficulty-model.md): computed, not authored ------------------
+// CORE = ids referenced by any a1-map competency. Tagged-A1 = CORE ∪ ids carrying the `a1` tag (in the
+// existing catalog OR minted this run). The band is measured over each level's `introduces` and OVERRIDES
+// the author's `levelLabel` target — the author aims, the classifier labels.
+const coreIds = new Set<string>();
+for (const c of a1Map.competencies ?? []) for (const id of c.learnables ?? []) coreIds.add(id);
+const taggedA1Ids = new Set<string>(coreIds);
+for (const [id, l] of Object.entries(existingLearnables)) if ((l as any).a1 === true) taggedA1Ids.add(id);
+for (const [id, l] of Object.entries(toMint)) if ((l as any).a1 === true) taggedA1Ids.add(id);
+
+const bandByLevel = new Map<number, DialogueBand>();
+for (const lvl of input.levels) {
+  const band = classifyBand({
+    introduces: introducesByLevel.get(lvl.level)!,
+    nodeCount: Object.keys(lvl.nodes ?? {}).length,
+    coreIds,
+    taggedA1Ids,
+  });
+  bandByLevel.set(lvl.level, band);
 }
 
 // ---- Step 4: apply critic fixes (keyed + exact; idempotent; never fuzzy) ----------------------------
@@ -176,6 +203,10 @@ function selfCheckTree(level: number, root: string, nodes: Record<string, any>):
   for (const [nid, n] of Object.entries<any>(nodes)) {
     if (n.speaker !== "npc" && n.speaker !== "client") die(`level ${level} node "${nid}": speaker must be npc|client`);
     for (const k of ["sl", "en"]) if (typeof n[k] !== "string" || !n[k]) die(`level ${level} node "${nid}": "${k}" required`);
+    if (n.context !== undefined) {
+      if (typeof n.context !== "string" || !n.context) die(`level ${level} node "${nid}": "context" must be a non-empty string`);
+      if (n.speaker !== "client") die(`level ${level} node "${nid}": "context" is only valid on a client choice`);
+    }
     if (!Array.isArray(n.next)) die(`level ${level} node "${nid}": next must be an array`);
     for (const t of n.next) if (!nodes[t]) die(`level ${level} node "${nid}": next → unknown node "${t}"`);
   }
@@ -210,33 +241,60 @@ function existingBackground(file: string): string | undefined {
   }
 }
 
+function normalizeIntro(raw: any): { audio: string; text?: string; en?: string } | undefined {
+  // A level's opening Slavko monologue: { audio (filename under public/intros/), text?, en? }. The author
+  // supplies text+en; audio is the target filename the OPERATOR generates separately (never here).
+  if (!raw || typeof raw !== "object") return undefined;
+  if (typeof raw.audio !== "string" || !raw.audio) return undefined;
+  const intro: { audio: string; text?: string; en?: string } = { audio: raw.audio };
+  if (typeof raw.text === "string" && raw.text) intro.text = raw.text;
+  if (typeof raw.en === "string" && raw.en) intro.en = raw.en;
+  return intro;
+}
+
+function existingIntro(file: string): { audio: string; text?: string; en?: string } | undefined {
+  // Like background: an intro wired onto the file is preserved on re-run unless the input supplies one.
+  if (!existsSync(file)) return undefined;
+  try {
+    return normalizeIntro(JSON.parse(readFileSync(file, "utf8")).intro);
+  } catch {
+    return undefined;
+  }
+}
+
 const writes: Array<{ path: string; label: string }> = [];
+const computedLabelByLevel = new Map<number, string>();
 for (const lvl of input.levels) {
-  if (typeof lvl.levelLabel !== "string" || !lvl.levelLabel) die(`level ${lvl.level}: "levelLabel" required`);
+  // `levelLabel` in the input is the author's TARGET; the written label is the computed band (docs §4).
+  if (typeof lvl.levelLabel !== "string" || !lvl.levelLabel) die(`level ${lvl.level}: "levelLabel" (author target) required`);
   if (typeof lvl.title !== "string" || !lvl.title) die(`level ${lvl.level}: "title" required`);
   if (!Array.isArray(lvl.objectives) || !lvl.objectives.length) die(`level ${lvl.level}: "objectives" required`);
   for (const o of lvl.objectives) if (!o.label || !o.descriptorEN) die(`level ${lvl.level}: each objective needs label + descriptorEN`);
   selfCheckTree(lvl.level, lvl.root, lvl.nodes);
 
   const file = path.join(DIALOGUES_DIR, `${scenarioId}-${lvl.level}.json`);
+  const computedLabel = bandToLabel(bandByLevel.get(lvl.level)!);
+  computedLabelByLevel.set(lvl.level, computedLabel);
   const background = (typeof lvl.background === "string" && lvl.background ? lvl.background : undefined)
     ?? existingBackground(file);
+  const intro = normalizeIntro(lvl.intro) ?? existingIntro(file);
   const dialogue = {
     id: `${scenarioId}-l${lvl.level}`,
     scenarioId,
     level: lvl.level,
-    levelLabel: lvl.levelLabel,
+    levelLabel: computedLabel,
     title: lvl.title,
     objectives: lvl.objectives.map((o: any) => ({ label: o.label, descriptorEN: o.descriptorEN })),
     introduces: introducesByLevel.get(lvl.level)!,
     audio: existingAudioState(file),
     voices: { npc: voices.npc, client: voices.client },
     ...(background ? { background } : {}),
+    ...(intro ? { intro } : {}),
     root: lvl.root,
     nodes: lvl.nodes,
   };
   writeFileSync(file, JSON.stringify(dialogue, null, 2) + "\n");
-  writes.push({ path: file, label: `L${lvl.level} ${lvl.levelLabel}` });
+  writes.push({ path: file, label: `L${lvl.level} ${computedLabel}` });
 }
 
 // ---- Step 6: merge new learnables into the catalog (append; preserve order; idempotent) -------------
@@ -266,7 +324,7 @@ manifest.surfaces = {
   dialogue: {
     voices: { npc: voices.npc, client: voices.client },
     levels: input.levels
-      .map((l: any) => ({ level: l.level, levelLabel: l.levelLabel }))
+      .map((l: any) => ({ level: l.level, levelLabel: computedLabelByLevel.get(l.level)! }))
       .sort((a: any, b: any) => a.level - b.level),
   },
   a1: (input.a1Candidates?.length ?? 0) > 0 ? true : (prevManifest.surfaces?.a1 ?? false),
@@ -297,9 +355,22 @@ console.log(`   minted ${mintedIds.size} new learnable(s): ${[...mintedIds].join
 console.log(`   critic fixes applied: ${fixesApplied}`);
 for (const lvl of input.levels) {
   const intro = introducesByLevel.get(lvl.level)!;
+  const band = bandByLevel.get(lvl.level)!;
+  const target = lvl.levelLabel;
   const multi = [...inDegrees(lvl.nodes).entries()].filter(([, d]) => d > 1).map(([id]) => id);
-  console.log(`   L${lvl.level} ${lvl.levelLabel}: introduces ${intro.length} [${intro.join(", ") || "none"}]`
+  console.log(`   L${lvl.level} computed band=${band} (author target "${target}"): introduces ${intro.length} [${intro.join(", ") || "none"}]`
     + (multi.length ? `  · convergence nodes for review: ${multi.join(", ")}` : ""));
+}
+// The ordinal `level` stays author-assigned; a non-ascending band order is a review signal, not an auto-renumber.
+const orderedBands = [...input.levels]
+  .sort((a: any, b: any) => a.level - b.level)
+  .map((l: any) => bandByLevel.get(l.level)!);
+for (let i = 1; i < orderedBands.length; i++) {
+  if (bandRank(orderedBands[i]!) < bandRank(orderedBands[i - 1]!)) {
+    console.log(`   ⚠️  computed bands are not ascending by level (${orderedBands.join(" → ")}) — `
+      + `consider re-ordering the level numbers so tabs run easy → hard.`);
+    break;
+  }
 }
 console.log(`   wrote ${writes.length} dialogue file(s) + manifest ${rel(manifestFile)}`);
 if (candidateFile) {

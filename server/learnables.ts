@@ -39,6 +39,11 @@ export interface Learnable {
   rank?: number; // leverage rank from the core pattern library; consulted only for core patterns
   predictableError?: string; // the one predictable beginner error, surfaced by presentation
   paretoCategory?: ParetoCategory[]; // A1 Pareto-set membership (implies high-leverage); see ParetoCategory
+  /** The "Tagged-A1" superset tag (docs/dialogue-difficulty-model.md §2). A deliberate at-mint decision:
+   *  set true when the item is A1 material even if it is not in the narrow a1-map CORE. It does NOT touch
+   *  the core (CORE ⊆ Tagged-A1); it only widens what the difficulty classifier counts as A1. An item left
+   *  untagged (and not in the a1-map) is above-A1 and simply raises a dialogue's computed band. */
+  a1?: boolean;
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -64,6 +69,7 @@ export function loadLearnables(): Record<string, Learnable> {
     const kind = l?.kind;
     if (!KINDS.includes(kind)) fail(`learnable "${id}": kind must be one of ${KINDS.join(" | ")}`);
     if (l.core !== undefined && typeof l.core !== "boolean") fail(`learnable "${id}": core must be a boolean`);
+    if (l.a1 !== undefined && typeof l.a1 !== "boolean") fail(`learnable "${id}": a1 must be a boolean`);
     if (l.rank !== undefined && typeof l.rank !== "number") fail(`learnable "${id}": rank must be a number`);
     if (l.predictableError !== undefined && typeof l.predictableError !== "string")
       fail(`learnable "${id}": predictableError must be a string`);
@@ -80,6 +86,7 @@ export function loadLearnables(): Record<string, Learnable> {
       sl: asString(l, "sl", `learnable "${id}"`),
       gloss: asString(l, "gloss", `learnable "${id}"`),
       ...(l.core !== undefined ? { core: l.core } : {}),
+      ...(l.a1 !== undefined ? { a1: l.a1 } : {}),
       ...(l.rank !== undefined ? { rank: l.rank } : {}),
       ...(l.predictableError !== undefined ? { predictableError: l.predictableError } : {}),
       ...(l.paretoCategory !== undefined ? { paretoCategory: l.paretoCategory } : {}),

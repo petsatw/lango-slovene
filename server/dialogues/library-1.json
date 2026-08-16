@@ -2,55 +2,60 @@
   "id": "library-l1",
   "scenarioId": "library",
   "level": 1,
-  "levelLabel": "Beginning A1",
-  "title": "Borrow a book",
+  "levelLabel": "Basic",
+  "title": "Welcome — a first look around",
   "objectives": [
     {
-      "label": "Greet the librarian",
-      "descriptorEN": "Return the librarian's greeting."
+      "label": "Prvič sem tukaj",
+      "descriptorEN": "Greet the librarian and say it's your first visit."
     },
     {
-      "label": "Ask to borrow a book",
-      "descriptorEN": "Say you'd like to borrow this book with 'Rad bi si izposodil ___' in the accusative."
+      "label": "Kje je ___?",
+      "descriptorEN": "Ask where things are — the books, the toilet."
     },
     {
-      "label": "Hand over your card",
-      "descriptorEN": "Hand over your library card with the fixed 'Izvolite.'"
+      "label": "Kaj je tam?",
+      "descriptorEN": "Point and ask what that is over there."
     },
     {
-      "label": "Take in the due date",
-      "descriptorEN": "Understand the spoken 30-day return date (receptive)."
-    },
-    {
-      "label": "Close politely",
-      "descriptorEN": "Close with 'Hvala, nasvidenje.'"
+      "label": "Najlepša hvala za pomoč",
+      "descriptorEN": "Thank the librarian warmly before you go and explore."
     }
   ],
   "introduces": [
-    "ali_imate",
+    "bom_pogledal",
     "dober_dan",
-    "hvala_nasvidenje",
-    "izposoditi_si",
-    "izvolite",
+    "hvala",
+    "hvala_za_pomoc",
+    "ja",
+    "kaj",
+    "kje_je",
+    "kje_lahko_sedim",
+    "kje_zacnem",
     "knjiga",
-    "najlepsa_hvala",
-    "nasvidenje",
-    "rad_bi",
-    "tukaj_imate"
+    "prvic",
+    "razumem",
+    "stranisce",
+    "tam",
+    "tukaj"
   ],
   "audio": "ready",
   "voices": {
     "npc": "female-speaker",
     "client": "male-speaker"
   },
-  "background": "library-computer.jpg",
+  "intro": {
+    "audio": "library-1.mp3",
+    "text": "[curious, almost whispering] Uau … prvič sem v tej knjižnici. [looking around, wide-eyed] Toliko knjig … [a little unsure] Kje naj sploh začnem?",
+    "en": "Wow… it's my first time in this library. So many books… Where should I even begin?"
+  },
   "root": "n1",
   "nodes": {
     "n1": {
       "speaker": "npc",
-      "sl": "Dober dan, izvolite?",
-      "en": "Good day, how can I help you?",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan, izvolite?",
+      "sl": "Dober dan, dobrodošli! Ste prvič pri nas? Vam malo pokažem, kako je vse urejeno?",
+      "en": "Good day, welcome! Is this your first time with us? Shall I show you a little how everything's arranged?",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Dober dan, dobrodošli! Ste prvič pri nas? Vam malo pokažem, kako je vse urejeno?",
       "next": [
         "c1a",
         "c1b"
@@ -58,25 +63,25 @@
     },
     "c1a": {
       "speaker": "client",
-      "sl": "Dober dan. Rad bi si izposodil to knjigo.",
-      "en": "Good day. I'd like to borrow this book.",
+      "sl": "Dober dan. Ja, prvič sem tukaj. Hvala!",
+      "en": "Good day. Yes, it's my first time here. Thank you!",
       "next": [
         "n2"
       ]
     },
     "c1b": {
       "speaker": "client",
-      "sl": "Dober dan. Ali imate to knjigo?",
-      "en": "Good day. Do you have this book?",
+      "sl": "Dober dan. Ja, kje pa začnem?",
+      "en": "Good day. Yes — where do I start?",
       "next": [
         "n2"
       ]
     },
     "n2": {
       "speaker": "npc",
-      "sl": "Seveda, prosim izkaznico.",
-      "en": "Of course, your card please.",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Seveda, prosim izkaznico.",
+      "sl": "Tukaj pri vhodu je katalog. Tu poiščete knjige.",
+      "en": "Right here by the entrance is the catalogue. Here you look up books.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Tukaj pri vhodu je katalog. Tu poiščete knjige.",
       "next": [
         "c2a",
         "c2b"
@@ -84,25 +89,25 @@
     },
     "c2a": {
       "speaker": "client",
-      "sl": "Izvolite.",
-      "en": "Here you are.",
+      "sl": "Aha, razumem. In kaj je tam?",
+      "en": "Aha, I understand. And what's over there?",
       "next": [
         "n3"
       ]
     },
     "c2b": {
       "speaker": "client",
-      "sl": "Tukaj imate.",
-      "en": "Here you go.",
+      "sl": "Super. In kje so knjige?",
+      "en": "Great. And where are the books?",
       "next": [
         "n3"
       ]
     },
     "n3": {
       "speaker": "npc",
-      "sl": "Izvolite. Rok vračila knjige je 30 dni. Prijetno branje!",
-      "en": "Here you are. The return date is 30 days. Enjoy your reading!",
-      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Izvolite. Rok vračila knjige je 30 dni. Prijetno branje!",
+      "sl": "Tam so knjige in čitalnica, zgoraj pa so računalniki.",
+      "en": "Over there are the books and the reading room, and upstairs are the computers.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Tam so knjige in čitalnica, zgoraj pa so računalniki.",
       "next": [
         "c3a",
         "c3b"
@@ -110,14 +115,51 @@
     },
     "c3a": {
       "speaker": "client",
-      "sl": "Hvala, nasvidenje.",
-      "en": "Thank you, goodbye.",
-      "next": []
+      "sl": "In kje je stranišče?",
+      "en": "And where is the toilet?",
+      "next": [
+        "n4"
+      ]
     },
     "c3b": {
       "speaker": "client",
-      "sl": "Najlepša hvala. Nasvidenje!",
-      "en": "Thank you very much. Goodbye!",
+      "sl": "Kje pa lahko sedim in berem?",
+      "en": "And where can I sit and read?",
+      "next": [
+        "n4"
+      ]
+    },
+    "n4": {
+      "speaker": "npc",
+      "sl": "Stranišče je levo, pri oknu pa je miren kotiček.",
+      "en": "The toilet is on the left, and by the window there's a quiet corner.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Stranišče je levo, pri oknu pa je miren kotiček.",
+      "next": [
+        "c4a",
+        "c4b"
+      ]
+    },
+    "c4a": {
+      "speaker": "client",
+      "sl": "Najlepša hvala za pomoč!",
+      "en": "Thank you very much for your help!",
+      "next": [
+        "nBye"
+      ]
+    },
+    "c4b": {
+      "speaker": "client",
+      "sl": "Super, hvala. Bom kar malo pogledal naokoli.",
+      "en": "Great, thanks. I'll just have a little look around.",
+      "next": [
+        "nBye"
+      ]
+    },
+    "nBye": {
+      "speaker": "npc",
+      "sl": "Kar razglejte se. Če boste kaj potrebovali, sem tukaj.",
+      "en": "Do have a look around. If you need anything, I'm here.",
+      "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Kar razglejte se. Če boste kaj potrebovali, sem tukaj.",
       "next": []
     }
   }
