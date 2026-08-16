@@ -540,20 +540,27 @@ function renderChoices(npcNode) {
 
   wrap.appendChild(list);
 
-  // Scroll cue: a fork may offer more than two choices (a complication branch), overflowing the
-  // fixed-height panel. Show a downward chevron while there's more below; hide it once scrolled to the end.
-  const cue = document.createElement("div");
-  cue.className = "choice-scroll-cue";
-  cue.setAttribute("aria-hidden", "true");
-  cue.textContent = "⌄";
-  wrap.appendChild(cue);
-  const updateCue = () => {
-    const overflow = list.scrollHeight - list.clientHeight > 4;
-    const atBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 4;
-    wrap.classList.toggle("has-scroll", overflow && !atBottom);
-  };
-  list.addEventListener("scroll", updateCue);
-  requestAnimationFrame(updateCue);
+  // "More choices" cue: a fork with more than two choices (a complication branch) overflows the
+  // fixed-height panel. Show a labeled amber pill counting what's still below; hide it once scrolled to the
+  // end. Gated on the choice COUNT (>2), so a 2-choice fork never shows it and a 3+-choice fork always does.
+  const hasMore = choices.length > 2;
+  if (hasMore) {
+    const cue = document.createElement("div");
+    cue.className = "choice-scroll-cue";
+    cue.setAttribute("aria-hidden", "true");
+    cue.innerHTML = `<span class="cue-pill"><span class="cue-count"></span><span class="cue-chev">⌄</span></span>`;
+    wrap.appendChild(cue);
+    const countEl = cue.querySelector(".cue-count");
+    const updateCue = () => {
+      // How many choice cards start below the visible fold — the number still to be revealed by scrolling.
+      const below = buttons.filter((b) => b.offsetTop - list.scrollTop >= list.clientHeight - 4).length;
+      const atBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 4;
+      countEl.textContent = below > 0 ? `${below} more` : "more choices";
+      wrap.classList.toggle("has-scroll", !atBottom);
+    };
+    list.addEventListener("scroll", updateCue);
+    requestAnimationFrame(updateCue);
+  }
 }
 
 // The learner picks a client line: show it and (with audio) let the client speak first, THEN present
