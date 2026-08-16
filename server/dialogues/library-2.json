@@ -54,8 +54,8 @@
   "background": "library-books.jpg",
   "intro": {
     "audio": "library-2.mp3",
-    "text": "[excited] Uh, končno! [warmly] To knjigo že leta hočem prebrati. [eager] Prijatelj mi je toliko pravil o njej… zdaj pa je vendarle prosta. [happy sigh] Komaj čakam, da jo odnesem domov in začnem brati. [determined] Dobro — grem noter, po svojo knjigo!",
-    "en": "Ugh, finally! I've wanted to read this book for years. A friend told me so much about it… and now it's finally free. I can hardly wait to take it home and start reading. Right — I'm going in, for my book!"
+    "text": "[excited] Končno! [warmly] To knjigo že leta hočem prebrati. [eager] Prijatelj mi je toliko pravil o njej… zdaj pa je vendarle prosta. [happy sigh] Komaj čakam, da jo odnesem domov in začnem brati. [determined] Dobro — grem noter, po svojo knjigo!",
+    "en": "Finally! I've wanted to read this book for years. A friend told me so much about it… and now it's finally free. I can hardly wait to take it home and start reading. Right — I'm going in, for my book!"
   },
   "root": "n1",
   "nodes": {

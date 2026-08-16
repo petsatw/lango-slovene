@@ -69,8 +69,8 @@
   "background": "library-card.jpg",
   "intro": {
     "audio": "library-6.mp3",
-    "text": "[yawning] Uf, dober dan… [waking up a little] Danes moram nujno urediti člansko izkaznico. [sheepish chuckle] Nekje sem jo zafrknil — ali mi je potekla, ali sem jo izgubil, sam ne vem več. [determined] Samo da spet lahko berem svoje knjige. [perking up] Dobro — gremo noter, knjižničarka bo že vedela, kaj naj naredim.",
-    "en": "Ugh, good day… Today I really have to sort out my library card. Somewhere I messed it up — either it expired, or I lost it, I honestly don't know anymore. As long as I can read my books again. Right — let's go in, the librarian will know what I should do."
+    "text": "[waking up a little] Dober dan. Danes moram nujno urediti člansko izkaznico. [sheepish chuckle] Nekje sem jo zafrknil — ali mi je potekla, ali sem jo izgubil, sam ne vem več. [determined] Samo da spet lahko berem svoje knjige. [perking up] Dobro — gremo noter, knjižničarka bo že vedela, kaj naj naredim.",
+    "en": "Good day. Today I really have to sort out my library card. Somewhere I messed it up — either it expired, or I lost it, I honestly don't know anymore. As long as I can read my books again. Right — let's go in, the librarian will know what I should do."
   },
   "root": "n1",
   "nodes": {

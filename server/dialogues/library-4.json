@@ -56,8 +56,8 @@
   "background": "library-computer.jpg",
   "intro": {
     "audio": "library-4.mp3",
-    "text": "[yawning] Uf… dober dan. [sleepy] Danes moram nujno v knjižnico. [tired] Rabim en miren kotiček, da se malo učim. [perking up] In pa mogoče računalnik, če imajo kakšnega prostega. [sleepy chuckle] Samo da ne zaspim kar med knjigami.",
-    "en": "Ugh… good day. Today I really have to get to the library. I need a quiet little corner to study a bit. And maybe a computer, if they have a free one. As long as I don't fall asleep right there among the books."
+    "text": "[sleepy] Dober dan. Danes moram nujno v knjižnico. [tired] Rabim en miren kotiček, da se malo učim. [perking up] In pa mogoče računalnik, če imajo kakšnega prostega. [sleepy chuckle] Samo da ne zaspim kar med knjigami.",
+    "en": "Good day. Today I really have to get to the library. I need a quiet little corner to study a bit. And maybe a computer, if they have a free one. As long as I don't fall asleep right there among the books."
   },
   "root": "n1",
   "nodes": {
