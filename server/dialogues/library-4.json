@@ -53,6 +53,7 @@
     "npc": "female-speaker",
     "client": "male-speaker"
   },
+  "background": "library-computer.jpg",
   "intro": {
     "audio": "library-4.mp3",
     "text": "[yawning] Uf… dober dan. [sleepy] Danes moram nujno v knjižnico. [tired] Rabim en miren kotiček, da se malo učim. [perking up] In pa mogoče računalnik, če imajo kakšnega prostega. [sleepy chuckle] Samo da ne zaspim kar med knjigami.",

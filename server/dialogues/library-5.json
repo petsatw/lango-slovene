@@ -51,6 +51,7 @@
     "npc": "female-speaker",
     "client": "male-speaker"
   },
+  "background": "library-wifi.jpg",
   "intro": {
     "audio": "library-5.mp3",
     "text": "[flustered] Uf, kje je pa zdaj tale knjižnica… [a little breathless] Prinesel sem računalnik, ker moram nujno na internet. [urgent] In natisniti moram en obrazec, še danes. [determined exhale] Dobro — gremo noter, da to čim prej uredim.",

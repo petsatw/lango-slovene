@@ -153,6 +153,19 @@ of the [asset pipeline](asset-pipeline.md) — a line identical in the same voic
 > The live-synth fallback in `/api/speak` (a cache miss) uses the plain `sl`, not `deliverySL` — so
 > pregenerate before shipping if the delivery direction matters.
 
+The **intro** monologue clips are a separate build (the line builder above deliberately skips them):
+
+```bash
+npm run build:dialogue-intros -- <scenarioId> [--level <n>] [--regen]
+```
+
+[`server/scripts/build-dialogue-intros.ts`](../server/scripts/build-dialogue-intros.ts) synthesizes each
+level's `intro.text` (the delivery-tagged source) in the scenario's **client** voice profile — the intro is
+the learner's own first-person monologue — and writes it to `public/intros/<intro.audio>`, the filename the
+dialogue declares. Preflight-gated, idempotent (skips an existing clip unless `--regen`), and sequential so a
+billed run can't half-complete. Unlike the line audio it writes a plain file (intros are referenced by name,
+like operator-supplied backgrounds), so the clips ship as git-tracked assets under `public/intros/`.
+
 ## Authoring
 
 Rehearsal dialogues are authored by the **`create-dialogue`** skill — the `dialogue` surface of the shared
