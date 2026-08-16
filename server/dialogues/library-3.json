@@ -62,6 +62,7 @@
     "npc": "female-speaker",
     "client": "male-speaker"
   },
+  "background": "library-book-borrowing.jpg",
   "intro": {
     "audio": "library-3.mp3",
     "text": "[sheepish] Uf… no, pa gremo. [nervous chuckle] To knjigo bi moral vrniti že prejšnji teden… [mumbling] ali pa še prej, ne vem točno. [awkward pause] In pa… ja. [sighing] Padla mi je v kad. [sheepish] Zdaj je čisto mokra in malo natrgana. [bracing himself] Upam, da ne bo predrago…",

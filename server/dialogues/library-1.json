@@ -44,6 +44,7 @@
     "npc": "female-speaker",
     "client": "male-speaker"
   },
+  "background": "library-welcome.jpg",
   "intro": {
     "audio": "library-1.mp3",
     "text": "[curious, almost whispering] Uau … prvič sem v tej knjižnici. [looking around, wide-eyed] Toliko knjig … [a little unsure] Kje naj sploh začnem?",
