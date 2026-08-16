@@ -29,7 +29,7 @@ Two different credentials, do not conflate them:
 
 ## Procedure
 
-Run all git commands from the repo root: `/Users/audocie/Apps/lango-slovenian`.
+Run all git commands from the repo root. The emitted blocks `cd` there via `$(git rev-parse --show-toplevel)` (portable across clones, and no local username in the skill), so the operator only needs to be somewhere inside the working tree.
 
 **Shell safety (this session and the operator's shell are zsh):** quote every glob — `'refs/heads/release/*'` — because zsh aborts an unquoted unmatched glob with `no matches found`. Iterate command output with `… | while IFS= read -r x; do …; done`, never `for x in $var`: zsh does not word-split an unquoted variable on newlines, so the loop body would receive all branches as one mangled token.
 
@@ -58,7 +58,7 @@ Run all git commands from the repo root: `/Users/audocie/Apps/lango-slovenian`.
    For the current common case — committed on `mvp`, remote `origin`:
 
    ```bash
-   cd /Users/audocie/Apps/lango-slovenian
+   cd "$(git rev-parse --show-toplevel)"
    git push origin mvp
    ```
 
@@ -67,7 +67,7 @@ Run all git commands from the repo root: `/Users/audocie/Apps/lango-slovenian`.
    For the current common case — source `mvp`, release `release/mvp-alpha`, repo `petsatw/lango-slovene`:
 
    ```bash
-   cd /Users/audocie/Apps/lango-slovenian
+   cd "$(git rev-parse --show-toplevel)"
    GH_TOKEN="$TOKEN" gh pr create --repo petsatw/lango-slovene --base release/mvp-alpha --head mvp --fill
    ```
 
