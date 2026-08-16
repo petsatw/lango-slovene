@@ -42,6 +42,7 @@
     "npc": "female-speaker",
     "client": "male-speaker"
   },
+  "background": "library-hours.jpg",
   "intro": {
     "audio": "library-7.mp3",
     "text": "[stretching, sleepy] Uf… danes bi rad šel v knjižnico. [thinking aloud] Ampak kdaj so pa sploh odprti? [a little worried] Ne bi rad prišel pred zaprtimi vrati. [perking up, eager] Najbolje, da najprej vprašam za delovni čas – potem pa lepo razporedim popoldne. [determined, brightening] Ja, dobro. Kar grem tja in vprašam.",
