@@ -25,6 +25,7 @@ Two different credentials, do not conflate them:
 - **Pushing** the source branch uses the fine-grained PAT already stored in the macOS keychain (`credential.helper=osxkeychain`). No login step. The source branch is unprotected, so the push succeeds.
 - **Opening the PR** uses `gh`, which has its **own** auth store and is **not** logged in here. It can reuse the same keychain PAT via `GH_TOKEN` — but only if that token grants **Pull requests: write**. If it lacks that scope, `gh` returns 403 and the operator opens the PR from the browser compare URL instead.
 - **The agent may run the PR block itself** (it is a GitHub API call, not a push — only pushes are hard-blocked for the agent in this environment). The **push block is always the operator's.**
+- **The emitted PR/merge blocks assume `$TOKEN` is already populated** with the keychain PAT (a prior prep-release run in the same shell exports it). They therefore use `GH_TOKEN="$TOKEN"` directly and do **not** re-extract the token each time. For a fresh shell where `$TOKEN` is unset, the **"Populating `$TOKEN`" block at the end** (always emitted) sets it — run that first.
 
 ## Procedure
 
@@ -61,13 +62,12 @@ Run all git commands from the repo root: `/Users/audocie/Apps/lango-slovenian`.
    git push origin mvp
    ```
 
-5. **Emit block 2 — the PR(s)**, one `gh pr create` per warranted `release/*`, targeting that branch with the source branch as head. The token line reuses the keychain PAT so `gh` needs no separate login; if the token lacks Pull requests: write, fall back to the browser compare URL stated below the block. One `gh pr create` line per warranted release branch.
+5. **Emit block 2 — the PR(s)**, one `gh pr create` per warranted `release/*`, targeting that branch with the source branch as head. The block **assumes `$TOKEN` is already populated** with the keychain PAT (see the always-emitted populate block in step 7) so `gh` needs no separate login; if the token lacks Pull requests: write, fall back to the browser compare URL stated below the block. One `gh pr create` line per warranted release branch.
 
    For the current common case — source `mvp`, release `release/mvp-alpha`, repo `petsatw/lango-slovene`:
 
    ```bash
    cd /Users/audocie/Apps/lango-slovenian
-   TOKEN=$(printf 'protocol=https\nhost=github.com\n\n' | git credential fill 2>/dev/null | awk -F= '/^password=/{print $2}')
    GH_TOKEN="$TOKEN" gh pr create --repo petsatw/lango-slovene --base release/mvp-alpha --head mvp --fill
    ```
 
@@ -78,6 +78,14 @@ Run all git commands from the repo root: `/Users/audocie/Apps/lango-slovenian`.
 6. **Railway redeploy advisory — always state it. The deploy fires on PR MERGE, not on the source-branch push.** Diff what will ship when the PR merges: `git diff --name-only origin/release/mvp-alpha <T>`.
    - If the diff is docs-only (`docs/**`, `*.md`), say so: a redeploy still fires on merge but has **no runtime effect** — the operator may choose not to merge if they don't want the redeploy.
    - If it touches audio, the asset store, or voice/model config (`assets/audio/**`, `server/adapters/**`, anything changing the serve-time env contract), point to **docs/DEPLOY.md** — the deploy only serves new audio if the branch carries the clips (gitignored `assets/` must be force-committed) and Railway's voice-id env matches the build. Remind the operator to re-run DEPLOY.md's recipe B (live probe) after the merge/redeploy.
+
+7. **Always emit the "Populating `$TOKEN`" block — last, after the PR/merge blocks.** The PR and merge blocks use `$TOKEN`; in a fresh shell that variable is unset. So every prep-release run ends with this block, stated as the thing to run first if `$TOKEN` is empty. It reads the keychain PAT without printing it:
+
+   ```bash
+   TOKEN=$(printf 'protocol=https\nhost=github.com\n\n' | git credential fill 2>/dev/null | awk -F= '/^password=/{print $2}')
+   ```
+
+   Emit it verbatim every time (it is repo-agnostic — `host=github.com` covers any GitHub remote). State in prose that a shell which already ran it this session can skip it.
 
 ## What prep-release does NOT do
 
