@@ -54,8 +54,8 @@
   "background": "library-wifi.jpg",
   "intro": {
     "audio": "library-5.mp3",
-    "text": "[flustered] Uf, kje je pa zdaj tale knjižnica… [a little breathless] Prinesel sem računalnik, ker moram nujno na internet. [urgent] In natisniti moram en obrazec, še danes. [determined exhale] Dobro — gremo noter, da to čim prej uredim.",
-    "en": "Ugh, now where is this library… I brought my laptop, because I urgently need to get online. And I have to print a form, today. Right — let's go in so I can sort this out as soon as possible."
+    "text": "[flustered] Kje je pa zdaj tale knjižnica… [a little breathless] Prinesel sem računalnik, ker moram nujno na internet. [urgent] In natisniti moram en obrazec, še danes. [determined] Dobro — gremo noter, da to čim prej uredim.",
+    "en": "Now, where is this library… I brought my laptop, because I urgently need to get online. And I have to print a form, today. Right — let's go in so I can sort this out as soon as possible."
   },
   "root": "n1",
   "nodes": {

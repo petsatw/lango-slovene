@@ -45,8 +45,8 @@
   "background": "library-hours.jpg",
   "intro": {
     "audio": "library-7.mp3",
-    "text": "[stretching, sleepy] Uf… danes bi rad šel v knjižnico. [thinking aloud] Ampak kdaj so pa sploh odprti? [a little worried] Ne bi rad prišel pred zaprtimi vrati. [perking up, eager] Najbolje, da najprej vprašam za delovni čas – potem pa lepo razporedim popoldne. [determined, brightening] Ja, dobro. Kar grem tja in vprašam.",
-    "en": "Ugh… today I'd like to go to the library. But when on earth are they even open? I wouldn't want to show up in front of locked doors. Best if I first ask about the opening hours — then I'll plan my afternoon nicely. Yes, good. I'll just head over and ask."
+    "text": "[sleepy] Danes bi rad šel v knjižnico. [thinking aloud] Ampak kdaj so pa sploh odprti? [a little worried] Ne bi rad prišel pred zaprtimi vrati. [perking up, eager] Najbolje, da najprej vprašam za delovni čas – potem pa lepo razporedim popoldne. [determined, brightening] Ja, dobro. Kar grem tja in vprašam.",
+    "en": "Today I'd like to go to the library. But when on earth are they even open? I wouldn't want to show up in front of locked doors. Best if I first ask about the opening hours — then I'll plan my afternoon nicely. Yes, good. I'll just head over and ask."
   },
   "root": "n1",
   "nodes": {
