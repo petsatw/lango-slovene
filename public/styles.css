@@ -338,10 +338,20 @@ main {
  * title, hint and bubbles legible. */
 .dialogue-card.has-bg {
   height: 82dvh; max-height: 82dvh;
-  background-image: linear-gradient(rgba(15, 17, 21, 0.5), rgba(15, 17, 21, 0.5)), var(--bg, none);
+  isolation: isolate; /* scope the scrim's negative z-index to this card */
+  background-image: var(--bg, none);
   background-size: cover; background-position: center;
   background-repeat: no-repeat;
 }
+/* The legibility scrim is its own layer so it can fade IN when the dialogue starts. During the intro the
+ * image plays clean (opacity 0); when the conversation interface fades in (~1s) the dim eases in with it. */
+.dialogue-card.has-bg::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  border-radius: inherit;
+  background: rgba(15, 17, 21, 0.5);
+  transition: opacity 1s ease;
+}
+.dialogue-card.has-bg.intro-active::before { opacity: 0; }
 .dialogue-card.has-bg .dialogue-convo { max-height: none; } /* frame is fixed; convo fills + scrolls */
 .dialogue-card.has-bg #dialogue-title,
 .dialogue-card.has-bg .dialogue-hint { color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
@@ -379,19 +389,28 @@ main {
 }
 .dialogue-choices.is-terminal { height: auto; } /* lone restart button — no fixed box */
 
-/* Scroll cue: a bottom fade + a bouncing chevron, shown only when the choice list overflows and isn't yet
- * scrolled to the end (a >2-choice fork). Purely a hint — pointer-events off so it never eats a tap. */
+/* "More choices" cue: a bottom fade with a labeled amber pill, shown ONLY on a >2-choice fork and until
+ * it's scrolled to the end. Absent on a 2-choice fork. Purely a hint — pointer-events off so it never
+ * eats a tap. The label spells it out ("2 more") so more-than-two is unmistakable, not just a chevron. */
 .choice-scroll-cue {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 34px;
+  position: absolute; left: 0; right: 0; bottom: 0; height: 42px;
   display: flex; align-items: flex-end; justify-content: center;
-  padding-bottom: 2px; font-size: 16px; line-height: 1; color: var(--amber);
-  background: linear-gradient(to top, rgba(15, 18, 23, 0.92), rgba(15, 18, 23, 0));
+  padding-bottom: 4px;
+  background: linear-gradient(to top, rgba(15, 18, 23, 0.96), rgba(15, 18, 23, 0));
   border-radius: 0 0 14px 14px;
   opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
 }
+.choice-scroll-cue .cue-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--amber); color: #1a1206;
+  border-radius: 999px; padding: 4px 12px;
+  font-size: 12px; font-weight: 800; letter-spacing: 0.04em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+.choice-scroll-cue .cue-chev { font-size: 13px; line-height: 1; }
 .dialogue-choices.has-scroll .choice-scroll-cue { opacity: 1; }
 @media (prefers-reduced-motion: no-preference) {
-  .dialogue-choices.has-scroll .choice-scroll-cue { animation: cue-bounce 1.4s ease-in-out infinite; }
+  .dialogue-choices.has-scroll .choice-scroll-cue .cue-pill { animation: cue-bounce 1.4s ease-in-out infinite; }
 }
 @keyframes cue-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
