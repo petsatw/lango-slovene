@@ -156,6 +156,6 @@ kept dormant, not deleted; not invested in for the MVP). No big-bang refactor of
 | `npm run reconcile:dialogue -- <input>` | L | merge delta + write dialogue files + manifest + emit A1 candidates (idempotent, fail-loud) |
 | `npm run lint:dialogue` | L | dialogue↔catalog seam: no duplicate canonical `sl`, `introduces` resolves, coverage |
 | `npm run lint:tree` | L | tree structure: root-npc, reachable, terminating, manifest-consistent; lists convergence nodes to review |
-| `npm run lint:a1` | L | A1 coverage: every learnable mapped or excluded; refs resolve; frontier report |
+| `npm run lint:a1` | L | A1-map ref-integrity (gate) + a band/coverage readout; the curated Pareto core is grown by promotion, never force-filled (see dialogue-difficulty-model.md) |
 | `npm run test:dialogue` | L | dialogue loader schema + `introduces` referential integrity |
 | `npm run build:dialogue-assets -- <id>` | G | **operator** — synth per-speaker audio; preflight; flips level `audio` → ready |
