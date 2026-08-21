@@ -26,7 +26,7 @@ async function main() {
   // Loading the modules runs their startup validation. A hard schema/id error throws here — surface it
   // as a lint failure rather than an uncaught stack.
   type LintNode = { speaker: "npc" | "client"; sl: string; deliverySL?: string; slowSL?: string;
-                    deliverySlowSL?: string; stallHandlers?: { sl: string; deliverySL?: string }[] };
+                    deliverySlowSL?: string };
   type LintDialogue = { id: string; introduces: string[]; voices: { npc: string; client: string }; nodes: Record<string, LintNode> };
   let LEARNABLES: Record<string, { id: string; kind: string; sl: string }>;
   let DIALOGUES: Record<string, LintDialogue[]>;
@@ -76,7 +76,6 @@ async function main() {
       const lines: { sl: string; delivery?: string; where: string }[] = [
         { sl: n.sl, delivery: n.deliverySL, where: `${d.id}:${nid}` },
         ...(n.slowSL ? [{ sl: n.slowSL, delivery: n.deliverySlowSL, where: `${d.id}:${nid}:slow` }] : []),
-        ...(n.stallHandlers ?? []).map((h, i) => ({ sl: h.sl, delivery: h.deliverySL, where: `${d.id}:${nid}:stall${i}` })),
       ];
       for (const l of lines) {
         if (!l.delivery) continue;
@@ -101,7 +100,6 @@ async function main() {
       const lines: { sl: string; say: string; where: string }[] = [
         { sl: n.sl, say: n.deliverySL ?? n.sl, where: `${d.id}:${nid}` },
         ...(n.slowSL ? [{ sl: n.slowSL, say: n.deliverySlowSL ?? n.slowSL, where: `${d.id}:${nid}:slow` }] : []),
-        ...(n.stallHandlers ?? []).map((h, i) => ({ sl: h.sl, say: h.deliverySL ?? h.sl, where: `${d.id}:${nid}:stall${i}` })),
       ];
       for (const l of lines) {
         const key = `${voice} :: ${l.sl}`; // clip identity: same (voice, clean sl) => same audio key

@@ -138,8 +138,8 @@ for (const { file, d } of files) {
     //                    synthesis there would bill mid-turn and arrive late.
     const extras: { text: string; say: string; label: string; suffix: string; speed?: number }[] = [];
     if (node.slowSL) extras.push({ text: node.slowSL, say: node.deliverySlowSL ?? node.slowSL, label: "🐢", suffix: "slow", speed: SLOW_SPEED });
-    for (const [i, h] of (node.stallHandlers ?? []).entries())
-      extras.push({ text: h.sl, say: h.deliverySL ?? h.sl, label: "⏳", suffix: `stall${i}` });
+    // Stall rungs carry no Slovene of their own — they pulse the caption, re-speak the node's existing
+    // slow clip, or soften the button label. Nothing to synthesize.
 
     for (const x of extras) {
       const xKey = store.audioKey(e3.name, voiceTag, x.text);

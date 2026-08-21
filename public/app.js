@@ -736,7 +736,7 @@ async function seedTurn(audioBase64) {
 // pacing: how long to hold before the caption appears, when the English arrives, whether the line gets
 // re-spoken slowly, and what to say if the learner goes quiet.
 
-let scene = { scenarioId: null, voice: null, node: null, stalls: [], armed: false };
+let scene = { scenarioId: null, voice: null, node: null, stalls: [], armed: false, backchannel: null };
 
 // How long a plain caption sits before the chunked-slow re-speak takes over. A rendering beat, not
 // authored content — long enough that the learner sees the sentence whole before it breaks apart.
@@ -768,17 +768,56 @@ function sceneClearStalls() {
   scene.stalls = [];
 }
 
-// The quiet-learner ladder: each rung is a real spoken line, already on disk, fired at its own wait.
-// Any of them is cancelled the moment the learner touches the button.
-function sceneArmStalls(handlers) {
+// The quiet-learner ladder. Someone who hasn't spoken is not short of Slovene — they're stuck, and
+// answering that with MORE Slovene is the one thing the scene must never do. So a rung either draws the
+// eye back to what is already there, models the target again, or lowers the bar in the learner's own
+// language. The bar never disappears. Cancelled the instant the learner touches the button.
+function sceneArmStalls(handlers, npc) {
   sceneClearStalls();
   for (const h of handlers) {
     scene.stalls.push(setTimeout(async () => {
       if (!scene.armed) return;
-      sceneCaption(h.sl);
-      await sceneSay(h.sl);
+      if (h.kind === "pulse") {
+        const cap = $("scene-caption");
+        cap.classList.remove("pulse");
+        void cap.offsetWidth; // restart the animation
+        cap.classList.add("pulse");
+      } else if (h.kind === "respeak" && npc.slowSL) {
+        sceneCaption(npc.slowSL, { slow: true });
+        await sceneSay(npc.slowSL);
+        sceneCaption(npc.sl);
+      } else if (h.kind === "soften" && h.label) {
+        $("scene-talk-label").textContent = h.label;
+      }
     }, h.afterMs));
   }
+}
+
+// Beats 1-11 — the English on-ramp, before any Slovene is spoken. Where you are, that nothing is being
+// asked of you yet, and that forgetting is not your fault.
+async function scenePlayFrame(lines) {
+  const el = $("scene-frame");
+  el.innerHTML = "";
+  for (const l of lines) {
+    const p = document.createElement("p");
+    p.textContent = l;
+    el.appendChild(p);
+  }
+  // Staggered in, then all gone by ~3s — long enough to read, short enough that it reads as a title
+  // card rather than a wall of instructions. The whole point is to get out of the way.
+  el.hidden = false;
+  const ps = [...el.children];
+  ps.forEach((p) => (p.style.opacity = "0"));
+  el.classList.add("shown");
+  for (const p of ps) {
+    p.style.transition = "opacity 400ms ease";
+    p.style.opacity = "1";
+    await new Promise((r) => setTimeout(r, 700));
+  }
+  await new Promise((r) => setTimeout(r, 1100));
+  el.classList.remove("shown");
+  await new Promise((r) => setTimeout(r, 620));
+  el.hidden = true;
 }
 
 async function scenePlayBeat(npc) {
@@ -787,9 +826,11 @@ async function scenePlayBeat(npc) {
   $("scene-talk").disabled = true;
   const cap = $("scene-caption");
   const gloss = $("scene-gloss");
-  cap.classList.remove("shown");
+  cap.classList.remove("shown", "pulse");
   gloss.classList.remove("shown");
   gloss.textContent = "";
+  $("scene-controls").hidden = true;      // the button belongs to the learner's turn, not the character's
+  $("scene-talk").classList.remove("waiting");
 
   // The line lands as SOUND, then the silence is held, and only then does it become text (beats 19-22).
   // These are three steps in sequence, not three timers racing: a hold that runs concurrently with the
@@ -817,7 +858,11 @@ async function scenePlayBeat(npc) {
     cap.onclick = () => { gloss.textContent = npc.en; gloss.classList.add("shown"); };
   }
 
-  if (npc.stallHandlers?.length) sceneArmStalls(npc.stallHandlers);
+  // The turn is handed over: the button appears carrying its instruction, and breathes while it waits.
+  $("scene-talk-label").textContent = "Hold and say it";
+  $("scene-controls").hidden = false;
+  $("scene-talk").classList.add("waiting");
+  if (npc.stallHandlers?.length) sceneArmStalls(npc.stallHandlers, npc);
   scene.armed = true;
   $("scene-talk").disabled = false;
 }
@@ -831,7 +876,9 @@ async function sceneStep(from) {
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
   scene.voice = data.voice;
+  if (data.backchannel) scene.backchannel = data.backchannel;
   if (data.background) $("scene-bg").style.backgroundImage = `url(/backgrounds/${data.background})`;
+  if (data.frameEN?.length) await scenePlayFrame(data.frameEN);
   if (data.npc) await scenePlayBeat(data.npc);
   else sceneFinish();
 }
@@ -845,7 +892,7 @@ function sceneFinish() {
 }
 
 async function openScene(scenarioId) {
-  scene = { scenarioId, voice: null, node: null, stalls: [], armed: false };
+  scene = { scenarioId, voice: null, node: null, stalls: [], armed: false, backchannel: null };
   showScreen("scene");
   $("scene-bg").style.backgroundImage = "";
   try {
@@ -881,6 +928,10 @@ function wireSceneMic() {
     const from = scene.node?.id;
     scene.armed = false;
     btn.disabled = true;
+    btn.classList.remove("waiting");
+    // The character answers the BODY before anything answers the words — a cached "Mhm." fires now,
+    // sooner than any processing could have returned. Perceived latency: zero.
+    if (scene.backchannel) sceneSay(scene.backchannel);
     try { await sceneStep(from); } catch (err) { obs.error(`scene: ${err.message}`); }
   };
   btn.addEventListener("pointerup", release);

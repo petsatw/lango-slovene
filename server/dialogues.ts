@@ -37,18 +37,24 @@ export type DialogueAdvance = "tap" | "audio";
  *    surface without being surfaced here. */
 export type GlossPolicy = "tap" | "after" | "held";
 
-/** One escalating prompt for a learner who has gone quiet — the character filling a silence, at a
- *  measured wait. Several on a node form a ladder (each `afterMs` later than the last), so a pause gets
- *  gentler company before it gets clearer help. Each is a real spoken line and gets its own clip. */
+/** One rung of the ladder for a learner who has gone quiet.
+ *
+ *  Crucially these are NOT extra lines of Slovene. Someone who has not spoken is not short of Slovene —
+ *  they are stuck, and answering that with more of the language they don't have is the cruellest thing
+ *  the scene could do. So each rung either draws the eye back to what is already there, models the
+ *  target again, or LOWERS THE BAR in the learner's own language. The bar never disappears.
+ *
+ *  - `"pulse"`   — the caption pulses once, gently. No copy at all.
+ *  - `"respeak"` — the character says the line again, slower (the node's slow clip). Modelling, never
+ *                  prompting: never "are you still there?".
+ *  - `"soften"`  — the button's label softens to `label` (e.g. "Whisper it if you like."). English, on
+ *                  the control, where an instruction belongs. */
 export interface DialogueStallHandler {
-  /** Milliseconds of silence after which this line plays, measured from the learner's turn opening. */
+  /** Milliseconds of silence after which this rung fires, measured from the learner's turn opening. */
   afterMs: number;
-  /** The line, in Slovene — the caption and the audio cache key, exactly as `DialogueNode.sl` is. */
-  sl: string;
-  /** English gloss. */
-  en: string;
-  /** Optional delivery-tagged variant, synthesized in place of `sl` while `sl` stays the key. */
-  deliverySL?: string;
+  kind: "pulse" | "respeak" | "soften";
+  /** For `"soften"`: the English label the button lowers to. Required for that kind, unused otherwise. */
+  label?: string;
 }
 
 export interface DialogueNode {
@@ -137,6 +143,12 @@ export interface Dialogue {
   audio: DialogueAudioState;
   /** Per-speaker voice profile id (catalog voices.json) — the tag pregenerated audio is keyed on. */
   voices: Record<DialogueSpeaker, string>;
+  /** The English lines shown BEFORE the scene opens, then faded (the first thing in the run). This is
+   *  the on-ramp: it names where the learner is, tells them they are not required to do anything yet,
+   *  and promises that forgetting is not their fault. It is what earns the right to withhold English
+   *  once the character starts speaking — a scene that opens straight onto un-glossed Slovene, with no
+   *  frame and nothing to look at, is unusable by the beginner it exists for. Absent → straight in. */
+  frameEN?: string[];
   /** How the learner advances this level — tapped choices (default) or spoken turns. Absent → "tap", so
    *  every dialogue authored before this field keeps its behaviour. See DialogueAdvance. */
   advance?: DialogueAdvance;
@@ -196,6 +208,10 @@ export function validateDialogue(file: string, raw: any): Dialogue {
   asProfile(file, raw.voices, "client", "voices");
   if (raw.advance !== undefined && raw.advance !== "tap" && raw.advance !== "audio")
     fail(file, `"advance" must be "tap" | "audio"`);
+  if (raw.frameEN !== undefined) {
+    if (!Array.isArray(raw.frameEN) || !raw.frameEN.length) fail(file, `"frameEN" must be a non-empty array of strings`);
+    for (const l of raw.frameEN) if (typeof l !== "string" || !l) fail(file, `"frameEN": every line must be a non-empty string`);
+  }
   if (raw.background !== undefined) asString(file, raw, "background", "dialogue");
   if (raw.intro !== undefined) {
     if (!raw.intro || typeof raw.intro !== "object") fail(file, `"intro" must be an object { audio, text?, en? }`);
@@ -239,18 +255,17 @@ export function validateDialogue(file: string, raw: any): Dialogue {
       fail(file, `${where}: "glossPolicy" must be "tap" | "after" | "held"`);
     if (n.stallHandlers !== undefined) {
       if (!Array.isArray(n.stallHandlers)) fail(file, `${where}: "stallHandlers" must be an array`);
-      if (n.speaker !== "npc") fail(file, `${where}: "stallHandlers" is only valid on an npc node (the character fills the silence)`);
+      if (n.speaker !== "npc") fail(file, `${where}: "stallHandlers" is only valid on an npc node (it is the character's silence to fill)`);
       let prev = -1;
       for (const [i, h] of n.stallHandlers.entries()) {
         const hw = `${where} stallHandler[${i}]`;
         if (typeof h?.afterMs !== "number" || !Number.isFinite(h.afterMs) || h.afterMs <= 0)
           fail(file, `${hw}: "afterMs" must be a positive number of milliseconds`);
-        // Ascending: a ladder only escalates if each rung waits longer than the one before it.
-        if (h.afterMs <= prev) fail(file, `${hw}: "afterMs" (${h.afterMs}) must be greater than the previous handler's (${prev})`);
+        if (h.afterMs <= prev) fail(file, `${hw}: "afterMs" (${h.afterMs}) must be greater than the previous rung's (${prev})`);
         prev = h.afterMs;
-        asString(file, h, "sl", hw);
-        asString(file, h, "en", hw);
-        if (h.deliverySL !== undefined) asString(file, h, "deliverySL", hw);
+        if (!["pulse", "respeak", "soften"].includes(h.kind)) fail(file, `${hw}: "kind" must be "pulse" | "respeak" | "soften"`);
+        if (h.kind === "soften") asString(file, h, "label", hw);
+        if (h.kind === "respeak" && !n.slowSL) fail(file, `${hw}: "respeak" needs the node to have a "slowSL" to re-speak`);
       }
     }
     if (n.context !== undefined) {

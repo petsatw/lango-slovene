@@ -23,6 +23,11 @@
     "client": "slavko"
   },
   "advance": "audio",
+  "frameEN": [
+    "You're in Ljubljana.",
+    "Just listen — nothing to do yet.",
+    "If you forget something, that's on us."
+  ],
   "root": "n1",
   "nodes": {
     "n1": {
@@ -35,14 +40,17 @@
       "glossPolicy": "held",
       "stallHandlers": [
         {
-          "afterMs": 15000,
-          "sl": "Nič ne skrbi. Kako ti je ime?",
-          "en": "Don't worry. What's your name?"
+          "afterMs": 15500,
+          "kind": "pulse"
+        },
+        {
+          "afterMs": 18000,
+          "kind": "respeak"
         },
         {
           "afterMs": 22000,
-          "sl": "Kar povej. Samo ime.",
-          "en": "Go ahead. Just your name."
+          "kind": "soften",
+          "label": "Whisper it if you like."
         }
       ],
       "next": [
@@ -69,14 +77,17 @@
       "glossPolicy": "after",
       "stallHandlers": [
         {
-          "afterMs": 15000,
-          "sl": "Nič se ne boj. Jaz sem Slavko, zdaj pa še ti.",
-          "en": "Don't be shy. I'm Slavko — now your turn."
+          "afterMs": 15500,
+          "kind": "pulse"
+        },
+        {
+          "afterMs": 18000,
+          "kind": "respeak"
         },
         {
           "afterMs": 22000,
-          "sl": "Kar počasi. Sem …",
-          "en": "Take your time. I'm …"
+          "kind": "soften",
+          "label": "Just the first word is fine."
         }
       ],
       "next": [

@@ -54,8 +54,9 @@ function die(msg: string): never {
 //              slowSL? /* chunked-slow re-speak: own caption, own audio key */,
 //              learnables? /* client nodes; the "audio"-mode attempt allowlist, may be [] */,
 //              captionDelayMs? /* silent hold before the caption */, glossPolicy? /* tap|after|held */,
-//              stallHandlers? /* npc nodes; [{afterMs,sl,en,deliverySL?}] ascending */,
+//              stallHandlers? /* npc nodes; [{afterMs,kind:"pulse"|"respeak"|"soften",label?}] ascending */,
 //              context? /* parenthetical on a client choice */, next } }, background?, intro?:{audio,text?,en?},
+//              frameEN? /* the English on-ramp shown before the scene opens */,
 //              catalog: { reuse:[id…], new:[{id,kind,sl,gloss,predictableError?,core?,a1?,rank?}…] } } ],
 //   criticFixes?: [ { level, nodeId, field:"sl"|"en"|"deliverySL", oldExact, newExact } ],
 //   a1Candidates?: [ { learnableId, competencyId, note? } ]
@@ -299,6 +300,7 @@ for (const lvl of input.levels) {
     audio: existingAudioState(file),
     voices: { npc: voices.npc, client: voices.client },
     ...(advance === "tap" ? {} : { advance }), // omit the default so existing files stay byte-identical
+    ...(Array.isArray(lvl.frameEN) && lvl.frameEN.length ? { frameEN: lvl.frameEN } : {}),
     ...(background ? { background } : {}),
     ...(intro ? { intro } : {}),
     root: lvl.root,

@@ -69,11 +69,19 @@
        only control, and nothing here judges what the learner says. -->
   <main id="scene" class="scene" hidden>
     <div id="scene-bg" class="scene-bg"></div>
+    <!-- The on-ramp: a few English lines that say where you are, that nothing is being asked of you
+         yet, and that forgetting is not your fault. This is what earns the right to withhold English
+         once the character starts speaking. It fades before the scene begins. -->
+    <div id="scene-frame" class="scene-frame" hidden></div>
     <p id="scene-caption" class="scene-caption" aria-live="polite"></p>
     <p id="scene-gloss" class="scene-gloss"></p>
-    <button id="scene-talk" class="scene-talk" type="button" aria-label="Hold to speak">
-      <span class="scene-talk-dot"></span>
-    </button>
+    <!-- Not a bare mic glyph: the button carries its instruction, and the reassurance sits under it. -->
+    <div id="scene-controls" class="scene-controls" hidden>
+      <button id="scene-talk" class="scene-talk" type="button">
+        <span id="scene-talk-label" class="scene-talk-label">Hold and say it</span>
+      </button>
+      <p class="scene-privacy">Nobody hears this but you.</p>
+    </div>
   </main>
 
   <!-- ③ REPLAYS — play back a past live session, tutor lines from the store (free). -->

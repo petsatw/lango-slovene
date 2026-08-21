@@ -139,16 +139,21 @@ app.post("/api/scene", (req, res) => {
     return n ? { id, sl: n.sl, en: n.en, slowSL: n.slowSL ?? null, captionDelayMs: n.captionDelayMs ?? 0,
                  glossPolicy: n.glossPolicy ?? "tap", stallHandlers: n.stallHandlers ?? [] } : null;
   };
+  // The character's listening noise, already on disk — the client fires it the instant the learner
+  // releases, before anything could have processed what they said.
+  const backchannel = CATALOG.voiceProfiles[scene.voices.npc]?.backchannels?.[0] ?? null;
 
   try {
     if (typeof from !== "string") {
-      return res.json({ voice: scene.voices.npc, background: scene.background ?? null, npc: shape(scene.root), done: false });
+      return res.json({ voice: scene.voices.npc, background: scene.background ?? null, backchannel,
+                        frameEN: scene.frameEN ?? [], npc: shape(scene.root), done: false });
     }
     const step = advanceDialogue(scene, from, { kind: "audio" });
     if (step.learnableProgress.length) learner.save(applyCredit(learner.load(), step.learnableProgress));
     res.json({
       voice: scene.voices.npc,
       background: scene.background ?? null,
+      backchannel,
       npc: shape(step.npcNodeId),
       spoke: step.clientNodeId ? { id: step.clientNodeId, sl: scene.nodes[step.clientNodeId]!.sl } : null,
       done: step.done,
