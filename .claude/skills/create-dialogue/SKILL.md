@@ -33,15 +33,36 @@ This skill is built as the **`dialogue` surface generator** of a future umbrella
 Work on a DRAFT under `.scratch/dialogue-drafts/<scenarioId>/` — **nothing is written into `server/` and no audio is generated until R approves** (PR semantics).
 
 ### 1 — Parse the manifest-shaped brief (J)
-Fix: the **situation**, a **register** (ti/vi + pogovorni/knjižni), the tutor **role** (Slovene role noun, e.g. `natakarica`), the **voices** (`npc` + `client` catalog voice profiles — and the learner's gender, which fixes first-person forms), and the **levels** to author (each: a `levelLabel`, a `title`, and its ordered **objectives** as EN meanings + the grammar point each teaches). Pick a kebab/lowercase `scenarioId`. If the scenario already exists, you are EXTENDING it — read its manifest + existing levels first so new levels don't re-introduce covered learnables.
+Fix: the **situation**, a **register** (ti/vi + pogovorni/knjižni), the tutor **role** (Slovene role noun, e.g. `natakarica`, or a named character who appears as himself), the **voices** (`npc` + `client` catalog voice profiles — and the learner's gender, which fixes first-person forms), the **advance mode**, and the **levels** to author (each: a `levelLabel`, a `title`, and its ordered **objectives** as EN meanings + the grammar point each teaches). Pick a kebab/lowercase `scenarioId`. If the scenario already exists, you are EXTENDING it — read its manifest + existing levels first so new levels don't re-introduce covered learnables.
+
+**The advance mode picks the shape (docs/rehearsal-dialogues.md › Tapped vs spoken).** Two kinds of package come out of this skill:
+
+| | `advance: "tap"` — a rehearsal tree | `advance: "audio"` — a spoken scene |
+|---|---|---|
+| Shape | branching: npc → **≥2 client choices** → re-convergence, sized per the template below | a **linear spine**, `next[0]` at every fork; extra entries are alternates a surface previews |
+| Client nodes | canned lines the learner **picks** | what the learner is expected to **say**; each carries `learnables` (the attempt allowlist, possibly `[]`) |
+| Arc | a real transaction: greeting → core exchange → closing | whatever the situation genuinely is — a **relationship opener** (curiosity → names exchanged → an invitation back) is as valid as an errand. Let the situation name its own arc. |
+| Extra node fields | — | `slowSL`, `captionDelayMs`, `glossPolicy`, `stallHandlers` (see stage 2) |
+
+Set `dialogueAdvance` in the reconcile input to match. Absent ⇒ `"tap"`.
 
 ### 2 — Design the per-level tree skeletons (J)
 From the **template + sizing** in docs/rehearsal-dialogues.md (L1 Survival ≈16 nodes, L2 Basic-A1 ≈26, L3 Full-A1 ≈52; spine = npc node → **2 client choices** → each client's single `next` = the npc response → branches **re-converge** onto shared later nodes; `root` is an `npc` node; every path ends at `next: []`). For each level author the node graph as `{ <id>: { speaker, intentEN, next } }` — ids + who speaks + the English intent + the branching. Ensure each level's objectives are each demonstrated on a reachable path, and are distinct across the scenario's levels.
 
+**For an `advance: "audio"` scene, spec the pacing too.** The spine carries the beats, and these per-node fields carry how each one lands. Author them as J (they are timing + policy, not language) alongside each node's `intentEN`:
+
+- `captionDelayMs` — the silent hold after a line is spoken, before its caption appears. Lets a line arrive as sound first.
+- `glossPolicy` — `"tap"` (click-to-reveal, the default), `"after"` (the English follows the Slovene on its own), `"held"` (the situation carries the meaning here).
+- `slowSL` — mark which npc beats re-speak their line chunked-and-slower; **LS writes the actual chunking** (stage 3).
+- `stallHandlers` — the ladder for a learner who has gone quiet: `[{afterMs, sl, en, deliverySL?}]`, strictly ascending, npc nodes only. Spec the `afterMs` rungs and each rung's **intent**; LS writes the lines.
+- `learnables` on each client node — the ids that beat expects the learner to produce. A beat whose expected utterance is the learner's own name carries `[]`.
+
 **Vary openers + closers across levels.** Give each level its own `n1` opener and its own terminal closers — do NOT reuse one greeting or one closing as every level's. Identical lines read monotonously *and* collapse to one audio clip (the audio key excludes the delivery tag, so same `sl` + same voice = one clip, first-built wins — a character's `deliverySL` only lands on lines whose `sl` is unique to that voice). Spec distinct intents; LS writes distinct lines. `lint:dialogue` warns on any delivery collision that slips through.
 
 ### 3 — Language authoring (J → LS), one subagent PER LEVEL, in parallel
-Dispatch **`slovenian-author`** (dialogue mode) once per level, concurrently — each gets the situation, register, voices, and that level's node map (speaker + `intentEN` + `next`). Each returns `{ level, nodes:{id:{sl,en,deliverySL?}}, catalogDelta:{reuse,new}, concerns }`. Start on the default model.
+Dispatch **`slovenian-author`** (dialogue mode) once per level, concurrently — each gets the situation, register, voices, and that level's node map (speaker + `intentEN` + `next`). Each returns `{ level, nodes:{id:{sl,en,deliverySL?,slowSL?}}, stallHandlers, catalogDelta:{reuse,new}, concerns }`. Start on the default model.
+
+For an **`"audio"` scene**, the dispatch also names: which nodes you marked for `slowSL` (LS writes the chunking — where a native would actually break the phrase, which is a language judgment), and each stall rung's intent (LS writes the line). Tell LS the register and that the client nodes are what the **learner** will say aloud.
 
 ### 4 — Sanity pass (J, C)
 Quick read against the rubric: native-not-textbook? register consistent? client lines carry the learner's gender? no npc-only line minted in a delta? branches re-converge coherently? If something's off, **re-dispatch that level's LS with the specific note** — never fix the Slovene yourself.
@@ -50,7 +71,7 @@ Quick read against the rubric: native-not-textbook? register consistent? client 
 Dispatch **`scenario-critic`** (dialogue mode) over ALL levels' trees + deltas at once. It returns `{ verdict, fixes:[{level,nodeId,field,oldExact,newExact,reason}], deltaFindings, convergenceReviewed, notes }`. Its `fixes` are the **structured, addressed** edits the reconcile applies; its `deltaFindings` flag mint/reuse problems. If a `deltaFinding` is `block`, route it back to LS (stage 3) and re-critique.
 
 ### 6 — Assemble the reconcile input (L, C)
-Write `.scratch/dialogue-drafts/<scenarioId>/reconcile-input.json` (shape in docs/authoring-pipeline.md): the `scenario` header, `dialogueVoices`, the `levels` (each with `levelLabel`, `title`, an optional `background` filename, `objectives:[{label,descriptorEN}]`, `root`, `nodes` merged from LS's `sl/en/deliverySL`, and `catalog:{reuse,new}`), the critic's `criticFixes`, and — folding A1 in (D5i) — `a1Candidates:[{learnableId,competencyId,note}]` proposing where each NEW learnable sits in the A1 map (competency ids from server/catalog/a1-map.json). You assemble English/structure only; every `sl` came from LS.
+Write `.scratch/dialogue-drafts/<scenarioId>/reconcile-input.json` (shape in docs/authoring-pipeline.md): the `scenario` header, `dialogueVoices`, `dialogueAdvance` (omit for `"tap"`), the `levels` (each with `levelLabel`, `title`, an optional `background` filename, `objectives:[{label,descriptorEN}]`, `root`, `nodes` merged from LS's `sl/en/deliverySL/slowSL` plus the J-owned `captionDelayMs/glossPolicy/stallHandlers/learnables`, and `catalog:{reuse,new}`), the critic's `criticFixes`, and — folding A1 in (D5i) — `a1Candidates:[{learnableId,competencyId,note}]` proposing where each NEW learnable sits in the A1 map (competency ids from server/catalog/a1-map.json). You assemble English/structure only; every `sl` came from LS.
 
 - **Mint-once across levels:** a learnable shared by several levels goes in `new` on **exactly one** level (its first use) and `reuse` on the rest. The same id under `new` twice makes the reconcile fail on a duplicate surface — split it here.
 - **`background`** (optional): a per-level portrait image filename under `public/backgrounds/` (operator-supplied art, `<scenario>-<level>.jpg` or descriptive). The reconcile writes it onto the level and **preserves it on re-run**. The reconcile input is the source of truth for a level's nodes — a re-run rewrites the file from it, so make later node changes here and re-run, not by hand-editing `server/dialogues/*.json`.

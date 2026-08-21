@@ -17,6 +17,10 @@ const PROFILE_ENV: Record<string, string> = {
   "female-speaker": "ELEVENLABS_VOICE_ID",
   "male-speaker": "ELEVENLABS_VOICE_ID_MALE",
   "shop-assistant": "ELEVENLABS_VOICE_ID_SHOP_ASSISTANT",
+  // Slavko shares male-speaker's binding on purpose: he IS the voice the restaurant client already
+  // speaks in, so every clip already synthesized for him stays a cache hit (the key is the voice ID,
+  // not the profile name). Giving him his own env var later re-keys all of his audio.
+  slavko: "ELEVENLABS_VOICE_ID_MALE",
 };
 
 function requireKey(): string {

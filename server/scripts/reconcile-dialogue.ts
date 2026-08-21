@@ -48,8 +48,13 @@ function die(msg: string): never {
 // {
 //   scenario: { id, name?, title, status?, character, role?, setup, opening, register?:{form,variety} },
 //   dialogueVoices: { npc, client },                       // shared across the scenario's levels
+//   dialogueAdvance?: "tap" | "audio",                     // default "tap" — how the learner advances
 //   levels: [ { level, levelLabel /* author TARGET; the written label is the COMPUTED band */, title,
 //              objectives:[{label,descriptorEN}], root, nodes:{ <id>:{ speaker, sl, en, deliverySL?,
+//              slowSL? /* chunked-slow re-speak: own caption, own audio key */,
+//              learnables? /* client nodes; the "audio"-mode attempt allowlist, may be [] */,
+//              captionDelayMs? /* silent hold before the caption */, glossPolicy? /* tap|after|held */,
+//              stallHandlers? /* npc nodes; [{afterMs,sl,en,deliverySL?}] ascending */,
 //              context? /* parenthetical on a client choice */, next } }, background?, intro?:{audio,text?,en?},
 //              catalog: { reuse:[id…], new:[{id,kind,sl,gloss,predictableError?,core?,a1?,rank?}…] } } ],
 //   criticFixes?: [ { level, nodeId, field:"sl"|"en"|"deliverySL", oldExact, newExact } ],
@@ -80,6 +85,11 @@ if (!/^[a-z0-9_-]+$/.test(scenarioId)) die(`scenario.id "${scenarioId}" must be 
 const voices = input.dialogueVoices;
 if (!voices || typeof voices.npc !== "string" || typeof voices.client !== "string")
   die(`"dialogueVoices" must be { npc, client }`);
+
+// How the learner advances this scenario's levels — tapped rehearsal choices (the default) or spoken
+// turns. Scenario-wide: a package is a rehearsal tree or a spoken scene, not a mix.
+const advance: "tap" | "audio" = input.dialogueAdvance ?? "tap";
+if (advance !== "tap" && advance !== "audio") die(`"dialogueAdvance" must be "tap" | "audio"`);
 
 if (!Array.isArray(input.levels) || !input.levels.length) die(`"levels" must be a non-empty array`);
 
@@ -288,6 +298,7 @@ for (const lvl of input.levels) {
     introduces: introducesByLevel.get(lvl.level)!,
     audio: existingAudioState(file),
     voices: { npc: voices.npc, client: voices.client },
+    ...(advance === "tap" ? {} : { advance }), // omit the default so existing files stay byte-identical
     ...(background ? { background } : {}),
     ...(intro ? { intro } : {}),
     root: lvl.root,
@@ -323,6 +334,7 @@ manifest.surfaces = {
   ...(prevManifest.surfaces ?? {}),
   dialogue: {
     voices: { npc: voices.npc, client: voices.client },
+    ...(advance === "tap" ? {} : { advance }),
     levels: input.levels
       .map((l: any) => ({ level: l.level, levelLabel: computedLabelByLevel.get(l.level)! }))
       .sort((a: any, b: any) => a.level - b.level),

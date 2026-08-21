@@ -21,6 +21,7 @@
     "build:seed-assets": "tsx server/scripts/build-seed-assets.ts",
     "build:dialogue-assets": "tsx server/scripts/build-dialogue-assets.ts",
     "build:dialogue-intros": "tsx server/scripts/build-dialogue-intros.ts",
+    "build:backchannels": "tsx server/scripts/build-backchannels.ts",
     "prompts": "tsx server/scripts/show-prompts.ts",
     "lint:scenario": "tsx server/scripts/lint-scenario.ts",
     "lint:dialogue": "tsx server/scripts/lint-dialogue.ts",

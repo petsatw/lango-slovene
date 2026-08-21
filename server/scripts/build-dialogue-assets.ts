@@ -6,6 +6,9 @@
 // "[hesitant] Dober dan…"), THAT is what gets synthesized, while the key stays node.sl. So delivery
 // direction steers the voice without ever showing on screen or changing the cache key.
 //
+// A node may also carry `slowSL` — the same line chunked and re-spoken slowly. That is DIFFERENT text,
+// so it is naturally its own key and its own clip, and it gets built alongside the natural one.
+//
 // After a level's nodes are all built (no failures), it flips that level's `audio` to "ready" so the
 // client starts showing play buttons for it. Idempotent + FREE on re-run (disk hits). Bills only on new
 // lines. Use --regen to force a re-roll (e.g. after changing a delivery note).
@@ -116,6 +119,39 @@ for (const { file, d } of files) {
     } catch (err: any) {
       failures++; levelFailures++;
       console.log(`   ❌  ${id} [${node.speaker}]: ${err?.message}`);
+    }
+
+    // Every OTHER spoken line this node owns, each keyed on its own clean text exactly as `sl` is:
+    //   • slowSL       — the chunked-slow re-speak. Different text ⇒ its own key and its own clip (the
+    //                    loader rejects a slowSL equal to sl, which would collapse the two into one).
+    //                    Synthesized as written: the chunking IS the delivery direction.
+    //   • stallHandlers — the lines that fill a learner's silence. They are spoken at the moment the
+    //                    learner has gone quiet, so they must be on disk before the scene runs; a live
+    //                    synthesis there would bill mid-turn and arrive late.
+    const extras: { text: string; say: string; label: string; suffix: string }[] = [];
+    if (node.slowSL) extras.push({ text: node.slowSL, say: node.slowSL, label: "🐢", suffix: "slow" });
+    for (const [i, h] of (node.stallHandlers ?? []).entries())
+      extras.push({ text: h.sl, say: h.deliverySL ?? h.sl, label: "⏳", suffix: `stall${i}` });
+
+    for (const x of extras) {
+      const xKey = store.audioKey(e3.name, voiceTag, x.text);
+      if (regen) store.remove(xKey, "audio");
+      try {
+        const { hit } = await store.getOrCreate(
+          xKey,
+          "audio",
+          { provider: e3.name, voiceOrModel: voiceTag, text: x.text, scenarioId: d.scenarioId, objectiveId: `dialogue:${d.id}:${id}:${x.suffix}` },
+          async () => {
+            const r = await e3.synthesize({ text: x.say, voiceProfile });
+            return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };
+          },
+        );
+        hit ? hits++ : made++;
+        console.log(`   ${hit ? "hit " : "gen "} ${x.label} ${id} [${node.speaker}] ${xKey.slice(0, 10)}…  "${x.text}"`);
+      } catch (err: any) {
+        failures++; levelFailures++;
+        console.log(`   ❌  ${id} [${node.speaker}] ${x.suffix}: ${err?.message}`);
+      }
     }
   }
 

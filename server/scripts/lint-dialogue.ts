@@ -25,7 +25,8 @@ async function main() {
 
   // Loading the modules runs their startup validation. A hard schema/id error throws here — surface it
   // as a lint failure rather than an uncaught stack.
-  type LintNode = { speaker: "npc" | "client"; sl: string; deliverySL?: string };
+  type LintNode = { speaker: "npc" | "client"; sl: string; deliverySL?: string; slowSL?: string;
+                    stallHandlers?: { sl: string; deliverySL?: string }[] };
   type LintDialogue = { id: string; introduces: string[]; voices: { npc: string; client: string }; nodes: Record<string, LintNode> };
   let LEARNABLES: Record<string, { id: string; kind: string; sl: string }>;
   let DIALOGUES: Record<string, LintDialogue[]>;
@@ -73,8 +74,18 @@ async function main() {
     for (const [nid, n] of Object.entries(d.nodes ?? {})) {
       const voice = d.voices?.[n.speaker];
       if (!voice || !n.sl) continue;
-      const key = `${voice} :: ${n.sl}`; // clip identity: same (voice, clean sl) => same audio key
-      (byClip.get(key) ?? byClip.set(key, []).get(key)!).push({ where: `${d.id}:${nid}`, say: n.deliverySL ?? n.sl, voice, sl: n.sl });
+      // Every clean line this node owns is its own clip: the line itself, its chunked-slow re-speak, and
+      // each stall handler. They share one key space, so a stall line that matches a node line in the
+      // same voice is the same collision the warning below exists for.
+      const lines: { sl: string; say: string; where: string }[] = [
+        { sl: n.sl, say: n.deliverySL ?? n.sl, where: `${d.id}:${nid}` },
+        ...(n.slowSL ? [{ sl: n.slowSL, say: n.slowSL, where: `${d.id}:${nid}:slow` }] : []),
+        ...(n.stallHandlers ?? []).map((h, i) => ({ sl: h.sl, say: h.deliverySL ?? h.sl, where: `${d.id}:${nid}:stall${i}` })),
+      ];
+      for (const l of lines) {
+        const key = `${voice} :: ${l.sl}`; // clip identity: same (voice, clean sl) => same audio key
+        (byClip.get(key) ?? byClip.set(key, []).get(key)!).push({ where: l.where, say: l.say, voice, sl: l.sl });
+      }
     }
   }
   for (const members of byClip.values()) {

@@ -64,6 +64,12 @@ The same authoring role, a different **surface**. Here C (the `create-dialogue` 
 - `sl` — the natural Ljubljana line for that intent (native-not-textbook, register-held). For **client** nodes this is what the LEARNER says; for **npc** nodes it is the character's line.
 - `en` — a faithful short English gloss.
 - `deliverySL` — OPTIONAL, **npc lines only**: the same `sl` with **one** eleven_v3 delivery tag (e.g. `[warmly] …`) matching the character's persona. Client lines carry NO `deliverySL`.
+- `slowSL` — OPTIONAL, and **only for the nodes C marks**: the same line **chunked and re-spoken slowly**, for a beat that says it once at natural speed and then again slower. Break it where a **native actually pauses** — at the phrase seam, not between every word — using ` … ` between chunks (e.g. `Jaz sem … Slavko.`). It must read as the same sentence, and its text must **differ from `sl`** (it is a separate audio clip keyed on its own text).
+
+### A spoken scene (`advance: "audio"`)
+C may hand you a **linear spine** instead of a branching tree, where the `client` nodes are what the learner is expected to **say aloud** rather than a menu to pick from. Two things change:
+- Write client lines as the learner's own speech at the level a beginner can actually produce on a first hearing — the line they were just shown how to say. Keep them short enough for one breath.
+- C may ask for **stall lines**: what the character says to a learner who has gone quiet, one per rung of an ascending ladder. Write them as the character genuinely filling a silence — warm, unhurried, and *shorter* as they escalate. Return them under `stallHandlers` keyed by node id.
 
 ### The catalog delta (the minting rubric — this is where over/under-minting happens)
 Alongside the nodes, return the learnables **this level introduces**, split into `reuse` and `new`:

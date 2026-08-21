@@ -54,6 +54,10 @@ export interface DialogueSurfaceLevel {
  *  manifest declares. The dialogue JSON files are keyed to this (D2 — manifest as source of truth). */
 export interface DialogueSurface {
   voices: { npc: string; client: string };
+  /** How the learner advances this scenario's levels — "tap" (rehearsal choices, the default) or
+   *  "audio" (spoken turns; see DialogueAdvance in dialogues.ts). Declared here as the manifest's
+   *  statement of it; `lint:tree` checks each dialogue file agrees, exactly as it does for voices. */
+  advance?: "tap" | "audio";
   levels: DialogueSurfaceLevel[];
 }
 
@@ -205,6 +209,8 @@ export function validateScenario(file: string, raw: any): Scenario {
         const p = asString(file, dlg.voices, speaker);
         if (!CATALOG.voiceProfiles[p]) fail(file, `surfaces.dialogue.voices.${speaker}: voice profile "${p}" is not in the catalog`);
       }
+      if (dlg.advance !== undefined && dlg.advance !== "tap" && dlg.advance !== "audio")
+        fail(file, `surfaces.dialogue.advance must be "tap" | "audio"`);
       if (!Array.isArray(dlg.levels) || !dlg.levels.length) fail(file, `surfaces.dialogue.levels must be a non-empty array`);
       const seen = new Set<number>();
       for (const lv of dlg.levels) {

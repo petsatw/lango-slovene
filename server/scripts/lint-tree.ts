@@ -45,9 +45,13 @@ for (const d of allDialogues) {
 
   // A fork should offer a real decision: ≥2 client choices (or 0 = a terminal / a single npc→npc beat).
   // >2 is a supported shape (a complication branch), so only a lone single choice is worth a warning.
-  for (const [nid, n] of Object.entries(nodes)) {
-    if (n.speaker === "npc" && n.next.length === 1)
-      warns.push(`${where}: npc node "${nid}" offers a single choice — a fork should present ≥2 (no real decision otherwise)`);
+  // NOT in "audio" mode: the learner speaks rather than picks, so a single continuation is the normal
+  // shape there (a linear spine) and warning on every beat would be noise.
+  if ((d.advance ?? "tap") === "tap") {
+    for (const [nid, n] of Object.entries(nodes)) {
+      if (n.speaker === "npc" && n.next.length === 1)
+        warns.push(`${where}: npc node "${nid}" offers a single choice — a fork should present ≥2 (no real decision otherwise)`);
+    }
   }
 }
 
@@ -66,6 +70,8 @@ for (const d of allDialogues) {
     errors.push(`${d.id}: levelLabel "${d.levelLabel}" ≠ manifest "${lv.levelLabel}"`);
   if (decl.voices.npc !== d.voices.npc || decl.voices.client !== d.voices.client)
     errors.push(`${d.id}: voices ${JSON.stringify(d.voices)} ≠ manifest ${JSON.stringify(decl.voices)}`);
+  if ((decl.advance ?? "tap") !== (d.advance ?? "tap"))
+    errors.push(`${d.id}: advance "${d.advance ?? "tap"}" ≠ manifest "${decl.advance ?? "tap"}"`);
 }
 
 // every manifest-declared level must have a file

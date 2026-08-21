@@ -20,6 +20,37 @@ import { LEARNABLES } from "./learnables";
 export type DialogueSpeaker = "npc" | "client";
 export type DialogueAudioState = "pending" | "ready";
 
+/** How the learner moves a tree forward.
+ *  - `"tap"` (the default, and every dialogue shipped before this existed): the learner PICKS a client
+ *    line. Pure rehearsal — no mic, no server turn, no crediting.
+ *  - `"audio"`: the learner SPEAKS and the tree advances on the audio ARRIVING, never on what it says
+ *    (nothing here inspects or judges the recording). Client nodes are then the expected production
+ *    rather than a menu, and the beat's `learnables` are planted as ATTEMPTS — never masteries.
+ *  Both are driven by the same adapter (adapters/dialogue-scripted.ts). */
+export type DialogueAdvance = "tap" | "audio";
+
+/** When this beat's English gloss reaches the learner.
+ *  - `"tap"` (the default): revealed on tap, the click-to-reveal every rehearsal tree uses.
+ *  - `"after"`: shown on its own once the Slovene has landed — meaning arrives second, so the learner
+ *    meets the Slovene first and the English confirms it.
+ *  - `"held"`: the beat carries its meaning by situation alone, and the gloss stays available to the
+ *    surface without being surfaced here. */
+export type GlossPolicy = "tap" | "after" | "held";
+
+/** One escalating prompt for a learner who has gone quiet — the character filling a silence, at a
+ *  measured wait. Several on a node form a ladder (each `afterMs` later than the last), so a pause gets
+ *  gentler company before it gets clearer help. Each is a real spoken line and gets its own clip. */
+export interface DialogueStallHandler {
+  /** Milliseconds of silence after which this line plays, measured from the learner's turn opening. */
+  afterMs: number;
+  /** The line, in Slovene — the caption and the audio cache key, exactly as `DialogueNode.sl` is. */
+  sl: string;
+  /** English gloss. */
+  en: string;
+  /** Optional delivery-tagged variant, synthesized in place of `sl` while `sl` stays the key. */
+  deliverySL?: string;
+}
+
 export interface DialogueNode {
   speaker: DialogueSpeaker;
   /** The line, in Slovene. This is the DISPLAY caption AND the audio cache key. */
@@ -30,11 +61,33 @@ export interface DialogueNode {
    *  is what gets SYNTHESIZED, while `sl` stays the clean caption + cache key — so the tags steer the
    *  voice without ever showing on screen or changing the key. Null/absent → synthesize `sl` plainly. */
   deliverySL?: string;
+  /** Optional CHUNKED-SLOW variant of this line — the same content re-spoken slowly, broken into chunks
+   *  (e.g. "Jaz sem … Slavko."), for a beat that says the line once at natural speed and then again
+   *  slower. Like `sl` it does double duty: it is the chunked CAPTION and the audio cache KEY for the
+   *  slow clip. It must therefore differ textually from `sl` — identical text would key to the same clip
+   *  and the "slow" version would silently be the natural one. `build:dialogue-assets` emits both. */
+  slowSL?: string;
+  /** Catalog learnable ids this beat expects the learner to PRODUCE — the allowlist the `"audio"`
+   *  advance mode plants as attempts (the same role `SeedStep.learnables` plays in the seed). Valid on
+   *  `client` nodes only, and MAY BE EMPTY: a beat whose expected utterance is not Slovene at all (the
+   *  learner saying their own name) exercises no catalog item. Ignored in `"tap"` mode, which credits
+   *  nothing. Absent → nothing to plant. */
+  learnables?: string[];
   /** Optional short parenthetical CONTEXT for a client choice (docs/dialogue-difficulty-model.md §5) —
    *  the situation that choice selects when one branch depends on context the line itself can't carry
    *  (e.g. "if the book is damaged", "no ID on you"). Rendered as a muted "(…)" tag on the choice, never
    *  spoken. Absent → a plain choice. */
   context?: string;
+  /** Milliseconds to hold after this line is spoken before its caption appears — the silent beat that
+   *  lets a line land as sound before it becomes text. Absent/0 → the caption appears with the line. */
+  captionDelayMs?: number;
+  /** When this beat's gloss reaches the learner. Absent → "tap", the click-to-reveal every rehearsal
+   *  tree already uses. */
+  glossPolicy?: GlossPolicy;
+  /** Escalating prompts for a learner who has gone quiet, ascending by `afterMs`. Valid on `npc` nodes
+   *  — the character is the one who fills the silence while awaiting the learner's turn. Each carries a
+   *  real spoken line, so `build:dialogue-assets` gives each its own clip. */
+  stallHandlers?: DialogueStallHandler[];
   /** Next node ids. On an npc node: the client-reply choices the learner picks between (may be more than
    *  two — the renderer scrolls). On a client node: the npc's response (one id). Empty = end. */
   next: string[];
@@ -77,6 +130,9 @@ export interface Dialogue {
   audio: DialogueAudioState;
   /** Per-speaker voice profile id (catalog voices.json) — the tag pregenerated audio is keyed on. */
   voices: Record<DialogueSpeaker, string>;
+  /** How the learner advances this level — tapped choices (default) or spoken turns. Absent → "tap", so
+   *  every dialogue authored before this field keeps its behaviour. See DialogueAdvance. */
+  advance?: DialogueAdvance;
   /** Optional portrait background image for this level's rehearsal — a filename under public/backgrounds/
    *  (e.g. "restaurant-1.jpg"). The conversation scrolls over it while the image stays fixed. Absent →
    *  the plain panel background. */
@@ -131,6 +187,8 @@ export function validateDialogue(file: string, raw: any): Dialogue {
   if (!raw.voices || typeof raw.voices !== "object") fail(file, `"voices" must be an object`);
   asProfile(file, raw.voices, "npc", "voices");
   asProfile(file, raw.voices, "client", "voices");
+  if (raw.advance !== undefined && raw.advance !== "tap" && raw.advance !== "audio")
+    fail(file, `"advance" must be "tap" | "audio"`);
   if (raw.background !== undefined) asString(file, raw, "background", "dialogue");
   if (raw.intro !== undefined) {
     if (!raw.intro || typeof raw.intro !== "object") fail(file, `"intro" must be an object { audio, text?, en? }`);
@@ -150,6 +208,40 @@ export function validateDialogue(file: string, raw: any): Dialogue {
     asString(file, n, "sl", where);
     asString(file, n, "en", where);
     if (n.deliverySL !== undefined) asString(file, n, "deliverySL", where);
+    if (n.slowSL !== undefined) {
+      asString(file, n, "slowSL", where);
+      // Same text ⇒ same audio key ⇒ one clip. The slow variant would silently be the natural one.
+      if (n.slowSL === n.sl) fail(file, `${where}: "slowSL" must differ from "sl" (identical text is one audio clip)`);
+    }
+    if (n.learnables !== undefined) {
+      if (!Array.isArray(n.learnables)) fail(file, `${where}: "learnables" must be an array of catalog ids`);
+      if (n.speaker !== "client") fail(file, `${where}: "learnables" is only valid on a client node (what the LEARNER produces)`);
+      for (const id of n.learnables) {
+        if (typeof id !== "string" || !LEARNABLES[id]) fail(file, `${where}: learnable "${id}" is not in the catalog`);
+      }
+    }
+    if (n.captionDelayMs !== undefined) {
+      if (typeof n.captionDelayMs !== "number" || !Number.isFinite(n.captionDelayMs) || n.captionDelayMs < 0)
+        fail(file, `${where}: "captionDelayMs" must be a non-negative number of milliseconds`);
+    }
+    if (n.glossPolicy !== undefined && !["tap", "after", "held"].includes(n.glossPolicy))
+      fail(file, `${where}: "glossPolicy" must be "tap" | "after" | "held"`);
+    if (n.stallHandlers !== undefined) {
+      if (!Array.isArray(n.stallHandlers)) fail(file, `${where}: "stallHandlers" must be an array`);
+      if (n.speaker !== "npc") fail(file, `${where}: "stallHandlers" is only valid on an npc node (the character fills the silence)`);
+      let prev = -1;
+      for (const [i, h] of n.stallHandlers.entries()) {
+        const hw = `${where} stallHandler[${i}]`;
+        if (typeof h?.afterMs !== "number" || !Number.isFinite(h.afterMs) || h.afterMs <= 0)
+          fail(file, `${hw}: "afterMs" must be a positive number of milliseconds`);
+        // Ascending: a ladder only escalates if each rung waits longer than the one before it.
+        if (h.afterMs <= prev) fail(file, `${hw}: "afterMs" (${h.afterMs}) must be greater than the previous handler's (${prev})`);
+        prev = h.afterMs;
+        asString(file, h, "sl", hw);
+        asString(file, h, "en", hw);
+        if (h.deliverySL !== undefined) asString(file, h, "deliverySL", hw);
+      }
+    }
     if (n.context !== undefined) {
       asString(file, n, "context", where);
       if (n.speaker !== "client") fail(file, `${where}: "context" is only valid on a client choice`);
