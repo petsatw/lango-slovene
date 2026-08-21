@@ -170,8 +170,11 @@ export interface E3Adapter {
   /** Cache-key tag for a NAMED voice profile (e.g. "male-speaker"). Audio reuse keys by the speaker's
    *  voice profile: the same text in two profiles is two distinct clips. Omit → the teacher voice. */
   voiceTagFor(voiceProfile?: string): string;
-  /** Full-buffer synthesis — used by probes and the replay harness. `voiceProfile` omitted → teacher. */
-  synthesize(input: { text: string; voiceProfile?: string }): Promise<E3Result>;
+  /** Full-buffer synthesis — used by probes and the replay harness. `voiceProfile` omitted → teacher.
+   *  `speed` is an optional provider-side rate control (<1 slower). It is deliberately NOT part of the
+   *  audio cache key: the client asks for a clip by (text, voice) alone, so a key carrying speed could
+   *  never be found again. Consequence: changing the speed of an already-built clip needs a --regen. */
+  synthesize(input: { text: string; voiceProfile?: string; speed?: number }): Promise<E3Result>;
   /** Progressive streaming synthesis (Level 1) — returns a web ReadableStream of audio bytes.
    *  Optional: providers without streaming fall back to synthesize(). `voiceProfile` omitted → teacher. */
   stream?(input: { text: string; voiceProfile?: string }): Promise<ReadableStream<Uint8Array>>;

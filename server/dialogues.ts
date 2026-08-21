@@ -67,6 +67,13 @@ export interface DialogueNode {
    *  slow clip. It must therefore differ textually from `sl` — identical text would key to the same clip
    *  and the "slow" version would silently be the natural one. `build:dialogue-assets` emits both. */
   slowSL?: string;
+  /** Optional `slowSL` WITH inline delivery tags — what actually gets SYNTHESIZED for the slow clip,
+   *  while `slowSL` stays the chunked caption and the cache key. Exactly the `sl`/`deliverySL` split,
+   *  and it exists for a measured reason: a ` … ` separator alone does NOT slow eleven_v3 down (two
+   *  authored slow lines came back 1.00× and 0.92× the length of their natural clips). Slower speech
+   *  has to be DIRECTED, and the direction must not appear on screen. Absent → `slowSL` is synthesized
+   *  as written, which will not be slower. */
+  deliverySlowSL?: string;
   /** Catalog learnable ids this beat expects the learner to PRODUCE — the allowlist the `"audio"`
    *  advance mode plants as attempts (the same role `SeedStep.learnables` plays in the seed). Valid on
    *  `client` nodes only, and MAY BE EMPTY: a beat whose expected utterance is not Slovene at all (the
@@ -212,6 +219,10 @@ export function validateDialogue(file: string, raw: any): Dialogue {
       asString(file, n, "slowSL", where);
       // Same text ⇒ same audio key ⇒ one clip. The slow variant would silently be the natural one.
       if (n.slowSL === n.sl) fail(file, `${where}: "slowSL" must differ from "sl" (identical text is one audio clip)`);
+    }
+    if (n.deliverySlowSL !== undefined) {
+      asString(file, n, "deliverySlowSL", where);
+      if (!n.slowSL) fail(file, `${where}: "deliverySlowSL" needs a "slowSL" to direct`);
     }
     if (n.learnables !== undefined) {
       if (!Array.isArray(n.learnables)) fail(file, `${where}: "learnables" must be an array of catalog ids`);

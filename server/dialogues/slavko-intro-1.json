@@ -17,7 +17,7 @@
   "introduces": [
     "sem_ime"
   ],
-  "audio": "pending",
+  "audio": "ready",
   "voices": {
     "npc": "slavko",
     "client": "slavko"
@@ -47,7 +47,8 @@
       ],
       "next": [
         "c1"
-      ]
+      ],
+      "deliverySlowSL": "[slower] Živjo … [slower] Kako ti je ime?"
     },
     "c1": {
       "speaker": "client",
@@ -80,7 +81,8 @@
       ],
       "next": [
         "c2"
-      ]
+      ],
+      "deliverySlowSL": "[slower] Me veseli … [deliberately] Jaz sem Slavko … [slower] Zdaj pa še ti."
     },
     "c2": {
       "speaker": "client",

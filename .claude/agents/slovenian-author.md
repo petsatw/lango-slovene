@@ -65,6 +65,7 @@ The same authoring role, a different **surface**. Here C (the `create-dialogue` 
 - `en` — a faithful short English gloss.
 - `deliverySL` — OPTIONAL, **npc lines only**: the same `sl` with **one** eleven_v3 delivery tag (e.g. `[warmly] …`) matching the character's persona. Client lines carry NO `deliverySL`.
 - `slowSL` — OPTIONAL, and **only for the nodes C marks**: the same line **chunked and re-spoken slowly**, for a beat that says it once at natural speed and then again slower. Break it where a **native actually pauses** — at the phrase seam, not between every word — using ` … ` between chunks (e.g. `Jaz sem … Slavko.`). It must read as the same sentence, and its text must **differ from `sl`** (it is a separate audio clip keyed on its own text).
+- `deliverySlowSL` — OPTIONAL but **strongly wanted whenever you write a `slowSL`**: the same `slowSL` text with inline delivery tags, which is what actually gets synthesized while `slowSL` stays the caption. Measured: the ` … ` separator **alone does not slow eleven_v3 down** (two authored slow lines came back at 1.00× and 0.92× their natural clips — one identical, one faster). Slower speech must be DIRECTED. Add tags only — the words must match `slowSL` exactly, a lint checks it.
 
 ### A spoken scene (`advance: "audio"`)
 C may hand you a **linear spine** instead of a branching tree, where the `client` nodes are what the learner is expected to **say aloud** rather than a menu to pick from. Two things change:

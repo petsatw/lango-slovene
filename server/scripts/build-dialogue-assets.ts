@@ -88,6 +88,10 @@ const e3 = getE3();
   console.log(`\n✓ preflight ok — ${profiles.size} voice profile(s) bound: ${[...profiles].join(", ")}`);
 }
 
+// Rate control for the chunked-slow re-speak. Not in the cache key (the client finds a clip by
+// text+voice), so changing it means --regen on the affected clips.
+const SLOW_SPEED = 0.75;
+
 let hits = 0, made = 0, failures = 0;
 
 if (auditionNodes) console.log(`\n♪ audition mode — synthesizing only [${[...auditionNodes].join(", ")}]; audio state left unchanged`);
@@ -132,8 +136,8 @@ for (const { file, d } of files) {
     //   • stallHandlers — the lines that fill a learner's silence. They are spoken at the moment the
     //                    learner has gone quiet, so they must be on disk before the scene runs; a live
     //                    synthesis there would bill mid-turn and arrive late.
-    const extras: { text: string; say: string; label: string; suffix: string }[] = [];
-    if (node.slowSL) extras.push({ text: node.slowSL, say: node.slowSL, label: "🐢", suffix: "slow" });
+    const extras: { text: string; say: string; label: string; suffix: string; speed?: number }[] = [];
+    if (node.slowSL) extras.push({ text: node.slowSL, say: node.deliverySlowSL ?? node.slowSL, label: "🐢", suffix: "slow", speed: SLOW_SPEED });
     for (const [i, h] of (node.stallHandlers ?? []).entries())
       extras.push({ text: h.sl, say: h.deliverySL ?? h.sl, label: "⏳", suffix: `stall${i}` });
 
@@ -146,7 +150,7 @@ for (const { file, d } of files) {
           "audio",
           { provider: e3.name, voiceOrModel: voiceTag, text: x.text, scenarioId: d.scenarioId, objectiveId: `dialogue:${d.id}:${id}:${x.suffix}` },
           async () => {
-            const r = await e3.synthesize({ text: x.say, voiceProfile });
+            const r = await e3.synthesize({ text: x.say, voiceProfile, ...(x.speed !== undefined ? { speed: x.speed } : {}) });
             return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };
           },
         );

@@ -83,6 +83,12 @@ the feature is optional per scenario.
   naturally a different key — no key-model change, nothing re-keyed. It must **differ from `sl`**
   (identical text is one clip, so the "slow" version would silently be the natural one); the loader
   rejects that. `build:dialogue-assets` emits both clips.
+- **`deliverySlowSL`** (optional) is `slowSL` **with inline delivery tags** — what gets synthesized for
+  the slow clip, while `slowSL` stays the caption and the key. The `sl`/`deliverySL` split, applied to
+  the slow line, and it exists for a **measured** reason: the ` … ` separator alone does **not** slow
+  eleven_v3 down. Two authored slow lines came back at 1.00× and 0.92× the duration of their natural
+  clips — one identical, one *faster*. Slower speech has to be **directed**, and the direction must not
+  reach the screen. Without it, `slowSL` is synthesized as written and the "slow" clip will not be slow.
 - **`learnables`** (optional, **client nodes only**) is the catalog ids that beat expects the learner to
   **produce** — the allowlist the `"audio"` advance mode plants as **attempts**. It **may be empty**: a
   beat whose expected utterance is not Slovene at all (the learner saying their own name) exercises no

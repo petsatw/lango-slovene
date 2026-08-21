@@ -50,7 +50,7 @@ export class ElevenLabsE3 implements E3Adapter {
     return this.voiceTagFor();
   }
 
-  async synthesize(input: { text: string; voiceProfile?: string }): Promise<E3Result> {
+  async synthesize(input: { text: string; voiceProfile?: string; speed?: number }): Promise<E3Result> {
     const key = requireKey();
     const voiceId = this.voiceIdFor(input.voiceProfile);
     if (!voiceId) throw new Error(`No ElevenLabs voice id set for profile "${input.voiceProfile ?? TEACHER_VOICE_PROFILE}" (set ${PROFILE_ENV[input.voiceProfile ?? TEACHER_VOICE_PROFILE]})`);
@@ -65,7 +65,14 @@ export class ElevenLabsE3 implements E3Adapter {
       body: JSON.stringify({
         text: input.text,
         model_id: this.modelId,
-        voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.75,
+          // Provider-side rate control, 0.7–1.2 (1.0 = default). Sent only when asked for; v3's support
+          // for it is undocumented, so the slow-clip path pairs it with a [slower] audio tag, which the
+          // v3 prompting guide names as its pacing lever.
+          ...(input.speed !== undefined ? { speed: input.speed } : {}),
+        },
       }),
     });
 
