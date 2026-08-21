@@ -30,14 +30,16 @@ let chatContext = null;      // free chat: the scene the learner arrived from (s
 let runId = null;            // unique id for THIS free-chat session — groups its turns into one replayable record
 
 // ---- Screen router — one screen visible at a time; the tree + obs are overlays on top. ----
-const SCREENS = ["home", "practice", "levels", "tutor", "replays", "a1"];
+const SCREENS = ["home", "practice", "levels", "tutor", "replays", "a1", "scene"];
 let currentScreen = "home";
 
 function showScreen(id) {
   currentScreen = id;
   for (const s of SCREENS) $(s).hidden = s !== id;
-  $("back").hidden = id === "home";
+  $("back").hidden = id === "home" || id === "scene";
   $("obs").hidden = id !== "tutor"; // observability panel is a dev affordance on the live surface only
+  // The scene owns the whole viewport — beat 15 is zero chrome, header included.
+  document.body.classList.toggle("in-scene", id === "scene");
 }
 
 function openHome() { stopAllAudio(); showScreen("home"); }
@@ -727,6 +729,156 @@ async function seedTurn(audioBase64) {
   }
 }
 
+// ---- Spoken scene: the first meeting. One character, one caption, one mic. ------------------------
+//
+// The learner's recording is never uploaded and never inspected — releasing the button IS the advance
+// signal, so the turn cannot be failed. What the server sends back is the next character line plus its
+// pacing: how long to hold before the caption appears, when the English arrives, whether the line gets
+// re-spoken slowly, and what to say if the learner goes quiet.
+
+let scene = { scenarioId: null, voice: null, node: null, stalls: [], armed: false };
+
+function sceneSay(text) {
+  return new Promise((resolve) => {
+    stopDialogueAudio();
+    const params = new URLSearchParams({ text });
+    if (scene.voice) params.set("voice", scene.voice);
+    const audio = new Audio(`/api/speak?${params.toString()}`);
+    dialogueAudio = audio;
+    const done = () => { if (dialogueAudio === audio) dialogueAudio = null; resolve(); };
+    audio.onended = done;
+    audio.onerror = done;
+    audio.play().catch(done);
+  });
+}
+
+function sceneCaption(text, { slow = false } = {}) {
+  const el = $("scene-caption");
+  el.textContent = text;
+  el.classList.toggle("slow", slow);
+  el.classList.add("shown");
+}
+
+function sceneClearStalls() {
+  for (const t of scene.stalls) clearTimeout(t);
+  scene.stalls = [];
+}
+
+// The quiet-learner ladder: each rung is a real spoken line, already on disk, fired at its own wait.
+// Any of them is cancelled the moment the learner touches the button.
+function sceneArmStalls(handlers) {
+  sceneClearStalls();
+  for (const h of handlers) {
+    scene.stalls.push(setTimeout(async () => {
+      if (!scene.armed) return;
+      sceneCaption(h.sl);
+      await sceneSay(h.sl);
+    }, h.afterMs));
+  }
+}
+
+async function scenePlayBeat(npc) {
+  scene.node = npc;
+  scene.armed = false;
+  $("scene-talk").disabled = true;
+  const cap = $("scene-caption");
+  const gloss = $("scene-gloss");
+  cap.classList.remove("shown");
+  gloss.classList.remove("shown");
+  gloss.textContent = "";
+
+  // The line lands as SOUND first; the caption arrives after its own hold (beats 19-22).
+  const spoken = sceneSay(npc.sl);
+  const holdMs = npc.captionDelayMs || 0;
+  setTimeout(() => sceneCaption(npc.sl), holdMs);
+  await spoken;
+
+  // Chunked-slow re-speak: same words, slower, with the caption chunking in step (beats 23-27).
+  if (npc.slowSL) {
+    sceneCaption(npc.slowSL, { slow: true });
+    await sceneSay(npc.slowSL);
+    sceneCaption(npc.sl);
+  }
+
+  // The gloss comes second when it comes at all — Slovene first, English confirming (beats 64-65, 82).
+  if (npc.glossPolicy === "after") {
+    gloss.textContent = npc.en;
+    gloss.classList.add("shown");
+  } else if (npc.glossPolicy === "tap") {
+    cap.onclick = () => { gloss.textContent = npc.en; gloss.classList.add("shown"); };
+  }
+
+  if (npc.stallHandlers?.length) sceneArmStalls(npc.stallHandlers);
+  scene.armed = true;
+  $("scene-talk").disabled = false;
+}
+
+async function sceneStep(from) {
+  const res = await fetch("/api/scene", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ scenarioId: scene.scenarioId, ...(from ? { from } : {}) }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  scene.voice = data.voice;
+  if (data.background) $("scene-bg").style.backgroundImage = `url(/backgrounds/${data.background})`;
+  if (data.npc) await scenePlayBeat(data.npc);
+  else sceneFinish();
+}
+
+function sceneFinish() {
+  sceneClearStalls();
+  scene.armed = false;
+  $("scene-talk").disabled = true;
+  learnerStarted = true;
+  openHome(); // the scene hands off to the app proper
+}
+
+async function openScene(scenarioId) {
+  scene = { scenarioId, voice: null, node: null, stalls: [], armed: false };
+  showScreen("scene");
+  $("scene-bg").style.backgroundImage = "";
+  try {
+    await sceneStep(null);
+  } catch (err) {
+    obs.error(`scene: ${err.message}`);
+    openHome();
+  }
+}
+
+// Push-to-talk for the scene. Haptic on press AND release (beats 47, 54) — the button answers the
+// hand, not the sentence. Nothing measures the audio, so there is no meter and no countdown.
+function wireSceneMic() {
+  const btn = $("scene-talk");
+  const buzz = (ms) => { try { navigator.vibrate?.(ms); } catch {} };
+
+  btn.addEventListener("pointerdown", async (e) => {
+    e.preventDefault();
+    if (!scene.armed) return;
+    sceneClearStalls();
+    buzz(8);
+    btn.classList.add("recording");
+    try { await startRecording(); } catch (err) { obs.error(`mic: ${err.message}`); }
+  });
+
+  const release = async (e) => {
+    e.preventDefault();
+    if (!btn.classList.contains("recording")) return;
+    btn.classList.remove("recording");
+    buzz(12);
+    // The recording stops and is discarded here: it is never sent, so nothing can judge it.
+    try { mediaRecorder?.stop(); mediaRecorder?.stream.getTracks().forEach((t) => t.stop()); } catch {}
+    const from = scene.node?.id;
+    scene.armed = false;
+    btn.disabled = true;
+    try { await sceneStep(from); } catch (err) { obs.error(`scene: ${err.message}`); }
+  };
+  btn.addEventListener("pointerup", release);
+  btn.addEventListener("pointercancel", release);
+  btn.addEventListener("pointerleave", release);
+}
+
 // ---- ③ Replays: play back a captured live session turn-by-turn, free (audio served from the store) ----
 function playClipToEnd(text) {
   return new Promise((resolve) => {
@@ -919,11 +1071,16 @@ async function init() {
   btn.addEventListener("pointercancel", stop);
   btn.addEventListener("pointerleave", stop);
 
+  wireSceneMic();
+
   // Boot metadata: providers (for obs) + the zero-state flag (empty learner → tutor routes to the seed).
   try {
     const info = await (await fetch("/api/practice")).json();
     obs.providers(`${info.providers.e2} + ${info.providers.e3}`);
     learnerStarted = !!info.started;
+    // D9 — a learner who has produced nothing meets the scene FIRST, ahead of the shell. `started`
+    // has to be in hand before this decision, which is why the route is settled here and not at paint.
+    if (!learnerStarted && info.scene) openScene(info.scene);
   } catch (err) {
     obs.error(`config: ${err.message}`);
   }

@@ -64,6 +64,18 @@
     <button id="play-fallback" class="play-fallback" hidden>▶ Tap to hear the tutor</button>
   </main>
 
+  <!-- SPOKEN SCENE — the first-meeting surface. Full-bleed image, the character, a caption low on
+       screen, one mic button, and no chrome at all: no header, no back, no counters. The mic is the
+       only control, and nothing here judges what the learner says. -->
+  <main id="scene" class="scene" hidden>
+    <div id="scene-bg" class="scene-bg"></div>
+    <p id="scene-caption" class="scene-caption" aria-live="polite"></p>
+    <p id="scene-gloss" class="scene-gloss"></p>
+    <button id="scene-talk" class="scene-talk" type="button" aria-label="Hold to speak">
+      <span class="scene-talk-dot"></span>
+    </button>
+  </main>
+
   <!-- ③ REPLAYS — play back a past live session, tutor lines from the store (free). -->
   <main id="replays" class="screen" hidden>
     <h2 class="screen-title">Replays</h2>

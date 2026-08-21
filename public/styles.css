@@ -549,3 +549,50 @@ main {
 .obs-row span { color: var(--muted); width: 78px; flex-shrink: 0; }
 .obs-row b { color: var(--text); font-weight: 500; word-break: break-word; }
 .obs-row.error b { color: var(--error); }
+
+/* ---- Spoken scene: the first-meeting surface -------------------------------------------------
+   Beat 15 is "zero chrome" — so this screen takes the whole viewport, paints over the header, and
+   shows exactly three things: the picture, the caption, and the mic. */
+body.in-scene header { display: none; }
+
+.scene {
+  position: fixed; inset: 0; z-index: 40;
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+  padding: 0 24px calc(40px + env(safe-area-inset-bottom));
+  background: #0a0c10;
+  overflow: hidden;
+}
+/* The image is full-bleed, with a bottom gradient so the caption stays legible over any art. */
+.scene-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+}
+.scene-bg::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 45%, rgba(10, 12, 16, 0.85) 88%);
+}
+.scene-caption, .scene-gloss {
+  position: relative; margin: 0; text-align: center; max-width: 32ch;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.7);
+  /* A caption arrives rather than blinks — the silent hold before it is a designed beat. */
+  opacity: 0; transition: opacity 220ms ease;
+}
+.scene-caption { font-size: 25px; line-height: 1.35; font-weight: 600; }
+.scene-gloss { font-size: 15px; color: var(--muted); margin-top: 10px; }
+.scene-caption.shown, .scene-gloss.shown { opacity: 1; }
+/* The chunked-slow re-speak is the same words, spaced — the caption widens to match the voice. */
+.scene-caption.slow { letter-spacing: 0.02em; word-spacing: 0.25em; }
+
+.scene-talk {
+  position: relative; margin-top: 34px; flex-shrink: 0;
+  width: 84px; height: 84px; border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.55); background: rgba(255, 255, 255, 0.1);
+  display: grid; place-items: center; cursor: pointer;
+  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+.scene-talk-dot { width: 26px; height: 26px; border-radius: 50%; background: #fff; transition: all 140ms ease; }
+/* Held: the button stays expanded for as long as the learner is speaking. No meter, no countdown —
+   beat 49 is explicit that the learner should not be watching a measurement of themselves. */
+.scene-talk.recording { transform: scale(1.12); background: rgba(224, 163, 54, 0.28); border-color: var(--amber); }
+.scene-talk.recording .scene-talk-dot { background: var(--amber); width: 30px; height: 30px; }
+.scene-talk:disabled { opacity: 0.35; cursor: default; }

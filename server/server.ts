@@ -13,12 +13,13 @@ import { getE2, getE3, getE4 } from "./adapters/index";
 import * as store from "./assets/store";
 import * as sessions from "./assets/sessions";
 import * as learner from "./assets/learner";
-import { inspect, statusOf } from "./mastery";
+import { inspect, statusOf, applyCredit } from "./mastery";
 import { A1_MAP } from "./a1";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
 import { CATALOG } from "./catalog";
 import { getDialoguesForScenario } from "./dialogues";
+import { advanceDialogue } from "./adapters/dialogue-scripted";
 import { getLearnable, LEARNABLES } from "./learnables";
 import { buildGalleryHtml } from "./scripts/gallery";
 
@@ -103,12 +104,58 @@ app.get("/api/config", (req, res) => {
 app.get("/api/practice", (_req, res) => {
   const scenarios = SCENARIOS.map((s) => ({ s, dialogues: getDialoguesForScenario(s.id) }))
     .filter(({ dialogues }) => dialogues.length > 0)
+    // A spoken scene is a place the app takes the learner, not a rehearsal the learner picks — so it
+    // stays out of the picker. The advance mode already tells the two apart.
+    .filter(({ dialogues }) => dialogues.some((d) => (d.advance ?? "tap") === "tap"))
     .map(({ s, dialogues }) => ({ id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null, dialogues }));
+  // The scenario that owns the first-run spoken scene, if one is authored — the boot route needs it in
+  // the same call as `started`, so a zero-state learner reaches the scene without a second round trip.
+  const sceneScenario = SCENARIOS.find((s) =>
+    getDialoguesForScenario(s.id).some((d) => (d.advance ?? "tap") === "audio"));
   res.json({
     scenarios,
     providers: { e2: getE2().name, e3: getE3().name },
     started: Object.keys(learner.load().learnables).length > 0,
+    scene: sceneScenario?.id ?? null,
   });
+});
+
+// SPOKEN SCENE — one step of an `advance: "audio"` dialogue. The learner's recording is NEVER sent
+// here: nothing inspects it, so uploading it would be waste, and the turn is unfailable by construction.
+// The client posts the node it is leaving; the server walks the spine, plants that beat's learnables as
+// ATTEMPTS, and returns the next character line with its pacing.
+//
+//   POST /api/scene { scenarioId }            → the opening line (credits nothing)
+//   POST /api/scene { scenarioId, from }      → the learner spoke at `from`; advance
+app.post("/api/scene", (req, res) => {
+  const { scenarioId, from } = req.body ?? {};
+  if (typeof scenarioId !== "string") return res.status(400).json({ error: "scenarioId is required" });
+
+  const scene = getDialoguesForScenario(scenarioId).find((d) => (d.advance ?? "tap") === "audio");
+  if (!scene) return res.status(404).json({ error: `No spoken scene for scenario "${scenarioId}"` });
+
+  const shape = (id: string | null) => {
+    const n = id ? scene.nodes[id] : null;
+    return n ? { id, sl: n.sl, en: n.en, slowSL: n.slowSL ?? null, captionDelayMs: n.captionDelayMs ?? 0,
+                 glossPolicy: n.glossPolicy ?? "tap", stallHandlers: n.stallHandlers ?? [] } : null;
+  };
+
+  try {
+    if (typeof from !== "string") {
+      return res.json({ voice: scene.voices.npc, background: scene.background ?? null, npc: shape(scene.root), done: false });
+    }
+    const step = advanceDialogue(scene, from, { kind: "audio" });
+    if (step.learnableProgress.length) learner.save(applyCredit(learner.load(), step.learnableProgress));
+    res.json({
+      voice: scene.voices.npc,
+      background: scene.background ?? null,
+      npc: shape(step.npcNodeId),
+      spoke: step.clientNodeId ? { id: step.clientNodeId, sl: scene.nodes[step.clientNodeId]!.sl } : null,
+      done: step.done,
+    });
+  } catch (err: any) {
+    res.status(400).json({ error: err?.message ?? String(err) });
+  }
 });
 
 // A1 Readiness (MVP destination ④) — the coverage map. Each competency carries REAL progress read from

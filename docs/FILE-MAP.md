@@ -20,8 +20,8 @@ about *where things are*. For the why, read ARCHITECTURE; for schemas and the HT
 
 | File | What it does |
 |---|---|
-| `public/index.html` | the app shell: talk button, transcript, objective dots, story / practice / runs panels, takeaway |
-| `public/app.js` | the whole front end: push-to-talk capture, `POST /api/turn`, streaming playback, the story player, free-practice, the **rehearsal-dialogue** overlay (branching tree + level tabs + single audio channel), past-runs replay, the live observability overlay |
+| `public/index.html` | the app shell: talk button, transcript, objective dots, story / practice / runs panels, takeaway, and the chrome-free **spoken-scene** surface (`#scene`) |
+| `public/app.js` | the whole front end: push-to-talk capture, `POST /api/turn`, streaming playback, the story player, free-practice, the **rehearsal-dialogue** overlay (branching tree + level tabs + single audio channel), past-runs replay, the **spoken scene** (beat pacing, slow re-speak, stall ladder, discard-on-release mic), the live observability overlay |
 
 The client holds the live `SessionState` in memory and talks only to `/api`. Keys never reach it.
 

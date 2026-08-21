@@ -122,6 +122,13 @@ generalized to a tree: pure, position-derived, unfailable by construction, and *
 caller's job** — the adapter returns the allowlist, the orchestrator applies it. Because it never scores,
 the mastery loop is untouched: production on the live mic is still the only place mastery accrues.
 
+A spoken scene renders on its **own surface**, not in the rehearsal overlay: `#scene` in
+[`public/index.html`](../public/index.html) — full-bleed image, one caption low on screen, one mic
+button, and no chrome (the header is hidden while it is up). It is driven by
+[`POST /api/scene`](DATA-MODEL.md), one beat per request. Because a spoken scene is somewhere the app
+*takes* the learner rather than a rehearsal they pick, `/api/practice` leaves it out of the picker, and
+`build:dialogue-assets` voices only the character — the client lines are the learner's own speech.
+
 `advance` is declared on the scenario manifest (`surfaces.dialogue.advance`) **and** on each level's
 file; `lint:tree` checks the two agree, exactly as it does for `voices`. Absent ⇒ `"tap"`, so every
 dialogue authored before the field keeps its behaviour. In `"audio"` mode `lint:tree` drops its
