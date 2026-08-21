@@ -1,0 +1,106 @@
+{
+  "id": "slavko-intro-l1",
+  "scenarioId": "slavko-intro",
+  "level": 1,
+  "levelLabel": "Basic",
+  "title": "Meeting Slavko",
+  "objectives": [
+    {
+      "label": "Say your name",
+      "descriptorEN": "Answer 'Kako ti je ime?' out loud with your own name."
+    },
+    {
+      "label": "Introduce yourself",
+      "descriptorEN": "Use the frame 'Sem ___.' with your own name in the slot."
+    }
+  ],
+  "introduces": [
+    "sem_ime"
+  ],
+  "audio": "pending",
+  "voices": {
+    "npc": "slavko",
+    "client": "slavko"
+  },
+  "advance": "audio",
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Živjo! Kako ti je ime?",
+      "en": "Hi! What's your name?",
+      "deliverySL": "[warmly] Živjo! Kako ti je ime?",
+      "slowSL": "Živjo … Kako ti je ime?",
+      "captionDelayMs": 3500,
+      "glossPolicy": "held",
+      "stallHandlers": [
+        {
+          "afterMs": 15000,
+          "sl": "Nič ne skrbi. Kako ti je ime?",
+          "en": "Don't worry. What's your name?"
+        },
+        {
+          "afterMs": 22000,
+          "sl": "Kar povej. Samo ime.",
+          "en": "Go ahead. Just your name."
+        }
+      ],
+      "next": [
+        "c1"
+      ]
+    },
+    "c1": {
+      "speaker": "client",
+      "sl": "___",
+      "en": "(your own name, spoken on its own)",
+      "learnables": [],
+      "next": [
+        "n2"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Me veseli! Jaz sem Slavko. Zdaj pa še ti.",
+      "en": "Nice to meet you! I'm Slavko. Now your turn.",
+      "deliverySL": "[cheerfully] Me veseli! Jaz sem Slavko. Zdaj pa še ti.",
+      "slowSL": "Me veseli … Jaz sem Slavko … Zdaj pa še ti.",
+      "captionDelayMs": 1200,
+      "glossPolicy": "after",
+      "stallHandlers": [
+        {
+          "afterMs": 15000,
+          "sl": "Nič se ne boj. Jaz sem Slavko, zdaj pa še ti.",
+          "en": "Don't be shy. I'm Slavko — now your turn."
+        },
+        {
+          "afterMs": 22000,
+          "sl": "Kar počasi. Sem …",
+          "en": "Take your time. I'm …"
+        }
+      ],
+      "next": [
+        "c2"
+      ]
+    },
+    "c2": {
+      "speaker": "client",
+      "sl": "Sem ___.",
+      "en": "I'm ___.",
+      "learnables": [
+        "sem_ime"
+      ],
+      "next": [
+        "n3"
+      ]
+    },
+    "n3": {
+      "speaker": "npc",
+      "sl": "Lepo, da sva se spoznala. Pridi spet kdaj!",
+      "en": "Good to have met you. Come again sometime!",
+      "deliverySL": "[warmly] Lepo, da sva se spoznala. Pridi spet kdaj!",
+      "captionDelayMs": 800,
+      "glossPolicy": "after",
+      "next": []
+    }
+  }
+}

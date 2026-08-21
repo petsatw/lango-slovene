@@ -65,6 +65,26 @@ async function main() {
   console.log(`  ${introducedBy.size}/${Object.keys(LEARNABLES).length} learnables are introduced by a dialogue.`);
   console.log(`  not introduced by any dialogue (may be owned by the seed/scenarios): ${orphans.join(", ") || "none"}`);
 
+  // 3b. DELIVERY DRIFT (error). `deliverySL` is the same line as `sl`, only with inline delivery tags —
+  //     so stripping the bracketed tags must give back `sl`. When it doesn't, the two have drifted:
+  //     `sl` is the caption AND the cache key, `deliverySL` is what gets SYNTHESIZED, so the clip says
+  //     one thing while the screen and the key say another, silently and only in the audio. The way this
+  //     happens is an edit that lands on `sl` and misses `deliverySL` beside it.
+  const stripTags = (s: string) => s.replace(/\[[^\]]*\]/g, " ").replace(/\s+/g, " ").trim();
+  for (const d of dialogues) {
+    for (const [nid, n] of Object.entries(d.nodes ?? {})) {
+      const lines: { sl: string; delivery?: string; where: string }[] = [
+        { sl: n.sl, delivery: n.deliverySL, where: `${d.id}:${nid}` },
+        ...(n.stallHandlers ?? []).map((h, i) => ({ sl: h.sl, delivery: h.deliverySL, where: `${d.id}:${nid}:stall${i}` })),
+      ];
+      for (const l of lines) {
+        if (!l.delivery) continue;
+        if (stripTags(l.delivery) !== stripTags(l.sl))
+          errors.push(`delivery drift at ${l.where}: deliverySL is not sl + tags — synthesized "${stripTags(l.delivery)}" vs caption/key "${l.sl}"`);
+      }
+    }
+  }
+
   // 4. Delivery-tag / audio-key collision (WARN). Group every node by (voice profile, clean sl) — its
   //    audio-clip identity. If a group's members were authored with more than one delivery (deliverySL ??
   //    sl), they collapse to a single clip and only the first built is heard. Flag it so the author makes

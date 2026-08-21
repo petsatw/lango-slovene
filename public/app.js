@@ -738,6 +738,10 @@ async function seedTurn(audioBase64) {
 
 let scene = { scenarioId: null, voice: null, node: null, stalls: [], armed: false };
 
+// How long a plain caption sits before the chunked-slow re-speak takes over. A rendering beat, not
+// authored content — long enough that the learner sees the sentence whole before it breaks apart.
+const CAPTION_READ_MS = 900;
+
 function sceneSay(text) {
   return new Promise((resolve) => {
     stopDialogueAudio();
@@ -787,14 +791,19 @@ async function scenePlayBeat(npc) {
   gloss.classList.remove("shown");
   gloss.textContent = "";
 
-  // The line lands as SOUND first; the caption arrives after its own hold (beats 19-22).
-  const spoken = sceneSay(npc.sl);
-  const holdMs = npc.captionDelayMs || 0;
-  setTimeout(() => sceneCaption(npc.sl), holdMs);
-  await spoken;
+  // The line lands as SOUND, then the silence is held, and only then does it become text (beats 19-22).
+  // These are three steps in sequence, not three timers racing: a hold that runs concurrently with the
+  // beat gets pre-empted by whatever comes next (the slow re-speak reveals the caption the instant the
+  // line ends), and the silence never actually happens.
+  await sceneSay(npc.sl);
+  if (npc.captionDelayMs) await new Promise((r) => setTimeout(r, npc.captionDelayMs));
+  sceneCaption(npc.sl);
 
-  // Chunked-slow re-speak: same words, slower, with the caption chunking in step (beats 23-27).
+  // Chunked-slow re-speak: same words, slower, with the caption chunking in step (beats 23-27). The
+  // caption has to be READ in its plain form first — setting it and re-setting it in the same tick means
+  // the learner only ever sees the chunked one, and the "appears, then re-speaks" beat collapses.
   if (npc.slowSL) {
+    await new Promise((r) => setTimeout(r, CAPTION_READ_MS));
     sceneCaption(npc.slowSL, { slow: true });
     await sceneSay(npc.slowSL);
     sceneCaption(npc.sl);
