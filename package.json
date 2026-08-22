@@ -27,6 +27,7 @@
     "lint:dialogue": "tsx server/scripts/lint-dialogue.ts",
     "lint:tree": "tsx server/scripts/lint-tree.ts",
     "lint:a1": "tsx server/scripts/lint-a1.ts",
+    "lint:audio": "tsx server/scripts/lint-audio.ts",
     "reconcile:dialogue": "tsx server/scripts/reconcile-dialogue.ts",
     "seed:catalog": "tsx server/scripts/seed-catalog.ts",
     "prune:assets": "tsx server/scripts/prune-assets.ts",
