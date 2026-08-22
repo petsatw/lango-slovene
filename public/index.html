@@ -69,18 +69,33 @@
        only control, and nothing here judges what the learner says. -->
   <main id="scene" class="scene" hidden>
     <div id="scene-bg" class="scene-bg"></div>
-    <!-- The on-ramp: a few English lines that say where you are, that nothing is being asked of you
-         yet, and that forgetting is not your fault. This is what earns the right to withhold English
+    <!-- The on-ramp: the English that tells a first-time learner what this is, what is about to happen,
+         what to do, and that nothing is at stake yet. This is what earns the right to withhold English
          once the character starts speaking. It fades before the scene begins. -->
-    <div id="scene-frame" class="scene-frame" hidden></div>
-    <p id="scene-caption" class="scene-caption" aria-live="polite"></p>
-    <p id="scene-gloss" class="scene-gloss"></p>
-    <!-- Not a bare mic glyph: the button carries its instruction, and the reassurance sits under it. -->
-    <div id="scene-controls" class="scene-controls" hidden>
+    <!-- The stage holds everything the character says. It is a fixed region so the caption does not
+         slide around as a gloss appears beneath it — the text lands in the same place every beat. -->
+    <div class="scene-stage">
+      <div id="scene-frame" class="scene-frame" hidden></div>
+      <p id="scene-caption" class="scene-caption" aria-live="polite"></p>
+      <p id="scene-gloss" class="scene-gloss"></p>
+    </div>
+    <!-- The controls are ALWAYS on screen and never move. The button is the one fixed object in the run:
+         it changes state (the character is speaking / your turn / recording) rather than appearing and
+         disappearing, so the learner always knows where the thing they act on lives. -->
+    <div id="scene-controls" class="scene-controls">
+      <!-- What the learner is being asked to SAY — their own upcoming line, not a gloss of the
+           character's. Without it a beginner who has heard nine words and must produce two has nothing
+           on screen telling them which two. -->
+      <p id="scene-prompt" class="scene-prompt">
+        <span id="scene-prompt-sl" class="scene-prompt-sl"></span>
+        <span id="scene-prompt-en" class="scene-prompt-en"></span>
+      </p>
       <button id="scene-talk" class="scene-talk" type="button">
-        <span id="scene-talk-label" class="scene-talk-label">Hold and say it</span>
+        <!-- While the character speaks the button carries no words, just a level meter: "sound is
+             happening, and it is not yours". It is the same object that will become your turn. -->
+        <span id="scene-talk-bars" class="scene-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span id="scene-talk-label" class="scene-talk-label"></span>
       </button>
-      <p class="scene-privacy">Nobody hears this but you.</p>
     </div>
   </main>
 

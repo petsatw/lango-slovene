@@ -19,6 +19,7 @@ import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
 import { CATALOG } from "./catalog";
 import { getDialoguesForScenario } from "./dialogues";
+import { pacingFor } from "./pacing";
 import { advanceDialogue } from "./adapters/dialogue-scripted";
 import { getLearnable, LEARNABLES } from "./learnables";
 import { buildGalleryHtml } from "./scripts/gallery";
@@ -134,10 +135,39 @@ app.post("/api/scene", (req, res) => {
   const scene = getDialoguesForScenario(scenarioId).find((d) => (d.advance ?? "tap") === "audio");
   if (!scene) return res.status(404).json({ error: `No spoken scene for scenario "${scenarioId}"` });
 
+  const pacing = pacingFor(scene.pacing);
+
   const shape = (id: string | null) => {
     const n = id ? scene.nodes[id] : null;
-    return n ? { id, sl: n.sl, en: n.en, slowSL: n.slowSL ?? null, captionDelayMs: n.captionDelayMs ?? 0,
-                 glossPolicy: n.glossPolicy ?? "tap", stallHandlers: n.stallHandlers ?? [] } : null;
+    if (!n) return null;
+    // What the learner is asked to say is the upcoming CLIENT node's own line — not a gloss of what the
+    // character just said. A beginner who hears nine words and must produce two cannot tell which two,
+    // and the character's caption can never tell them; their own line can.
+    const client = n.next.map((i) => scene.nodes[i]).find((x) => x?.speaker === "client");
+    // A client line that is nothing but a blank ("___" — the learner saying their own name) has no
+    // Slovene stem to show. Rendering the blank on its own is worse than showing nothing: it is a bold
+    // placeholder that says only "something goes here". In that case the English instruction IS the
+    // prompt, and it carries the beat alone.
+    const stem = client && /\p{L}/u.test(client.sl) ? client.sl : null;
+    return {
+      id,
+      sl: n.sl,
+      en: n.en,
+      slowSL: n.slowSL ?? null,
+      // Resolved here so the renderer never has to know a default: the node's own lead, else the profile's.
+      captionLeadMs: n.captionDelayMs ?? pacing.captionLeadMs,
+      glossPolicy: n.glossPolicy ?? "tap",
+      // Each rung's timing resolved from the profile by position unless the rung overrides it.
+      stallHandlers: (n.stallHandlers ?? []).map((h, i) => ({
+        kind: h.kind,
+        label: h.label ?? null,
+        afterMs: h.afterMs ?? pacing.stallMs[i]!,
+      })),
+      prompt: client ? { sl: stem, en: client.en } : null,
+      // A closing beat has nobody to hand the turn to. Without this the renderer armed the button anyway
+      // and the run ended sitting on "Hold and say it" after the character had said goodbye.
+      terminal: !n.next.length,
+    };
   };
   // The character's listening noise, already on disk — the client fires it the instant the learner
   // releases, before anything could have processed what they said.
@@ -146,7 +176,7 @@ app.post("/api/scene", (req, res) => {
   try {
     if (typeof from !== "string") {
       return res.json({ voice: scene.voices.npc, background: scene.background ?? null, backchannel,
-                        frameEN: scene.frameEN ?? [], npc: shape(scene.root), done: false });
+                        pacing, frameEN: scene.frameEN ?? [], npc: shape(scene.root), done: false });
     }
     const step = advanceDialogue(scene, from, { kind: "audio" });
     if (step.learnableProgress.length) learner.save(applyCredit(learner.load(), step.learnableProgress));
@@ -154,6 +184,7 @@ app.post("/api/scene", (req, res) => {
       voice: scene.voices.npc,
       background: scene.background ?? null,
       backchannel,
+      pacing,
       npc: shape(step.npcNodeId),
       spoke: step.clientNodeId ? { id: step.clientNodeId, sl: scene.nodes[step.clientNodeId]!.sl } : null,
       done: step.done,

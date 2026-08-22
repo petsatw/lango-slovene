@@ -1,0 +1,61 @@
+{
+  "_note": "PACING PROFILES — the timing of a spoken lesson, as data. A spoken scene is a sequence of engineered silences as much as it is a sequence of lines, and those silences are a TEACHING decision (how long an orienting sentence gets to be read, how long the learner gets to think before the character helps). So they live server-side, named, and are dialed per lesson rather than hardcoded in the renderer. A dialogue picks a profile by id; a node may override a single value where one beat genuinely needs it.",
+  "_axis": "Profiles are ordered by how much room the learner is given. `onboarding` is the most generous. Later lessons withdraw scaffolding by moving to a tighter profile — no renderer change, no re-authoring.",
+  "_frameTiming": "An on-ramp line dwells for `frameLineMs` PLUS `frameCharMs` per character, because a 45-character line and a 73-character line do not take the same time to read. Lines accumulate rather than replacing each other, so the learner can still be reading line 1 when line 3 arrives.",
+  "profiles": {
+    "onboarding": {
+      "label": "Onboarding — hour zero, maximum room",
+      "frameLineMs": 650,
+      "frameCharMs": 28,
+      "frameHoldMs": 1600,
+      "frameFadeMs": 620,
+      "captionLeadMs": 0,
+      "captionReadMs": 900,
+      "glossDelayMs": 400,
+      "handoverMs": 600,
+      "closeHoldMs": 2200,
+      "backchannelMs": 700,
+      "stallMs": [
+        4500,
+        7000,
+        11000
+      ]
+    },
+    "guided": {
+      "label": "Guided — the learner knows the format, still gets the slow re-speak",
+      "frameLineMs": 550,
+      "frameCharMs": 24,
+      "frameHoldMs": 1200,
+      "frameFadeMs": 500,
+      "captionLeadMs": 0,
+      "captionReadMs": 800,
+      "glossDelayMs": 300,
+      "handoverMs": 500,
+      "closeHoldMs": 1800,
+      "backchannelMs": 700,
+      "stallMs": [
+        5000,
+        8000,
+        12000
+      ]
+    },
+    "brisk": {
+      "label": "Brisk — scaffolds mostly withdrawn, silence carries more",
+      "frameLineMs": 450,
+      "frameCharMs": 20,
+      "frameHoldMs": 900,
+      "frameFadeMs": 450,
+      "captionLeadMs": 0,
+      "captionReadMs": 700,
+      "glossDelayMs": 250,
+      "handoverMs": 400,
+      "closeHoldMs": 1400,
+      "backchannelMs": 700,
+      "stallMs": [
+        6000,
+        10000,
+        15000
+      ]
+    }
+  }
+}

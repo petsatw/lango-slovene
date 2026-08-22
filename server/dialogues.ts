@@ -16,6 +16,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { CATALOG } from "./catalog";
 import { LEARNABLES } from "./learnables";
+import { PACING, DEFAULT_PACING, pacingFor } from "./pacing";
 
 export type DialogueSpeaker = "npc" | "client";
 export type DialogueAudioState = "pending" | "ready";
@@ -50,8 +51,13 @@ export type GlossPolicy = "tap" | "after" | "held";
  *  - `"soften"`  — the button's label softens to `label` (e.g. "Whisper it if you like."). English, on
  *                  the control, where an instruction belongs. */
 export interface DialogueStallHandler {
-  /** Milliseconds of silence after which this rung fires, measured from the learner's turn opening. */
-  afterMs: number;
+  /** Milliseconds of silence after which this rung fires, measured FROM THE LEARNER'S TURN OPENING
+   *  (i.e. from when the button appears — NOT from the start of the run). Optional, and normally absent:
+   *  the rung takes its timing from the dialogue's pacing profile by position (`stallMs[i]`), so a lesson
+   *  is paced in one place instead of being re-specified on every node. Set it only to override one rung
+   *  of one beat. The original ladder was mis-transcribed as absolute clock times precisely because the
+   *  numbers lived here, per node, with nothing to compare them against. */
+  afterMs?: number;
   kind: "pulse" | "respeak" | "soften";
   /** For `"soften"`: the English label the button lowers to. Required for that kind, unused otherwise. */
   label?: string;
@@ -106,6 +112,18 @@ export interface DialogueNode {
   next: string[];
 }
 
+/** What the learner is being asked to say, surfaced at the moment their turn opens. It is the upcoming
+ *  CLIENT node's own line — not a translation of what the character just said — which is the whole point:
+ *  a beginner who has just heard nine words and must produce two cannot tell which two, and the caption
+ *  of the character's line cannot tell them. Derived, never authored separately. */
+export interface DialoguePrompt {
+  /** The Slovene stem the learner produces, e.g. "Sem ___." Blank-slot lines are authored as "___". */
+  sl: string;
+  /** Its English, e.g. "I'm ___." — for a non-Slovene turn this is the instruction itself, e.g.
+   *  "(your own name, spoken on its own)". */
+  en: string;
+}
+
 /** A competency this rehearsal level demonstrates — DISPLAY ONLY (no crediting; mastery is earned live).
  *  Shown to the learner so each level's "what you can do" is explicit. */
 export interface DialogueObjective {
@@ -152,6 +170,10 @@ export interface Dialogue {
   /** How the learner advances this level — tapped choices (default) or spoken turns. Absent → "tap", so
    *  every dialogue authored before this field keeps its behaviour. See DialogueAdvance. */
   advance?: DialogueAdvance;
+  /** Which PACING PROFILE times this lesson (server/catalog/pacing.json) — every engineered silence in
+   *  the run, named and dialed in one place. Absent → the default profile. Only meaningful for
+   *  `advance: "audio"`; a tapped tree is paced by the learner's own finger. */
+  pacing?: string;
   /** Optional portrait background image for this level's rehearsal — a filename under public/backgrounds/
    *  (e.g. "restaurant-1.jpg"). The conversation scrolls over it while the image stays fixed. Absent →
    *  the plain panel background. */
@@ -208,6 +230,11 @@ export function validateDialogue(file: string, raw: any): Dialogue {
   asProfile(file, raw.voices, "client", "voices");
   if (raw.advance !== undefined && raw.advance !== "tap" && raw.advance !== "audio")
     fail(file, `"advance" must be "tap" | "audio"`);
+  if (raw.pacing !== undefined) {
+    asString(file, raw, "pacing", "dialogue");
+    if (!PACING[raw.pacing])
+      fail(file, `"pacing": no such profile "${raw.pacing}" (have: ${Object.keys(PACING).join(", ")})`);
+  }
   if (raw.frameEN !== undefined) {
     if (!Array.isArray(raw.frameEN) || !raw.frameEN.length) fail(file, `"frameEN" must be a non-empty array of strings`);
     for (const l of raw.frameEN) if (typeof l !== "string" || !l) fail(file, `"frameEN": every line must be a non-empty string`);
@@ -256,13 +283,18 @@ export function validateDialogue(file: string, raw: any): Dialogue {
     if (n.stallHandlers !== undefined) {
       if (!Array.isArray(n.stallHandlers)) fail(file, `${where}: "stallHandlers" must be an array`);
       if (n.speaker !== "npc") fail(file, `${where}: "stallHandlers" is only valid on an npc node (it is the character's silence to fill)`);
+      // The ladder's TIMING lives in the pacing profile, by position; a rung may override its own.
+      const profile = pacingFor(raw.pacing);
+      if (n.stallHandlers.length > profile.stallMs.length)
+        fail(file, `${where}: ${n.stallHandlers.length} stall rungs, but pacing profile "${raw.pacing ?? DEFAULT_PACING}" defines only ${profile.stallMs.length} (stallMs)`);
       let prev = -1;
       for (const [i, h] of n.stallHandlers.entries()) {
         const hw = `${where} stallHandler[${i}]`;
-        if (typeof h?.afterMs !== "number" || !Number.isFinite(h.afterMs) || h.afterMs <= 0)
-          fail(file, `${hw}: "afterMs" must be a positive number of milliseconds`);
-        if (h.afterMs <= prev) fail(file, `${hw}: "afterMs" (${h.afterMs}) must be greater than the previous rung's (${prev})`);
-        prev = h.afterMs;
+        if (h?.afterMs !== undefined && (typeof h.afterMs !== "number" || !Number.isFinite(h.afterMs) || h.afterMs <= 0))
+          fail(file, `${hw}: "afterMs" must be a positive number of milliseconds when present`);
+        const atMs = h?.afterMs ?? profile.stallMs[i]!;
+        if (atMs <= prev) fail(file, `${hw}: fires at ${atMs}ms, which is not after the previous rung (${prev}ms)`);
+        prev = atMs;
         if (!["pulse", "respeak", "soften"].includes(h.kind)) fail(file, `${hw}: "kind" must be "pulse" | "respeak" | "soften"`);
         if (h.kind === "soften") asString(file, h, "label", hw);
         if (h.kind === "respeak" && !n.slowSL) fail(file, `${hw}: "respeak" needs the node to have a "slowSL" to re-speak`);

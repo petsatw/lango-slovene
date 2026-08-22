@@ -49,12 +49,15 @@ function die(msg: string): never {
 //   scenario: { id, name?, title, status?, character, role?, setup, opening, register?:{form,variety} },
 //   dialogueVoices: { npc, client },                       // shared across the scenario's levels
 //   dialogueAdvance?: "tap" | "audio",                     // default "tap" — how the learner advances
+//   dialoguePacing?: string,                               // spoken scenes: pacing profile id (catalog/pacing.json);
+//                                                          // absent → whatever is already on the file is preserved
 //   levels: [ { level, levelLabel /* author TARGET; the written label is the COMPUTED band */, title,
 //              objectives:[{label,descriptorEN}], root, nodes:{ <id>:{ speaker, sl, en, deliverySL?,
-//              slowSL? /* chunked-slow re-speak: own caption, own audio key */,
+//              slowSL? /* chunked-slow re-speak: own caption, own audio key */, deliverySlowSL? /* its delivery tags */,
 //              learnables? /* client nodes; the "audio"-mode attempt allowlist, may be [] */,
-//              captionDelayMs? /* silent hold before the caption */, glossPolicy? /* tap|after|held */,
-//              stallHandlers? /* npc nodes; [{afterMs,kind:"pulse"|"respeak"|"soften",label?}] ascending */,
+//              captionDelayMs? /* overrides the profile's captionLeadMs for this one beat */, glossPolicy? /* tap|after|held */,
+//              stallHandlers? /* npc nodes; [{kind:"pulse"|"respeak"|"soften",label?}] — NO Slovene;
+//                                timing comes from the pacing profile by position, afterMs only to override */,
 //              context? /* parenthetical on a client choice */, next } }, background?, intro?:{audio,text?,en?},
 //              frameEN? /* the English on-ramp shown before the scene opens */,
 //              catalog: { reuse:[id…], new:[{id,kind,sl,gloss,predictableError?,core?,a1?,rank?}…] } } ],
@@ -273,6 +276,20 @@ function existingIntro(file: string): { audio: string; text?: string; en?: strin
   }
 }
 
+function existingPacing(file: string): string | undefined {
+  // A spoken scene's PACING PROFILE (server/catalog/pacing.json) is timing, not language — it is wired
+  // onto the file and must survive a re-authoring pass. Without this a reconcile silently strips it and
+  // the lesson falls back to the default profile, which is exactly the kind of drift the profile exists
+  // to prevent. An input `dialoguePacing` wins.
+  if (!existsSync(file)) return undefined;
+  try {
+    const p = JSON.parse(readFileSync(file, "utf8")).pacing;
+    return typeof p === "string" && p ? p : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 const writes: Array<{ path: string; label: string }> = [];
 const computedLabelByLevel = new Map<number, string>();
 for (const lvl of input.levels) {
@@ -289,6 +306,8 @@ for (const lvl of input.levels) {
   const background = (typeof lvl.background === "string" && lvl.background ? lvl.background : undefined)
     ?? existingBackground(file);
   const intro = normalizeIntro(lvl.intro) ?? existingIntro(file);
+  const pacing = (typeof input.dialoguePacing === "string" && input.dialoguePacing ? input.dialoguePacing : undefined)
+    ?? existingPacing(file);
   const dialogue = {
     id: `${scenarioId}-l${lvl.level}`,
     scenarioId,
@@ -300,6 +319,7 @@ for (const lvl of input.levels) {
     audio: existingAudioState(file),
     voices: { npc: voices.npc, client: voices.client },
     ...(advance === "tap" ? {} : { advance }), // omit the default so existing files stay byte-identical
+    ...(pacing ? { pacing } : {}),
     ...(Array.isArray(lvl.frameEN) && lvl.frameEN.length ? { frameEN: lvl.frameEN } : {}),
     ...(background ? { background } : {}),
     ...(intro ? { intro } : {}),

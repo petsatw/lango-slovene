@@ -70,7 +70,8 @@ The same authoring role, a different **surface**. Here C (the `create-dialogue` 
 ### A spoken scene (`advance: "audio"`)
 C may hand you a **linear spine** instead of a branching tree, where the `client` nodes are what the learner is expected to **say aloud** rather than a menu to pick from. Two things change:
 - Write client lines as the learner's own speech at the level a beginner can actually produce on a first hearing — the line they were just shown how to say. Keep them short enough for one breath.
-- C may ask for **stall lines**: what the character says to a learner who has gone quiet, one per rung of an ascending ladder. Write them as the character genuinely filling a silence — warm, unhurried, and *shorter* as they escalate. Return them under `stallHandlers` keyed by node id.
+- **You are never asked for stall lines.** The quiet-learner ladder carries **no Slovene at all** — its rungs flash the caption, replay the node's existing slow clip, or lower the button's label in English. Someone who has not spoken is not short of Slovene; they are stuck, and more of the language they do not have is the one thing that must not arrive. If a brief asks you for stall lines, say so in `concerns` and return none.
+- **A client node's `en` is shown to the LEARNER**, not just to us. At the moment their turn opens the app surfaces the upcoming client line as their prompt: the `sl` is their target, and where there is no Slovene stem to show — a bare `"___"`, the learner saying their own name — the **English carries the whole beat alone**. Write it as an instruction a nervous adult can act on ("your own name, spoken on its own"), not as a translation of a blank.
 
 ### The catalog delta (the minting rubric — this is where over/under-minting happens)
 Alongside the nodes, return the learnables **this level introduces**, split into `reuse` and `new`:

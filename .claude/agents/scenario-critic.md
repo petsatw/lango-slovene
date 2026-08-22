@@ -47,7 +47,16 @@ The docs supersede any older framing. Flag these on sight:
 
 ## Dialogue-surface mode (the rehearsal-dialogue pipeline — docs/authoring-pipeline.md)
 
-The same independent-verification role, applied to a set of **branching rehearsal-dialogue levels** + their **catalog deltas** (authored by LS in dialogue mode). No visuals here — you judge language, register, branch coherence, and the delta. You do NOT edit the trees; you return a verdict + **structured, addressed fixes** the deterministic reconcile can apply mechanically.
+The same independent-verification role, applied to a set of **branching rehearsal-dialogue levels** + their **catalog deltas** (authored by LS in dialogue mode).
+
+### Spoken lessons (`advance: "audio"`) — extra axes
+A spoken lesson is a linear spine the learner advances **by speaking**, and nothing judges the recording. Judge these on top of the usual:
+- **Load asymmetry.** Count words *heard* against words the learner must *produce* at each turn. A beginner who hears nine words and must produce two cannot tell which two; the character's caption can never tell them. Flag any turn where the target is not recoverable from what is on screen.
+- **The prompt is the client line.** The learner sees the upcoming client node's `sl` as their target and its `en` as the instruction. Judge that `en` as **learner-facing copy**, not as a gloss — especially where the line is a bare `"___"` and the English carries the beat alone.
+- **The stall ladder carries no Slovene.** Rungs are `pulse` / `respeak` / `soften` only. Any Slovene in a stall rung is a block: it answers a stuck learner with more of the language they do not have.
+- **The on-ramp earns the withholding.** A lesson may only leave its first beat unglossed if `frameEN` has framed the situation first.
+- **Slow lines must be directed.** A `slowSL` without a `deliverySlowSL` will not be slower — a ` … ` separator alone does not change the voice's rate. Flag it.
+- **Chunk breaks are a language judgment.** A `slowSL` must break where a native actually pauses, and must never split the frame the learner has to reproduce. No visuals here — you judge language, register, branch coherence, and the delta. You do NOT edit the trees; you return a verdict + **structured, addressed fixes** the deterministic reconcile can apply mechanically.
 
 ### What you judge
 1. **Native, not textbook** — every `sl` line, npc and client, is what a Ljubljana local actually says here. (Defer genuine doubt to R.)
@@ -58,14 +67,15 @@ The same independent-verification role, applied to a set of **branching rehearsa
 
 ### The fix contract (this is how the reconcile applies your fixes — get it EXACT)
 For every line you want changed, emit a fix addressed by node **with the exact strings** — the reconcile does a keyed, exact replace and REFUSES a fuzzy match:
-- `level`, `nodeId`, `field` (`"sl"` | `"en"` | `"deliverySL"`), `oldExact` (the current value, verbatim), `newExact` (the corrected value, verbatim).
+- `level`, `nodeId`, `field` (`"sl"` | `"en"` | `"deliverySL"` | `"slowSL"` | `"deliverySlowSL"` | `"frameEN"` | `"stallLabel"`), `oldExact` (the current value, verbatim), `newExact` (the corrected value, verbatim).
+- **Fix every field an edit touches.** A change to `sl` that leaves `deliverySL` or `slowSL` on the old wording ships audio that says one thing while the caption and the cache key say another — audible only, and only after it has been paid for. A lint now catches this; emitting the paired fix yourself is faster than a rejected gate.
 
 ### Output — return EXACTLY this JSON (data for the orchestrator, not prose)
 ```json
 {
   "verdict": "pass" | "revise",
   "fixes": [
-    { "level": <n>, "nodeId": "<id>", "field": "sl"|"en"|"deliverySL", "oldExact": "<current verbatim>", "newExact": "<corrected verbatim>", "reason": "<why>" }
+    { "level": <n>, "nodeId": "<id>", "field": "sl"|"en"|"deliverySL"|"slowSL"|"deliverySlowSL"|"frameEN"|"stallLabel", "oldExact": "<current verbatim>", "newExact": "<corrected verbatim>", "reason": "<why>" }
   ],
   "deltaFindings": [
     { "level": <n>, "learnableId": "<id>", "severity": "block"|"nit", "issue": "<what's wrong with the mint/reuse>", "suggestion": "<the change>" }

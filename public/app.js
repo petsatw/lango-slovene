@@ -736,11 +736,13 @@ async function seedTurn(audioBase64) {
 // pacing: how long to hold before the caption appears, when the English arrives, whether the line gets
 // re-spoken slowly, and what to say if the learner goes quiet.
 
-let scene = { scenarioId: null, voice: null, node: null, stalls: [], armed: false, backchannel: null };
+// Every engineered silence in the run comes from the server's PACING PROFILE (server/catalog/pacing.json)
+// — there are no timing constants in this file. Pacing is a teaching decision, so it lives with the rest
+// of the pedagogy, is named, and is dialed per lesson; a renderer that invents its own durations is how
+// the ladder drifted eleven seconds out of true in the first place.
+let scene = { scenarioId: null, voice: null, node: null, stalls: [], armed: false, backchannel: null, pacing: null };
 
-// How long a plain caption sits before the chunked-slow re-speak takes over. A rendering beat, not
-// authored content — long enough that the learner sees the sentence whole before it breaks apart.
-const CAPTION_READ_MS = 900;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function sceneSay(text) {
   return new Promise((resolve) => {
@@ -783,9 +785,13 @@ function sceneArmStalls(handlers, npc) {
         void cap.offsetWidth; // restart the animation
         cap.classList.add("pulse");
       } else if (h.kind === "respeak" && npc.slowSL) {
+        // The character takes the floor back for a moment: the button says so, then returns the turn.
+        const label = $("scene-talk-label").textContent;
+        sceneSetPhase("speaking");
         sceneCaption(npc.slowSL, { slow: true });
         await sceneSay(npc.slowSL);
         sceneCaption(npc.sl);
+        if (scene.armed) sceneSetPhase("ready", label);
       } else if (h.kind === "soften" && h.label) {
         $("scene-talk-label").textContent = h.label;
       }
@@ -795,56 +801,86 @@ function sceneArmStalls(handlers, npc) {
 
 // Beats 1-11 — the English on-ramp, before any Slovene is spoken. Where you are, that nothing is being
 // asked of you yet, and that forgetting is not your fault.
+// The button is the one object that is always on screen and never moves; it changes PHASE instead of
+// appearing and disappearing. "speaking" wears a level meter and no words (sound is happening, and it is
+// not yours); "ready" carries the single action the learner is meant to take.
+function sceneSetPhase(phase, label) {
+  const btn = $("scene-talk");
+  btn.classList.toggle("speaking", phase === "speaking");
+  btn.classList.toggle("waiting", phase === "ready");
+  btn.setAttribute("aria-disabled", phase === "speaking" ? "true" : "false");
+  if (label !== undefined) $("scene-talk-label").textContent = label;
+  // The character's line recedes the moment the turn stops being his, so the only thing at full
+  // brightness is the line the learner is being asked for.
+  const handed = phase === "ready";
+  $("scene-caption").classList.toggle("receded", handed);
+  $("scene-gloss").classList.toggle("receded", handed);
+}
+
+// How long one on-ramp line takes to swap for the next. Not a pacing knob — it is the transition itself,
+// the same in every profile; the dwell either side of it is what gets dialed.
+const FRAME_CROSSFADE_MS = 300;
+
 async function scenePlayFrame(lines) {
+  const pace = scene.pacing;
   const el = $("scene-frame");
   el.innerHTML = "";
-  for (const l of lines) {
-    const p = document.createElement("p");
-    p.textContent = l;
-    el.appendChild(p);
-  }
-  // Staggered in, then all gone by ~3s — long enough to read, short enough that it reads as a title
-  // card rather than a wall of instructions. The whole point is to get out of the way.
+  el.appendChild(document.createElement("p"));
+  // Staggered in, held, then gone — long enough to read, short enough that it reads as a title card
+  // rather than a wall of instructions. Each line stays on screen once shown, so the learner reads the
+  // whole frame at the end rather than chasing lines that vanish.
+  // ONE line at a time, in one place. Stacking them made the frame grow downward and the learner's eye
+  // chase it; a single line that is replaced holds the gaze still and reads as someone talking to you.
   el.hidden = false;
-  const ps = [...el.children];
-  ps.forEach((p) => (p.style.opacity = "0"));
   el.classList.add("shown");
-  for (const p of ps) {
-    p.style.transition = "opacity 400ms ease";
+  const p = el.firstElementChild;
+  p.style.transition = `opacity ${FRAME_CROSSFADE_MS}ms ease`;
+  p.style.opacity = "0";
+  for (const [i, line] of lines.entries()) {
+    p.textContent = line;
     p.style.opacity = "1";
-    await new Promise((r) => setTimeout(r, 700));
+    // Dwell scales with the length of the line — these are the first sentences the learner ever reads,
+    // and a fixed interval either rushes the long one or strands the short one. Nothing can be re-read
+    // once it is replaced, so each line has to be legible the first time.
+    await sleep(pace.frameLineMs + pace.frameCharMs * line.length);
+    if (i === lines.length - 1) break;          // the last line stays up for the frame's own hold
+    p.style.opacity = "0";
+    await sleep(FRAME_CROSSFADE_MS);
   }
-  await new Promise((r) => setTimeout(r, 1100));
+  await sleep(pace.frameHoldMs);
   el.classList.remove("shown");
-  await new Promise((r) => setTimeout(r, 620));
+  await sleep(pace.frameFadeMs);
   el.hidden = true;
 }
 
 async function scenePlayBeat(npc) {
+  const pace = scene.pacing;
   scene.node = npc;
   scene.armed = false;
-  $("scene-talk").disabled = true;
   const cap = $("scene-caption");
   const gloss = $("scene-gloss");
   cap.classList.remove("shown", "pulse");
   gloss.classList.remove("shown");
   gloss.textContent = "";
-  $("scene-controls").hidden = true;      // the button belongs to the learner's turn, not the character's
-  $("scene-talk").classList.remove("waiting");
+  $("scene-prompt").classList.remove("shown");
+  sceneSetPhase("speaking");              // the button stays put and shows that the character has the floor
 
   // The line lands as SOUND, then the silence is held, and only then does it become text (beats 19-22).
   // These are three steps in sequence, not three timers racing: a hold that runs concurrently with the
   // beat gets pre-empted by whatever comes next (the slow re-speak reveals the caption the instant the
   // line ends), and the silence never actually happens.
-  await sceneSay(npc.sl);
-  if (npc.captionDelayMs) await new Promise((r) => setTimeout(r, npc.captionDelayMs));
+  // The caption and the voice are ONE event: the text goes up and the line is spoken over it. Awaiting
+  // the clip before setting the caption — which is what this used to do — put the text a whole sentence
+  // behind the audio, so the learner could never match what they heard to what they were reading.
   sceneCaption(npc.sl);
+  if (npc.captionLeadMs) await sleep(npc.captionLeadMs);
+  await sceneSay(npc.sl);
 
   // Chunked-slow re-speak: same words, slower, with the caption chunking in step (beats 23-27). The
   // caption has to be READ in its plain form first — setting it and re-setting it in the same tick means
   // the learner only ever sees the chunked one, and the "appears, then re-speaks" beat collapses.
   if (npc.slowSL) {
-    await new Promise((r) => setTimeout(r, CAPTION_READ_MS));
+    await sleep(pace.captionReadMs);
     sceneCaption(npc.slowSL, { slow: true });
     await sceneSay(npc.slowSL);
     sceneCaption(npc.sl);
@@ -852,22 +888,42 @@ async function scenePlayBeat(npc) {
 
   // The gloss comes second when it comes at all — Slovene first, English confirming (beats 64-65, 82).
   if (npc.glossPolicy === "after") {
+    await sleep(pace.glossDelayMs);
     gloss.textContent = npc.en;
     gloss.classList.add("shown");
   } else if (npc.glossPolicy === "tap") {
     cap.onclick = () => { gloss.textContent = npc.en; gloss.classList.add("shown"); };
   }
 
-  // The turn is handed over: the button appears carrying its instruction, and breathes while it waits.
-  $("scene-talk-label").textContent = "Hold and say it";
-  $("scene-controls").hidden = false;
-  $("scene-talk").classList.add("waiting");
+  // A closing beat hands the turn to nobody. The goodbye is left up long enough to land and the run
+  // ends — the button never invites a turn that does not exist.
+  if (npc.terminal) {
+    await sleep(pace.closeHoldMs);
+    sceneFinish();
+    return;
+  }
+
+  // The turn is handed over. The pause first, so the hand-over reads as an offer rather than a cue.
+  await sleep(pace.handoverMs);
+  // What they are being asked to say — their own line, beside the button that produces it. When the turn
+  // expects no Slovene (the learner says their own name) there is no stem, and the English instruction
+  // stands on its own rather than under a bold blank.
+  const sl = npc.prompt?.sl ?? "";
+  $("scene-prompt-sl").textContent = sl;
+  $("scene-prompt-sl").hidden = !sl;
+  $("scene-prompt-en").textContent = npc.prompt?.en ?? "";
+  $("scene-prompt").classList.toggle("bare", !!npc.prompt && !sl);
+  if (npc.prompt) $("scene-prompt").classList.add("shown");
+  // Same button, same place — the meter gives way to the one action being asked for.
+  sceneSetPhase("ready", "Continue");
   if (npc.stallHandlers?.length) sceneArmStalls(npc.stallHandlers, npc);
   scene.armed = true;
-  $("scene-talk").disabled = false;
 }
 
-async function sceneStep(from) {
+// `ack` is the character's backchannel, already playing. The fetch overlaps with it, but the next line
+// must not START until it has finished — `sceneSay` stops whatever is playing, so without this the
+// "Mhm." is cut off within ~50ms and the instant-acknowledgement beat never reaches the learner at all.
+async function sceneStep(from, ack) {
   const res = await fetch("/api/scene", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -876,8 +932,10 @@ async function sceneStep(from) {
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
   scene.voice = data.voice;
+  if (data.pacing) scene.pacing = data.pacing;
   if (data.backchannel) scene.backchannel = data.backchannel;
   if (data.background) $("scene-bg").style.backgroundImage = `url(/backgrounds/${data.background})`;
+  if (ack) await ack;
   if (data.frameEN?.length) await scenePlayFrame(data.frameEN);
   if (data.npc) await scenePlayBeat(data.npc);
   else sceneFinish();
@@ -886,57 +944,54 @@ async function sceneStep(from) {
 function sceneFinish() {
   sceneClearStalls();
   scene.armed = false;
-  $("scene-talk").disabled = true;
+  sceneSetPhase("speaking");
   learnerStarted = true;
   openHome(); // the scene hands off to the app proper
 }
 
 async function openScene(scenarioId) {
-  scene = { scenarioId, voice: null, node: null, stalls: [], armed: false, backchannel: null };
+  scene = { scenarioId, voice: null, node: null, stalls: [], armed: false, backchannel: null, pacing: null };
   showScreen("scene");
   $("scene-bg").style.backgroundImage = "";
+  $("scene-prompt").classList.remove("shown");
+  // The button is on screen from the first frame, anchored, showing that it is not yet the learner's.
+  sceneSetPhase("speaking", "");
   try {
-    await sceneStep(null);
+    await sceneStep(null, null);
   } catch (err) {
     obs.error(`scene: ${err.message}`);
     openHome();
   }
 }
 
-// Push-to-talk for the scene. Haptic on press AND release (beats 47, 54) — the button answers the
-// hand, not the sentence. Nothing measures the audio, so there is no meter and no countdown.
-function wireSceneMic() {
+// The scene's button ADVANCES; it does not record. The learner practises the line out loud in their own
+// time and presses when they are ready, so the app never opens the microphone: there is no permission
+// prompt, no capture, and nothing on screen that could be mistaken for one. (The audio was always
+// discarded unheard, so holding it only ever bought an OS dialog and the suspicion of being recorded.)
+function wireSceneAdvance() {
   const btn = $("scene-talk");
   const buzz = (ms) => { try { navigator.vibrate?.(ms); } catch {} };
 
-  btn.addEventListener("pointerdown", async (e) => {
+  const advance = async (e) => {
     e.preventDefault();
     if (!scene.armed) return;
     sceneClearStalls();
-    buzz(8);
-    btn.classList.add("recording");
-    try { await startRecording(); } catch (err) { obs.error(`mic: ${err.message}`); }
-  });
-
-  const release = async (e) => {
-    e.preventDefault();
-    if (!btn.classList.contains("recording")) return;
-    btn.classList.remove("recording");
-    buzz(12);
-    // The recording stops and is discarded here: it is never sent, so nothing can judge it.
-    try { mediaRecorder?.stop(); mediaRecorder?.stream.getTracks().forEach((t) => t.stop()); } catch {}
+    buzz(10);
     const from = scene.node?.id;
     scene.armed = false;
-    btn.disabled = true;
-    btn.classList.remove("waiting");
+    sceneSetPhase("speaking");
+    $("scene-prompt").classList.remove("shown");
     // The character answers the BODY before anything answers the words — a cached "Mhm." fires now,
-    // sooner than any processing could have returned. Perceived latency: zero.
-    if (scene.backchannel) sceneSay(scene.backchannel);
-    try { await sceneStep(from); } catch (err) { obs.error(`scene: ${err.message}`); }
+    // sooner than any processing could have returned. Perceived latency: zero. It is held for at least
+    // the profile's `backchannelMs` so the next line cannot talk over the acknowledgement.
+    const ack = scene.backchannel
+      ? Promise.all([sceneSay(scene.backchannel), sleep(scene.pacing?.backchannelMs ?? 0)])
+      : null;
+    try { await sceneStep(from, ack); } catch (err) { obs.error(`scene: ${err.message}`); }
   };
-  btn.addEventListener("pointerup", release);
-  btn.addEventListener("pointercancel", release);
-  btn.addEventListener("pointerleave", release);
+  // A plain click: no hold, so a slipped thumb cannot end the turn early and there is no gesture to
+  // learn. `click` also covers keyboard activation for free.
+  btn.addEventListener("click", advance);
 }
 
 // ---- ③ Replays: play back a captured live session turn-by-turn, free (audio served from the store) ----
@@ -1131,7 +1186,7 @@ async function init() {
   btn.addEventListener("pointercancel", stop);
   btn.addEventListener("pointerleave", stop);
 
-  wireSceneMic();
+  wireSceneAdvance();
 
   // Boot metadata: providers (for obs) + the zero-state flag (empty learner → tutor routes to the seed).
   try {

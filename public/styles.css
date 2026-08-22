@@ -555,12 +555,20 @@ main {
    shows exactly three things: the picture, the caption, and the mic. */
 body.in-scene header { display: none; }
 
+/* Two fixed zones: a stage that holds whatever the character is saying, and controls pinned to the
+   bottom that never move. Everything used to stack from the bottom edge, so each new element (gloss,
+   then the button) shoved the caption upward mid-beat and the screen appeared to jump. */
 .scene {
   position: fixed; inset: 0; z-index: 40;
-  display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+  display: flex; flex-direction: column; align-items: center;
   padding: 0 24px calc(40px + env(safe-area-inset-bottom));
   background: #0a0c10;
   overflow: hidden;
+}
+.scene-stage {
+  flex: 1; min-height: 0; width: 100%;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  padding-bottom: 8px;
 }
 /* The image is full-bleed, with a bottom gradient so the caption stays legible over any art. */
 .scene-bg {
@@ -578,8 +586,16 @@ body.in-scene header { display: none; }
   opacity: 0; transition: opacity 220ms ease;
 }
 .scene-caption { font-size: 25px; line-height: 1.35; font-weight: 600; }
-.scene-gloss { font-size: 15px; color: var(--muted); margin-top: 10px; }
+/* Space is RESERVED for the gloss whether or not one arrives, so the caption above it does not move
+   when the English appears. A caption that shifts mid-beat reads as the app glitching. */
+.scene-gloss { font-size: 15px; color: var(--muted); margin-top: 10px; min-height: 42px; }
 .scene-caption.shown, .scene-gloss.shown { opacity: 1; }
+/* When the turn is handed over, what the CHARACTER said recedes and what the LEARNER must say comes
+   forward. Without this the beginner sees a nine-word sentence in the largest, brightest type on screen
+   and reasonably concludes that all nine words are the assignment. One rule, learned in a single beat
+   and never explained: the bright text is your turn. The line stays legible — it is still the model. */
+.scene-caption.receded.shown { opacity: 0.55; }
+.scene-gloss.receded.shown { opacity: 0.5; }
 /* The chunked-slow re-speak is the same words, spaced — the caption widens to match the voice. */
 .scene-caption.slow { letter-spacing: 0.02em; word-spacing: 0.25em; }
 
@@ -593,8 +609,9 @@ body.in-scene header { display: none; }
 .scene-talk-label { font-size: 17px; font-weight: 600; color: #fff; white-space: nowrap; }
 /* Held: the button stays expanded for as long as the learner is speaking. No meter, no countdown —
    beat 49 is explicit that the learner should not be watching a measurement of themselves. */
-.scene-talk.recording { transform: scale(1.12); background: rgba(224, 163, 54, 0.28); border-color: var(--amber); }
-.scene-talk.recording { animation: none; }
+/* Pressed feedback for the advance button. The scene never records, so there is deliberately no
+   amber "capturing" state here — nothing on this screen should look like a live microphone. */
+.scene-talk:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.16); animation: none; }
 .scene-talk:disabled { opacity: 0.35; cursor: default; }
 
 /* The English on-ramp, before the scene opens. */
@@ -604,12 +621,53 @@ body.in-scene header { display: none; }
   opacity: 0; transition: opacity 600ms ease;
 }
 .scene-frame.shown { opacity: 1; }
-.scene-frame p { margin: 0; font-size: 19px; line-height: 1.5; }
-.scene-frame p:nth-child(2) { font-size: 17px; color: #d3d8e0; }
-.scene-frame p:nth-child(3) { font-size: 15px; color: var(--muted); }
+/* One line at a time, swapped in place — so there is no size hierarchy to encode. Every line is the
+   only thing on screen while it is up, and gets the same weight. */
+.scene-frame p { margin: 0; font-size: 24px; line-height: 1.45; }
 
 .scene-controls { position: relative; margin-top: 30px; display: grid; justify-items: center; gap: 12px; }
-.scene-privacy { margin: 0; font-size: 13px; color: var(--muted); text-shadow: 0 1px 10px rgba(0,0,0,.7); }
+
+/* The learner's own line, at the moment their turn opens. Deliberately quieter than the character's
+   caption — it is what they are reaching for, not an assignment card. `.bare` is the turn that expects
+   no Slovene at all (the learner says their own name), where the English instruction stands alone
+   rather than sitting under a bold blank. */
+.scene-prompt {
+  margin: 0 0 2px; display: grid; align-content: end; justify-items: center; gap: 3px; text-align: center;
+  /* Reserved whether or not there is a prompt, so the button below never shifts between beats. */
+  min-height: 62px;
+  opacity: 0; transition: opacity 420ms ease;
+}
+.scene-prompt.shown { opacity: 1; }
+/* Deliberately the largest, brightest type on screen while the turn is the learner's — it has to
+   out-weigh the character's caption, which is longer and would otherwise dominate by sheer size. */
+.scene-prompt-sl { font-size: 27px; font-weight: 700; letter-spacing: .01em; color: #fff; line-height: 1.25; }
+.scene-prompt-en { font-size: 15px; color: var(--muted); }
+.scene-prompt.bare .scene-prompt-en { font-size: 18px; color: #e8ecf2; }
+
+/* The level meter the button wears while the CHARACTER is speaking: sound is happening and it is not
+   yours. Four bars, staggered, the universal "audio is playing" shape — not a mouth, not a face, and
+   nothing that could be mistaken for a recording indicator. */
+.scene-bars { display: none; align-items: center; gap: 4px; height: 22px; }
+.scene-bars i {
+  display: block; width: 4px; height: 100%; border-radius: 2px;
+  background: rgba(255, 255, 255, 0.85);
+  transform-origin: center;
+  animation: scene-bar 900ms ease-in-out infinite;
+}
+.scene-bars i:nth-child(2) { animation-delay: 150ms; }
+.scene-bars i:nth-child(3) { animation-delay: 300ms; }
+.scene-bars i:nth-child(4) { animation-delay: 450ms; }
+@keyframes scene-bar {
+  0%, 100% { transform: scaleY(0.28); opacity: .55; }
+  50%      { transform: scaleY(1);    opacity: 1; }
+}
+/* Speaking: no words at all, just the meter, and the button is not actionable. */
+.scene-talk.speaking { cursor: default; border-color: rgba(255, 255, 255, 0.28); background: rgba(255, 255, 255, 0.05); }
+.scene-talk.speaking .scene-bars { display: flex; }
+.scene-talk.speaking .scene-talk-label { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .scene-bars i { animation-duration: 2s; }
+}
 
 /* The button breathes while it waits — a slow pulse, not a flash or a bouncing arrow. */
 @keyframes scene-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }

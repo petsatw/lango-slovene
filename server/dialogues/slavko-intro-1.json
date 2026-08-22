@@ -12,9 +12,14 @@
     {
       "label": "Introduce yourself",
       "descriptorEN": "Use the frame 'Sem ___.' with your own name in the slot."
+    },
+    {
+      "label": "Say goodbye",
+      "descriptorEN": "Return Slavko's farewell with 'Adijo' after hearing him say it."
     }
   ],
   "introduces": [
+    "adijo",
     "sem_ime"
   ],
   "audio": "ready",
@@ -23,10 +28,12 @@
     "client": "slavko"
   },
   "advance": "audio",
+  "pacing": "onboarding",
   "frameEN": [
-    "You're in Ljubljana.",
-    "Just listen — nothing to do yet.",
-    "If you forget something, that's on us."
+    "Hi",
+    "Ready to learn Slovene?",
+    "Let's go!",
+    "Practice Speaking, then press the button to continue"
   ],
   "root": "n1",
   "nodes": {
@@ -36,27 +43,19 @@
       "en": "Hi! What's your name?",
       "deliverySL": "[warmly] Živjo! Kako ti je ime?",
       "slowSL": "Živjo … Kako ti je ime?",
-      "captionDelayMs": 3500,
+      "deliverySlowSL": "[slower] Živjo … [slower] Kako ti je ime?",
       "glossPolicy": "held",
       "stallHandlers": [
         {
-          "afterMs": 15500,
           "kind": "pulse"
         },
         {
-          "afterMs": 18000,
           "kind": "respeak"
-        },
-        {
-          "afterMs": 22000,
-          "kind": "soften",
-          "label": "Whisper it if you like."
         }
       ],
       "next": [
         "c1"
-      ],
-      "deliverySlowSL": "[slower] Živjo … [slower] Kako ti je ime?"
+      ]
     },
     "c1": {
       "speaker": "client",
@@ -73,27 +72,19 @@
       "en": "Nice to meet you! I'm Slavko. Now your turn.",
       "deliverySL": "[cheerfully] Me veseli! Jaz sem Slavko. Zdaj pa še ti.",
       "slowSL": "Me veseli … Jaz sem Slavko … Zdaj pa še ti.",
-      "captionDelayMs": 1200,
+      "deliverySlowSL": "[slower] Me veseli … [deliberately] Jaz sem Slavko … [slower] Zdaj pa še ti.",
       "glossPolicy": "after",
       "stallHandlers": [
         {
-          "afterMs": 15500,
           "kind": "pulse"
         },
         {
-          "afterMs": 18000,
           "kind": "respeak"
-        },
-        {
-          "afterMs": 22000,
-          "kind": "soften",
-          "label": "Just the first word is fine."
         }
       ],
       "next": [
         "c2"
-      ],
-      "deliverySlowSL": "[slower] Me veseli … [deliberately] Jaz sem Slavko … [slower] Zdaj pa še ti."
+      ]
     },
     "c2": {
       "speaker": "client",
@@ -108,11 +99,31 @@
     },
     "n3": {
       "speaker": "npc",
-      "sl": "Lepo, da sva se spoznala. Pridi spet kdaj!",
-      "en": "Good to have met you. Come again sometime!",
-      "deliverySL": "[warmly] Lepo, da sva se spoznala. Pridi spet kdaj!",
-      "captionDelayMs": 800,
+      "sl": "Lepo, da sva se spoznala. Adijo!",
+      "en": "Good to have met you. Bye!",
+      "deliverySL": "[warmly] Lepo, da sva se spoznala. [brightly] Adijo!",
+      "slowSL": "Lepo, da sva se spoznala … Adijo.",
+      "deliverySlowSL": "[slower] Lepo, da sva se spoznala … [deliberately] Adijo.",
       "glossPolicy": "after",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "respeak"
+        }
+      ],
+      "next": [
+        "c3"
+      ]
+    },
+    "c3": {
+      "speaker": "client",
+      "sl": "Adijo",
+      "en": "Bye",
+      "learnables": [
+        "adijo"
+      ],
       "next": []
     }
   }
