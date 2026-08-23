@@ -64,6 +64,16 @@ export function advanceDialogue(dialogue: Dialogue, fromNodeId: string, input: D
   // A terminal npc node ends the tree — there is nothing to produce and nothing to credit.
   if (!from.next.length) return { clientNodeId: null, npcNodeId: null, learnableProgress: [], done: true };
 
+  // A beat the learner is not asked to answer — an acknowledgement, a slow re-model, a nudge onward. In
+  // "audio" mode the spine may run npc → npc so the character can say more than one thing before handing
+  // over. Without it every line he speaks demands a turn, and a lesson can never hold a beat that only
+  // carries him forward; the alternative is packing several sentences into one node, which puts far more
+  // words in front of the learner than the turn that follows them is worth. Nothing is produced here, so
+  // nothing is credited.
+  if (input.kind === "audio" && nodeOrThrow(dialogue, from.next[0]!).speaker === "npc") {
+    return { clientNodeId: null, npcNodeId: from.next[0]!, learnableProgress: [], done: false };
+  }
+
   const clientNodeId =
     input.kind === "tap"
       ? input.choice

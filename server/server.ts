@@ -164,6 +164,9 @@ app.post("/api/scene", (req, res) => {
         afterMs: h.afterMs ?? pacing.stallMs[i]!,
       })),
       prompt: client ? { sl: stem, en: client.en } : null,
+      // Whether this beat ends in a turn at all. A node that hands to another npc node is the character
+      // carrying himself forward — the renderer plays it and continues rather than arming the button.
+      handsOver: !!client,
       // A closing beat has nobody to hand the turn to. Without this the renderer armed the button anyway
       // and the run ended sitting on "Hold and say it" after the character had said goodbye.
       terminal: !n.next.length,

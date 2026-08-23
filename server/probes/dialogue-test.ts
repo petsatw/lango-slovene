@@ -177,6 +177,19 @@ console.log("\ndialogue adapter — tap vs spoken advance:");
   const t2 = advanceDialogue(tapped, "n2", { kind: "tap", choice: "c1" });
   check("a terminal npc node ends the tree", t2.done && t2.npcNodeId === null && t2.clientNodeId === null);
 
+  // A spoken beat the learner is not asked to answer: npc → npc. The character carries himself forward,
+  // no turn is demanded and nothing is credited. Without this every line he speaks would need a turn.
+  const passthrough = validateDialogue("fixture.json", (() => {
+    const t: any = { ...tree(), advance: "audio" };
+    t.nodes.nAside = { speaker: "npc", sl: "Aha!", en: "Aha!", next: ["c1"] };
+    t.nodes.n1.next = ["nAside"];
+    return t;
+  })());
+  const pt = advanceDialogue(passthrough, "n1", { kind: "audio" });
+  check("audio may run npc → npc, demanding no turn", pt.npcNodeId === "nAside" && pt.clientNodeId === null && !pt.done);
+  check("a pass-through beat credits nothing", pt.learnableProgress.length === 0);
+  check("the spine resumes from a pass-through beat", advanceDialogue(passthrough, "nAside", { kind: "audio" }).clientNodeId === "c1");
+
   const throws = (label: string, fn: () => unknown) => {
     let threw = false;
     try { fn(); } catch { threw = true; }

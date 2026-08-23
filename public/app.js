@@ -606,7 +606,16 @@ function closeDialogue() {
 // Introduce→reinforce handoff: leave the rehearsed tree and open a live chat biased toward exactly the
 // learnables THIS level introduced. Rehearsal credits nothing; the live chat is where mastery accrues.
 function reinforceFromDialogue() {
-  const focus = (dialogue && dialogue.introduces) || [];
+  // Bias toward everything this level had the learner PRODUCE, not only what it was first to introduce.
+  // `introduces` is new-to-the-learner by design, so on a level that mostly re-practises earlier phrases
+  // it is nearly empty — and those phrases are exactly what the chat should keep working. Derived from
+  // the client nodes rather than stored, so there is one fact and no second field to keep in step.
+  const produced = dialogue
+    ? [...new Set(Object.values(dialogue.nodes || {})
+        .filter((n) => n.speaker === "client")
+        .flatMap((n) => n.learnables || []))]
+    : [];
+  const focus = produced.length ? produced : ((dialogue && dialogue.introduces) || []);
   // Carry the scene into the live chat: the tutor pins the scenario's role and is told the situation +
   // the objectives this level rehearsed, so it keeps the scene alive while still tutoring.
   const scene = currentScenario ? (currentScenario.name || currentScenario.title) : null;
@@ -900,6 +909,15 @@ async function scenePlayBeat(npc) {
   if (npc.terminal) {
     await sleep(pace.closeHoldMs);
     sceneFinish();
+    return;
+  }
+
+  // A beat that hands over to nobody: the character says something the learner is not being asked to
+  // answer — an acknowledgement, a nudge onward — and simply carries on. Arming the button here would
+  // ask for a turn that does not exist.
+  if (!npc.handsOver) {
+    await sleep(pace.handoverMs);
+    await sceneStep(npc.id, null);
     return;
   }
 

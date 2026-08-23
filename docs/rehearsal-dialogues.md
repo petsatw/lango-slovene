@@ -122,6 +122,16 @@ drives both:
 | Judging | none | **none** — nothing inspects the recording; there is no model in the loop |
 | Crediting | nothing (the [witness contract](free-conversation.md)) | the beat's `learnables`, as **attempts** — never masteries |
 | An npc node's `next` | the choices offered | the **canonical spine is `next[0]`**; further entries are alternates a surface may preview without them advancing anything |
+| npc → npc | not possible — a tap needs a choice | **allowed**: a beat the learner is not asked to answer |
+
+**A spoken spine may run npc → npc.** When an npc node's `next[0]` is another npc node, the character is
+carrying himself forward — an acknowledgement, a slow re-model, a nudge onward — and no turn is demanded:
+`advanceDialogue` returns the next npc line with `clientNodeId: null` and credits nothing, and the
+renderer plays it and continues instead of arming the button (`handsOver: false` on the shaped beat).
+Without this every line the character speaks would demand a response, and the only way to hold a
+supporting beat would be to pack several sentences into one node — which puts far more words in front of
+a beginner than the turn following them is worth. Authoring consequence: **one node is one caption, one
+thing on screen**; if two sentences want different captions or different timing, they are two nodes.
 
 `"audio"` is the seed adapter's contract ([`seed-scripted.ts`](../server/adapters/seed-scripted.ts))
 generalized to a tree: pure, position-derived, unfailable by construction, and **crediting is the
