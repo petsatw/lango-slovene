@@ -97,6 +97,15 @@ export interface DialogueNode {
    *  (e.g. "if the book is damaged", "no ID on you"). Rendered as a muted "(…)" tag on the choice, never
    *  spoken. Absent → a plain choice. */
   context?: string;
+  /** The substring of `sl` to render at full weight while the rest of the caption steps down —
+   *  emphasis doing the segmenting a beginner cannot do for themselves. A learner who hears nine words
+   *  and must produce two has nothing on screen telling them which two; contrast tells them, without a
+   *  label, a box or a colour announcing that a lesson is happening.
+   *
+   *  It marks a SHAPE and its variations, wherever they appear — the character's captions included — and
+   *  only while that shape is being INTRODUCED; once a phrase is the learner's it stops being marked.
+   *  Must occur exactly once in `sl`. */
+  focusSpan?: string;
   /** Milliseconds to hold after this line is spoken before its caption appears — the silent beat that
    *  lets a line land as sound before it becomes text. Absent/0 → the caption appears with the line. */
   captionDelayMs?: number;
@@ -277,6 +286,13 @@ export function validateDialogue(file: string, raw: any): Dialogue {
     if (n.captionDelayMs !== undefined) {
       if (typeof n.captionDelayMs !== "number" || !Number.isFinite(n.captionDelayMs) || n.captionDelayMs < 0)
         fail(file, `${where}: "captionDelayMs" must be a non-negative number of milliseconds`);
+    }
+    if (n.focusSpan !== undefined) {
+      asString(file, n, "focusSpan", where);
+      // Exactly once, or the renderer has to guess which occurrence carries the emphasis — and a span
+      // that isn't in the line at all marks nothing while looking authored.
+      const hits = n.sl.split(n.focusSpan).length - 1;
+      if (hits !== 1) fail(file, `${where}: "focusSpan" occurs ${hits} times in "sl" — it must occur exactly once`);
     }
     if (n.glossPolicy !== undefined && !["tap", "after", "held"].includes(n.glossPolicy))
       fail(file, `${where}: "glossPolicy" must be "tap" | "after" | "held"`);

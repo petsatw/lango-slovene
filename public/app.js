@@ -259,17 +259,27 @@ async function loadPractice() {
     const { scenarios } = await (await fetch("/api/practice")).json();
     if (!scenarios.length) { el.innerHTML = "<p class='muted'>No scenarios yet.</p>"; return; }
     el.innerHTML = "";
-    for (const s of scenarios) {
-      const card = document.createElement("button");
-      card.className = "scenario-card";
-      card.type = "button";
-      const n = s.dialogues.length;
-      card.innerHTML =
-        `<span class="scenario-name">${s.name}</span>` +
-        `<span class="scenario-meta">${n} lesson${n === 1 ? "" : "s"}</span>` +
-        `<span class="level-chevron">›</span>`;
-      card.addEventListener("click", () => openScenario(s));
-      el.appendChild(card);
+    // Two groups, because they are two different things to do: the spoken lessons are the course, the
+    // rehearsal trees are conversations to read through.
+    for (const [heading, mode] of [["Practice!", "spoken"], ["Example Conversations", "rehearsal"]]) {
+      const group = scenarios.filter((s) => s.mode === mode);
+      if (!group.length) continue;
+      const h = document.createElement("p");
+      h.className = "scenario-group";
+      h.textContent = heading;
+      el.appendChild(h);
+      for (const s of group) {
+        const card = document.createElement("button");
+        card.className = "scenario-card";
+        card.type = "button";
+        const n = s.dialogues.length;
+        card.innerHTML =
+          `<span class="scenario-name">${s.name}</span>` +
+          `<span class="scenario-meta">${n} lesson${n === 1 ? "" : "s"}</span>` +
+          `<span class="level-chevron">›</span>`;
+        card.addEventListener("click", () => openScenario(s));
+        el.appendChild(card);
+      }
     }
   } catch (err) {
     el.innerHTML = `<p class='muted'>Failed: ${err.message}</p>`;
@@ -318,6 +328,9 @@ function openScenario(s) {
 
 function openLevel(i) {
   dialogue = dialogues[i];
+  // A spoken level is a lesson the app plays, not a tree to click through — same authored data, a
+  // different surface. Which one is named by the level's own advance mode.
+  if ((dialogue.advance ?? "tap") === "audio") { openScene(dialogue.scenarioId, dialogue.level); return; }
   applyDialogueBackground(); // apply the scene background first so the intro can show it alone
   $("dialogue").hidden = false;
   if (dialogue.intro) runIntro();
@@ -749,11 +762,37 @@ async function seedTurn(audioBase64) {
 // — there are no timing constants in this file. Pacing is a teaching decision, so it lives with the rest
 // of the pedagogy, is named, and is dialed per lesson; a renderer that invents its own durations is how
 // the ladder drifted eleven seconds out of true in the first place.
-let scene = { scenarioId: null, voice: null, node: null, stalls: [], armed: false, backchannel: null, pacing: null };
+let scene = { scenarioId: null, level: null, voice: null, audio: null, node: null, stalls: [], armed: false,
+              backchannel: null, pacing: null, nextLevel: null, keyPhrases: null };
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// Emphasis carries the segmenting a beginner cannot do: the span the lesson is working sits at full
+// weight and the rest of the line steps down. Contrast only — no box, no colour, no label, so it
+// answers "which part is mine?" without announcing that a lesson is happening.
+function writeFocused(el, text, span) {
+  el.textContent = "";
+  const at = span ? text.indexOf(span) : -1;
+  if (at < 0) { el.textContent = text; return; }
+  const put = (t, cls) => {
+    if (!t) return;
+    const s = document.createElement("span");
+    if (cls) s.className = cls;
+    s.textContent = t;
+    el.appendChild(s);
+  };
+  put(text.slice(0, at), "unfocused");
+  put(span, "focused");
+  put(text.slice(at + span.length), "unfocused");
+}
+
+// The character speaks only from clips that are already built. A level that honestly declares its audio
+// "pending" plays SILENT — and faster, since nothing is being waited on — rather than live-synthesizing.
+// This is the same gate the rehearsal tree puts on its play buttons, and it matters more here: the
+// scene asks for `sl`, while the build asks for `deliverySL` under the `sl` key, so a miss would both
+// bill and permanently seat undirected audio where the directed clip belongs.
 function sceneSay(text) {
+  if (scene.audio !== "ready") return Promise.resolve();
   return new Promise((resolve) => {
     stopDialogueAudio();
     const params = new URLSearchParams({ text });
@@ -767,9 +806,9 @@ function sceneSay(text) {
   });
 }
 
-function sceneCaption(text, { slow = false } = {}) {
+function sceneCaption(text, { slow = false, focus = null } = {}) {
   const el = $("scene-caption");
-  el.textContent = text;
+  writeFocused(el, text, focus);
   el.classList.toggle("slow", slow);
   el.classList.add("shown");
 }
@@ -797,9 +836,9 @@ function sceneArmStalls(handlers, npc) {
         // The character takes the floor back for a moment: the button says so, then returns the turn.
         const label = $("scene-talk-label").textContent;
         sceneSetPhase("speaking");
-        sceneCaption(npc.slowSL, { slow: true });
+        sceneCaption(npc.slowSL, { slow: true, focus: npc.focusSpan });
         await sceneSay(npc.slowSL);
-        sceneCaption(npc.sl);
+        sceneCaption(npc.sl, { focus: npc.focusSpan });
         if (scene.armed) sceneSetPhase("ready", label);
       } else if (h.kind === "soften" && h.label) {
         $("scene-talk-label").textContent = h.label;
@@ -862,6 +901,19 @@ async function scenePlayFrame(lines) {
   el.hidden = true;
 }
 
+// Help is one tap away and arrives like a friend handing it over. Tapping the learner's own slot brings
+// the English back and replays the line they are answering. It is theirs to ask for — nothing here
+// diagnoses a struggle, because there is nothing to diagnose once they have asked.
+//
+// The Slovene never withdraws; the English does. A line carries its translation the first time the
+// learner produces it ("after") and is held after — held, never dropped, so a tap always returns it.
+function scenePromptGloss(npc) {
+  const en = $("scene-prompt-en");
+  en.textContent = npc.prompt?.en ?? "";
+  en.classList.toggle("held", (npc.prompt?.glossPolicy ?? "tap") !== "after");
+  $("scene-prompt").onclick = () => { en.classList.remove("held"); sceneSay(npc.sl); };
+}
+
 async function scenePlayBeat(npc) {
   const pace = scene.pacing;
   scene.node = npc;
@@ -881,7 +933,7 @@ async function scenePlayBeat(npc) {
   // The caption and the voice are ONE event: the text goes up and the line is spoken over it. Awaiting
   // the clip before setting the caption — which is what this used to do — put the text a whole sentence
   // behind the audio, so the learner could never match what they heard to what they were reading.
-  sceneCaption(npc.sl);
+  sceneCaption(npc.sl, { focus: npc.focusSpan });
   if (npc.captionLeadMs) await sleep(npc.captionLeadMs);
   await sceneSay(npc.sl);
 
@@ -890,9 +942,9 @@ async function scenePlayBeat(npc) {
   // the learner only ever sees the chunked one, and the "appears, then re-speaks" beat collapses.
   if (npc.slowSL) {
     await sleep(pace.captionReadMs);
-    sceneCaption(npc.slowSL, { slow: true });
+    sceneCaption(npc.slowSL, { slow: true, focus: npc.focusSpan });
     await sceneSay(npc.slowSL);
-    sceneCaption(npc.sl);
+    sceneCaption(npc.sl, { focus: npc.focusSpan });
   }
 
   // The gloss comes second when it comes at all — Slovene first, English confirming (beats 64-65, 82).
@@ -927,9 +979,9 @@ async function scenePlayBeat(npc) {
   // expects no Slovene (the learner says their own name) there is no stem, and the English instruction
   // stands on its own rather than under a bold blank.
   const sl = npc.prompt?.sl ?? "";
-  $("scene-prompt-sl").textContent = sl;
+  writeFocused($("scene-prompt-sl"), sl, npc.prompt?.focusSpan);
   $("scene-prompt-sl").hidden = !sl;
-  $("scene-prompt-en").textContent = npc.prompt?.en ?? "";
+  scenePromptGloss(npc);
   $("scene-prompt").classList.toggle("bare", !!npc.prompt && !sl);
   if (npc.prompt) $("scene-prompt").classList.add("shown");
   // Same button, same place — the meter gives way to the one action being asked for.
@@ -945,11 +997,14 @@ async function sceneStep(from, ack) {
   const res = await fetch("/api/scene", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ scenarioId: scene.scenarioId, ...(from ? { from } : {}) }),
+    body: JSON.stringify({ scenarioId: scene.scenarioId, ...(scene.level ? { level: scene.level } : {}), ...(from ? { from } : {}) }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
   scene.voice = data.voice;
+  if (data.audio) scene.audio = data.audio;
+  if (data.level) scene.level = data.level;
+  if (data.keyPhrases) { scene.keyPhrases = data.keyPhrases; scene.nextLevel = data.nextLevel ?? null; }
   if (data.pacing) scene.pacing = data.pacing;
   if (data.backchannel) scene.backchannel = data.backchannel;
   if (data.background) $("scene-bg").style.backgroundImage = `url(/backgrounds/${data.background})`;
@@ -959,18 +1014,89 @@ async function sceneStep(from, ack) {
   else sceneFinish();
 }
 
+// The close: the character's last line, unglossed, still on screen — then a way to look back at the
+// phrases and a way onward. Key Phrases is a button, never a screen you have to pass through, and it
+// carries no counts, no badges, nothing that reads as a measure.
 function sceneFinish() {
   sceneClearStalls();
   scene.armed = false;
-  sceneSetPhase("speaking");
   learnerStarted = true;
-  openHome(); // the scene hands off to the app proper
+  $("scene-controls").hidden = true;
+  $("scene-phrases").hidden = true;
+  const next = $("scene-next");
+  next.textContent = scene.nextLevel ? "Next lesson" : "Done";
+  next.onclick = () => (scene.nextLevel ? openScene(scene.scenarioId, scene.nextLevel) : openHome());
+  const phrases = scene.keyPhrases;
+  const toggle = $("scene-phrases-btn");
+  toggle.hidden = !(phrases && (phrases.new.length || phrases.review.length));
+  toggle.onclick = () => {
+    const panel = $("scene-phrases");
+    if (panel.hidden) renderKeyPhrases(phrases);
+    panel.hidden = !panel.hidden;
+  };
+  $("scene-close").hidden = false;
 }
 
-async function openScene(scenarioId) {
-  scene = { scenarioId, voice: null, node: null, stalls: [], armed: false, backchannel: null, pacing: null };
+// One row per phrase they met: the Slovene, and a play button where the clip is already on disk. Tap the
+// text for the English — the same interaction as every other line in the app.
+function renderKeyPhrases(phrases) {
+  const panel = $("scene-phrases");
+  panel.innerHTML = "";
+  const h = document.createElement("h3");
+  h.className = "phrases-title";
+  h.textContent = "Key Phrases";
+  panel.appendChild(h);
+  for (const [heading, rows] of [["New", phrases.new], ["Review", phrases.review]]) {
+    if (!rows.length) continue;
+    const sub = document.createElement("p");
+    sub.className = "phrases-sub";
+    sub.textContent = heading;
+    panel.appendChild(sub);
+    for (const r of rows) {
+      const row = document.createElement("div");
+      row.className = "phrase-row";
+      const sl = document.createElement("button");
+      sl.type = "button";
+      sl.className = "phrase-sl";
+      sl.textContent = r.sl;
+      const en = document.createElement("small");
+      en.className = "phrase-en held";
+      en.textContent = r.en;
+      sl.addEventListener("click", () => en.classList.remove("held"));
+      row.appendChild(sl);
+      if (r.playable) {
+        const play = document.createElement("button");
+        play.type = "button";
+        play.className = "replay";
+        play.title = "Hear it";
+        play.textContent = "▶";
+        play.addEventListener("click", () => {
+          const params = new URLSearchParams({ text: r.sl });
+          if (phrases.voice) params.set("voice", phrases.voice);
+          stopDialogueAudio();
+          dialogueAudio = new Audio(`/api/speak?${params.toString()}`);
+          dialogueAudio.play().catch(() => {});
+        });
+        row.appendChild(play);
+      }
+      row.appendChild(en);
+      panel.appendChild(row);
+    }
+  }
+}
+
+async function openScene(scenarioId, level = null) {
+  scene = { scenarioId, level, voice: null, audio: null, node: null, stalls: [], armed: false,
+            backchannel: null, pacing: null, nextLevel: null, keyPhrases: null };
   showScreen("scene");
+  $("scene-close").hidden = true;
+  $("scene-phrases").hidden = true;
+  $("scene-controls").hidden = false;
   $("scene-bg").style.backgroundImage = "";
+  // Clear the stage before the next lesson's on-ramp plays over it — the previous run's last line and
+  // prompt are still up, and a new lesson opening onto the old one's goodbye reads as a stuck screen.
+  $("scene-caption").classList.remove("shown", "pulse");
+  $("scene-gloss").classList.remove("shown");
   $("scene-prompt").classList.remove("shown");
   // The button is on screen from the first frame, anchored, showing that it is not yet the learner's.
   sceneSetPhase("speaking", "");

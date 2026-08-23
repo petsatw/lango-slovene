@@ -90,6 +90,9 @@ main.screen, main.home {
   transition: border-color 0.12s ease;
 }
 .scenario-card:hover { border-color: var(--green); }
+/* Two groups on one screen: the spoken lessons, and the conversations to read through. */
+.scenario-group { margin: 14px 0 0; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.scenario-group:first-child { margin-top: 0; }
 .scenario-name { font-size: 18px; font-weight: 600; flex: 1; }
 .scenario-meta { color: var(--muted); font-size: 13px; }
 
@@ -675,3 +678,42 @@ body.in-scene header { display: none; }
 /* Stall rung 1: the caption pulses once, drawing the eye back. No copy. */
 @keyframes scene-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
 .scene-caption.pulse { animation: scene-pulse 900ms ease-in-out 2; }
+
+/* The focus span: the shape being worked stays at full weight and everything around it steps down.
+   CONTRAST ONLY — no highlight, no colour, no label. It answers "which part is mine?" without
+   announcing that a lesson is happening, and it marks a shape only while that shape is new. */
+.unfocused { opacity: 0.45; font-weight: 400; }
+
+/* The learner's slot is tappable: the English comes back and the character's line replays. Held, not
+   dropped — the Slovene never withdraws, the English does, and a tap always returns it. */
+.scene-prompt { pointer-events: none; }
+.scene-prompt.shown { pointer-events: auto; cursor: pointer; }
+.scene-prompt-en.held { visibility: hidden; }
+
+/* The close screen. Two controls in the same place the button lived, so nothing jumps at the end. */
+.scene-close {
+  position: relative; flex-shrink: 0; width: 100%; max-width: 420px;
+  margin-top: 30px; display: grid; justify-items: center; gap: 10px;
+}
+.scene-close-btn {
+  min-width: 190px; padding: 0 26px; height: 56px; border-radius: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.55); background: rgba(255, 255, 255, 0.1);
+  color: #fff; font-size: 17px; font-weight: 600; cursor: pointer;
+}
+.scene-close-btn.ghost { border-color: rgba(255, 255, 255, 0.22); background: transparent; font-weight: 500; }
+
+/* Key Phrases: a list of what you have MET. No ordering or marking that implies mastery — the moment
+   it ranks, it is a measure. */
+.scene-phrases {
+  width: 100%; max-height: 42vh; overflow-y: auto; text-align: left;
+  background: rgba(10, 12, 16, 0.72); border-radius: 16px; padding: 14px 16px; margin-bottom: 4px;
+}
+.phrases-title { margin: 0 0 10px; font-size: 17px; font-weight: 700; color: #fff; }
+.phrases-sub { margin: 12px 0 4px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.phrase-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; padding: 6px 0; }
+.phrase-sl {
+  justify-self: start; padding: 0; border: 0; background: none; cursor: pointer;
+  color: #fff; font-size: 17px; font-weight: 600; text-align: left;
+}
+.phrase-en { grid-column: 1 / -1; font-size: 14px; color: var(--muted); }
+.phrase-en.held { display: none; }

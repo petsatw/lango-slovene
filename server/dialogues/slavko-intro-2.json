@@ -24,7 +24,7 @@
     "ne_govorim_dobro",
     "zivjo"
   ],
-  "audio": "pending",
+  "audio": "ready",
   "voices": {
     "npc": "slavko",
     "client": "slavko"
@@ -138,6 +138,7 @@
       "deliverySL": "[playfully] A ti? Govorim angleško?",
       "slowSL": "A ti … Govorim angleško?",
       "deliverySlowSL": "[slower] A ti … [deliberately] Govorim angleško?",
+      "focusSpan": "Govorim angleško",
       "glossPolicy": "after",
       "stallHandlers": [
         {
@@ -268,6 +269,7 @@
       "deliverySL": "[sheepishly] Ampak angleško? Uf. Ne govorim dobro angleško.",
       "slowSL": "Ampak angleško … Uf … Ne govorim … dobro angleško.",
       "deliverySlowSL": "[slower] Ampak angleško … [sheepishly] Uf … [deliberately] Ne govorim … [slower] dobro angleško.",
+      "focusSpan": "Ne govorim dobro angleško",
       "glossPolicy": "after",
       "next": [
         "n13"

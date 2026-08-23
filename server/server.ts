@@ -105,10 +105,14 @@ app.get("/api/config", (req, res) => {
 app.get("/api/practice", (_req, res) => {
   const scenarios = SCENARIOS.map((s) => ({ s, dialogues: getDialoguesForScenario(s.id) }))
     .filter(({ dialogues }) => dialogues.length > 0)
-    // A spoken scene is a place the app takes the learner, not a rehearsal the learner picks — so it
-    // stays out of the picker. The advance mode already tells the two apart.
-    .filter(({ dialogues }) => dialogues.some((d) => (d.advance ?? "tap") === "tap"))
-    .map(({ s, dialogues }) => ({ id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null, dialogues }));
+    .map(({ s, dialogues }) => ({
+      id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null,
+      // The spoken lessons are the spine of the course, so they have a durable home in the picker
+      // alongside the rehearsal trees. `mode` is what splits the two groups on the screen: a spoken
+      // scenario's levels open the scene surface, a rehearsal scenario's open the click-through tree.
+      mode: dialogues.some((d) => (d.advance ?? "tap") === "audio") ? "spoken" : "rehearsal",
+      dialogues,
+    }));
   // The scenario that owns the first-run spoken scene, if one is authored — the boot route needs it in
   // the same call as `started`, so a zero-state learner reaches the scene without a second round trip.
   const sceneScenario = SCENARIOS.find((s) =>
@@ -126,14 +130,18 @@ app.get("/api/practice", (_req, res) => {
 // The client posts the node it is leaving; the server walks the spine, plants that beat's learnables as
 // ATTEMPTS, and returns the next character line with its pacing.
 //
-//   POST /api/scene { scenarioId }            → the opening line (credits nothing)
-//   POST /api/scene { scenarioId, from }      → the learner spoke at `from`; advance
+//   POST /api/scene { scenarioId, level? }        → the opening line (credits nothing)
+//   POST /api/scene { scenarioId, level?, from }  → the learner spoke at `from`; advance
+//
+// `level` picks which spoken level of the scenario to play; absent → the lowest. Without it only the
+// first spoken level of a scenario is reachable, and every level after it ships unplayable.
 app.post("/api/scene", (req, res) => {
-  const { scenarioId, from } = req.body ?? {};
+  const { scenarioId, level, from } = req.body ?? {};
   if (typeof scenarioId !== "string") return res.status(400).json({ error: "scenarioId is required" });
 
-  const scene = getDialoguesForScenario(scenarioId).find((d) => (d.advance ?? "tap") === "audio");
-  if (!scene) return res.status(404).json({ error: `No spoken scene for scenario "${scenarioId}"` });
+  const spoken = getDialoguesForScenario(scenarioId).filter((d) => (d.advance ?? "tap") === "audio");
+  const scene = typeof level === "number" ? spoken.find((d) => d.level === level) : spoken[0];
+  if (!scene) return res.status(404).json({ error: `No spoken scene for scenario "${scenarioId}"${typeof level === "number" ? ` level ${level}` : ""}` });
 
   const pacing = pacingFor(scene.pacing);
 
@@ -156,6 +164,7 @@ app.post("/api/scene", (req, res) => {
       slowSL: n.slowSL ?? null,
       // Resolved here so the renderer never has to know a default: the node's own lead, else the profile's.
       captionLeadMs: n.captionDelayMs ?? pacing.captionLeadMs,
+      focusSpan: n.focusSpan ?? null,
       glossPolicy: n.glossPolicy ?? "tap",
       // Each rung's timing resolved from the profile by position unless the rung overrides it.
       stallHandlers: (n.stallHandlers ?? []).map((h, i) => ({
@@ -163,7 +172,12 @@ app.post("/api/scene", (req, res) => {
         label: h.label ?? null,
         afterMs: h.afterMs ?? pacing.stallMs[i]!,
       })),
-      prompt: client ? { sl: stem, en: client.en } : null,
+      // The Slovene never withdraws; the English does. The client node's own gloss policy rides along so
+      // the surface can show the translation the first time the learner produces a line and hold it
+      // after — the gloss is never dropped from the data, so a tap can always bring it back.
+      prompt: client
+        ? { sl: stem, en: client.en, glossPolicy: client.glossPolicy ?? "tap", focusSpan: client.focusSpan ?? null }
+        : null,
       // Whether this beat ends in a turn at all. A node that hands to another npc node is the character
       // carrying himself forward — the renderer plays it and continues rather than arming the button.
       handsOver: !!client,
@@ -176,10 +190,41 @@ app.post("/api/scene", (req, res) => {
   // releases, before anything could have processed what they said.
   const backchannel = CATALOG.voiceProfiles[scene.voices.npc]?.backchannels?.[0] ?? null;
 
+  // Key Phrases for the close screen: the lines the learner actually produced in this level, in the
+  // order they met them, split by whether the level INTRODUCED them. `introduces` is the split, not the
+  // list — a learnable id is a catalog frame ("Govorim ___.") and what belongs on the close screen is
+  // the sentence they said.
+  const keyPhrases = () => {
+    const e3 = getE3();
+    const voiceTag = e3.voiceTagFor(scene.voices.client);
+    const rows: { new: any[]; review: any[] } = { new: [], review: [] };
+    const seen = new Set<string>();
+    for (const n of Object.values(scene.nodes)) {
+      // A turn that expects no Slovene (the learner saying their own name) is not a phrase they met.
+      if (n.speaker !== "client" || !/\p{L}/u.test(n.sl) || seen.has(n.sl)) continue;
+      seen.add(n.sl);
+      const isNew = (n.learnables ?? []).some((id) => scene.introduces.includes(id));
+      rows[isNew ? "new" : "review"].push({
+        sl: n.sl,
+        en: n.en,
+        // The play affordance appears only where the bytes are already on disk. A miss would live-
+        // synthesize, and audio is built on the operator's instruction alone.
+        playable: store.has(store.audioKey(e3.name, voiceTag, n.sl), "audio"),
+      });
+    }
+    return { voice: scene.voices.client, ...rows };
+  };
+
   try {
     if (typeof from !== "string") {
       return res.json({ voice: scene.voices.npc, background: scene.background ?? null, backchannel,
-                        pacing, frameEN: scene.frameEN ?? [], npc: shape(scene.root), done: false });
+                        pacing, frameEN: scene.frameEN ?? [], npc: shape(scene.root), done: false,
+                        audio: scene.audio,
+                        level: scene.level, title: scene.title,
+                        // What the close screen offers next — the scenario's next spoken level, if one
+                        // is authored. Null ends the run at the close screen.
+                        nextLevel: spoken.find((d) => d.level > scene.level)?.level ?? null,
+                        keyPhrases: keyPhrases() });
     }
     const step = advanceDialogue(scene, from, { kind: "audio" });
     if (step.learnableProgress.length) learner.save(applyCredit(learner.load(), step.learnableProgress));
@@ -188,6 +233,12 @@ app.post("/api/scene", (req, res) => {
       background: scene.background ?? null,
       backchannel,
       pacing,
+      // The level's own declaration that its clips are built. The renderer asks for audio only when it
+      // is "ready": /api/speak synthesizes on a miss (it must — the live tutor's text is unpredictable),
+      // so an unbuilt line played here would BILL, and it would bill for the wrong bytes. This surface
+      // sends `sl`; build:dialogue-assets sends `deliverySL` and keys on `sl`, so the miss fills the
+      // real key with undirected audio and the later build skips it.
+      audio: scene.audio,
       npc: shape(step.npcNodeId),
       spoke: step.clientNodeId ? { id: step.clientNodeId, sl: scene.nodes[step.clientNodeId]!.sl } : null,
       done: step.done,
