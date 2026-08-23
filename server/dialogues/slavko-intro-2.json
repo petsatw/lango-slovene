@@ -395,16 +395,6 @@
       "learnables": [
         "adijo"
       ],
-      "next": [
-        "n17"
-      ]
-    },
-    "n17": {
-      "speaker": "npc",
-      "sl": "Če ne razumeš, kar reci: Ne razumem!",
-      "en": "If you don't understand, just say: I don't understand!",
-      "deliverySL": "[warmly] Če ne razumeš, kar reci: Ne razumem!",
-      "glossPolicy": "held",
       "next": []
     }
   }
