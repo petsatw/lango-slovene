@@ -77,6 +77,20 @@ When diagnosing a problem or analyzing a behavior:
 - **To generalize into a rule, say so and name the evidence** — don't pass a hypothesis off as fact.
 - **Test the live system over reasoning from static artifacts.** When you can exec into it, ask it, or probe it, do that and report the result.
 
+### 6. Write What Is
+
+**Comments and docs describe the present. Git holds the history.**
+
+- **No histories.** "This used to be X", "the old behaviour", "that gate was removed", "(decided
+  2026-08-23)" — all of it belongs in the commit message, `docs/research/`, or a handoff brief. A file
+  that narrates its own changes forces every future reader to reconstruct the present out of a story.
+- **No negative ontologies.** Define a thing by what it is, not by what it isn't or what it replaced.
+  "Core is the learnable's `core: true` flag" — not "core is no longer read from the a1-map".
+- **Warding off a tempting alternative gets one clause, not a paragraph.** "Length is not a band input —
+  it measures amount, not difficulty." Enough to stop a plausible revert; not a retrospective.
+- Applies to code comments, `docs/`, and skill files alike. `docs/research/` is exempt: it is a record of
+  what was thought and when, and a superseded document there should say so at the top.
+
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
 
 ## Testing conventions — low abstraction, high fidelity
