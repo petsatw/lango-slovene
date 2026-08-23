@@ -1,0 +1,409 @@
+{
+  "id": "slavko-intro-l2",
+  "scenarioId": "slavko-intro",
+  "level": 2,
+  "levelLabel": "Basic",
+  "title": "Do you speak Slovene?",
+  "objectives": [
+    {
+      "label": "Greet him back",
+      "descriptorEN": "Return Slavko's 'Živjo' after hearing him say it."
+    },
+    {
+      "label": "Say which language you speak",
+      "descriptorEN": "Use the frame 'Govorim ___.' with slovensko or angleško in the slot."
+    },
+    {
+      "label": "Say how well you speak it",
+      "descriptorEN": "Qualify that frame with 'dobro', and negate it with 'ne', to say how well you speak a language."
+    }
+  ],
+  "introduces": [
+    "govorim_dobro_lang",
+    "govorim_lang",
+    "ne_govorim_dobro",
+    "zivjo"
+  ],
+  "audio": "pending",
+  "voices": {
+    "npc": "slavko",
+    "client": "slavko"
+  },
+  "advance": "audio",
+  "pacing": "onboarding",
+  "frameEN": [
+    "You've met Slavko before.",
+    "He won't remember your name — that's normal. You'll tell him again."
+  ],
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Živjo!",
+      "en": "Hi!",
+      "deliverySL": "[warmly] Živjo!",
+      "glossPolicy": "tap",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "soften",
+          "label": "Say hi back"
+        }
+      ],
+      "next": [
+        "c1"
+      ]
+    },
+    "c1": {
+      "speaker": "client",
+      "sl": "Živjo",
+      "en": "Hi",
+      "glossPolicy": "after",
+      "learnables": [
+        "zivjo"
+      ],
+      "next": [
+        "n2"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Se spomniš? Sem Slavko.",
+      "en": "Remember? I'm Slavko.",
+      "deliverySL": "[cheerfully] Se spomniš? Sem Slavko.",
+      "glossPolicy": "after",
+      "next": [
+        "n3"
+      ]
+    },
+    "n3": {
+      "speaker": "npc",
+      "sl": "Kako ti je že ime?",
+      "en": "What was your name again?",
+      "deliverySL": "[curious] Kako ti je že ime?",
+      "glossPolicy": "after",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "soften",
+          "label": "Tell him your name"
+        }
+      ],
+      "next": [
+        "c2"
+      ]
+    },
+    "c2": {
+      "speaker": "client",
+      "sl": "Sem ___.",
+      "en": "I'm ___.",
+      "glossPolicy": "tap",
+      "learnables": [
+        "sem_ime"
+      ],
+      "next": [
+        "n4"
+      ]
+    },
+    "n4": {
+      "speaker": "npc",
+      "sl": "Ja, seveda!",
+      "en": "Yes, of course!",
+      "deliverySL": "[warmly] Ja, seveda!",
+      "glossPolicy": "after",
+      "next": [
+        "n5"
+      ]
+    },
+    "n5": {
+      "speaker": "npc",
+      "sl": "Govorim slovensko.",
+      "en": "I speak Slovene.",
+      "deliverySL": "[proudly] Govorim slovensko.",
+      "slowSL": "Govorim … slovensko.",
+      "deliverySlowSL": "[slower] Govorim … [deliberately] slovensko.",
+      "glossPolicy": "after",
+      "next": [
+        "n6"
+      ]
+    },
+    "n6": {
+      "speaker": "npc",
+      "sl": "A ti? Govorim angleško?",
+      "en": "And you? 'I speak English'?",
+      "deliverySL": "[playfully] A ti? Govorim angleško?",
+      "slowSL": "A ti … Govorim angleško?",
+      "deliverySlowSL": "[slower] A ti … [deliberately] Govorim angleško?",
+      "glossPolicy": "after",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "respeak"
+        },
+        {
+          "kind": "soften",
+          "label": "Read it out loud"
+        }
+      ],
+      "next": [
+        "c3"
+      ]
+    },
+    "c3": {
+      "speaker": "client",
+      "sl": "Govorim angleško.",
+      "en": "I speak English.",
+      "glossPolicy": "after",
+      "learnables": [
+        "govorim_lang"
+      ],
+      "next": [
+        "n7"
+      ]
+    },
+    "n7": {
+      "speaker": "npc",
+      "sl": "Aha! Govoriš angleško.",
+      "en": "Aha! You speak English.",
+      "deliverySL": "[amused] Aha! Govoriš angleško.",
+      "glossPolicy": "after",
+      "next": [
+        "n8"
+      ]
+    },
+    "n8": {
+      "speaker": "npc",
+      "sl": "Daj, poskusi!",
+      "en": "Go on, try!",
+      "deliverySL": "[encouraging] Daj, poskusi!",
+      "glossPolicy": "after",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "soften",
+          "label": "Read it out loud"
+        }
+      ],
+      "next": [
+        "c4"
+      ]
+    },
+    "c4": {
+      "speaker": "client",
+      "sl": "Govorim slovensko.",
+      "en": "I speak Slovene.",
+      "glossPolicy": "after",
+      "learnables": [
+        "govorim_lang"
+      ],
+      "next": [
+        "n9"
+      ]
+    },
+    "n9": {
+      "speaker": "npc",
+      "sl": "Ne verjamem! Še enkrat!",
+      "en": "I don't believe it! Again!",
+      "deliverySL": "[playfully] Ne verjamem! Še enkrat!",
+      "glossPolicy": "after",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "soften",
+          "label": "Say it once more"
+        }
+      ],
+      "next": [
+        "c5"
+      ]
+    },
+    "c5": {
+      "speaker": "client",
+      "sl": "Govorim slovensko.",
+      "en": "I speak Slovene.",
+      "glossPolicy": "tap",
+      "learnables": [
+        "govorim_lang"
+      ],
+      "next": [
+        "n10"
+      ]
+    },
+    "n10": {
+      "speaker": "npc",
+      "sl": "Saj govoriš slovensko! Super!",
+      "en": "You do speak Slovene! Great!",
+      "deliverySL": "[delighted] Saj govoriš slovensko! Super!",
+      "glossPolicy": "after",
+      "next": [
+        "n11"
+      ]
+    },
+    "n11": {
+      "speaker": "npc",
+      "sl": "Govorim dobro slovensko.",
+      "en": "I speak Slovene well.",
+      "deliverySL": "[proudly] Govorim dobro slovensko.",
+      "slowSL": "Govorim … dobro slovensko.",
+      "deliverySlowSL": "[slower] Govorim … [deliberately] dobro slovensko.",
+      "glossPolicy": "after",
+      "next": [
+        "n12"
+      ]
+    },
+    "n12": {
+      "speaker": "npc",
+      "sl": "Ampak angleško? Uf. Ne govorim dobro angleško.",
+      "en": "But English? Ugh. I don't speak English well.",
+      "deliverySL": "[sheepishly] Ampak angleško? Uf. Ne govorim dobro angleško.",
+      "slowSL": "Ampak angleško … Uf … Ne govorim … dobro angleško.",
+      "deliverySlowSL": "[slower] Ampak angleško … [sheepishly] Uf … [deliberately] Ne govorim … [slower] dobro angleško.",
+      "glossPolicy": "after",
+      "next": [
+        "n13"
+      ]
+    },
+    "n13": {
+      "speaker": "npc",
+      "sl": "A ti? Slovensko?",
+      "en": "And you? Slovene?",
+      "deliverySL": "[curious] A ti? Slovensko?",
+      "glossPolicy": "tap",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "soften",
+          "label": "Read it out loud"
+        }
+      ],
+      "next": [
+        "c6"
+      ]
+    },
+    "c6": {
+      "speaker": "client",
+      "sl": "Ne govorim dobro slovensko.",
+      "en": "I don't speak Slovene well.",
+      "glossPolicy": "after",
+      "learnables": [
+        "ne_govorim_dobro"
+      ],
+      "next": [
+        "n14"
+      ]
+    },
+    "n14": {
+      "speaker": "npc",
+      "sl": "Ha! In angleško?",
+      "en": "Ha! And English?",
+      "deliverySL": "[amused] Ha! In angleško?",
+      "glossPolicy": "tap",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "soften",
+          "label": "Read it out loud"
+        }
+      ],
+      "next": [
+        "c7"
+      ]
+    },
+    "c7": {
+      "speaker": "client",
+      "sl": "Govorim dobro angleško.",
+      "en": "I speak English well.",
+      "glossPolicy": "after",
+      "learnables": [
+        "govorim_dobro_lang"
+      ],
+      "next": [
+        "n15"
+      ]
+    },
+    "n15": {
+      "speaker": "npc",
+      "sl": "Praviš: Ne govorim dobro angleško?",
+      "en": "You're saying: 'I don't speak English well'?",
+      "deliverySL": "[puzzled] Praviš: Ne govorim dobro angleško?",
+      "glossPolicy": "after",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "soften",
+          "label": "Put him right"
+        }
+      ],
+      "next": [
+        "c8"
+      ]
+    },
+    "c8": {
+      "speaker": "client",
+      "sl": "Govorim dobro angleško.",
+      "en": "I speak English well.",
+      "glossPolicy": "tap",
+      "learnables": [
+        "govorim_dobro_lang"
+      ],
+      "next": [
+        "n16"
+      ]
+    },
+    "n16": {
+      "speaker": "npc",
+      "sl": "Ja, ja! Adijo!",
+      "en": "Yes, yes! Bye!",
+      "deliverySL": "[laughing] Ja, ja! Adijo!",
+      "glossPolicy": "tap",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "soften",
+          "label": "Say bye"
+        }
+      ],
+      "next": [
+        "c9"
+      ]
+    },
+    "c9": {
+      "speaker": "client",
+      "sl": "Adijo",
+      "en": "Bye",
+      "glossPolicy": "tap",
+      "learnables": [
+        "adijo"
+      ],
+      "next": [
+        "n17"
+      ]
+    },
+    "n17": {
+      "speaker": "npc",
+      "sl": "Če ne razumeš, kar reci: Ne razumem!",
+      "en": "If you don't understand, just say: I don't understand!",
+      "deliverySL": "[warmly] Če ne razumeš, kar reci: Ne razumem!",
+      "glossPolicy": "held",
+      "next": []
+    }
+  }
+}

@@ -21,10 +21,14 @@
         {
           "level": 1,
           "levelLabel": "Basic"
+        },
+        {
+          "level": 2,
+          "levelLabel": "Basic"
         }
       ]
     },
-    "a1": false
+    "a1": true
   },
   "objectives": []
 }

@@ -32,6 +32,24 @@ This skill is built as the **`dialogue` surface generator** of a future umbrella
 
 Work on a DRAFT under `.scratch/dialogue-drafts/<scenarioId>/` — **nothing is written into `server/` and no audio is generated until R approves** (PR semantics).
 
+### 0 — Lesson ingredients (L + J) — before any authoring
+Answers to **AGENTS.md › How the lessons teach**. Read it first; it is the law this stage applies. Two halves, never blurred.
+
+**Computed (L) — read from the scenario's existing levels, never judged:**
+- **Owned set** — every `sl` on a `client` node in prior levels, with how many times produced and how many levels back. This is what the slot rule and gloss withdrawal test against.
+- **Heard-only set** — what appears on `npc` nodes but has never been in a slot.
+- **The open payoff** — the previous level's closing unglossed line, and whether anything has yet made it comprehensible.
+
+**Judged (J — the orchestrator):**
+- **The act**, one step on: **echo → answer → interrupt → ask**.
+- **The one new shape.** A shape, not a phrase — *Govorim slovensko / angleško / dobro angleško / ne dobro slovensko* is one item. Reject a candidate if producing it needs a **derivation** (person, case, number, tense) or hides morphology in a slot the app cannot fill — `sem_iz` demands a genitive on the learner's own home town and is therefore not a beginner shape.
+- **The variation plan** — how the shape gets worked, and how many turns that yields. Moves: answer it · negate it · swap the filler · add a qualifier · hear it said back · be wrong then right.
+- **The repetition engines** — the in-fiction *reasons* those variations happen. The character guesses wrong about them · doesn't believe them · quotes them back wrong · asks about a second thing · is self-deprecating and invites the mirror. Never "say it again": a lesson that instructs a repeat has failed to earn one.
+- **The recycle plan** — which owned lines return: every level for two levels after introduction, then every other level, each in a changed shape rather than recited. A level may drop an item if a variation of its shape appears instead.
+- **Next level's closing unglossed line**, and what will illuminate it.
+
+Size against the level's band (AGENTS.md › Lesson shape). Beginner: 9–18 nodes, turns ≈ two-thirds of nodes, one new shape. Where in the band it lands follows from how much play the shape offers, never from a length target.
+
 ### 1 — Parse the manifest-shaped brief (J)
 Fix: the **situation**, a **register** (ti/vi + pogovorni/knjižni), the tutor **role** (Slovene role noun, e.g. `natakarica`, or a named character who appears as himself), the **voices** (`npc` + `client` catalog voice profiles — and the learner's gender, which fixes first-person forms), the **advance mode**, and the **levels** to author (each: a `levelLabel`, a `title`, and its ordered **objectives** as EN meanings + the grammar point each teaches). Pick a kebab/lowercase `scenarioId`. If the scenario already exists, you are EXTENDING it — read its manifest + existing levels first so new levels don't re-introduce covered learnables.
 
@@ -94,6 +112,33 @@ instruction, not a translation.
 
 **Vary openers + closers across levels.** Give each level its own `n1` opener and its own terminal closers — do NOT reuse one greeting or one closing as every level's. Identical lines read monotonously *and* collapse to one audio clip (the audio key excludes the delivery tag, so same `sl` + same voice = one clip, first-built wins — a character's `deliverySL` only lands on lines whose `sl` is unique to that voice). Spec distinct intents; LS writes distinct lines. `lint:dialogue` warns on any delivery collision that slips through.
 
+**Beginner scaffolding — the ladder, and what the slot may contain.** For an `advance: "audio"` beginner
+level these are construction rules, not polish:
+
+- **Nothing reaches a slot that has not been heard.** Every client `sl` is either voiced **verbatim** by an
+  npc node earlier in the same level, or is a **known word swapped into a shape** voiced seconds earlier.
+  Introduce anything new on the full ladder — heard inside a sentence → heard on its own → heard slowly
+  (`slowSL`) → in the slot. Skipping the isolated pass leaves a beginner unable to find the word boundaries.
+- **No derivation, ever.** Never elicit a form differing from the modelled one by person, case, number or
+  tense. Hearing *govoriš* licenses saying *govoriš* and nothing else.
+- **The slot always carries Slovene; it is never empty.** An empty slot risks the learner producing nothing,
+  which is the failure state — not the advanced one.
+- **Gloss withdrawal is the only thing that withdraws.** A client node carries `en` the first time its line
+  is produced and **omits it thereafter** — the Slovene stays, and a tap restores the English on any line.
+  (The existing rule that `en` is written as an instruction applies **only** to a turn with no Slovene stem,
+  such as the learner's own name. Where there is a stem, `en` is its translation. Never write instructions
+  telling the learner what to do — the armed control says whose turn it is and the slot says what to say.)
+- **A slot may offer a choice, and the choice branches.** With no microphone this is the only way a spoken
+  scene can branch on what the learner chose to say. Prefer branches where the "wrong" answer earns *more*
+  practice — the character nudges and the shape gets said twice.
+- **`focusSpan` marks the shape and each of its variations**, in every caption they appear in, the
+  character's included. It is a family, not one string, and it is what does the segmenting a beginner
+  cannot do for themselves.
+- **The character only says what is true for him** and natural for a person in this situation. He does not
+  greet a stranger he has met, does not announce a language he obviously speaks, and does not talk like a
+  textbook. He may quote a line *for* the learner ("Reci: …") or guess at their line aloud — both are what
+  a helpful local actually does.
+
 ### 3 — Language authoring (J → LS), one subagent PER LEVEL, in parallel
 Dispatch **`slovenian-author`** (dialogue mode) once per level, concurrently — each gets the situation, register, voices, and that level's node map (speaker + `intentEN` + `next`). Each returns `{ level, nodes:{id:{sl,en,deliverySL?,slowSL?,deliverySlowSL?}}, catalogDelta:{reuse,new}, concerns }`. Start on the default model. **LS never returns stall handlers** — those carry no Slovene.
 
@@ -104,6 +149,14 @@ Quick read against the rubric: native-not-textbook? register consistent? client 
 
 ### 5 — Independent critique (J → critic)
 Dispatch **`scenario-critic`** (dialogue mode) over ALL levels' trees + deltas at once. It returns `{ verdict, fixes:[{level,nodeId,field,oldExact,newExact,reason}], deltaFindings, convergenceReviewed, notes }`. Its `fixes` are the **structured, addressed** edits the reconcile applies; its `deltaFindings` flag mint/reuse problems. If a `deltaFinding` is `block`, route it back to LS (stage 3) and re-critique.
+
+**For a beginner `advance: "audio"` level, the critic must also rule on two things a linter cannot.**
+**Heard-first:** walk the level in order and confirm every client `sl` was voiced verbatim by an earlier npc
+node, or is a known word swapped into a shape voiced seconds earlier — and that no elicited form differs
+from its model by person, case, number or tense. **Character truth:** does the character only say things
+true for him and natural for a person in this situation? That single question catches the failures a
+structural gate never will — greeting a stranger he has already met, announcing a language he obviously
+speaks, or a learner re-introducing themselves unprompted to someone who knows them.
 
 ### 6 — Assemble the reconcile input (L, C)
 Write `.scratch/dialogue-drafts/<scenarioId>/reconcile-input.json` (shape in docs/authoring-pipeline.md): the `scenario` header, `dialogueVoices`, `dialogueAdvance` (omit for `"tap"`), `dialoguePacing` (spoken scenes; omit to keep whatever the file already carries), the `levels` (each with `levelLabel`, `title`, an optional `background` filename and `frameEN`, `objectives:[{label,descriptorEN}]`, `root`, `nodes` merged from LS's `sl/en/deliverySL/slowSL/deliverySlowSL` plus the J-owned `glossPolicy/stallHandlers/learnables`, and `catalog:{reuse,new}`), the critic's `criticFixes`, and — folding A1 in (D5i) — `a1Candidates:[{learnableId,competencyId,note}]` proposing where each NEW learnable sits in the A1 map (competency ids from server/catalog/a1-map.json). You assemble English/structure only; every `sl` came from LS.

@@ -111,6 +111,60 @@ The one invariant to respect everywhere: **the app owns the pedagogy, not the mo
 `pending → recast → completed` rules live in the server, and the prompt is rebuilt from objective state
 each turn. Don't move teaching decisions into the model.
 
+## How the lessons teach
+
+These are the guiding principles for the lesson surface, and they bind hardest on the **early lessons**,
+where the learner has never heard the language before. Design, authoring and review all answer to them.
+
+1. **Every phrase they say has been spoken to them moments earlier, in exactly the form they need it.**
+   Heard in a sentence, heard on its own, heard slowly, then said.
+2. **Each phrase comes back on a thinning schedule** — often while it's new, now and then once it's
+   theirs — and it comes back because it's useful in a new moment, not recited in a list.
+3. **One new sentence-shape a lesson — new words to drop into a shape they already own are free**, and
+   playing with those swaps is how they learn the shape is theirs. *Govorim slovensko / angleško / dobro
+   angleško / ne dobro slovensko* is one shape, not four phrases. Difficulty grows by doing something new
+   with what they own: **echo → answer → interrupt → ask**.
+4. **The learner's own voice is the main event.** Most of a session is them talking.
+5. **However they respond, it goes well.** Nail it, hesitate, or skip it entirely — the conversation
+   carries on warmly and they end up in the same place.
+6. **They feel the progress themselves.** A line that was noise last week makes sense today. The
+   character changes what he's doing because of something they said.
+7. **Help is one tap away and arrives like a friend handing it over.**
+8. **The moment is obvious** — whose turn it is, what to say — **and the character talks like a person**,
+   so it stays a conversation rather than an exercise.
+
+Principle 1 is the hard one: asking a beginner to produce a form they have not heard — including a form
+that differs from the modelled one by person, case, number or tense — fails immediately. It is checkable,
+and it should be checked.
+
+### Lesson shape — guidelines, not budgets
+
+A **node** is one NPC interaction with the learner; a **turn** is a learner response. One node is one
+caption — one thing on screen. A slow re-speak (`slowSL`) is not a second node.
+
+**Length** is the total count of both — turns plus nodes. **The split** between them shifts with level, so
+the node count *falls* as a lesson advances: the character says less and hands over more often.
+
+Only **substantive** nodes count toward the split — the ones carrying new information or prompting
+something different. A node that re-says a phrase slowly, confirms, praises, or nudges the learner onward
+is real and playable, but it isn't part of the ratio. In a real conversation one person holds the floor
+for several turns while the other just keeps them going.
+
+| level | total | split (turns : nodes) | → turns | → nodes |
+|---|---|---|---|---|
+| beginner | 9–18 | ~40 : 60 | 4–7 | 5–11 |
+| intermediate | 9–27 | ~60 : 40 | 5–16 | 4–11 |
+| advanced | 18–27 | ~80 : 20 | 14–22 | 4–5 |
+
+**Guidelines, not requirements.** Where in a band a lesson lands follows from how much play the new shape
+offers, never from a length target. By advanced the learner is producing most of the lesson while the
+character mostly confirms and hands back.
+
+**Get the repeats by giving a reason to say it again that isn't "say it again."** The character guesses
+wrong about them, doesn't believe them, quotes them back wrong, asks about a second thing, or is
+self-deprecating and invites the mirror. "Repeat after me" is what you fall back on when you haven't built
+a reason.
+
 ## Run & verify
 
 ```bash
