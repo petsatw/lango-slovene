@@ -22,19 +22,58 @@ the operator promotes an item (§7).
 - A new learnable gets a **deliberate A1 decision as it is minted**: tag it `a1: true` when it is A1 material.
   The tag is the standard home for A1 material; the core stays the Pareto few, entered by promotion.
 
-## 3. The three bands (computed per dialogue)
+## 3. The three bands — measured PER LINE, not per level
 
-Measured over the dialogue's **produced (client) learnables** (NPC receptive lines are not learnables):
+**The unit of measurement is the line, not the level.** A band used to be computed over the level's flat
+`introduces` list, which counts a noun as a demand equal in weight to the frame it sits inside: bakery L1
+scored 3/6 core and landed *intermediate*, because `kruh` · `žemlja` · `rogljiček` outvoted the two
+`___, prosim.` patterns — even though every one of its nine learner lines is a core frame with a word
+dropped into its slot. Counted per line it is 9/9 core, which is what it plainly is.
+
+### Classifying one line
+
+From the `learnables` on that node:
+
+| | |
+|---|---|
+| **core line** | contains **at least one core item**, and everything else in it is A1 (or core) |
+| **A1 line** | contains **no** core item, but everything in it is A1 |
+| **outside line** | contains at least one item that is neither core nor A1 |
+
+The core item is the frame; A1 vocabulary filling its slots rides along. `En kruh, prosim.` =
+`en_masacc` (core) + `kruh` (A1) → **a core line**.
+
+### Which lines count — the ONLY difference between the two surfaces
+
+| surface | denominator | why |
+|---|---|---|
+| **spoken lesson** (`advance: "audio"`) | **client nodes only** | The band is what the learner is *required to produce*. The character's lines are input they are supported through — captioned, glossed, hint on tap — and are held to a **guideline** for the target band, not counted in it. |
+| **rehearsal dialogue** (`advance: "tap"`) | **every node, npc and client** | A worked example is read and heard end to end, so the character's lines are exposure that counts. |
+
+### The bands
 
 | Band | Rule |
 |---|---|
-| **Basic** | the dialogue is **short & simple** AND **≥80%** of its content is from the **CORE** (`a1-map`). |
-| **Intermediate** | **≥80%** of its content is **Tagged-A1** (the superset). |
-| **Advanced** | anything beyond that threshold (**<80%** Tagged-A1). |
+| **Basic** | **≥80%** of counted lines are **core lines** |
+| **Intermediate** | **≥80%** are core-or-A1 lines **AND ≥50%** are core lines |
+| **Advanced** | **≥75%** are core-or-A1 lines |
+| *(below that)* | above A1 |
 
-Basic & intermediate remain **A1-focused**, so introducing new A1 learnables stays a value at those bands.
-**If a dialogue introduces no new learnables, check the catalog first** — it may be missing A1 items it
-should carry.
+**Length is not an input** — see "Decided specifics".
+
+### What this requires
+
+`learnables` on **every** node, npc included. On an npc node it means *what this line is made of*; it is
+**not** a crediting instruction — crediting stays client-only and spoken-only (docs/free-conversation.md).
+The field was originally specified as the audio-mode attempt allowlist, so tapped trees carry none at all;
+until a dialogue's nodes are tagged, it cannot be banded per line.
+
+**Two open questions**, to settle once real tagged data exists rather than by guessing now:
+- **An untagged line** is either trivial or above-A1 language that was never minted. Those are opposite
+  answers and the data can't yet tell them apart.
+- **A multi-sentence node** (`Me veseli! Jaz sem Slavko. Zdaj pa še ti.`) takes one classification, where
+  the same content split across three nodes takes three. Decide whether the unit is the node or the
+  utterance.
 
 ## 4. levelLabel is derived from the computed band
 
@@ -85,7 +124,13 @@ promotions it recommends — a silent override or a mid-run block on a judgment 
 ## Decided specifics
 
 - **Measurement basis:** produced/client learnables only (a level's `introduces` set).
-- **"Short & simple"** (basic gate): a node ceiling of **≤16 nodes** (`BASIC_NODE_CEILING`).
+- **Length is NOT a band input.** `basic` once required a node ceiling as a "short & simple" proxy; that
+  was removed. Length is amount, not difficulty — a long lesson built entirely of core survival language,
+  heavily scaffolded and recycling what the learner already owns, is easier than a short one carrying
+  three above-core items, and the proxy actively punished good scaffolding (splitting a line into smaller
+  nodes to lower the load per beat raised the count). Length is still reported beside the band by
+  `lint:a1`, and per-level size guidance lives in AGENTS.md › Lesson shape. **Core utilisation decides the
+  band.**
 - **Lint:** gates on `a1-map` ref-integrity; band and coverage are a readout, never a block; the core is never
   force-filled.
 - **Tag:** `a1: true` on the catalog learnable, set at mint by author/critic.

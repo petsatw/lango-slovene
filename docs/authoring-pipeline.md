@@ -100,6 +100,30 @@ rather than reset (a level's `background` also comes from the input if given). T
 **source of truth** for a level's nodes — a re-run rewrites the dialogue file from it, so post-hoc hand-edits
 to `server/dialogues/*.json` are overwritten on the next reconcile. Make node changes in the input and re-run.
 
+### The input is COMMITTED (decided 2026-08-23)
+
+A reconcile input is **source**, not scratch: it is committed to the repo, and `server/dialogues/*.json` is a
+**build artifact** regenerated from it and never hand-edited. This is what the paragraph above always
+claimed, but the model was only half-built — inputs were written under gitignored `.scratch/` and thrown
+away after each run, so for `bakery` and `restaurant` the declared source of truth **does not exist** and the
+generated file is the only record. That is the state to repair, not to bless.
+
+Two consequences:
+
+- **Per-node `learnables` are authored in the input**, beside the lines they describe (see
+  dialogue-difficulty-model.md §3 — the band is measured per line, so every node needs them, npc included).
+  Because a line and its tags live together in one file, a re-authored line cannot silently keep stale tags.
+- **`bakery` and `restaurant` need their inputs reconstructed**, one-time, from their generated files. The
+  lines are all there; what has to be rebuilt is the level headers and the catalog delta, and the delta is
+  recoverable from each level's `introduces`.
+
+The alternatives were considered and rejected: teaching the reconcile to *preserve* authored node fields (it
+makes the artifact half-authored — the exact ambiguity this rule exists to prevent, and it needs a staleness
+guard), and a sidecar annotation file per dialogue (clean separation, but node renames silently orphan tags).
+Both are cheaper; neither is right once the inputs are where they belong.
+
+Rejected only because the dialogue file is a *build artifact*. If that ever stops being true, revisit.
+
 **A learnable is `new` in exactly one level — the first that introduces it — and `reuse` everywhere after.**
 Listing the same id under `new` on two levels is a duplicate-surface error the reconcile refuses (the second
 mint collides with the now-existing catalog entry). Across a scenario's levels the author/critic split shared

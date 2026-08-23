@@ -108,30 +108,35 @@ export function canReachTerminal(nodes: TreeNodes): Set<string> {
 
 export type DialogueBand = "basic" | "intermediate" | "advanced";
 
-/** Basic is reserved for "short & simple" trees (docs §"Open specifics"): a node ceiling (~the L1 sizing)
- *  with no deep nesting. We use total node count as the practical proxy. */
-export const BASIC_NODE_CEILING = 16;
 /** The A1-density threshold both A1-focused bands clear (docs §3). */
 export const A1_DENSITY_THRESHOLD = 0.8;
 
 export interface BandInputs {
   /** The level's produced/client learnable ids (its `introduces` — the measurement basis). */
   introduces: string[];
-  /** Total node count in the tree (the "short & simple" proxy for the basic gate). */
-  nodeCount: number;
   /** Learnable ids that are CORE (mapped by ≥1 a1-map competency). */
   coreIds: Set<string>;
   /** Learnable ids that are Tagged-A1 (CORE OR carrying the `a1` tag). */
   taggedA1Ids: Set<string>;
 }
 
-/** Classify a dialogue into basic/intermediate/advanced. A level that produces nothing measurable
- *  (introduces == []) is treated as fully-A1 (ratios = 1), so a pure-review short tree lands basic. */
-export function classifyBand({ introduces, nodeCount, coreIds, taggedA1Ids }: BandInputs): DialogueBand {
+/** Classify a dialogue into basic/intermediate/advanced, on the LANGUAGE IT DEMANDS and nothing else.
+ *
+ *  Length is deliberately not an input. It used to be — `basic` required a node ceiling as a "short &
+ *  simple" proxy — but length is amount, not difficulty: a long lesson built entirely of core survival
+ *  language, heavily scaffolded and recycling what the learner already owns, is EASIER than a short one
+ *  carrying three above-core items. The proxy also punished good scaffolding, since splitting a line into
+ *  smaller nodes to lower the load per beat raised the count. Length still matters — it is reported
+ *  beside the band by `lint:a1`, and the per-level size guidance lives in AGENTS.md — it just no longer
+ *  decides how hard a lesson is.
+ *
+ *  A level that produces nothing measurable (introduces == []) is treated as fully-A1 (ratios = 1), so a
+ *  pure-review tree lands basic. */
+export function classifyBand({ introduces, coreIds, taggedA1Ids }: BandInputs): DialogueBand {
   const n = introduces.length;
   const coreRatio = n === 0 ? 1 : introduces.filter((id) => coreIds.has(id)).length / n;
   const taggedRatio = n === 0 ? 1 : introduces.filter((id) => taggedA1Ids.has(id)).length / n;
-  if (nodeCount <= BASIC_NODE_CEILING && coreRatio >= A1_DENSITY_THRESHOLD) return "basic";
+  if (coreRatio >= A1_DENSITY_THRESHOLD) return "basic";
   if (taggedRatio >= A1_DENSITY_THRESHOLD) return "intermediate";
   return "advanced";
 }
@@ -152,4 +157,16 @@ const BAND_ORDER: Record<DialogueBand, number> = { basic: 0, intermediate: 1, ad
 /** Ordinal rank of a band (basic < intermediate < advanced) — for the ascending-order check. */
 export function bandRank(band: DialogueBand): number {
   return BAND_ORDER[band];
+}
+
+/** Does this node become an audio clip? In a SPOKEN scene (`advance: "audio"`) the client lines are what
+ *  the LEARNER says aloud — they are never synthesized and never played back, so they own no clip and can
+ *  collide with nothing. Every tool that reasons about clips must ask this rather than re-derive it: the
+ *  rule lived inline in the asset builder and was simply missing from `lint:dialogue`, which then warned
+ *  about a delivery collision between audio files that do not exist. */
+export function isSynthesized(
+  dialogue: { advance?: string },
+  node: { speaker: "npc" | "client" },
+): boolean {
+  return !((dialogue.advance ?? "tap") === "audio" && node.speaker === "client");
 }

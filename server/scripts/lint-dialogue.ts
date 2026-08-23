@@ -17,7 +17,7 @@
 //
 // Exit code 0 = pass, 1 = at least one integrity error (so the authoring procedure can gate on it).
 
-import { normSurface } from "./dialogue-lib";
+import { normSurface, isSynthesized } from "./dialogue-lib";
 
 async function main() {
   const errors: string[] = [];
@@ -27,7 +27,7 @@ async function main() {
   // as a lint failure rather than an uncaught stack.
   type LintNode = { speaker: "npc" | "client"; sl: string; deliverySL?: string; slowSL?: string;
                     deliverySlowSL?: string };
-  type LintDialogue = { id: string; introduces: string[]; voices: { npc: string; client: string }; nodes: Record<string, LintNode> };
+  type LintDialogue = { id: string; introduces: string[]; advance?: string; voices: { npc: string; client: string }; nodes: Record<string, LintNode> };
   let LEARNABLES: Record<string, { id: string; kind: string; sl: string }>;
   let DIALOGUES: Record<string, LintDialogue[]>;
   try {
@@ -94,6 +94,9 @@ async function main() {
     for (const [nid, n] of Object.entries(d.nodes ?? {})) {
       const voice = d.voices?.[n.speaker];
       if (!voice || !n.sl) continue;
+      // A node that is never synthesized owns no clip, so it cannot collide with one. Without this a
+      // spoken scene warns about its own client lines sharing a key with the character's.
+      if (!isSynthesized(d, n)) continue;
       // Every clean line this node owns is its own clip: the line itself, its chunked-slow re-speak, and
       // each stall handler. They share one key space, so a stall line that matches a node line in the
       // same voice is the same collision the warning below exists for.

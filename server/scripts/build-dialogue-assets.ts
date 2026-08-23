@@ -29,6 +29,7 @@ import path from "node:path";
 import { getE3 } from "../adapters/index";
 import * as store from "../assets/store";
 import { validateDialogue, type Dialogue } from "../dialogues";
+import { isSynthesized } from "./dialogue-lib";
 
 const args = process.argv.slice(2);
 const scenarioId = args.find(
@@ -104,8 +105,8 @@ for (const { file, d } of files) {
     if (auditionNodes && !auditionNodes.has(id)) continue;
     // In a SPOKEN scene the client lines are what the LEARNER says aloud — they are never played back,
     // and synthesizing them would bill for clips nobody hears, in the character's voice rather than the
-    // learner's. Only the character is voiced here.
-    if ((d.advance ?? "tap") === "audio" && node.speaker === "client") continue;
+    // learner's. Only the character is voiced here. Shared with the lints so the rule cannot drift.
+    if (!isSynthesized(d, node)) continue;
     const voiceProfile = d.voices[node.speaker];
     const voiceTag = e3.voiceTagFor(voiceProfile);
     const key = store.audioKey(e3.name, voiceTag, node.sl); // KEY on the clean display line

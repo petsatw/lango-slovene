@@ -80,8 +80,10 @@ console.log(`  frontier domains (0 learnables, awaiting a scenario): ${frontier.
 //    CORE = ids the a1-map maps; Tagged-A1 = CORE ∪ ids carrying the `a1` tag. The band is measured over
 //    each dialogue's produced (client) learnables — its `introduces` set — and should match the written
 //    levelLabel (reconcile computes both from this same function).
-const coreIds = new Set<string>();
-for (const c of A1_MAP) for (const id of c.learnables) coreIds.add(id);
+// CORE is the learnable's own `core: true` flag — the single source of truth for Pareto-unlock
+// membership. It used to be read off a1-map membership, which is a COVERAGE map (which competency
+// domains an item serves) and had grown to 82% of the catalog, so "core" stopped discriminating.
+const coreIds = new Set<string>(Object.entries(LEARNABLES).filter(([, l]) => (l as any).core === true).map(([id]) => id));
 const taggedA1Ids = new Set<string>(coreIds);
 for (const [id, l] of Object.entries(LEARNABLES)) if (l.a1 === true) taggedA1Ids.add(id);
 
@@ -90,7 +92,6 @@ for (const [sid, list] of Object.entries(DIALOGUES).sort()) {
   for (const d of [...list].sort((a, b) => a.level - b.level)) {
     const band = classifyBand({
       introduces: d.introduces,
-      nodeCount: Object.keys(d.nodes).length,
       coreIds,
       taggedA1Ids,
     });

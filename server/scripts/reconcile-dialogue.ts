@@ -160,13 +160,27 @@ for (const lvl of input.levels) {
   newByLevel.set(lvl.level, news);
 }
 
-// ---- Step 3: assign each level's introduces = sorted-unique(reuse + new); validate every id resolves --
+// ---- Step 3: introduces = what this level is the FIRST to have the learner PRODUCE ------------------
+// The field means what its name says: new to the LEARNER here, not everything the level covers. It used
+// to be reuse ∪ new, which is "covers" — and a course that deliberately re-practises earlier phrases in
+// every later lesson would then have each level claim to introduce material from sessions ago. That
+// inflates the difficulty band, which is measured over this list, so a lesson scored as HARDER for
+// recycling well. Truth comes from the client nodes (what the learner actually says), walked in level
+// order so the first level to elicit an id owns it.
 const knownAfterMerge = new Set<string>([...Object.keys(existingLearnables), ...mintedIds]);
 const introducesByLevel = new Map<number, string[]>();
-for (const lvl of input.levels) {
-  const ids = Array.from(new Set([...(reusedByLevel.get(lvl.level) ?? []), ...(newByLevel.get(lvl.level) ?? [])])).sort();
-  for (const id of ids) if (!knownAfterMerge.has(id))
-    die(`level ${lvl.level}: introduces id "${id}" is neither in the catalog nor minted this run`);
+const introducedAlready = new Set<string>();
+for (const lvl of [...input.levels].sort((a: any, b: any) => a.level - b.level)) {
+  // The declared delta, NOT the client nodes: `learnables` is the "audio"-mode attempt allowlist and is
+  // absent by design on a tapped tree (rehearsal credits nothing), so reading the nodes would empty
+  // `introduces` for every tap dialogue — wiping the free-chat handoff and scoring them all basic.
+  const covered = new Set<string>([...(reusedByLevel.get(lvl.level) ?? []), ...(newByLevel.get(lvl.level) ?? [])]);
+  const ids = [...covered].filter((id) => !introducedAlready.has(id)).sort();
+  for (const id of ids) {
+    if (!knownAfterMerge.has(id))
+      die(`level ${lvl.level}: learnable "${id}" is neither in the catalog nor minted this run`);
+    introducedAlready.add(id);
+  }
   introducesByLevel.set(lvl.level, ids);
 }
 
@@ -174,8 +188,12 @@ for (const lvl of input.levels) {
 // CORE = ids referenced by any a1-map competency. Tagged-A1 = CORE ∪ ids carrying the `a1` tag (in the
 // existing catalog OR minted this run). The band is measured over each level's `introduces` and OVERRIDES
 // the author's `levelLabel` target — the author aims, the classifier labels.
+// CORE is the learnable's own `core: true` flag — one source of truth for Pareto-unlock membership.
+// Not a1-map membership: that map answers WHICH COMPETENCY DOMAIN an item serves (coverage), and using
+// it as the core test let the core drift to 82% of the catalog, where it no longer discriminated.
 const coreIds = new Set<string>();
-for (const c of a1Map.competencies ?? []) for (const id of c.learnables ?? []) coreIds.add(id);
+for (const [id, l] of Object.entries(existingLearnables)) if ((l as any).core === true) coreIds.add(id);
+for (const [id, l] of Object.entries(toMint)) if ((l as any).core === true) coreIds.add(id);
 const taggedA1Ids = new Set<string>(coreIds);
 for (const [id, l] of Object.entries(existingLearnables)) if ((l as any).a1 === true) taggedA1Ids.add(id);
 for (const [id, l] of Object.entries(toMint)) if ((l as any).a1 === true) taggedA1Ids.add(id);
@@ -184,7 +202,6 @@ const bandByLevel = new Map<number, DialogueBand>();
 for (const lvl of input.levels) {
   const band = classifyBand({
     introduces: introducesByLevel.get(lvl.level)!,
-    nodeCount: Object.keys(lvl.nodes ?? {}).length,
     coreIds,
     taggedA1Ids,
   });
