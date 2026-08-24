@@ -32,13 +32,13 @@
   ],
   "introduces": [
     "ali_imate",
-    "raje",
-    "tisti",
-    "svez",
-    "topel",
-    "pol_kilograma",
     "dekagram",
-    "koliko_sem_dolzna"
+    "koliko_sem_dolzna",
+    "pol_kilograma",
+    "raje",
+    "svez",
+    "tisti",
+    "topel"
   ],
   "audio": "ready",
   "voices": {

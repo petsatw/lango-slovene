@@ -2,7 +2,7 @@
   "id": "library-l5",
   "scenarioId": "library",
   "level": 5,
-  "levelLabel": "Advanced",
+  "levelLabel": "Intermediate",
   "title": "WiFi & printing",
   "objectives": [
     {
@@ -28,23 +28,16 @@
   ],
   "introduces": [
     "ali_imate",
-    "ali_lahko",
     "ali_potrebujem",
     "bom_poskusil",
     "brezplacen",
-    "dober_dan",
     "dokument",
     "geslo",
-    "hvala",
     "kako_deluje",
     "kaksno_je",
     "kje_se_povezem",
-    "najlepsa_hvala",
-    "nasvidenje",
     "natisniti",
-    "razumem",
-    "svoj_papir",
-    "tukaj"
+    "svoj_papir"
   ],
   "audio": "ready",
   "voices": {

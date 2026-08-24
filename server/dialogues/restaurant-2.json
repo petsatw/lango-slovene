@@ -29,13 +29,13 @@
   "introduces": [
     "dober_vecer",
     "jaz_bom",
+    "na_zdravje",
     "pica",
-    "pizza_variety",
-    "stirje_siri",
     "pivo",
+    "pizza_variety",
     "solata",
-    "super_izbira",
-    "na_zdravje"
+    "stirje_siri",
+    "super_izbira"
   ],
   "audio": "ready",
   "voices": {

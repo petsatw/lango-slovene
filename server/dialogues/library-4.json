@@ -2,7 +2,7 @@
   "id": "library-l4",
   "scenarioId": "library",
   "level": 4,
-  "levelLabel": "Advanced",
+  "levelLabel": "Intermediate",
   "title": "Using the space",
   "objectives": [
     {
@@ -27,23 +27,15 @@
     }
   ],
   "introduces": [
-    "ali_lahko",
     "ali_moram",
     "citalnica",
-    "dober_dan",
-    "hvala",
-    "hvala_za_pomoc",
     "katerikoli",
     "miren",
-    "nasvidenje",
     "odlicno",
     "potrebovati",
     "prijaviti_se",
-    "prosim",
     "prost",
     "racunalnik",
-    "rad_bi",
-    "rezervirati",
     "sedez",
     "uporabljati",
     "usesti_se"

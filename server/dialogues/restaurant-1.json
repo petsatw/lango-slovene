@@ -27,13 +27,13 @@
     }
   ],
   "introduces": [
+    "placam_s_kartico",
+    "racun",
     "rad_bi",
-    "za_mene",
     "sendvic",
     "sok",
     "to_bo_vse",
-    "racun",
-    "placam_s_kartico"
+    "za_mene"
   ],
   "audio": "ready",
   "voices": {

@@ -27,12 +27,12 @@
     }
   ],
   "introduces": [
-    "kruh",
-    "en_masacc",
-    "zemlja",
     "dve_dualacc",
+    "en_masacc",
+    "kruh",
+    "placam_s_kartico",
     "rogljicek",
-    "placam_s_kartico"
+    "zemlja"
   ],
   "audio": "ready",
   "voices": {

@@ -27,17 +27,17 @@
     }
   ],
   "introduces": [
-    "vzel_bom",
-    "priporocate",
-    "predjed",
     "glavna_jed",
-    "juha",
-    "riba",
     "govedina",
-    "sladica",
-    "postrezba_odlicna",
+    "hvala_za_vecer",
+    "juha",
     "na_tebe",
-    "hvala_za_vecer"
+    "postrezba_odlicna",
+    "predjed",
+    "priporocate",
+    "riba",
+    "sladica",
+    "vzel_bom"
   ],
   "audio": "ready",
   "voices": {

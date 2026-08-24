@@ -2,7 +2,7 @@
   "id": "library-l7",
   "scenarioId": "library",
   "level": 7,
-  "levelLabel": "Advanced",
+  "levelLabel": "Intermediate",
   "title": "Opening hours",
   "objectives": [
     {
@@ -27,13 +27,8 @@
     "ali_ste_odprti",
     "danes",
     "delovni_cas",
-    "dober_dan",
-    "hvala",
     "hvala_za_informacijo",
-    "kaj",
     "med_pocitnicami",
-    "odlicno",
-    "prosim",
     "spletna_stran",
     "velja_enak_urnik"
   ],

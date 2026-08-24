@@ -39,17 +39,17 @@
     }
   ],
   "introduces": [
-    "katera_bolj",
-    "ker",
-    "vsebuje",
-    "namesto",
     "alergicen_na",
     "je_tako_prav",
-    "narociti",
-    "za_osebe",
-    "oprostite",
+    "katera_bolj",
+    "ker",
     "lepo_vreme",
-    "torta"
+    "namesto",
+    "narociti",
+    "oprostite",
+    "torta",
+    "vsebuje",
+    "za_osebe"
   ],
   "audio": "ready",
   "voices": {

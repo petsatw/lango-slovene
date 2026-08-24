@@ -74,7 +74,10 @@ Script: **`server/scripts/reconcile-dialogue.ts`**. Gates: `lint:dialogue`, `lin
 
 ### The reconcile input contract
 
-The orchestrator assembles ONE bundle at `.scratch/dialogue-drafts/<scenarioId>/reconcile-input.json`:
+The orchestrator assembles ONE bundle at `authoring/dialogues/<scenarioId>/reconcile-input.json` — drafted
+under `.scratch/dialogue-drafts/<scenarioId>/` while it is still a proposal, moved into place on approval
+(it is source; see "The input is COMMITTED"). Reconcile writes its `a1-candidates.json` beside it; that one
+is gitignored, a worklist to be folded into the a1-map and spent.
 
 ```jsonc
 {
@@ -100,29 +103,17 @@ rather than reset (a level's `background` also comes from the input if given). T
 **source of truth** for a level's nodes — a re-run rewrites the dialogue file from it, so post-hoc hand-edits
 to `server/dialogues/*.json` are overwritten on the next reconcile. Make node changes in the input and re-run.
 
-### The input is COMMITTED (decided 2026-08-23)
+### The input is COMMITTED
 
-A reconcile input is **source**, not scratch: it is committed to the repo, and `server/dialogues/*.json` is a
-**build artifact** regenerated from it and never hand-edited. This is what the paragraph above always
-claimed, but the model was only half-built — inputs were written under gitignored `.scratch/` and thrown
-away after each run, so for `bakery` and `restaurant` the declared source of truth **does not exist** and the
-generated file is the only record. That is the state to repair, not to bless.
+A reconcile input is **source**, not scratch: it lives in the repo, and `server/dialogues/*.json` is a
+**build artifact** regenerated from it and never hand-edited. Everything a dialogue node carries is
+therefore authored in the input, including its **per-node `learnables`**, written beside the line they
+describe (see dialogue-difficulty-model.md §3 — the band is measured per line, so every node needs them,
+npc included). A line and its tags living together in one file is what stops a re-authored line from
+silently keeping stale tags.
 
-Two consequences:
-
-- **Per-node `learnables` are authored in the input**, beside the lines they describe (see
-  dialogue-difficulty-model.md §3 — the band is measured per line, so every node needs them, npc included).
-  Because a line and its tags live together in one file, a re-authored line cannot silently keep stale tags.
-- **`bakery` and `restaurant` need their inputs reconstructed**, one-time, from their generated files. The
-  lines are all there; what has to be rebuilt is the level headers and the catalog delta, and the delta is
-  recoverable from each level's `introduces`.
-
-The alternatives were considered and rejected: teaching the reconcile to *preserve* authored node fields (it
-makes the artifact half-authored — the exact ambiguity this rule exists to prevent, and it needs a staleness
-guard), and a sidecar annotation file per dialogue (clean separation, but node renames silently orphan tags).
-Both are cheaper; neither is right once the inputs are where they belong.
-
-Rejected only because the dialogue file is a *build artifact*. If that ever stops being true, revisit.
+The reconcile does not preserve authored fields it finds in the generated file, and tags do not live in a
+sidecar: either would make the artifact half-authored, which is the ambiguity this rule exists to prevent.
 
 **A learnable is `new` in exactly one level — the first that introduces it — and `reuse` everywhere after.**
 Listing the same id under `new` on two levels is a duplicate-surface error the reconcile refuses (the second
@@ -147,10 +138,15 @@ levels the A1 map references. The manifest is additive — legacy scenarios omit
 
 `server/catalog/a1-map.json` is grounded in the official Slovene A1 taxonomy (**docs/a1-taxonomy.md**): 3
 foundational layers + 10 thematic domains; learnable→competency is many-to-many; a bucket may be an empty
-**frontier** domain. The reconcile **emits candidate mappings** for each newly-minted learnable
-(`a1-candidates.json`); the operator confirms them and folds them into the map (never auto-mapped —
-no auto-competency assignment). `lint:a1` keeps it honest: every catalog learnable is mapped to ≥1 competency
-**or** on the explicit `excluded` list, and every scenario ref resolves. Scope: the catalog is the
+**frontier** domain. It is a **coverage** map — which life domain an item serves and how far the learner is
+in it — and the readiness screen (`GET /api/a1`) is the learner's only progress surface. It does not decide
+what is core; the learnable's `core: true` flag does.
+
+The reconcile **emits candidate mappings** for each newly-minted learnable (`a1-candidates.json`); the
+operator confirms them and folds them into the map (never auto-mapped — no auto-competency assignment).
+`lint:a1` gates the fold: every **core and/or A1-tagged** learnable is mapped to ≥1 competency **or** on the
+explicit `excluded` list, and every scenario ref resolves. An unmapped one is invisible on the readiness
+screen — the learner masters it and nothing moves. Above-A1 items are not tracked there. Scope: the catalog is the
 **production** inventory, so coverage is over produced learnables; the wider recognition set and the weighted
 4-mode readiness scoring are out of scope (the MVP exercises Speaking/Listening/Reading; Writing is out by
 design — see docs/a1-taxonomy.md).
