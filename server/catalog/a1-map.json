@@ -184,7 +184,17 @@
         "ljudje",
         "oseba",
         "moz",
-        "hci"
+        "hci",
+        "boli_me",
+        "z_s_instr",
+        "vceraj_sem",
+        "bil_sem",
+        "sel_sem",
+        "hvala_za",
+        "veselim_se",
+        "iscemo",
+        "oddam",
+        "prepovedano"
       ],
       "scenarios": [
         {
@@ -278,7 +288,11 @@
         "potem",
         "ampak",
         "zato",
-        "ali_or"
+        "ali_or",
+        "lep_pozdrav",
+        "hvala_za",
+        "veselim_se",
+        "pozor"
       ],
       "scenarios": [
         {
@@ -372,7 +386,12 @@
         "sestra",
         "doma",
         "ulica",
-        "rad_verb"
+        "rad_verb",
+        "vceraj_sem",
+        "bil_sem",
+        "sel_sem",
+        "delo",
+        "hcerka"
       ],
       "scenarios": [
         {
@@ -415,7 +434,9 @@
         "ulica",
         "doma",
         "zunaj",
-        "v_na_lok"
+        "v_na_lok",
+        "oddam",
+        "kljuc"
       ],
       "scenarios": [
         {
@@ -442,7 +463,18 @@
       "learnables": [
         "alergicen_na",
         "dokazilo_o_zdravstvenem_zavarovanju",
-        "lekarna"
+        "lekarna",
+        "boli_me",
+        "glava",
+        "trebuh",
+        "grlo",
+        "zob",
+        "slabo_mi_je",
+        "vrocina",
+        "prehlad",
+        "zdravnik",
+        "recept",
+        "tableta"
       ],
       "scenarios": [
         {
@@ -736,7 +768,16 @@
         "caka_3sg",
         "stevilo_enaindvajset",
         "stevilo_enote_desetice",
-        "konec_tedna"
+        "konec_tedna",
+        "odprto",
+        "zaprto",
+        "odpiralni_cas",
+        "popust",
+        "cena",
+        "informacije",
+        "vozovnica",
+        "rezervacija",
+        "prijava"
       ],
       "scenarios": [
         {
@@ -812,7 +853,11 @@
         "otrok",
         "porocen_sem",
         "pogovarjata_se",
-        "govori_3sg"
+        "govori_3sg",
+        "lep_pozdrav",
+        "hvala_za",
+        "veselim_se",
+        "hcerka"
       ],
       "scenarios": [
         {
@@ -856,7 +901,9 @@
         "vrstilni_osmi",
         "leto",
         "september",
-        "sola"
+        "sola",
+        "tecaj",
+        "prijava"
       ],
       "scenarios": [
         {
@@ -897,7 +944,10 @@
         "ponedeljek",
         "petek",
         "tocno",
-        "dela_3sg"
+        "dela_3sg",
+        "delo",
+        "iscemo",
+        "prijava"
       ],
       "scenarios": []
     },
@@ -945,7 +995,24 @@
         "ulica",
         "mesto",
         "v_na_lok",
-        "caka_3sg"
+        "caka_3sg",
+        "vlak",
+        "vozovnica",
+        "peron",
+        "odhod",
+        "prihod",
+        "prtljaga",
+        "taksi",
+        "avto",
+        "z_s_instr",
+        "rezervacija",
+        "kljuc",
+        "za_dve_noci",
+        "vstop",
+        "izhod",
+        "pozor",
+        "prepovedano",
+        "informacije"
       ],
       "scenarios": []
     }

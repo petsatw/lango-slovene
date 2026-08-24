@@ -3136,5 +3136,365 @@
     "predictableError": "'konec' takes the GENITIVE — 'konec tedna', never 'konec teden'; 'at the weekend' is 'ob koncu tedna' (locative), and this is the form you meet on signs and in print, not in the bar",
     "core": false,
     "a1": true
+  },
+  "boli_me": {
+    "kind": "pattern",
+    "sl": "Boli me ___.",
+    "gloss": "my ___ hurts (lit. '___ hurts me')",
+    "predictableError": "the body part is the SUBJECT and stays nominative — 'Boli me glava', never 'boli me glavo'; the person is the accusative clitic 'me', not a possessive ('moja glava boli'). Two or more parts flip the verb: 'Bolijo me noge.'",
+    "core": true,
+    "a1": true
+  },
+  "glava": {
+    "kind": "vocabulary",
+    "sl": "glava",
+    "gloss": "head (fem.)",
+    "predictableError": "in 'Boli me glava' it is the subject in the nominative — the slip is the accusative 'boli me glavo' on the English 'my head' model",
+    "core": false,
+    "a1": true
+  },
+  "trebuh": {
+    "kind": "vocabulary",
+    "sl": "trebuh",
+    "gloss": "belly, stomach (masc.)",
+    "predictableError": "'trebuh' is the belly you point at; 'želodec' is the stomach organ — for a stomach ache you say 'Boli me trebuh'",
+    "core": false,
+    "a1": true
+  },
+  "grlo": {
+    "kind": "vocabulary",
+    "sl": "grlo",
+    "gloss": "throat (neut.)",
+    "predictableError": "it is neuter — 'vneto grlo' (a sore throat), not 'vnet grlo'",
+    "core": false,
+    "a1": true
+  },
+  "zob": {
+    "kind": "vocabulary",
+    "sl": "zob",
+    "gloss": "tooth (masc.)",
+    "predictableError": "the nominative plural is irregular 'zobje' (not 'zobi'), and two or more flip the verb — 'Bolijo me zobje'; one aching tooth is just 'Boli me zob'",
+    "core": false,
+    "a1": true
+  },
+  "slabo_mi_je": {
+    "kind": "chunk",
+    "sl": "Slabo mi je.",
+    "gloss": "I feel sick / unwell (nauseous)",
+    "predictableError": "the person is the dative clitic 'mi' — 'Slabo mi je', not 'Sem slab'; and it means nauseous/faint, not 'I feel bad' in general, which is 'Slabo se počutim'",
+    "core": false,
+    "a1": true
+  },
+  "vrocina": {
+    "kind": "vocabulary",
+    "sl": "vročina",
+    "gloss": "fever (fem.); also 'heat'",
+    "predictableError": "'I have a fever' takes the accusative — 'Imam vročino', not 'imam vročina'",
+    "core": false,
+    "a1": true
+  },
+  "prehlad": {
+    "kind": "vocabulary",
+    "sl": "prehlad",
+    "gloss": "a cold (masc.)",
+    "predictableError": "Slovenes say 'Prehlajen sem. / Prehlajena sem.' — participle first, since 'sem' is a second-position clitic; the calque 'Imam prehlad.' is said but noticeably less idiomatic. A cold is not 'gripa' (flu).",
+    "core": false,
+    "a1": true
+  },
+  "zdravnik": {
+    "kind": "vocabulary",
+    "sl": "zdravnik",
+    "gloss": "doctor (masc.; fem. 'zdravnica')",
+    "predictableError": "'to the doctor' is 'k' + DATIVE — 'grem k zdravniku', not 'k zdravnik'",
+    "core": false,
+    "a1": true
+  },
+  "recept": {
+    "kind": "vocabulary",
+    "sl": "recept",
+    "gloss": "prescription (masc.); also 'recipe'",
+    "predictableError": "the same word means 'recipe' — at the pharmacy the distinction is 'na recept' (on prescription) vs 'brez recepta' (over the counter)",
+    "core": false,
+    "a1": true
+  },
+  "tableta": {
+    "kind": "vocabulary",
+    "sl": "tableta",
+    "gloss": "tablet, pill (fem.)",
+    "predictableError": "you normally ask in the plural — 'tablete proti bolečinam'; accusative singular is 'tableto' and 'pet tablet' is the genitive plural",
+    "core": false,
+    "a1": true
+  },
+  "vlak": {
+    "kind": "vocabulary",
+    "sl": "vlak",
+    "gloss": "train (masc.)",
+    "predictableError": "'by train' is 'z' + INSTRUMENTAL — 'z vlakom', not 'z vlak'; and 'na vlak' (boarding) vs 'na vlaku' (aboard)",
+    "core": false,
+    "a1": true
+  },
+  "vozovnica": {
+    "kind": "vocabulary",
+    "sl": "vozovnica",
+    "gloss": "travel ticket (fem.)",
+    "predictableError": "accusative 'vozovnico' — 'Eno vozovnico, prosim'; at a ticket window locals very often just say 'karta' ('Eno karto do Maribora, prosim'), and a cinema or museum ticket is 'vstopnica'",
+    "core": false,
+    "a1": true
+  },
+  "peron": {
+    "kind": "vocabulary",
+    "sl": "peron",
+    "gloss": "platform (masc.)",
+    "predictableError": "'on platform 2' is the locative 'na drugem peronu'; note Slovenian station announcements usually say 'tir' (track), not 'peron'",
+    "core": false,
+    "a1": true
+  },
+  "odhod": {
+    "kind": "vocabulary",
+    "sl": "odhod",
+    "gloss": "departure (masc.)",
+    "predictableError": "'odhod' (od- = away) is departure and 'prihod' (pri- = towards) is arrival — the prefix is the whole difference on a board",
+    "core": false,
+    "a1": true
+  },
+  "prihod": {
+    "kind": "vocabulary",
+    "sl": "prihod",
+    "gloss": "arrival (masc.)",
+    "predictableError": "mirror of 'odhod' — beginners read the two off a board by the shared '-hod' and pick the wrong column",
+    "core": false,
+    "a1": true
+  },
+  "prtljaga": {
+    "kind": "vocabulary",
+    "sl": "prtljaga",
+    "gloss": "luggage, baggage (fem.)",
+    "predictableError": "it is a feminine SINGULAR mass noun covering all your bags — 'moja prtljaga je težka', not an English-style plural; 'prtljage' is the genitive singular ('nimam prtljage'), not 'bags'",
+    "core": false,
+    "a1": true
+  },
+  "taksi": {
+    "kind": "vocabulary",
+    "sl": "taksi",
+    "gloss": "taxi (masc.)",
+    "predictableError": "the stem gains a -j- when it declines — 's taksijem' (by taxi), 'v taksiju' — not 'z taksi'",
+    "core": false,
+    "a1": true
+  },
+  "avto": {
+    "kind": "vocabulary",
+    "sl": "avto",
+    "gloss": "car (masc., despite the -o)",
+    "predictableError": "masculine even though it ends in -o, like 'kino' — 'z avtom', 'v avtu'; beginners decline it as a neuter",
+    "core": false,
+    "a1": true
+  },
+  "z_s_instr": {
+    "kind": "pattern",
+    "sl": "z / s ___",
+    "gloss": "by ___ / with ___ — the means: 'z avtom', 'z vlakom', 's taksijem'",
+    "predictableError": "the means takes the INSTRUMENTAL ('z avtom', not 'z avto'), and the preposition is 's' before a voiceless consonant ('s taksijem', 's kartico') but 'z' elsewhere",
+    "core": true,
+    "a1": true
+  },
+  "rezervacija": {
+    "kind": "vocabulary",
+    "sl": "rezervacija",
+    "gloss": "reservation, booking (fem.)",
+    "predictableError": "accusative 'rezervacijo' — 'Imam rezervacijo'; it is the noun, and it cannot stand in for the verb 'rezervirati'",
+    "core": false,
+    "a1": true
+  },
+  "kljuc": {
+    "kind": "vocabulary",
+    "sl": "ključ",
+    "gloss": "key (masc.)",
+    "predictableError": "'the room key' is 'ključ od sobe' — genitive after 'od'; and it is inanimate, so the accusative equals the nominative ('dobim ključ')",
+    "core": false,
+    "a1": true
+  },
+  "za_dve_noci": {
+    "kind": "chunk",
+    "sl": "za dve noči",
+    "gloss": "for two nights",
+    "predictableError": "'noč' is feminine and its dual is 'dve noči' — not 'dva noči' or 'dve noč'",
+    "core": false,
+    "a1": true
+  },
+  "odprto": {
+    "kind": "vocabulary",
+    "sl": "odprto",
+    "gloss": "open (the sign)",
+    "predictableError": "the sign is the neuter 'Odprto'; describing the shop the adjective agrees — 'trgovina je odprta' — and asking a person is 'Ali ste odprti?'",
+    "core": false,
+    "a1": true
+  },
+  "zaprto": {
+    "kind": "vocabulary",
+    "sl": "zaprto",
+    "gloss": "closed (the sign)",
+    "predictableError": "the sign is the neuter 'Zaprto'; with a noun it agrees — 'trgovina je zaprta', 'muzej je zaprt'",
+    "core": false,
+    "a1": true
+  },
+  "prepovedano": {
+    "kind": "vocabulary",
+    "sl": "prepovedano",
+    "gloss": "forbidden, prohibited",
+    "predictableError": "on its own the sign is the neuter 'Prepovedano', but attached to a noun it agrees — 'Vstop prepovedan', 'Kajenje prepovedano'",
+    "core": false,
+    "a1": true
+  },
+  "vstop": {
+    "kind": "vocabulary",
+    "sl": "vstop",
+    "gloss": "entry, admission (masc.)",
+    "predictableError": "'vstop' is entry as an act — the doorway itself is 'vhod'; the sign reads 'Vstop prepovedan', 'Vstop prost'",
+    "core": false,
+    "a1": true
+  },
+  "izhod": {
+    "kind": "vocabulary",
+    "sl": "izhod",
+    "gloss": "exit, way out (masc.)",
+    "predictableError": "confusing 'izhod' (the door out) with 'odhod' (a departure time); the emergency exit is 'izhod v sili'",
+    "core": false,
+    "a1": true
+  },
+  "pozor": {
+    "kind": "vocabulary",
+    "sl": "pozor",
+    "gloss": "attention! caution! (on a sign)",
+    "predictableError": "the printed word is the bare noun 'Pozor!'; the spoken warning to a person is the verb 'Pazi!' / 'Pazite!'",
+    "core": false,
+    "a1": true
+  },
+  "informacije": {
+    "kind": "vocabulary",
+    "sl": "informacije",
+    "gloss": "information (desk) — the sign is plural",
+    "predictableError": "the desk is always the plural 'Informacije'; a single piece of information is the singular 'informacija' ('Hvala za informacijo.')",
+    "core": false,
+    "a1": true
+  },
+  "odpiralni_cas": {
+    "kind": "chunk",
+    "sl": "odpiralni čas",
+    "gloss": "opening hours (of a shop, a museum)",
+    "predictableError": "the phrase is masculine — 'kakšen je odpiralni čas', not 'kakšni'; 'odpiralni čas' is the shop-door wording, and you will just as often see 'delovni čas' on the same door",
+    "core": false,
+    "a1": true
+  },
+  "popust": {
+    "kind": "vocabulary",
+    "sl": "popust",
+    "gloss": "discount (masc.)",
+    "predictableError": "a percentage takes the GENITIVE — '20 % popusta', 'popust na vse' — not '20 % popust'",
+    "core": false,
+    "a1": true
+  },
+  "cena": {
+    "kind": "vocabulary",
+    "sl": "cena",
+    "gloss": "price (fem.)",
+    "predictableError": "'cena' is the printed price; across a counter Slovenes ask 'Koliko stane?', not the stiff 'Kakšna je cena?'",
+    "core": false,
+    "a1": true
+  },
+  "delo": {
+    "kind": "vocabulary",
+    "sl": "delo",
+    "gloss": "work; a job (neut.)",
+    "predictableError": "'delo' is work in general ('iščem delo'); the paid post you actually hold is 'služba' ('imam novo službo') — English 'job' maps to both",
+    "core": false,
+    "a1": true
+  },
+  "iscemo": {
+    "kind": "pattern",
+    "sl": "Iščemo ___.",
+    "gloss": "We are looking for ___. (the job-ad frame)",
+    "predictableError": "the object goes accusative, and an animate masculine takes -a — 'Iščemo natakarja', not 'Iščemo natakar'",
+    "core": false,
+    "a1": true
+  },
+  "oddam": {
+    "kind": "pattern",
+    "sl": "Oddam ___.",
+    "gloss": "For rent / to let: I let out ___. (as written by a private owner; an agency writes 'Oddamo')",
+    "predictableError": "English 'rent' goes both ways — 'oddam' is the owner letting it out ('Oddam stanovanje'), while renting FROM someone is 'najamem'; and the next card along reading 'PRODAM' is for SALE, not for rent.",
+    "core": false,
+    "a1": true
+  },
+  "tecaj": {
+    "kind": "vocabulary",
+    "sl": "tečaj",
+    "gloss": "course (masc.)",
+    "predictableError": "'a Slovene course' is the genitive 'tečaj slovenščine', and you attend it with 'na' + accusative — 'hodim na tečaj'; the same word also means exchange rate",
+    "core": false,
+    "a1": true
+  },
+  "prijava": {
+    "kind": "vocabulary",
+    "sl": "prijava",
+    "gloss": "registration, sign-up, application (fem.)",
+    "predictableError": "'prijava' is the noun on the notice ('Prijave zbiramo do 10. septembra'); signing yourself up is the verb 'prijavim se' — the noun cannot stand in for it",
+    "core": false,
+    "a1": true
+  },
+  "vceraj_sem": {
+    "kind": "pattern",
+    "sl": "Včeraj sem ___.",
+    "gloss": "Yesterday I ___ed — the past tense: the -l participle + 'sem'",
+    "predictableError": "the participle agrees with the SPEAKER'S gender — a man says 'Včeraj sem bil', a woman 'Včeraj sem bila' — and 'sem' alone carries the past; there is no second auxiliary to add",
+    "core": true,
+    "a1": true
+  },
+  "bil_sem": {
+    "kind": "chunk",
+    "sl": "Bil sem doma. / Bila sem doma.",
+    "gloss": "I was at home (man / woman)",
+    "predictableError": "the past of 'biti' is the participle 'bil/bila' PLUS 'sem' — dropping 'sem' ('jaz bil doma') leaves no tense at all",
+    "core": false,
+    "a1": true
+  },
+  "sel_sem": {
+    "kind": "chunk",
+    "sl": "Šel sem. / Šla sem.",
+    "gloss": "I went (man / woman)",
+    "predictableError": "the participle of 'iti' is suppletive — 'šel / šla', nothing like the infinitive; there is no regular form to build",
+    "core": false,
+    "a1": true
+  },
+  "lep_pozdrav": {
+    "kind": "chunk",
+    "sl": "Lep pozdrav",
+    "gloss": "Kind regards (letter / email sign-off)",
+    "predictableError": "it is the written (and phone) sign-off — walking out of a shop you say 'Nasvidenje', not 'Lep pozdrav'",
+    "core": false,
+    "a1": true
+  },
+  "hvala_za": {
+    "kind": "pattern",
+    "sl": "Hvala za ___.",
+    "gloss": "Thank you for ___.",
+    "predictableError": "'za' takes the ACCUSATIVE — 'Hvala za pomoč', 'Hvala za vabilo' — not the dative 'hvala pomoči' on the English 'thanks to' model",
+    "core": true,
+    "a1": true
+  },
+  "veselim_se": {
+    "kind": "pattern",
+    "sl": "Veselim se ___.",
+    "gloss": "I look forward to ___.",
+    "predictableError": "the reflexive 'se' is obligatory and what follows goes GENITIVE — 'Veselim se srečanja'; and it is not 'Me veseli', which is 'nice to meet you'",
+    "core": false,
+    "a1": true
+  },
+  "hcerka": {
+    "kind": "vocabulary",
+    "sl": "hčerka",
+    "gloss": "daughter (everyday; the standard/written form is 'hči')",
+    "predictableError": "'hčerka' declines regularly — 'imam hčerko', 'dve hčerki' — while the standard 'hči' does not: its accusative is 'hčer' and its plural 'hčere'. It is not a diminutive; that is 'hčerkica'.",
+    "core": false,
+    "a1": true
   }
 }
