@@ -334,37 +334,6 @@
         "govorim_dobro_lang"
       ],
       "next": [
-        "n15"
-      ]
-    },
-    "n15": {
-      "speaker": "npc",
-      "sl": "Praviš: Ne govorim dobro angleško?",
-      "en": "You're saying: 'I don't speak English well'?",
-      "deliverySL": "[puzzled] Praviš: Ne govorim dobro angleško?",
-      "glossPolicy": "after",
-      "stallHandlers": [
-        {
-          "kind": "pulse"
-        },
-        {
-          "kind": "soften",
-          "label": "Put him right"
-        }
-      ],
-      "next": [
-        "c8"
-      ]
-    },
-    "c8": {
-      "speaker": "client",
-      "sl": "Govorim dobro angleško.",
-      "en": "I speak English well.",
-      "glossPolicy": "tap",
-      "learnables": [
-        "govorim_dobro_lang"
-      ],
-      "next": [
         "n16"
       ]
     },
