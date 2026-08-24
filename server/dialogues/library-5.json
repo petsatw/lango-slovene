@@ -2,7 +2,7 @@
   "id": "library-l5",
   "scenarioId": "library",
   "level": 5,
-  "levelLabel": "Intermediate",
+  "levelLabel": "Advanced",
   "title": "WiFi & printing",
   "objectives": [
     {
@@ -60,6 +60,9 @@
       "next": [
         "c1a",
         "c1b"
+      ],
+      "learnables": [
+        "kako"
       ]
     },
     "c1a": {
@@ -68,6 +71,12 @@
       "en": "Hello. Do you have free WiFi here?",
       "next": [
         "n2w"
+      ],
+      "learnables": [
+        "dober_dan",
+        "ali_imate",
+        "tukaj",
+        "brezplacen"
       ]
     },
     "c1b": {
@@ -76,6 +85,13 @@
       "en": "Hello. Can I print a document here?",
       "next": [
         "n2p"
+      ],
+      "learnables": [
+        "dober_dan",
+        "ali_lahko",
+        "tukaj",
+        "natisniti",
+        "dokument"
       ]
     },
     "n2w": {
@@ -86,6 +102,10 @@
       "next": [
         "c2w1",
         "c2w2"
+      ],
+      "learnables": [
+        "da",
+        "seveda"
       ]
     },
     "c2w1": {
@@ -94,6 +114,10 @@
       "en": "What's the password?",
       "next": [
         "n3w"
+      ],
+      "learnables": [
+        "kaksno_je",
+        "geslo"
       ]
     },
     "c2w2": {
@@ -102,6 +126,9 @@
       "en": "Great. So where do I connect?",
       "next": [
         "n3w"
+      ],
+      "learnables": [
+        "kje_se_povezem"
       ]
     },
     "n3w": {
@@ -112,6 +139,11 @@
       "next": [
         "cz1",
         "cz2"
+      ],
+      "learnables": [
+        "geslo",
+        "v_na_lok",
+        "tudi"
       ]
     },
     "n2p": {
@@ -122,6 +154,9 @@
       "next": [
         "c2p1",
         "c2p2"
+      ],
+      "learnables": [
+        "seveda"
       ]
     },
     "c2p1": {
@@ -130,6 +165,9 @@
       "en": "How does that work?",
       "next": [
         "n3p"
+      ],
+      "learnables": [
+        "kako_deluje"
       ]
     },
     "c2p2": {
@@ -138,6 +176,11 @@
       "en": "Do I need my own paper?",
       "next": [
         "n3p"
+      ],
+      "learnables": [
+        "ali_potrebujem",
+        "potrebovati",
+        "svoj_papir"
       ]
     },
     "n3p": {
@@ -148,6 +191,14 @@
       "next": [
         "cz1",
         "cz2"
+      ],
+      "learnables": [
+        "dokument",
+        "ali_or",
+        "spletna_stran",
+        "prijaviti_se",
+        "in",
+        "natisniti"
       ]
     },
     "cz1": {
@@ -156,6 +207,11 @@
       "en": "Ah, I understand. Thanks, I'll give it a try.",
       "next": [
         "nBye"
+      ],
+      "learnables": [
+        "razumem",
+        "hvala",
+        "bom_poskusil"
       ]
     },
     "cz2": {
@@ -164,6 +220,10 @@
       "en": "Thank you very much, goodbye.",
       "next": [
         "nBye"
+      ],
+      "learnables": [
+        "najlepsa_hvala",
+        "nasvidenje"
       ]
     },
     "nBye": {
@@ -171,7 +231,10 @@
       "sl": "Z veseljem! Prijetno delo!",
       "en": "My pleasure! Enjoy your work!",
       "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Z veseljem! Prijetno delo!",
-      "next": []
+      "next": [],
+      "learnables": [
+        "delo"
+      ]
     }
   }
 }

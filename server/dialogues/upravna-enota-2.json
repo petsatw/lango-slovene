@@ -2,7 +2,7 @@
   "id": "upravna-enota-l2",
   "scenarioId": "upravna-enota",
   "level": 2,
-  "levelLabel": "A2",
+  "levelLabel": "Intermediate",
   "title": "Fee & notification",
   "objectives": [
     {
@@ -60,6 +60,10 @@
       "next": [
         "c1a",
         "c1b"
+      ],
+      "learnables": [
+        "dober_dan",
+        "ali_imate"
       ]
     },
     "c1a": {
@@ -68,6 +72,11 @@
       "en": "Yes. How long does the procedure take?",
       "next": [
         "n2"
+      ],
+      "learnables": [
+        "ja",
+        "koliko_casa_traja",
+        "postopek"
       ]
     },
     "c1b": {
@@ -76,6 +85,10 @@
       "en": "Yes. How long will it take?",
       "next": [
         "n2"
+      ],
+      "learnables": [
+        "ja",
+        "kako_dolgo"
       ]
     },
     "n2": {
@@ -86,6 +99,10 @@
       "next": [
         "c2a",
         "c2b"
+      ],
+      "learnables": [
+        "stevilo_ena",
+        "mesec"
       ]
     },
     "c2a": {
@@ -94,6 +111,10 @@
       "en": "How will I know when the permit is ready?",
       "next": [
         "n3"
+      ],
+      "learnables": [
+        "kako",
+        "dovoljenje"
       ]
     },
     "c2b": {
@@ -102,6 +123,11 @@
       "en": "And how will you notify me?",
       "next": [
         "n3"
+      ],
+      "learnables": [
+        "in",
+        "kako",
+        "obvestiti"
       ]
     },
     "n3": {
@@ -112,6 +138,10 @@
       "next": [
         "c3a",
         "c3b"
+      ],
+      "learnables": [
+        "posta",
+        "ali_or"
       ]
     },
     "c3a": {
@@ -120,6 +150,12 @@
       "en": "Alright, thank you. How much is the administrative fee?",
       "next": [
         "n4"
+      ],
+      "learnables": [
+        "v_redu",
+        "hvala",
+        "koliko_znasa",
+        "upravna_taksa"
       ]
     },
     "c3b": {
@@ -128,6 +164,11 @@
       "en": "I understand. How much does the administrative fee cost?",
       "next": [
         "n4"
+      ],
+      "learnables": [
+        "razumem",
+        "koliko_stane",
+        "upravna_taksa"
       ]
     },
     "n4": {
@@ -138,6 +179,11 @@
       "next": [
         "c4a",
         "c4b"
+      ],
+      "learnables": [
+        "upravna_taksa",
+        "stevilo_sedemdeset",
+        "evro"
       ]
     },
     "c4a": {
@@ -146,6 +192,10 @@
       "en": "Can I pay by card?",
       "next": [
         "n5a"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "placam_s_kartico"
       ]
     },
     "c4b": {
@@ -154,6 +204,11 @@
       "en": "Can I pay in cash?",
       "next": [
         "n5b"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "placati",
+        "z_gotovino"
       ]
     },
     "n5a": {
@@ -163,6 +218,9 @@
       "deliverySL": "[brisk, courteous civil servant] Seveda, sprejemamo kartice.",
       "next": [
         "c5"
+      ],
+      "learnables": [
+        "seveda"
       ]
     },
     "n5b": {
@@ -172,6 +230,11 @@
       "deliverySL": "[brisk, courteous civil servant] Seveda, sprejemamo tudi gotovino.",
       "next": [
         "c5"
+      ],
+      "learnables": [
+        "seveda",
+        "tudi",
+        "z_gotovino"
       ]
     },
     "c5": {
@@ -180,6 +243,9 @@
       "en": "Thank you for your help.",
       "next": [
         "n6"
+      ],
+      "learnables": [
+        "hvala_za_pomoc"
       ]
     },
     "n6": {
@@ -190,19 +256,33 @@
       "next": [
         "c6a",
         "c6b"
+      ],
+      "learnables": [
+        "stevilo_ena",
+        "mesec",
+        "in",
+        "nasvidenje",
+        "lep"
       ]
     },
     "c6a": {
       "speaker": "client",
       "sl": "Nasvidenje.",
       "en": "Goodbye.",
-      "next": []
+      "next": [],
+      "learnables": [
+        "nasvidenje"
+      ]
     },
     "c6b": {
       "speaker": "client",
       "sl": "Najlepša hvala. Nasvidenje.",
       "en": "Thank you very much. Goodbye.",
-      "next": []
+      "next": [],
+      "learnables": [
+        "najlepsa_hvala",
+        "nasvidenje"
+      ]
     }
   }
 }

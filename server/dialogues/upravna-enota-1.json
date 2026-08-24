@@ -2,7 +2,7 @@
   "id": "upravna-enota-l1",
   "scenarioId": "upravna-enota",
   "level": 1,
-  "levelLabel": "A2",
+  "levelLabel": "Above A1",
   "title": "Submit the application",
   "objectives": [
     {
@@ -66,6 +66,10 @@
       "next": [
         "c1a",
         "c1b"
+      ],
+      "learnables": [
+        "dober_dan",
+        "kako"
       ]
     },
     "c1a": {
@@ -74,6 +78,14 @@
       "en": "Good day. I'd like to submit an application for a residence and work permit.",
       "next": [
         "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "rad_bi",
+        "oddati_vlogo",
+        "dovoljenje_za_prebivanje",
+        "in",
+        "delo"
       ]
     },
     "c1b": {
@@ -82,6 +94,12 @@
       "en": "Good day. I'd like to submit an application for a residence permit.",
       "next": [
         "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "rad_bi",
+        "oddati_vlogo",
+        "dovoljenje_za_prebivanje"
       ]
     },
     "n2": {
@@ -92,6 +110,9 @@
       "next": [
         "c2a",
         "c2b"
+      ],
+      "learnables": [
+        "narocen_sem"
       ]
     },
     "c2a": {
@@ -100,6 +121,12 @@
       "en": "Yes, I have an appointment at nine o'clock.",
       "next": [
         "n3"
+      ],
+      "learnables": [
+        "da",
+        "narocen_sem",
+        "ob_uri",
+        "vrstilni_deveti"
       ]
     },
     "c2b": {
@@ -108,6 +135,11 @@
       "en": "No, I don't have an appointment. Is that a problem?",
       "next": [
         "n3"
+      ],
+      "learnables": [
+        "ne",
+        "nimam",
+        "termin"
       ]
     },
     "n3": {
@@ -118,6 +150,10 @@
       "next": [
         "c3a",
         "c3b"
+      ],
+      "learnables": [
+        "prosim",
+        "potni_list"
       ]
     },
     "c3a": {
@@ -126,6 +162,9 @@
       "en": "Here you are.",
       "next": [
         "n4"
+      ],
+      "learnables": [
+        "izvolite"
       ]
     },
     "c3b": {
@@ -134,6 +173,11 @@
       "en": "Here you are, this is my passport.",
       "next": [
         "n4"
+      ],
+      "learnables": [
+        "izvolite",
+        "tukaj_je",
+        "potni_list"
       ]
     },
     "n4": {
@@ -144,6 +188,11 @@
       "next": [
         "c4a",
         "c4b"
+      ],
+      "learnables": [
+        "hvala",
+        "ali_imate",
+        "dokument"
       ]
     },
     "c4a": {
@@ -152,6 +201,14 @@
       "en": "I think I have them. Here are the employment contract, a photograph and proof of health insurance.",
       "next": [
         "n5"
+      ],
+      "learnables": [
+        "imam",
+        "tukaj_je",
+        "pogodba_o_zaposlitvi",
+        "fotografija",
+        "in",
+        "dokazilo_o_zdravstvenem_zavarovanju"
       ]
     },
     "c4b": {
@@ -160,6 +217,13 @@
       "en": "Yes, here are all the documents and the completed form.",
       "next": [
         "n5"
+      ],
+      "learnables": [
+        "da",
+        "tukaj_je",
+        "dokument",
+        "in",
+        "obrazec"
       ]
     },
     "n5": {
@@ -170,6 +234,11 @@
       "next": [
         "c5a",
         "c5b"
+      ],
+      "learnables": [
+        "prosim",
+        "dokument",
+        "prijava"
       ]
     },
     "c5a": {
@@ -178,6 +247,10 @@
       "en": "Where can I get it?",
       "next": [
         "n6a"
+      ],
+      "learnables": [
+        "kje",
+        "lahko_dobim"
       ]
     },
     "c5b": {
@@ -186,6 +259,11 @@
       "en": "I have a rental agreement. Is that enough?",
       "next": [
         "n6b"
+      ],
+      "learnables": [
+        "imam",
+        "najemna_pogodba",
+        "ali_je_to_dovolj"
       ]
     },
     "n6a": {
@@ -195,6 +273,12 @@
       "deliverySL": "[brisk, courteous civil servant] Če že živite v Sloveniji, ga lahko uredite tukaj.",
       "next": [
         "c6"
+      ],
+      "learnables": [
+        "zivim_v",
+        "drzava_slovenija",
+        "urediti",
+        "tukaj"
       ]
     },
     "n6b": {
@@ -204,6 +288,10 @@
       "deliverySL": "[brisk, courteous civil servant] Da, najemna pogodba bo dovolj.",
       "next": [
         "c6"
+      ],
+      "learnables": [
+        "da",
+        "najemna_pogodba"
       ]
     },
     "c6": {
@@ -212,6 +300,10 @@
       "en": "Alright, thank you.",
       "next": [
         "n7"
+      ],
+      "learnables": [
+        "v_redu",
+        "hvala"
       ]
     },
     "n7": {
@@ -222,19 +314,33 @@
       "next": [
         "c7a",
         "c7b"
+      ],
+      "learnables": [
+        "dokument",
+        "oddati_vlogo",
+        "tukaj",
+        "nasvidenje"
       ]
     },
     "c7a": {
       "speaker": "client",
       "sl": "Hvala. Nasvidenje.",
       "en": "Thank you. Goodbye.",
-      "next": []
+      "next": [],
+      "learnables": [
+        "hvala_nasvidenje"
+      ]
     },
     "c7b": {
       "speaker": "client",
       "sl": "Najlepša hvala za pomoč. Nasvidenje.",
       "en": "Thank you very much for your help. Goodbye.",
-      "next": []
+      "next": [],
+      "learnables": [
+        "najlepsa_hvala",
+        "hvala_za_pomoc",
+        "nasvidenje"
+      ]
     }
   }
 }

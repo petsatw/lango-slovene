@@ -21,15 +21,15 @@
       "levels": [
         {
           "level": 1,
-          "levelLabel": "Survival"
+          "levelLabel": "Basic"
         },
         {
           "level": 2,
-          "levelLabel": "Basic A1"
+          "levelLabel": "Basic"
         },
         {
           "level": 3,
-          "levelLabel": "Full A1"
+          "levelLabel": "Basic"
         }
       ]
     },

@@ -2,7 +2,7 @@
   "id": "restaurant-l1",
   "scenarioId": "restaurant",
   "level": 1,
-  "levelLabel": "Survival",
+  "levelLabel": "Basic",
   "title": "Order & pay — a first visit",
   "objectives": [
     {
@@ -56,6 +56,10 @@
       "next": [
         "c1a",
         "c1b"
+      ],
+      "learnables": [
+        "dober_dan",
+        "izvolite"
       ]
     },
     "c1a": {
@@ -64,6 +68,11 @@
       "en": "Hello. I'd like a coffee.",
       "next": [
         "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "rad_bi",
+        "kava"
       ]
     },
     "c1b": {
@@ -72,6 +81,12 @@
       "en": "Hello. Water for me, please.",
       "next": [
         "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "za_mene",
+        "voda",
+        "prosim"
       ]
     },
     "n2": {
@@ -82,6 +97,10 @@
       "next": [
         "c2a",
         "c2b"
+      ],
+      "learnables": [
+        "kaj",
+        "je_3sg"
       ]
     },
     "c2a": {
@@ -90,6 +109,11 @@
       "en": "Yes, I'd like a sandwich.",
       "next": [
         "n3"
+      ],
+      "learnables": [
+        "ja",
+        "rad_bi",
+        "sendvic"
       ]
     },
     "c2b": {
@@ -98,6 +122,10 @@
       "en": "No thanks, just the drink.",
       "next": [
         "n3"
+      ],
+      "learnables": [
+        "ne",
+        "hvala"
       ]
     },
     "n3": {
@@ -108,6 +136,9 @@
       "next": [
         "c3a",
         "c3b"
+      ],
+      "learnables": [
+        "kaj"
       ]
     },
     "c3a": {
@@ -116,6 +147,12 @@
       "en": "Yes, one more juice, please.",
       "next": [
         "n4"
+      ],
+      "learnables": [
+        "ja",
+        "en_masacc",
+        "sok",
+        "prosim"
       ]
     },
     "c3b": {
@@ -124,6 +161,10 @@
       "en": "No, that'll be all.",
       "next": [
         "n4"
+      ],
+      "learnables": [
+        "ne",
+        "to_bo_vse"
       ]
     },
     "n4": {
@@ -134,6 +175,10 @@
       "next": [
         "c4a",
         "c4b"
+      ],
+      "learnables": [
+        "izvolite",
+        "to_je"
       ]
     },
     "c4a": {
@@ -142,6 +187,10 @@
       "en": "The bill, please.",
       "next": [
         "n5"
+      ],
+      "learnables": [
+        "racun",
+        "prosim"
       ]
     },
     "c4b": {
@@ -150,6 +199,12 @@
       "en": "Can I pay by card?",
       "next": [
         "n5"
+      ],
+      "learnables": [
+        "placam_s_kartico",
+        "ali_lahko",
+        "z_s_instr",
+        "placati"
       ]
     },
     "n5": {
@@ -160,6 +215,11 @@
       "next": [
         "c5a",
         "c5b"
+      ],
+      "learnables": [
+        "seveda",
+        "stevilo_osem",
+        "evro"
       ]
     },
     "c5a": {
@@ -168,6 +228,10 @@
       "en": "Here you are, thank you.",
       "next": [
         "n6"
+      ],
+      "learnables": [
+        "izvolite",
+        "hvala"
       ]
     },
     "c5b": {
@@ -176,6 +240,11 @@
       "en": "Thank you, goodbye.",
       "next": [
         "n6"
+      ],
+      "learnables": [
+        "hvala_nasvidenje",
+        "hvala",
+        "nasvidenje"
       ]
     },
     "n6": {
@@ -183,7 +252,12 @@
       "sl": "Hvala, nasvidenje, pridite spet!",
       "en": "Thank you, goodbye, come again!",
       "deliverySL": "[warmly] Hvala, nasvidenje, pridite spet!",
-      "next": []
+      "next": [],
+      "learnables": [
+        "hvala_nasvidenje",
+        "hvala",
+        "nasvidenje"
+      ]
     }
   }
 }

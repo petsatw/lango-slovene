@@ -52,134 +52,284 @@
           "sl": "Dober dan. Kako vam lahko pomagam?",
           "en": "Good day. How can I help you?",
           "deliverySL": "[brisk, courteous civil servant] Dober dan. Kako vam lahko pomagam?",
-          "next": ["c1a", "c1b"]
+          "next": [
+            "c1a",
+            "c1b"
+          ],
+          "learnables": [
+            "dober_dan",
+            "kako"
+          ]
         },
         "c1a": {
           "speaker": "client",
           "sl": "Dober dan. Rad bi oddal vlogo za dovoljenje za prebivanje in delo.",
           "en": "Good day. I'd like to submit an application for a residence and work permit.",
-          "next": ["n2"]
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "rad_bi",
+            "oddati_vlogo",
+            "dovoljenje_za_prebivanje",
+            "in",
+            "delo"
+          ]
         },
         "c1b": {
           "speaker": "client",
           "sl": "Dober dan. Rad bi oddal vlogo za dovoljenje za prebivanje.",
           "en": "Good day. I'd like to submit an application for a residence permit.",
-          "next": ["n2"]
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "rad_bi",
+            "oddati_vlogo",
+            "dovoljenje_za_prebivanje"
+          ]
         },
         "n2": {
           "speaker": "npc",
           "sl": "Ste naročeni?",
           "en": "Do you have an appointment?",
           "deliverySL": "[brisk, courteous civil servant] Ste naročeni?",
-          "next": ["c2a", "c2b"]
+          "next": [
+            "c2a",
+            "c2b"
+          ],
+          "learnables": [
+            "narocen_sem"
+          ]
         },
         "c2a": {
           "speaker": "client",
           "sl": "Da, naročen sem ob deveti uri.",
           "en": "Yes, I have an appointment at nine o'clock.",
-          "next": ["n3"]
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "da",
+            "narocen_sem",
+            "ob_uri",
+            "vrstilni_deveti"
+          ]
         },
         "c2b": {
           "speaker": "client",
           "sl": "Ne, nimam termina. Ali je to problem?",
           "en": "No, I don't have an appointment. Is that a problem?",
-          "next": ["n3"]
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "ne",
+            "nimam",
+            "termin"
+          ]
         },
         "n3": {
           "speaker": "npc",
           "sl": "Prosim za vaš potni list.",
           "en": "Your passport, please.",
           "deliverySL": "[brisk, courteous civil servant] Prosim za vaš potni list.",
-          "next": ["c3a", "c3b"]
+          "next": [
+            "c3a",
+            "c3b"
+          ],
+          "learnables": [
+            "prosim",
+            "potni_list"
+          ]
         },
         "c3a": {
           "speaker": "client",
           "sl": "Izvolite.",
           "en": "Here you are.",
-          "next": ["n4"]
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "izvolite"
+          ]
         },
         "c3b": {
           "speaker": "client",
           "sl": "Izvolite, tukaj je moj potni list.",
           "en": "Here you are, this is my passport.",
-          "next": ["n4"]
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "izvolite",
+            "tukaj_je",
+            "potni_list"
+          ]
         },
         "n4": {
           "speaker": "npc",
           "sl": "Hvala. Ali imate vse potrebne dokumente?",
           "en": "Thank you. Do you have all the required documents?",
           "deliverySL": "[brisk, courteous civil servant] Hvala. Ali imate vse potrebne dokumente?",
-          "next": ["c4a", "c4b"]
+          "next": [
+            "c4a",
+            "c4b"
+          ],
+          "learnables": [
+            "hvala",
+            "ali_imate",
+            "dokument"
+          ]
         },
         "c4a": {
           "speaker": "client",
           "sl": "Mislim, da jih imam. Tukaj so pogodba o zaposlitvi, fotografija in dokazilo o zdravstvenem zavarovanju.",
           "en": "I think I have them. Here are the employment contract, a photograph and proof of health insurance.",
-          "next": ["n5"]
+          "next": [
+            "n5"
+          ],
+          "learnables": [
+            "imam",
+            "tukaj_je",
+            "pogodba_o_zaposlitvi",
+            "fotografija",
+            "in",
+            "dokazilo_o_zdravstvenem_zavarovanju"
+          ]
         },
         "c4b": {
           "speaker": "client",
           "sl": "Da, tukaj so vsi dokumenti in izpolnjen obrazec.",
           "en": "Yes, here are all the documents and the completed form.",
-          "next": ["n5"]
+          "next": [
+            "n5"
+          ],
+          "learnables": [
+            "da",
+            "tukaj_je",
+            "dokument",
+            "in",
+            "obrazec"
+          ]
         },
         "n5": {
           "speaker": "npc",
           "sl": "Samo trenutek, prosim. Preverila bom dokumente. Dokumenti so skoraj popolni, vendar manjka potrdilo o prijavi prebivališča.",
           "en": "One moment, please. I'll check the documents. The documents are almost complete, but proof of residence registration is missing.",
           "deliverySL": "[brisk, courteous civil servant] Samo trenutek, prosim. Preverila bom dokumente. Dokumenti so skoraj popolni, vendar manjka potrdilo o prijavi prebivališča.",
-          "next": ["c5a", "c5b"]
+          "next": [
+            "c5a",
+            "c5b"
+          ],
+          "learnables": [
+            "prosim",
+            "dokument",
+            "prijava"
+          ]
         },
         "c5a": {
           "speaker": "client",
           "sl": "Kje ga lahko dobim?",
           "en": "Where can I get it?",
-          "next": ["n6a"]
+          "next": [
+            "n6a"
+          ],
+          "learnables": [
+            "kje",
+            "lahko_dobim"
+          ]
         },
         "c5b": {
           "speaker": "client",
           "sl": "Imam najemno pogodbo. Ali je to dovolj?",
           "en": "I have a rental agreement. Is that enough?",
-          "next": ["n6b"]
+          "next": [
+            "n6b"
+          ],
+          "learnables": [
+            "imam",
+            "najemna_pogodba",
+            "ali_je_to_dovolj"
+          ]
         },
         "n6a": {
           "speaker": "npc",
           "sl": "Če že živite v Sloveniji, ga lahko uredite tukaj.",
           "en": "If you already live in Slovenia, you can arrange it here.",
           "deliverySL": "[brisk, courteous civil servant] Če že živite v Sloveniji, ga lahko uredite tukaj.",
-          "next": ["c6"]
+          "next": [
+            "c6"
+          ],
+          "learnables": [
+            "zivim_v",
+            "drzava_slovenija",
+            "urediti",
+            "tukaj"
+          ]
         },
         "n6b": {
           "speaker": "npc",
           "sl": "Da, najemna pogodba bo dovolj.",
           "en": "Yes, a rental agreement will be enough.",
           "deliverySL": "[brisk, courteous civil servant] Da, najemna pogodba bo dovolj.",
-          "next": ["c6"]
+          "next": [
+            "c6"
+          ],
+          "learnables": [
+            "da",
+            "najemna_pogodba"
+          ]
         },
         "c6": {
           "speaker": "client",
           "sl": "V redu, hvala.",
           "en": "Alright, thank you.",
-          "next": ["n7"]
+          "next": [
+            "n7"
+          ],
+          "learnables": [
+            "v_redu",
+            "hvala"
+          ]
         },
         "n7": {
           "speaker": "npc",
           "sl": "Ko boste imeli vse dokumente, lahko oddate vlogo tukaj. Nasvidenje.",
           "en": "Once you have all the documents, you can submit the application here. Goodbye.",
           "deliverySL": "[brisk, courteous civil servant] Ko boste imeli vse dokumente, lahko oddate vlogo tukaj. Nasvidenje.",
-          "next": ["c7a", "c7b"]
+          "next": [
+            "c7a",
+            "c7b"
+          ],
+          "learnables": [
+            "dokument",
+            "oddati_vlogo",
+            "tukaj",
+            "nasvidenje"
+          ]
         },
         "c7a": {
           "speaker": "client",
           "sl": "Hvala. Nasvidenje.",
           "en": "Thank you. Goodbye.",
-          "next": []
+          "next": [],
+          "learnables": [
+            "hvala_nasvidenje"
+          ]
         },
         "c7b": {
           "speaker": "client",
           "sl": "Najlepša hvala za pomoč. Nasvidenje.",
           "en": "Thank you very much for your help. Goodbye.",
-          "next": []
+          "next": [],
+          "learnables": [
+            "najlepsa_hvala",
+            "hvala_za_pomoc",
+            "nasvidenje"
+          ]
         }
       },
       "catalog": {
@@ -311,115 +461,232 @@
           "sl": "Dober dan. Vašo vlogo sem sprejela. Imate še kakšno vprašanje?",
           "en": "Good day. I've accepted your application. Do you have any more questions?",
           "deliverySL": "[brisk, courteous civil servant] Dober dan. Vašo vlogo sem sprejela. Imate še kakšno vprašanje?",
-          "next": ["c1a", "c1b"]
+          "next": [
+            "c1a",
+            "c1b"
+          ],
+          "learnables": [
+            "dober_dan",
+            "ali_imate"
+          ]
         },
         "c1a": {
           "speaker": "client",
           "sl": "Ja. Koliko časa traja postopek?",
           "en": "Yes. How long does the procedure take?",
-          "next": ["n2"]
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "ja",
+            "koliko_casa_traja",
+            "postopek"
+          ]
         },
         "c1b": {
           "speaker": "client",
           "sl": "Ja. Kako dolgo bo trajalo?",
           "en": "Yes. How long will it take?",
-          "next": ["n2"]
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "ja",
+            "kako_dolgo"
+          ]
         },
         "n2": {
           "speaker": "npc",
           "sl": "Običajno približno en mesec.",
           "en": "Usually about one month.",
           "deliverySL": "[brisk, courteous civil servant] Običajno približno en mesec.",
-          "next": ["c2a", "c2b"]
+          "next": [
+            "c2a",
+            "c2b"
+          ],
+          "learnables": [
+            "stevilo_ena",
+            "mesec"
+          ]
         },
         "c2a": {
           "speaker": "client",
           "sl": "Kako bom izvedel, da je dovoljenje pripravljeno?",
           "en": "How will I know when the permit is ready?",
-          "next": ["n3"]
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "kako",
+            "dovoljenje"
+          ]
         },
         "c2b": {
           "speaker": "client",
           "sl": "In kako me boste obvestili?",
           "en": "And how will you notify me?",
-          "next": ["n3"]
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "in",
+            "kako",
+            "obvestiti"
+          ]
         },
         "n3": {
           "speaker": "npc",
           "sl": "Poslali vam bomo obvestilo po pošti ali po elektronski pošti.",
           "en": "We'll send you a notification by mail or by email.",
           "deliverySL": "[brisk, courteous civil servant] Poslali vam bomo obvestilo po pošti ali po elektronski pošti.",
-          "next": ["c3a", "c3b"]
+          "next": [
+            "c3a",
+            "c3b"
+          ],
+          "learnables": [
+            "posta",
+            "ali_or"
+          ]
         },
         "c3a": {
           "speaker": "client",
           "sl": "V redu, hvala. Koliko znaša upravna taksa?",
           "en": "Alright, thank you. How much is the administrative fee?",
-          "next": ["n4"]
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "v_redu",
+            "hvala",
+            "koliko_znasa",
+            "upravna_taksa"
+          ]
         },
         "c3b": {
           "speaker": "client",
           "sl": "Razumem. Koliko stane upravna taksa?",
           "en": "I understand. How much does the administrative fee cost?",
-          "next": ["n4"]
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "razumem",
+            "koliko_stane",
+            "upravna_taksa"
+          ]
         },
         "n4": {
           "speaker": "npc",
           "sl": "Upravna taksa znaša sedemdeset evrov.",
           "en": "The administrative fee is seventy euros.",
           "deliverySL": "[brisk, courteous civil servant] Upravna taksa znaša sedemdeset evrov.",
-          "next": ["c4a", "c4b"]
+          "next": [
+            "c4a",
+            "c4b"
+          ],
+          "learnables": [
+            "upravna_taksa",
+            "stevilo_sedemdeset",
+            "evro"
+          ]
         },
         "c4a": {
           "speaker": "client",
           "sl": "Ali lahko plačam s kartico?",
           "en": "Can I pay by card?",
-          "next": ["n5a"]
+          "next": [
+            "n5a"
+          ],
+          "learnables": [
+            "ali_lahko",
+            "placam_s_kartico"
+          ]
         },
         "c4b": {
           "speaker": "client",
           "sl": "Ali lahko plačam z gotovino?",
           "en": "Can I pay in cash?",
-          "next": ["n5b"]
+          "next": [
+            "n5b"
+          ],
+          "learnables": [
+            "ali_lahko",
+            "placati",
+            "z_gotovino"
+          ]
         },
         "n5a": {
           "speaker": "npc",
           "sl": "Seveda, sprejemamo kartice.",
           "en": "Of course, we accept cards.",
           "deliverySL": "[brisk, courteous civil servant] Seveda, sprejemamo kartice.",
-          "next": ["c5"]
+          "next": [
+            "c5"
+          ],
+          "learnables": [
+            "seveda"
+          ]
         },
         "n5b": {
           "speaker": "npc",
           "sl": "Seveda, sprejemamo tudi gotovino.",
           "en": "Of course, we accept cash too.",
           "deliverySL": "[brisk, courteous civil servant] Seveda, sprejemamo tudi gotovino.",
-          "next": ["c5"]
+          "next": [
+            "c5"
+          ],
+          "learnables": [
+            "seveda",
+            "tudi",
+            "z_gotovino"
+          ]
         },
         "c5": {
           "speaker": "client",
           "sl": "Hvala za pomoč.",
           "en": "Thank you for your help.",
-          "next": ["n6"]
+          "next": [
+            "n6"
+          ],
+          "learnables": [
+            "hvala_za_pomoc"
+          ]
         },
         "n6": {
           "speaker": "npc",
           "sl": "Ni za kaj. Vse bo pripravljeno v približno enem mesecu. Nasvidenje in lep dan!",
           "en": "You're welcome. Everything will be ready in about a month. Goodbye and have a nice day!",
           "deliverySL": "[brisk, courteous civil servant] Ni za kaj. Vse bo pripravljeno v približno enem mesecu. Nasvidenje in lep dan!",
-          "next": ["c6a", "c6b"]
+          "next": [
+            "c6a",
+            "c6b"
+          ],
+          "learnables": [
+            "stevilo_ena",
+            "mesec",
+            "in",
+            "nasvidenje",
+            "lep"
+          ]
         },
         "c6a": {
           "speaker": "client",
           "sl": "Nasvidenje.",
           "en": "Goodbye.",
-          "next": []
+          "next": [],
+          "learnables": [
+            "nasvidenje"
+          ]
         },
         "c6b": {
           "speaker": "client",
           "sl": "Najlepša hvala. Nasvidenje.",
           "en": "Thank you very much. Goodbye.",
-          "next": []
+          "next": [],
+          "learnables": [
+            "najlepsa_hvala",
+            "nasvidenje"
+          ]
         }
       },
       "catalog": {

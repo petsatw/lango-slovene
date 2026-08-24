@@ -2,7 +2,7 @@
   "id": "restaurant-l2",
   "scenarioId": "restaurant",
   "level": 2,
-  "levelLabel": "Basic A1",
+  "levelLabel": "Intermediate",
   "title": "Pizza with friends",
   "objectives": [
     {
@@ -58,6 +58,9 @@
       "next": [
         "c1a",
         "c1b"
+      ],
+      "learnables": [
+        "dober_vecer"
       ]
     },
     "c1a": {
@@ -66,6 +69,9 @@
       "en": "Hmm, what should I have? I'm still thinking.",
       "next": [
         "m2"
+      ],
+      "learnables": [
+        "kaj"
       ]
     },
     "c1b": {
@@ -74,6 +80,11 @@
       "en": "I'll have a spicy pizza.",
       "next": [
         "m2b"
+      ],
+      "learnables": [
+        "jaz_bom",
+        "pizza_variety",
+        "pica"
       ]
     },
     "m2": {
@@ -84,6 +95,11 @@
       "next": [
         "c2a",
         "c2b"
+      ],
+      "learnables": [
+        "pizza_variety",
+        "pica",
+        "stirje_siri"
       ]
     },
     "c2a": {
@@ -92,6 +108,11 @@
       "en": "I'll have a vegan pizza.",
       "next": [
         "m3"
+      ],
+      "learnables": [
+        "jaz_bom",
+        "pizza_variety",
+        "pica"
       ]
     },
     "c2b": {
@@ -100,6 +121,11 @@
       "en": "I'll have the four-cheese pizza.",
       "next": [
         "m3"
+      ],
+      "learnables": [
+        "jaz_bom",
+        "stirje_siri",
+        "pica"
       ]
     },
     "m2b": {
@@ -110,6 +136,9 @@
       "next": [
         "c2c",
         "c2d"
+      ],
+      "learnables": [
+        "ali_or"
       ]
     },
     "c2c": {
@@ -118,6 +147,9 @@
       "en": "Medium, please.",
       "next": [
         "m3"
+      ],
+      "learnables": [
+        "prosim"
       ]
     },
     "c2d": {
@@ -126,7 +158,8 @@
       "en": "As hot as possible!",
       "next": [
         "m3"
-      ]
+      ],
+      "learnables": []
     },
     "m3": {
       "speaker": "npc",
@@ -136,6 +169,11 @@
       "next": [
         "c3a",
         "c3b"
+      ],
+      "learnables": [
+        "odlicno",
+        "in",
+        "kaj"
       ]
     },
     "c3a": {
@@ -144,7 +182,8 @@
       "en": "Ana will have a margherita, and Marko a spicy one.",
       "next": [
         "m4"
-      ]
+      ],
+      "learnables": []
     },
     "c3b": {
       "speaker": "client",
@@ -152,6 +191,9 @@
       "en": "We'll all just have pizza!",
       "next": [
         "m4"
+      ],
+      "learnables": [
+        "pica"
       ]
     },
     "m4": {
@@ -162,6 +204,9 @@
       "next": [
         "c4a",
         "c4b"
+      ],
+      "learnables": [
+        "kaj"
       ]
     },
     "c4a": {
@@ -170,6 +215,11 @@
       "en": "A beer for me, please.",
       "next": [
         "m5"
+      ],
+      "learnables": [
+        "za_mene",
+        "pivo",
+        "prosim"
       ]
     },
     "c4b": {
@@ -178,6 +228,11 @@
       "en": "And a water, please.",
       "next": [
         "m5"
+      ],
+      "learnables": [
+        "eno_femacc",
+        "voda",
+        "prosim"
       ]
     },
     "m5": {
@@ -188,6 +243,11 @@
       "next": [
         "c5a",
         "c5b"
+      ],
+      "learnables": [
+        "takoj",
+        "eno_femacc",
+        "solata"
       ]
     },
     "c5a": {
@@ -196,6 +256,11 @@
       "en": "Yes, a salad to share.",
       "next": [
         "m6"
+      ],
+      "learnables": [
+        "ja",
+        "eno_femacc",
+        "solata"
       ]
     },
     "c5b": {
@@ -204,6 +269,11 @@
       "en": "No thanks, just the pizzas.",
       "next": [
         "m6"
+      ],
+      "learnables": [
+        "ne",
+        "hvala",
+        "pica"
       ]
     },
     "m6": {
@@ -214,6 +284,9 @@
       "next": [
         "c6a",
         "c6b"
+      ],
+      "learnables": [
+        "izvolite"
       ]
     },
     "c6a": {
@@ -222,6 +295,9 @@
       "en": "Mmm, super choice!",
       "next": [
         "m7"
+      ],
+      "learnables": [
+        "super_izbira"
       ]
     },
     "c6b": {
@@ -230,6 +306,9 @@
       "en": "This looks amazing!",
       "next": [
         "m7"
+      ],
+      "learnables": [
+        "odlicno"
       ]
     },
     "m7": {
@@ -240,6 +319,9 @@
       "next": [
         "c7a",
         "c7b"
+      ],
+      "learnables": [
+        "kaj"
       ]
     },
     "c7a": {
@@ -248,6 +330,9 @@
       "en": "Cheers!",
       "next": [
         "m8"
+      ],
+      "learnables": [
+        "na_zdravje"
       ]
     },
     "c7b": {
@@ -256,14 +341,20 @@
       "en": "To us!",
       "next": [
         "m8"
-      ]
+      ],
+      "learnables": []
     },
     "m8": {
       "speaker": "npc",
       "sl": "Na zdravje in lep večer še naprej!",
       "en": "Cheers, and enjoy the rest of your evening!",
       "deliverySL": "[warmly] Na zdravje in lep večer še naprej!",
-      "next": []
+      "next": [],
+      "learnables": [
+        "na_zdravje",
+        "in",
+        "lep"
+      ]
     }
   }
 }
