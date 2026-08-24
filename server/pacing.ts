@@ -47,6 +47,16 @@ export interface PacingProfile {
   /** After the gloss, before the turn is handed over (the button and the prompt appear). The pause that
    *  makes the hand-over read as an offer rather than a cue. */
   handoverMs: number;
+  /** Base dwell for a beat that hands over to NOBODY — the character carrying himself forward — before
+   *  its caption is replaced by the next line. This is the only caption the learner cannot keep reading:
+   *  on a hand-over beat the line recedes but stays up beside their prompt, while here it is gone.
+   *  Distinct from `handoverMs` because the two beats ask for different things — one is a pause before
+   *  an offer, this is reading time. */
+  beatHoldMs: number;
+  /** Added to `beatHoldMs` per CHARACTER of the longest text on screen for that beat. The same reason
+   *  the on-ramp scales: "Ja, seveda!" and "Ampak angleško? Uf. Ne govorim dobro angleško." are not the
+   *  same amount to read, and a flat dwell either rushes the long one or strands the short one. */
+  beatCharMs: number;
   /** How long the CLOSING line is left on screen before the run ends. A goodbye needs a moment to land,
    *  but nothing is being asked for — the button must not invite a turn that does not exist. */
   closeHoldMs: number;
@@ -68,7 +78,8 @@ const PACING_FILE = path.join(__dirname, "catalog", "pacing.json");
 
 const MS_FIELDS = [
   "frameLineMs", "frameCharMs", "frameHoldMs", "frameFadeMs",
-  "captionLeadMs", "captionReadMs", "glossDelayMs", "handoverMs", "closeHoldMs", "backchannelMs",
+  "captionLeadMs", "captionReadMs", "glossDelayMs", "handoverMs", "beatHoldMs", "beatCharMs",
+  "closeHoldMs", "backchannelMs",
 ] as const;
 
 function fail(msg: string): never {

@@ -968,7 +968,11 @@ async function scenePlayBeat(npc) {
   // answer — an acknowledgement, a nudge onward — and simply carries on. Arming the button here would
   // ask for a turn that does not exist.
   if (!npc.handsOver) {
-    await sleep(pace.handoverMs);
+    // This caption is the only one the learner cannot go back to — the next line replaces it, whereas a
+    // hand-over beat's line recedes but stays up beside their prompt. So it is held for reading time,
+    // scaled to how much there is to read, rather than for the hand-over's pause-before-an-offer.
+    const shown = Math.max(npc.sl.length, npc.glossPolicy === "after" ? npc.en.length : 0);
+    await sleep(pace.beatHoldMs + pace.beatCharMs * shown);
     await sceneStep(npc.id, null);
     return;
   }
