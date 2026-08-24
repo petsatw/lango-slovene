@@ -38,7 +38,7 @@ Answers to **AGENTS.md › How the lessons teach**. Read it first; it is the law
 **Computed (L) — read from the scenario's existing levels, never judged:**
 - **Owned set** — every `sl` on a `client` node in prior levels, with how many times produced and how many levels back. This is what the slot rule and gloss withdrawal test against.
 - **Heard-only set** — what appears on `npc` nodes but has never been in a slot.
-- **The open payoff** — the previous level's closing unglossed line, and whether anything has yet made it comprehensible.
+- **Held lines** — what earlier levels left unglossed (`glossPolicy: "held"`). This level's material may make one of them land.
 
 **Judged (J — the orchestrator):**
 - **The act**, one step on: **echo → answer → interrupt → ask**.
@@ -46,7 +46,7 @@ Answers to **AGENTS.md › How the lessons teach**. Read it first; it is the law
 - **The variation plan** — how the shape gets worked, and how many turns that yields. Moves: answer it · negate it · swap the filler · add a qualifier · hear it said back · be wrong then right.
 - **The repetition engines** — the in-fiction *reasons* those variations happen. The character guesses wrong about them · doesn't believe them · quotes them back wrong · asks about a second thing · is self-deprecating and invites the mirror. Never "say it again": a lesson that instructs a repeat has failed to earn one.
 - **The recycle plan** — which owned lines return: every level for two levels after introduction, then every other level, each in a changed shape rather than recited. A level may drop an item if a variation of its shape appears instead.
-- **Next level's closing unglossed line**, and what will illuminate it.
+- **The closing line** — what the character says as this conversation ends. It belongs to this lesson: it uses this lesson's material, and it reads as a person finishing a conversation.
 
 Size against the level's band (AGENTS.md › Lesson shape). Beginner: 9–18 nodes, turns ≈ two-thirds of nodes, one new shape. Where in the band it lands follows from how much play the shape offers, never from a length target.
 
@@ -126,11 +126,11 @@ level these are construction rules, not polish:
   tense. Hearing *govoriš* licenses saying *govoriš* and nothing else.
 - **The slot always carries Slovene; it is never empty.** An empty slot risks the learner producing nothing,
   which is the failure state — not the advanced one.
-- **Gloss withdrawal is the only thing that withdraws.** A client node carries `en` the first time its line
-  is produced and **omits it thereafter** — the Slovene stays, and a tap restores the English on any line.
-  (The existing rule that `en` is written as an instruction applies **only** to a turn with no Slovene stem,
-  such as the learner's own name. Where there is a stem, `en` is its translation. Never write instructions
-  telling the learner what to do — the armed control says whose turn it is and the slot says what to say.)
+- **Gloss withdrawal is a `glossPolicy`.** Every node carries a non-empty `en`, and the policy says when
+  the learner sees it. A client line the learner produces for the first time carries `"after"` — the
+  English follows the Slovene on its own. The same line later carries `"tap"`, held until they ask for it.
+  The Slovene stands in the slot every time. Where a line has a Slovene stem, its `en` is that line's
+  translation.
 - **A slot may offer a choice, and the choice branches.** With no microphone this is the only way a spoken
   scene can branch on what the learner chose to say. Prefer branches where the "wrong" answer earns *more*
   practice — the character nudges and the shape gets said twice.
