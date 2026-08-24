@@ -35,14 +35,18 @@ export interface Learnable {
    *  "___" (pattern, e.g. "Eno ___, prosim."). */
   sl: string;
   gloss: string; // short English gloss
-  core?: boolean; // high-leverage (US-15); default false
+  /** CORE — the narrow, high-frequency Pareto set of survival frames. The single source of truth for core
+   *  membership: the difficulty classifier, mastery selection and the authoring gates all read this flag.
+   *  Default false. */
+  core?: boolean;
   rank?: number; // leverage rank from the core pattern library; consulted only for core patterns
   predictableError?: string; // the one predictable beginner error, surfaced by presentation
   paretoCategory?: ParetoCategory[]; // A1 Pareto-set membership (implies high-leverage); see ParetoCategory
   /** The "Tagged-A1" superset tag (docs/dialogue-difficulty-model.md §2). A deliberate at-mint decision:
-   *  set true when the item is A1 material even if it is not in the narrow a1-map CORE. It does NOT touch
-   *  the core (CORE ⊆ Tagged-A1); it only widens what the difficulty classifier counts as A1. An item left
-   *  untagged (and not in the a1-map) is above-A1 and simply raises a dialogue's computed band. */
+   *  set true when the item is A1 material even if it is not core (CORE ⊆ Tagged-A1). It widens what the
+   *  difficulty classifier counts as A1; an item that is neither core nor tagged is above-A1 and simply
+   *  raises a dialogue's computed band. Core and/or tagged items must also be placed in the a1-map, which
+   *  is what the A1 Readiness screen reads (`lint:a1` gates on it). */
   a1?: boolean;
 }
 

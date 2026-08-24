@@ -6,7 +6,7 @@
 // learnable catalog — then emits candidate A1 mappings for operator review (D5i).
 //
 //   npm run reconcile:dialogue -- <path-to-reconcile-input.json>
-//   npm run reconcile:dialogue -- .scratch/dialogue-drafts/pharmacy/reconcile-input.json
+//   npm run reconcile:dialogue -- authoring/dialogues/pharmacy/reconcile-input.json
 //
 // THE J/L BOUNDARY (handoff D4). The genuinely-fuzzy judgments happen UPSTREAM, by the LLM:
 //   - the minting-rubric filter ("does the LEARNER produce this?") is applied by slovenian-author/critic;
@@ -29,7 +29,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import {
   normSurface, normalizeKind, inDegrees, reachableFrom, canReachTerminal,
-  classifyBand, bandToLabel, bandRank, type DialogueBand,
+  bandFor, bandToLabel, bandRank, type DialogueBand,
 } from "./dialogue-lib";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -54,7 +54,8 @@ function die(msg: string): never {
 //   levels: [ { level, levelLabel /* author TARGET; the written label is the COMPUTED band */, title,
 //              objectives:[{label,descriptorEN}], root, nodes:{ <id>:{ speaker, sl, en, deliverySL?,
 //              slowSL? /* chunked-slow re-speak: own caption, own audio key */, deliverySlowSL? /* its delivery tags */,
-//              learnables? /* client nodes; the "audio"-mode attempt allowlist, may be [] */,
+//              learnables? /* what the line is MADE OF, on any node — the per-line band counts these.
+//                             On a client node it doubles as the "audio"-mode attempt allowlist. May be [] */,
 //              captionDelayMs? /* overrides the profile's captionLeadMs for this one beat */, glossPolicy? /* tap|after|held */,
 //              stallHandlers? /* npc nodes; [{kind:"pulse"|"respeak"|"soften",label?}] — NO Slovene;
 //                                timing comes from the pacing profile by position, afterMs only to override */,
@@ -161,19 +162,15 @@ for (const lvl of input.levels) {
 }
 
 // ---- Step 3: introduces = what this level is the FIRST to have the learner PRODUCE ------------------
-// The field means what its name says: new to the LEARNER here, not everything the level covers. It used
-// to be reuse ∪ new, which is "covers" — and a course that deliberately re-practises earlier phrases in
-// every later lesson would then have each level claim to introduce material from sessions ago. That
-// inflates the difficulty band, which is measured over this list, so a lesson scored as HARDER for
-// recycling well. Truth comes from the client nodes (what the learner actually says), walked in level
-// order so the first level to elicit an id owns it.
+// The field means what its name says: new to the LEARNER here, not everything the level covers — so a
+// course that deliberately re-practises earlier phrases never has a later level claim to introduce them.
+// Walked in level order, the first level to elicit an id owns it.
 const knownAfterMerge = new Set<string>([...Object.keys(existingLearnables), ...mintedIds]);
 const introducesByLevel = new Map<number, string[]>();
 const introducedAlready = new Set<string>();
 for (const lvl of [...input.levels].sort((a: any, b: any) => a.level - b.level)) {
-  // The declared delta, NOT the client nodes: `learnables` is the "audio"-mode attempt allowlist and is
-  // absent by design on a tapped tree (rehearsal credits nothing), so reading the nodes would empty
-  // `introduces` for every tap dialogue — wiping the free-chat handoff and scoring them all basic.
+  // The declared catalog delta, NOT the client nodes. `introduces` is the free-chat handoff — what this
+  // level hands the learner — and it must hold for a tapped tree whose nodes carry no `learnables` yet.
   const covered = new Set<string>([...(reusedByLevel.get(lvl.level) ?? []), ...(newByLevel.get(lvl.level) ?? [])]);
   const ids = [...covered].filter((id) => !introducedAlready.has(id)).sort();
   for (const id of ids) {
@@ -184,13 +181,15 @@ for (const lvl of [...input.levels].sort((a: any, b: any) => a.level - b.level))
   introducesByLevel.set(lvl.level, ids);
 }
 
-// ---- Difficulty bands (docs/dialogue-difficulty-model.md): computed, not authored ------------------
-// CORE = ids referenced by any a1-map competency. Tagged-A1 = CORE ∪ ids carrying the `a1` tag (in the
-// existing catalog OR minted this run). The band is measured over each level's `introduces` and OVERRIDES
-// the author's `levelLabel` target — the author aims, the classifier labels.
-// CORE is the learnable's own `core: true` flag — one source of truth for Pareto-unlock membership.
-// Not a1-map membership: that map answers WHICH COMPETENCY DOMAIN an item serves (coverage), and using
-// it as the core test let the core drift to 82% of the catalog, where it no longer discriminated.
+// ---- Difficulty bands (docs/dialogue-difficulty-model.md §3): computed, not authored ---------------
+// CORE is the learnable's own `core: true` flag — the one source of truth for Pareto-unlock membership.
+// Tagged-A1 = CORE ∪ ids carrying the `a1` tag (in the existing catalog OR minted this run). The band is
+// measured PER LINE and OVERRIDES the author's `levelLabel` target — the author aims, the classifier labels.
+//
+// The override is earned by MEASURING. A level whose nodes carry no `learnables` cannot be measured per
+// line, and the `introduces` fallback is not a second opinion — it weighs a noun as heavily as the frame it
+// sits in, so a tree of core frames with vocabulary in their slots reads far harder than it is. On that
+// basis the author's label STANDS and the run recommends tagging; only a per-line band is written.
 const coreIds = new Set<string>();
 for (const [id, l] of Object.entries(existingLearnables)) if ((l as any).core === true) coreIds.add(id);
 for (const [id, l] of Object.entries(toMint)) if ((l as any).core === true) coreIds.add(id);
@@ -199,13 +198,15 @@ for (const [id, l] of Object.entries(existingLearnables)) if ((l as any).a1 === 
 for (const [id, l] of Object.entries(toMint)) if ((l as any).a1 === true) taggedA1Ids.add(id);
 
 const bandByLevel = new Map<number, DialogueBand>();
+const unmeasuredLevels: Array<{ level: number; guess: DialogueBand }> = [];
 for (const lvl of input.levels) {
-  const band = classifyBand({
-    introduces: introducesByLevel.get(lvl.level)!,
+  const tally = bandFor(
+    { advance, introduces: introducesByLevel.get(lvl.level)!, nodes: lvl.nodes },
     coreIds,
     taggedA1Ids,
-  });
-  bandByLevel.set(lvl.level, band);
+  );
+  if (tally.basis === "line") bandByLevel.set(lvl.level, tally.band);
+  else unmeasuredLevels.push({ level: lvl.level, guess: tally.band });
 }
 
 // ---- Step 4: apply critic fixes (keyed + exact; idempotent; never fuzzy) ----------------------------
@@ -307,10 +308,15 @@ function existingPacing(file: string): string | undefined {
   }
 }
 
+const BAND_NAMES = new Map<string, DialogueBand>(
+  (["basic", "intermediate", "advanced", "above-a1"] as DialogueBand[]).map((b) => [b, b]),
+);
+
 const writes: Array<{ path: string; label: string }> = [];
 const computedLabelByLevel = new Map<number, string>();
 for (const lvl of input.levels) {
-  // `levelLabel` in the input is the author's TARGET; the written label is the computed band (docs §4).
+  // `levelLabel` in the input is the author's TARGET; a per-line band overrides it (docs §4). An untagged
+  // level has no measured band, so the author's label stands.
   if (typeof lvl.levelLabel !== "string" || !lvl.levelLabel) die(`level ${lvl.level}: "levelLabel" (author target) required`);
   if (typeof lvl.title !== "string" || !lvl.title) die(`level ${lvl.level}: "title" required`);
   if (!Array.isArray(lvl.objectives) || !lvl.objectives.length) die(`level ${lvl.level}: "objectives" required`);
@@ -318,7 +324,11 @@ for (const lvl of input.levels) {
   selfCheckTree(lvl.level, lvl.root, lvl.nodes);
 
   const file = path.join(DIALOGUES_DIR, `${scenarioId}-${lvl.level}.json`);
-  const computedLabel = bandToLabel(bandByLevel.get(lvl.level)!);
+  // An author target that names a band ("advanced") is written in the classifier's own casing, so a
+  // measured and an unmeasured level never disagree about how the same band is spelled.
+  const band = bandByLevel.get(lvl.level);
+  const asBand = BAND_NAMES.get(lvl.levelLabel.toLowerCase().trim());
+  const computedLabel = band ? bandToLabel(band) : asBand ? bandToLabel(asBand) : lvl.levelLabel;
   computedLabelByLevel.set(lvl.level, computedLabel);
   const background = (typeof lvl.background === "string" && lvl.background ? lvl.background : undefined)
     ?? existingBackground(file);
@@ -406,16 +416,28 @@ console.log(`   minted ${mintedIds.size} new learnable(s): ${[...mintedIds].join
 console.log(`   critic fixes applied: ${fixesApplied}`);
 for (const lvl of input.levels) {
   const intro = introducesByLevel.get(lvl.level)!;
-  const band = bandByLevel.get(lvl.level)!;
+  const band = bandByLevel.get(lvl.level);
   const target = lvl.levelLabel;
   const multi = [...inDegrees(lvl.nodes).entries()].filter(([, d]) => d > 1).map(([id]) => id);
-  console.log(`   L${lvl.level} computed band=${band} (author target "${target}"): introduces ${intro.length} [${intro.join(", ") || "none"}]`
+  const verdict = band
+    ? `computed band=${band} (author target "${target}")`
+    : `label "${target}" kept — nodes carry no learnables, so the band is unmeasured`;
+  console.log(`   L${lvl.level} ${verdict}: introduces ${intro.length} [${intro.join(", ") || "none"}]`
     + (multi.length ? `  · convergence nodes for review: ${multi.join(", ")}` : ""));
 }
+if (unmeasuredLevels.length) {
+  console.log(`   ⚠️  ${unmeasuredLevels.length} level(s) shipped with the AUTHOR's label because their nodes carry no`);
+  console.log(`       "learnables": ${unmeasuredLevels.map((u) => `L${u.level}`).join(", ")}. Tag every node (npc included) in`);
+  console.log(`       this input and re-run to have the band measured per line (docs/dialogue-difficulty-model.md §3).`);
+  console.log(`       For reference the coarse per-introduces guess would be: `
+    + unmeasuredLevels.map((u) => `L${u.level}=${u.guess}`).join(", ") + ` — not written.`);
+}
 // The ordinal `level` stays author-assigned; a non-ascending band order is a review signal, not an auto-renumber.
+// Only measured levels take part; an unmeasured one is a gap, not evidence of a jump.
 const orderedBands = [...input.levels]
   .sort((a: any, b: any) => a.level - b.level)
-  .map((l: any) => bandByLevel.get(l.level)!);
+  .map((l: any) => bandByLevel.get(l.level))
+  .filter((b): b is DialogueBand => b !== undefined);
 for (let i = 1; i < orderedBands.length; i++) {
   if (bandRank(orderedBands[i]!) < bandRank(orderedBands[i - 1]!)) {
     console.log(`   ⚠️  computed bands are not ascending by level (${orderedBands.join(" → ")}) — `

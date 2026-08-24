@@ -8,27 +8,37 @@
 
 `lint:a1` **classifies** how advanced a dialogue is and reports its band; all content ships at whatever band
 it measures, and above-A1 language is **labelled** by band. The lint **gates on integrity** — every `a1-map`
-reference resolves in the catalog — and everything else is a **readout**: the band per dialogue, and which
-learnables sit in the tagged superset versus the curated core. It reads the map; it grows the map only when
-the operator promotes an item (§7).
+reference resolves, and every core and/or A1-tagged learnable is placed in the map (§2) — and everything
+else is a **readout**: the band per dialogue, and its core/A1 line counts.
 
-## 2. Two-tier A1 — a curated core, a tagged superset
+## 2. Two-tier A1 — a core flag, a tagged superset
 
-- **CORE** = the curated `a1-map` mappings ([a1-taxonomy.md](a1-taxonomy.md)): a small Pareto set of the
-  highest-frequency, highest-leverage survival language. It **grows by deliberate promotion** (§7), which is
-  what keeps its signal sharp.
+- **CORE** = the learnable's own **`core: true`** flag: a small Pareto set of the highest-frequency,
+  highest-leverage survival language. One flag, one source of truth, read by the classifier, mastery
+  selection and the authoring gates alike. It **grows by deliberate promotion** (§7), which keeps its
+  signal sharp.
 - **Tagged-A1** = catalog learnables carrying the `a1: true` tag — the **superset** of "also A1 material"
   (CORE ⊆ Tagged-A1). The tag is the **primary signal** the classifier reads, and a run grows it freely.
 - A new learnable gets a **deliberate A1 decision as it is minted**: tag it `a1: true` when it is A1 material.
   The tag is the standard home for A1 material; the core stays the Pareto few, entered by promotion.
 
+### What the a1-map is
+
+The `a1-map` ([a1-taxonomy.md](a1-taxonomy.md)) is **only** a mapping of competencies to learnables that are
+core and/or A1-tagged. It answers *which life domain does this item serve, and how far along is the learner
+in that domain* — it does **not** answer *is this core*. It is many-to-many by design (`hvala` serves both
+`pragmatics` and `personal_relations`), which is exactly the right shape for coverage.
+
+Its one live product job is `GET /api/a1`, the **A1 Readiness screen** — the only place progress is visible
+to the learner, and the finite map the no-measures invariant promises. So a core/A1-tagged item that reaches
+the catalog without landing in the map can be mastered with nothing moving on screen; `lint:a1` fails on
+exactly that.
+
 ## 3. The three bands — measured PER LINE, not per level
 
-**The unit of measurement is the line, not the level.** A band used to be computed over the level's flat
-`introduces` list, which counts a noun as a demand equal in weight to the frame it sits inside: bakery L1
-scored 3/6 core and landed *intermediate*, because `kruh` · `žemlja` · `rogljiček` outvoted the two
-`___, prosim.` patterns — even though every one of its nine learner lines is a core frame with a word
-dropped into its slot. Counted per line it is 9/9 core, which is what it plainly is.
+**The unit of measurement is the line, not the level.** A line is what the learner actually faces; counting
+learnable *ids* instead weighs a noun as a demand equal to the frame it sits inside, so a lesson of nine
+core frames with a word dropped into each slot scores as a mixed bag rather than the 9/9 core it is.
 
 ### Classifying one line
 
@@ -65,12 +75,13 @@ The core item is the frame; A1 vocabulary filling its slots rides along. `En kru
 
 `learnables` on **every** node, npc included. On an npc node it means *what this line is made of*; it is
 **not** a crediting instruction — crediting stays client-only and spoken-only (docs/free-conversation.md).
-The field was originally specified as the audio-mode attempt allowlist, so tapped trees carry none at all;
-until a dialogue's nodes are tagged, it cannot be banded per line.
+A dialogue whose nodes carry no `learnables` falls back to the per-`introduces` count until it is tagged
+(`lint:a1` reports which basis each band was computed on).
 
 **Two open questions**, to settle once real tagged data exists rather than by guessing now:
 - **An untagged line** is either trivial or above-A1 language that was never minted. Those are opposite
-  answers and the data can't yet tell them apart.
+  answers and the data can't yet tell them apart, so an untagged line is currently excluded from the
+  denominator and counted in a separate `untagged` tally.
 - **A multi-sentence node** (`Me veseli! Jaz sem Slavko. Zdaj pa še ti.`) takes one classification, where
   the same content split across three nodes takes three. Decide whether the unit is the node or the
   utterance.
@@ -123,14 +134,12 @@ promotions it recommends — a silent override or a mid-run block on a judgment 
 
 ## Decided specifics
 
-- **Measurement basis:** produced/client learnables only (a level's `introduces` set).
-- **Length is NOT a band input.** `basic` once required a node ceiling as a "short & simple" proxy; that
-  was removed. Length is amount, not difficulty — a long lesson built entirely of core survival language,
-  heavily scaffolded and recycling what the learner already owns, is easier than a short one carrying
-  three above-core items, and the proxy actively punished good scaffolding (splitting a line into smaller
-  nodes to lower the load per beat raised the count). Length is still reported beside the band by
-  `lint:a1`, and per-level size guidance lives in AGENTS.md › Lesson shape. **Core utilisation decides the
-  band.**
-- **Lint:** gates on `a1-map` ref-integrity; band and coverage are a readout, never a block; the core is never
-  force-filled.
+- **Measurement basis:** lines, per §3 — client nodes for a spoken lesson, every node for a rehearsal
+  dialogue.
+- **Length is NOT a band input.** Length is amount, not difficulty: a long lesson built entirely of core
+  survival language, heavily scaffolded and recycling what the learner already owns, is easier than a short
+  one carrying three above-core items. `lint:a1` still reports node count beside the band, and per-level
+  size guidance lives in AGENTS.md › Lesson shape. **Core utilisation decides the band.**
+- **Lint:** gates on `a1-map` ref-integrity and readiness coverage (§2); the band is a readout, never a
+  block; the core is never force-filled.
 - **Tag:** `a1: true` on the catalog learnable, set at mint by author/critic.
