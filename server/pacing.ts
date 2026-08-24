@@ -6,9 +6,8 @@
 // decisions (invariant: the app owns the pedagogy), and they are the difference between a beat that
 // lands and one that reads as a hang.
 //
-// They used to be three different things at once — magic numbers in the renderer, per-node authored
-// fields, and the implicit duration of whatever audio happened to come back. That is why they drifted:
-// there was nowhere to look to answer "how is this lesson paced?". Now there is exactly one place.
+// This module is the one place that answers "how is this lesson paced?" — the renderer, the authored
+// nodes and the audio durations all read from here rather than each carrying their own numbers.
 //
 // A dialogue names a profile; a node may override a single value where one beat genuinely needs it
 // (`captionDelayMs`). Withdrawing scaffolding across a course is then a profile swap, not a renderer
@@ -37,9 +36,8 @@ export interface PacingProfile {
   // ---- One character beat ------------------------------------------------------------------------
   /** How long the caption is on screen BEFORE its audio starts. 0 (the default everywhere) means the
    *  text and the voice arrive together, which is what a learner expects: seeing a sentence appear and
-   *  hearing it spoken are one event. This used to be the opposite — the renderer awaited the whole clip
-   *  and only then set the caption, so the text always trailed the speech by the length of the line and
-   *  the two never lined up. A node's own `captionDelayMs` overrides this. */
+   *  hearing it spoken are one event, so the caption is set before the clip is awaited rather than after.
+   *  A node's own `captionDelayMs` overrides this. */
   captionLeadMs: number;
   /** How long the plain caption sits before the chunked-slow re-speak takes over. The caption has to be
    *  readable WHOLE before it breaks apart, or the "appears, then re-speaks" beat collapses. */

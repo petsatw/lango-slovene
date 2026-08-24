@@ -251,7 +251,7 @@ function normSurface(s: string): string {
 }
 
 /** Map a produced Slovene surface to a known catalog learnable (vocab/chunk only — a bare surface can't
- *  evidence a pattern frame). Used to credit OBSERVED off-target Slovene against the right id. */
+ *  evidence a pattern frame). Credits OBSERVED off-target Slovene against the right id. */
 export function findLearnableBySurface(surface: string): Learnable | undefined {
   const n = normSurface(surface);
   if (!n) return undefined;

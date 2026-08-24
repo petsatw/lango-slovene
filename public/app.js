@@ -930,9 +930,9 @@ async function scenePlayBeat(npc) {
   // These are three steps in sequence, not three timers racing: a hold that runs concurrently with the
   // beat gets pre-empted by whatever comes next (the slow re-speak reveals the caption the instant the
   // line ends), and the silence never actually happens.
-  // The caption and the voice are ONE event: the text goes up and the line is spoken over it. Awaiting
-  // the clip before setting the caption — which is what this used to do — put the text a whole sentence
-  // behind the audio, so the learner could never match what they heard to what they were reading.
+  // The caption and the voice are ONE event: the text goes up and the line is spoken over it. The caption
+  // must therefore be set BEFORE the clip is awaited — await first and the text trails the audio by a
+  // whole sentence, and the learner cannot match what they hear to what they are reading.
   sceneCaption(npc.sl, { focus: npc.focusSpan });
   if (npc.captionLeadMs) await sleep(npc.captionLeadMs);
   await sceneSay(npc.sl);
