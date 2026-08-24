@@ -102,9 +102,14 @@ console.log("\nscene fields — slowSL / per-node learnables / advance:");
     try { return !!validateDialogue("fixture.json", t); } catch { return false; }
   })());
 
-  // Per-node learnables: the "audio"-mode attempt allowlist. Client-only, catalog-resolved…
-  rejects("learnables on an npc node is rejected", (t) => { t.nodes.n1.learnables = ["dober_dan"]; });
+  // Per-node learnables: what the line is MADE OF, on any node, catalog-resolved. An npc line carries them
+  // so the per-line band can count it; crediting stays client-only (asserted below).
+  check("learnables on an npc node is accepted (what the line is made of)", (() => {
+    const t = tree(); t.nodes.n1.learnables = ["dober_dan"];
+    try { return !!validateDialogue("fixture.json", t); } catch { return false; }
+  })());
   rejects("an unknown learnable id is rejected", (t) => { t.nodes.c1.learnables = ["definitely_not_a_learnable"]; });
+  rejects("an unknown learnable id on an npc node is rejected too", (t) => { t.nodes.n1.learnables = ["definitely_not_a_learnable"]; });
   // …and MAY be empty: the bare-name beat is a real production that exercises no catalog item.
   check("an EMPTY learnables array is accepted (a non-Slovene beat like saying your own name)", (() => {
     const t = tree(); t.nodes.c1.learnables = [];
@@ -169,6 +174,18 @@ console.log("\ndialogue adapter — tap vs spoken advance:");
   check("audio follows next[0] — the canonical spine", a1.clientNodeId === "c1");
   check("audio plants the beat's learnables as attempts", a1.learnableProgress.length === 1 && a1.learnableProgress[0]!.result === "attempt");
   check("audio never mints a mastery", a1.learnableProgress.every((p) => p.result === "attempt"));
+
+  // Tagging an npc line describes it for the band; it must never become something the learner is
+  // credited for merely HEARING. The npc tags here are dense on purpose — only c1's may be planted.
+  const taggedNpc = validateDialogue("fixture.json", (() => {
+    const t: any = { ...tree(), advance: "audio" };
+    t.nodes.n1.learnables = ["hvala", "zdravo"];   // deliberately NOT c1's own tag
+    t.nodes.n2.learnables = ["nasvidenje"];
+    return t;
+  })());
+  const tn = advanceDialogue(taggedNpc, "n1", { kind: "audio" });
+  check("a tagged npc line credits nothing — only the client beat's learnables are planted",
+    JSON.stringify(tn.learnableProgress.map((p) => p.id)) === JSON.stringify(["dober_dan"]));
 
   // A beat with no learnables (the bare name) still advances — it just credits nothing.
   const bare = validateDialogue("fixture.json", (() => { const t: any = { ...tree(), advance: "audio" }; t.nodes.c1.learnables = []; return t; })());

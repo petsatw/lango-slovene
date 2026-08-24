@@ -89,10 +89,13 @@ the feature is optional per scenario.
   eleven_v3 down. Two authored slow lines came back at 1.00× and 0.92× the duration of their natural
   clips — one identical, one *faster*. Slower speech has to be **directed**, and the direction must not
   reach the screen. Without it, `slowSL` is synthesized as written and the "slow" clip will not be slow.
-- **`learnables`** (optional, **client nodes only**) is the catalog ids that beat expects the learner to
-  **produce** — the allowlist the `"audio"` advance mode plants as **attempts**. It **may be empty**: a
+- **`learnables`** (optional, on **any** node) is the catalog ids the line **is made of** — what the
+  per-line difficulty band counts (dialogue-difficulty-model.md §3), which is why an npc line carries them
+  too. On a **client** node it doubles as the ids that beat expects the learner to **produce**, the
+  allowlist the `"audio"` advance mode plants as **attempts**; crediting reads it only there, so tagging an
+  npc line describes it and never credits the learner for hearing it. It **may be empty**: a
   beat whose expected utterance is not Slovene at all (the learner saying their own name) exercises no
-  catalog item. Ignored entirely in `"tap"` mode, which credits nothing. This is the per-beat allowlist
+  catalog item. Ignored for crediting in `"tap"` mode, which credits nothing. This is the per-beat allowlist
   `SeedStep.learnables` plays for the seed; the level-wide `introduces` is a different thing (the
   free-chat bias set).
 - **`voices`** maps each speaker to a catalog voice profile id (`server/catalog/voices.json`), so the two
@@ -277,7 +280,8 @@ learnables is a **gated step of the authoring pass**, a byproduct of writing the
    NOT a distinct lexeme that merely shares a function; `Živjo`/`Zdravo` and `ja`/`da` both coexist).
 3. **Reconcile deterministically.** `npm run reconcile:dialogue -- <reconcile-input.json>` merges the new
    entries into `learnables.json` (skip existing ids; **fail loud** on a duplicate canonical `sl`; normalize
-   `kind`), assigns each level's `introduces` = union(reused + new), applies the critic's exact fixes, writes
+   `kind`), assigns each level's `introduces` = the ids it is the FIRST level to have the learner produce,
+   computes its difficulty band, applies the critic's exact fixes, writes
    the dialogue files + the manifest, and emits candidate A1 mappings. Then the gates must all exit 0:
    **`lint:dialogue`** (the DRY invariant + `introduces` integrity + coverage), **`lint:tree`** (tree
    structure + manifest consistency), **`lint:a1`** (a1-map ref-integrity + a difficulty/coverage readout — the

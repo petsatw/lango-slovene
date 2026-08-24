@@ -86,11 +86,18 @@ export interface DialogueNode {
    *  has to be DIRECTED, and the direction must not appear on screen. Absent → `slowSL` is synthesized
    *  as written, which will not be slower. */
   deliverySlowSL?: string;
-  /** Catalog learnable ids this beat expects the learner to PRODUCE — the allowlist the `"audio"`
-   *  advance mode plants as attempts (the same role `SeedStep.learnables` plays in the seed). Valid on
-   *  `client` nodes only, and MAY BE EMPTY: a beat whose expected utterance is not Slovene at all (the
-   *  learner saying their own name) exercises no catalog item. Ignored in `"tap"` mode, which credits
-   *  nothing. Absent → nothing to plant. */
+  /** The catalog learnable ids this line IS MADE OF — what the difficulty classifier measures the line
+   *  against (docs/dialogue-difficulty-model.md §3). Valid on every node, npc included, since a band
+   *  counts lines and an npc line is one.
+   *
+   *  On a `client` node it carries a second, narrower job: it is also the allowlist the `"audio"` advance
+   *  mode plants as attempts (the role `SeedStep.learnables` plays in the seed). **Crediting reads it
+   *  only there** — every consumer filters to `speaker === "client"` first — so tagging an npc line
+   *  describes it and never credits the learner for hearing it.
+   *
+   *  MAY BE EMPTY: a beat whose utterance is not Slovene at all (the learner saying their own name)
+   *  exercises no catalog item, and an empty list says so rather than leaving it unanswered. Absent →
+   *  untagged, which leaves the line unmeasured. */
   learnables?: string[];
   /** Optional short parenthetical CONTEXT for a client choice (docs/dialogue-difficulty-model.md §5) —
    *  the situation that choice selects when one branch depends on context the line itself can't carry
@@ -278,7 +285,6 @@ export function validateDialogue(file: string, raw: any): Dialogue {
     }
     if (n.learnables !== undefined) {
       if (!Array.isArray(n.learnables)) fail(file, `${where}: "learnables" must be an array of catalog ids`);
-      if (n.speaker !== "client") fail(file, `${where}: "learnables" is only valid on a client node (what the LEARNER produces)`);
       for (const id of n.learnables) {
         if (typeof id !== "string" || !LEARNABLES[id]) fail(file, `${where}: learnable "${id}" is not in the catalog`);
       }
