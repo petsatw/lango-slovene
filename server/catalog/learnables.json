@@ -2016,5 +2016,1125 @@
     "predictableError": "English word order — 'Govorim angleško dobro' — instead of 'dobro' before the language adverb",
     "a1": true,
     "core": true
+  },
+  "stevilo_enajst": {
+    "kind": "vocabulary",
+    "sl": "enajst",
+    "gloss": "eleven (11)",
+    "predictableError": "the teen is en- + -najst: 'enajst'; like 5+ it takes the genitive plural ('enajst evrov'). Don't confuse it with 'ena' (1).",
+    "core": false,
+    "a1": true
+  },
+  "stevilo_dvanajst": {
+    "kind": "vocabulary",
+    "sl": "dvanajst",
+    "gloss": "twelve (12)",
+    "predictableError": "hearing/saying it as 'dvajset' (20) — the exam's classic 12-vs-20-vs-21 trap; the teen has -najst, while twenty is the irregular 'dvajset' (the other tens are -deset).",
+    "core": false,
+    "a1": true
+  },
+  "stevilo_trinajst": {
+    "kind": "vocabulary",
+    "sl": "trinajst",
+    "gloss": "thirteen (13)",
+    "predictableError": "confusing it with 'trideset' (30) — the -najst / -deset pair is the whole difference",
+    "core": false,
+    "a1": true
+  },
+  "stevilo_stirinajst": {
+    "kind": "vocabulary",
+    "sl": "štirinajst",
+    "gloss": "fourteen (14)",
+    "predictableError": "dropping the -i- to 'štirnajst', and confusing it with 'štirideset' (40)",
+    "core": false,
+    "a1": true
+  },
+  "stevilo_petnajst": {
+    "kind": "vocabulary",
+    "sl": "petnajst",
+    "gloss": "fifteen (15)",
+    "predictableError": "confusing it with 'petdeset' (50); also 'petnajst minut' — genitive plural after it",
+    "core": false,
+    "a1": true
+  },
+  "stevilo_sestnajst": {
+    "kind": "vocabulary",
+    "sl": "šestnajst",
+    "gloss": "sixteen (16)",
+    "predictableError": "confusing it with 'šestdeset' (60) — beginners hear only the 'šest-'",
+    "core": false,
+    "a1": true
+  },
+  "stevilo_sedemnajst": {
+    "kind": "vocabulary",
+    "sl": "sedemnajst",
+    "gloss": "seventeen (17)",
+    "predictableError": "swallowing the -e- to 'sedmnajst'; the full 'sedem-' stays: 'sedemnajst'",
+    "core": false,
+    "a1": true
+  },
+  "stevilo_osemnajst": {
+    "kind": "vocabulary",
+    "sl": "osemnajst",
+    "gloss": "eighteen (18)",
+    "predictableError": "swallowing the -e- to 'osmnajst'; the full 'osem-' stays: 'osemnajst'",
+    "core": false,
+    "a1": true
+  },
+  "stevilo_devetnajst": {
+    "kind": "vocabulary",
+    "sl": "devetnajst",
+    "gloss": "nineteen (19)",
+    "predictableError": "confusing it with 'devetdeset' (90)",
+    "core": false,
+    "a1": true
+  },
+  "stevilo_sestdeset": {
+    "kind": "vocabulary",
+    "sl": "šestdeset",
+    "gloss": "sixty (60)",
+    "predictableError": "confusing it with 'šestnajst' (16); the tens end in -deset",
+    "core": false,
+    "a1": true
+  },
+  "stevilo_sedemdeset": {
+    "kind": "vocabulary",
+    "sl": "sedemdeset",
+    "gloss": "seventy (70)",
+    "predictableError": "the -e- of 'sedem' is kept — 'sedemdeset', not 'sedmdeset'",
+    "core": false,
+    "a1": true
+  },
+  "stevilo_osemdeset": {
+    "kind": "vocabulary",
+    "sl": "osemdeset",
+    "gloss": "eighty (80)",
+    "predictableError": "the -e- of 'osem' is kept — 'osemdeset', not 'osmdeset'",
+    "core": false,
+    "a1": true
+  },
+  "stevilo_devetdeset": {
+    "kind": "vocabulary",
+    "sl": "devetdeset",
+    "gloss": "ninety (90)",
+    "predictableError": "spelt with both t and d, but said as one voiced stop — 'devet-deset' comes out [devéd-desét], the way 'petdeset' is [pedesét]; the confusable is 'devetnajst' (19).",
+    "core": false,
+    "a1": true
+  },
+  "evro": {
+    "kind": "vocabulary",
+    "sl": "evro",
+    "gloss": "euro (masc.)",
+    "predictableError": "the counted forms — 'en evro, dva evra, trije evri, pet evrov'; from five up it is the genitive plural 'evrov', never 'pet evro'",
+    "core": false,
+    "a1": true
+  },
+  "cent": {
+    "kind": "vocabulary",
+    "sl": "cent",
+    "gloss": "cent",
+    "predictableError": "genitive plural from five up — 'petdeset centov', not 'petdeset cent'; in speech the price is often just 'pet petdeset' with no currency word at all",
+    "core": false,
+    "a1": true
+  },
+  "vrstilni_prvi": {
+    "kind": "vocabulary",
+    "sl": "prvi",
+    "gloss": "first (1.)",
+    "predictableError": "an ordinal is an adjective and must agree — 'prvo nadstropje' (neut.), 'prva vrsta' (fem.) — not the frozen masc. 'prvi'",
+    "core": false,
+    "a1": true
+  },
+  "vrstilni_drugi": {
+    "kind": "vocabulary",
+    "sl": "drugi",
+    "gloss": "second (2.); also 'the other'",
+    "predictableError": "reading 'drugi' as 'other' where a floor directory or a date means 'second' — context decides, and it still agrees ('drugo nadstropje')",
+    "core": false,
+    "a1": true
+  },
+  "vrstilni_tretji": {
+    "kind": "vocabulary",
+    "sl": "tretji",
+    "gloss": "third (3.)",
+    "predictableError": "soft stem — neuter is 'tretje' and feminine 'tretja' ('tretje nadstropje'), not 'tretjo'/'tretji' everywhere",
+    "core": false,
+    "a1": true
+  },
+  "vrstilni_cetrti": {
+    "kind": "vocabulary",
+    "sl": "četrti",
+    "gloss": "fourth (4.)",
+    "predictableError": "confusing 'četrti' (fourth) with 'četrt' (a quarter of an hour) — and with 'četrtek' (Thursday)",
+    "core": false,
+    "a1": true
+  },
+  "vrstilni_peti": {
+    "kind": "vocabulary",
+    "sl": "peti",
+    "gloss": "fifth (5.)",
+    "predictableError": "reusing the cardinal — 'pet nadstropje' instead of the ordinal 'peto nadstropje'",
+    "core": false,
+    "a1": true
+  },
+  "vrstilni_sesti": {
+    "kind": "vocabulary",
+    "sl": "šesti",
+    "gloss": "sixth (6.)",
+    "predictableError": "in writing Slovene marks an ordinal with a full stop — '6. nadstropje' is read 'šesto nadstropje', not 'šest'",
+    "core": false,
+    "a1": true
+  },
+  "vrstilni_sedmi": {
+    "kind": "vocabulary",
+    "sl": "sedmi",
+    "gloss": "seventh (7.)",
+    "predictableError": "the -e- of 'sedem' drops in the ordinal — 'sedmi', not 'sedemi'",
+    "core": false,
+    "a1": true
+  },
+  "vrstilni_osmi": {
+    "kind": "vocabulary",
+    "sl": "osmi",
+    "gloss": "eighth (8.)",
+    "predictableError": "the -e- of 'osem' drops in the ordinal — 'osmi', not 'osemi'",
+    "core": false,
+    "a1": true
+  },
+  "vrstilni_deveti": {
+    "kind": "vocabulary",
+    "sl": "deveti",
+    "gloss": "ninth (9.)",
+    "predictableError": "after 'v' the ordinal goes locative — 'v devetem razredu', not 'v deveti razred'",
+    "core": false,
+    "a1": true
+  },
+  "vrstilni_deseti": {
+    "kind": "vocabulary",
+    "sl": "deseti",
+    "gloss": "tenth (10.)",
+    "predictableError": "a calendar date puts the ordinal in the genitive — 'desetega maja', not nominative 'deseti maj'",
+    "core": false,
+    "a1": true
+  },
+  "vrstilni_enajsti": {
+    "kind": "vocabulary",
+    "sl": "enajsti",
+    "gloss": "eleventh (11.)",
+    "predictableError": "formed straight off 'enajst' — 'enajsti', not 'enajstni'",
+    "core": false,
+    "a1": true
+  },
+  "vrstilni_dvanajsti": {
+    "kind": "vocabulary",
+    "sl": "dvanajsti",
+    "gloss": "twelfth (12.)",
+    "predictableError": "mixing it with the clock — twelve o'clock is 'ob dvanajstih', while 'dvanajsti' is the twelfth (floor, date, grade)",
+    "core": false,
+    "a1": true
+  },
+  "pritlicje": {
+    "kind": "vocabulary",
+    "sl": "pritličje",
+    "gloss": "ground floor (neut.)",
+    "predictableError": "calling it 'prvo nadstropje' on the English model — in Slovenia the ground floor is 'pritličje' and 'prvo nadstropje' is one flight up; location is locative 'v pritličju'",
+    "core": false,
+    "a1": true
+  },
+  "nadstropje": {
+    "kind": "vocabulary",
+    "sl": "nadstropje",
+    "gloss": "floor, storey (neut.)",
+    "predictableError": "'v prvem nadstropju' — locative after 'v', with the ordinal agreeing in the neuter; not 'v prvo nadstropje'",
+    "core": false,
+    "a1": true
+  },
+  "razred": {
+    "kind": "vocabulary",
+    "sl": "razred",
+    "gloss": "class, school grade; classroom",
+    "predictableError": "'v tretjem razredu' (locative) for which grade you are in; a university year is 'letnik', not 'razred'",
+    "core": false,
+    "a1": true
+  },
+  "ponedeljek": {
+    "kind": "vocabulary",
+    "sl": "ponedeljek",
+    "gloss": "Monday",
+    "predictableError": "'on Monday' is 'v ponedeljek' — 'v' + ACCUSATIVE; a masculine day looks unchanged because its accusative is identical to the nominative. Not 'na ponedeljek' on the English 'on' model.",
+    "core": false,
+    "a1": true
+  },
+  "torek": {
+    "kind": "vocabulary",
+    "sl": "torek",
+    "gloss": "Tuesday",
+    "predictableError": "the fleeting -e- drops when it declines — 'od torka do četrtka', not 'od toreka'",
+    "core": false,
+    "a1": true
+  },
+  "sreda": {
+    "kind": "vocabulary",
+    "sl": "sreda",
+    "gloss": "Wednesday (fem.)",
+    "predictableError": "'v' + accusative — 'v sredo', not 'v sreda'; the feminine -o is where the case becomes visible.",
+    "core": false,
+    "a1": true
+  },
+  "cetrtek": {
+    "kind": "vocabulary",
+    "sl": "četrtek",
+    "gloss": "Thursday",
+    "predictableError": "confusing 'četrtek' (Thursday) with 'četrt' (a quarter of an hour); 'on Thursday' is 'v četrtek'",
+    "core": false,
+    "a1": true
+  },
+  "petek": {
+    "kind": "vocabulary",
+    "sl": "petek",
+    "gloss": "Friday",
+    "predictableError": "confusing 'petek' (Friday) with 'pet' (five); the genitive in a range is 'do petka'",
+    "core": false,
+    "a1": true
+  },
+  "sobota": {
+    "kind": "vocabulary",
+    "sl": "sobota",
+    "gloss": "Saturday (fem.)",
+    "predictableError": "'v' + accusative 'v soboto' for 'on Saturday'; genitive 'do sobote' in a range.",
+    "core": false,
+    "a1": true
+  },
+  "nedelja": {
+    "kind": "vocabulary",
+    "sl": "nedelja",
+    "gloss": "Sunday (fem.)",
+    "predictableError": "'v' + accusative 'v nedeljo'; and it is the LAST day of the Slovene week, listed after 'sobota', not the first.",
+    "core": false,
+    "a1": true
+  },
+  "januar": {
+    "kind": "vocabulary",
+    "sl": "januar",
+    "gloss": "January",
+    "predictableError": "'in January' is the bare genitive 'januarja' (or 'v januarju') — never 'v januar'",
+    "core": false,
+    "a1": true
+  },
+  "februar": {
+    "kind": "vocabulary",
+    "sl": "februar",
+    "gloss": "February",
+    "predictableError": "English-shaped 'februari'; it is 'februar', and 'in February' is 'februarja'",
+    "core": false,
+    "a1": true
+  },
+  "marec": {
+    "kind": "vocabulary",
+    "sl": "marec",
+    "gloss": "March",
+    "predictableError": "the fleeting -e- drops — the genitive is 'marca' ('marca 2026'), not 'mareca'",
+    "core": false,
+    "a1": true
+  },
+  "april": {
+    "kind": "vocabulary",
+    "sl": "april",
+    "gloss": "April",
+    "predictableError": "'in April' is 'aprila'; beginners add a preposition and say 'v april'",
+    "core": false,
+    "a1": true
+  },
+  "maj": {
+    "kind": "vocabulary",
+    "sl": "maj",
+    "gloss": "May",
+    "predictableError": "'in May' is 'maja' — the same form as the girl's name Maja, which throws learners off; it is still the plain genitive",
+    "core": false,
+    "a1": true
+  },
+  "junij": {
+    "kind": "vocabulary",
+    "sl": "junij",
+    "gloss": "June",
+    "predictableError": "confusing it by ear with 'julij' (July); genitive 'junija' loses nothing",
+    "core": false,
+    "a1": true
+  },
+  "julij": {
+    "kind": "vocabulary",
+    "sl": "julij",
+    "gloss": "July",
+    "predictableError": "confusing it by ear with 'junij' (June) — the one letter is the whole difference",
+    "core": false,
+    "a1": true
+  },
+  "avgust": {
+    "kind": "vocabulary",
+    "sl": "avgust",
+    "gloss": "August",
+    "predictableError": "spelt and said with a v — 'avgust', not the English-looking 'august'",
+    "core": false,
+    "a1": true
+  },
+  "september": {
+    "kind": "vocabulary",
+    "sl": "september",
+    "gloss": "September",
+    "predictableError": "the fleeting -e- drops — 'septembra' for 'in September', not 'septemberja'",
+    "core": false,
+    "a1": true
+  },
+  "oktober": {
+    "kind": "vocabulary",
+    "sl": "oktober",
+    "gloss": "October",
+    "predictableError": "the fleeting -e- drops — 'oktobra', not 'oktoberja'",
+    "core": false,
+    "a1": true
+  },
+  "november": {
+    "kind": "vocabulary",
+    "sl": "november",
+    "gloss": "November",
+    "predictableError": "the fleeting -e- drops — 'novembra', not 'novemberja'",
+    "core": false,
+    "a1": true
+  },
+  "december": {
+    "kind": "vocabulary",
+    "sl": "december",
+    "gloss": "December",
+    "predictableError": "the fleeting -e- drops — 'decembra', not 'decemberja'; and month names are lowercase in Slovene",
+    "core": false,
+    "a1": true
+  },
+  "teden": {
+    "kind": "vocabulary",
+    "sl": "teden",
+    "gloss": "week",
+    "predictableError": "'this week' is the bare 'ta teden' with no preposition; and the fleeting -e- drops in the plural — 'pet tednov', not 'pet tedenov'",
+    "core": false,
+    "a1": true
+  },
+  "mesec": {
+    "kind": "vocabulary",
+    "sl": "mesec",
+    "gloss": "month",
+    "predictableError": "'for a month' / 'in a month' is 'en mesec' / 'čez en mesec'; and 'mesec' also means moon — the month is meant only in a time phrase",
+    "core": false,
+    "a1": true
+  },
+  "leto": {
+    "kind": "vocabulary",
+    "sl": "leto",
+    "gloss": "year (neut.)",
+    "predictableError": "the genitive plural is irregular 'let' — 'pet let', not 'pet letov'; dual is 'dve leti'",
+    "core": false,
+    "a1": true
+  },
+  "vikend": {
+    "kind": "vocabulary",
+    "sl": "vikend",
+    "gloss": "weekend (colloquial; standard 'konec tedna')",
+    "predictableError": "'over the weekend' is 'čez vikend' or 'za vikend' — not 'na vikend' on the English 'on' model",
+    "core": false,
+    "a1": true
+  },
+  "od_do": {
+    "kind": "pattern",
+    "sl": "od ___ do ___",
+    "gloss": "from ___ to ___ (hours, days, dates, places)",
+    "predictableError": "BOTH 'od' and 'do' take the genitive — 'od ponedeljka do petka', 'od osmih do štirih' — not nominative 'od ponedeljek do petek'",
+    "core": true,
+    "a1": true
+  },
+  "pol_gen": {
+    "kind": "pattern",
+    "sl": "pol ___",
+    "gloss": "half past (the hour BEFORE ___); 'pol sedmih' = 6:30",
+    "predictableError": "Slovene counts forward to the COMING hour, so 'pol sedmih' is 6:30, not 7:30; the hour goes genitive plural ('pol sedmih', 'pol desetih').",
+    "core": false,
+    "a1": true
+  },
+  "cetrt": {
+    "kind": "vocabulary",
+    "sl": "četrt",
+    "gloss": "a quarter (of an hour)",
+    "predictableError": "counting backwards like English — 'četrt na sedem' is 6:15 and 'tri četrt na sedem' is 6:45, both pointing at the COMING hour; in speech you'll also hear 'petnajst čez šest' and 'petnajst do sedmih'.",
+    "core": false,
+    "a1": true
+  },
+  "minuta": {
+    "kind": "vocabulary",
+    "sl": "minuta",
+    "gloss": "minute (fem.)",
+    "predictableError": "genitive plural from five up — 'pet minut', not 'pet minute'; the dual is 'dve minuti'",
+    "core": false,
+    "a1": true
+  },
+  "tocno": {
+    "kind": "vocabulary",
+    "sl": "točno",
+    "gloss": "exactly, sharp (of a time)",
+    "predictableError": "putting it after the time on the English 'five o'clock sharp' model — Slovene says 'točno ob petih', with 'točno' in front",
+    "core": false,
+    "a1": true
+  },
+  "zamuda": {
+    "kind": "vocabulary",
+    "sl": "zamuda",
+    "gloss": "delay (a train's, a bus's)",
+    "predictableError": "a person is late with the verb — 'zamujam' — while 'zamuda' is the delay itself: 'Vlak ima deset minut zamude.' (genitive after the number).",
+    "core": false,
+    "a1": true
+  },
+  "in": {
+    "kind": "vocabulary",
+    "sl": "in",
+    "gloss": "and",
+    "predictableError": "leaving a bare pause between two clauses instead of joining them with 'in' — the speaking rubric listens for it; note that inside a number 'in' is written as one word ('enaindvajset')",
+    "core": true,
+    "a1": true
+  },
+  "potem": {
+    "kind": "vocabulary",
+    "sl": "potem",
+    "gloss": "then, after that (sequencing)",
+    "predictableError": "'potem' sequences what comes next ('Najprej ..., potem ...'); it is not the cause word — that is 'ker' — nor the result word 'zato'.",
+    "core": true,
+    "a1": true
+  },
+  "ampak": {
+    "kind": "vocabulary",
+    "sl": "ampak",
+    "gloss": "but",
+    "predictableError": "putting it at the end of the clause like English 'though', or reaching for 'pa' — 'ampak' opens the contrasting clause after a comma: 'Rad bi kavo, ampak nimam denarja.'",
+    "core": true,
+    "a1": true
+  },
+  "zato": {
+    "kind": "vocabulary",
+    "sl": "zato",
+    "gloss": "so, therefore (gives the result)",
+    "predictableError": "swapping it with 'ker' — 'ker' gives the cause, 'zato' the result ('Dežuje, zato ostanem doma'); and it is not the question word 'zakaj'",
+    "core": true,
+    "a1": true
+  },
+  "ali_or": {
+    "kind": "pattern",
+    "sl": "___ ali ___?",
+    "gloss": "___ or ___? (offering two options)",
+    "predictableError": "the same word also opens a yes/no question; between two nouns it is plainly 'or' — 'Kavo ali čaj?', and both options take the same case.",
+    "core": false,
+    "a1": true
+  },
+  "to_je": {
+    "kind": "pattern",
+    "sl": "To je ___.",
+    "gloss": "This / that is ___.",
+    "predictableError": "agreeing 'to' with the noun ('Ta je knjiga', 'Ta je moja žena') — 'to' stays the invariable neuter, and two or more things take 'To so ___.'",
+    "core": true,
+    "a1": true
+  },
+  "na_sliki": {
+    "kind": "pattern",
+    "sl": "Na sliki je / so ___.",
+    "gloss": "In the picture there is / are ___.",
+    "predictableError": "'na slika' — after 'na' for a location it is the locative 'na sliki'; and the verb switches to 'so' for two or more ('Na sliki so trije ljudje.')",
+    "core": true,
+    "a1": true
+  },
+  "tukaj_je": {
+    "kind": "pattern",
+    "sl": "Tukaj je ___.",
+    "gloss": "___ is here / here's where ___ is (pointing something out)",
+    "predictableError": "this is the LOCATIONAL 'here is' — pointing at where a thing stands ('Tukaj je banka.'). Handing something over is 'Izvolite', not 'Tukaj je'.",
+    "core": true,
+    "a1": true
+  },
+  "moski": {
+    "kind": "vocabulary",
+    "sl": "moški",
+    "gloss": "man (masc.)",
+    "predictableError": "the nominative plural is IDENTICAL to the singular — 'en moški' / 'trije moški' — so only the numeral tells you how many; and the same word is also the adjective 'male'",
+    "core": false,
+    "a1": true
+  },
+  "zenska": {
+    "kind": "vocabulary",
+    "sl": "ženska",
+    "gloss": "woman (fem.)",
+    "predictableError": "confusing 'ženska' (a woman) with 'žena' (a wife); the accusative is 'žensko'",
+    "core": false,
+    "a1": true
+  },
+  "otrok": {
+    "kind": "vocabulary",
+    "sl": "otrok",
+    "gloss": "child (masc.; irregular pl. 'otroci')",
+    "predictableError": "the plural is irregular — 'dva otroka', 'trije otroci', and the genitive plural is the bare 'pet otrok'; never 'otroki'",
+    "core": false,
+    "a1": true
+  },
+  "fant": {
+    "kind": "vocabulary",
+    "sl": "fant",
+    "gloss": "boy; boyfriend",
+    "predictableError": "'moj fant' means 'my boyfriend', not 'my boy' — for a son say 'sin'; animate, so the accusative is 'fanta'",
+    "core": false,
+    "a1": true
+  },
+  "dekle": {
+    "kind": "vocabulary",
+    "sl": "dekle",
+    "gloss": "girl; girlfriend (grammatically NEUTER)",
+    "predictableError": "'dekle' is neuter despite meaning a female — 'lepo dekle', 'to dekle', 'mlado dekle', never 'lepa dekle'",
+    "core": false,
+    "a1": true
+  },
+  "ljudje": {
+    "kind": "vocabulary",
+    "sl": "ljudje",
+    "gloss": "people (suppletive plural of 'človek')",
+    "predictableError": "after a number from five up it goes genitive plural 'ljudi' — 'pet ljudi', 'koliko ljudi' — while 3 and 4 take the masculine 'trije/štirje ljudje'",
+    "core": false,
+    "a1": true
+  },
+  "oseba": {
+    "kind": "vocabulary",
+    "sl": "oseba",
+    "gloss": "person (fem., whatever the person's sex)",
+    "predictableError": "'oseba' is always feminine even about a man — 'ena oseba', 'dve osebi', 'pet oseb'; never 'dva oseba'",
+    "core": false,
+    "a1": true
+  },
+  "druzina": {
+    "kind": "vocabulary",
+    "sl": "družina",
+    "gloss": "family (fem.)",
+    "predictableError": "'družina' is feminine — 'moja družina je velika' — and it takes the accusative as an object: 'Imam veliko družino.' Beware 'družina' is the family unit; relatives more broadly are 'sorodniki'.",
+    "core": false,
+    "a1": true
+  },
+  "mlad": {
+    "kind": "vocabulary",
+    "sl": "mlad",
+    "gloss": "young",
+    "predictableError": "the adjective agrees with what it describes — 'mlad moški', 'mlada ženska', 'mlado dekle' — English speakers leave it frozen as 'mlad'",
+    "core": false,
+    "a1": true
+  },
+  "star": {
+    "kind": "vocabulary",
+    "sl": "star",
+    "gloss": "old (of a person or a thing)",
+    "predictableError": "the same word does double duty — 'star moški' (an old man) and 'Star sem 30 let' (age); as a describing word it must agree: 'stara ženska', 'staro mesto'",
+    "core": false,
+    "a1": true
+  },
+  "visok": {
+    "kind": "vocabulary",
+    "sl": "visok",
+    "gloss": "tall (of a person); high (of a thing)",
+    "predictableError": "one word covers both English 'tall' and 'high', and it agrees — 'visoka ženska', 'visoko drevo'",
+    "core": false,
+    "a1": true
+  },
+  "majhen": {
+    "kind": "vocabulary",
+    "sl": "majhen",
+    "gloss": "small, little",
+    "predictableError": "the fleeting -e- drops the moment it inflects — 'majhna soba', 'majhno stanovanje', 'majhni otroci' — not 'majhena'",
+    "core": false,
+    "a1": true
+  },
+  "vesel": {
+    "kind": "vocabulary",
+    "sl": "vesel",
+    "gloss": "happy, cheerful (visibly)",
+    "predictableError": "agreement — 'vesela ženska', 'veseli otroci'; 'vesel' is the cheer you can see in a picture, while 'srečen' is the deeper 'fortunate/happy'",
+    "core": false,
+    "a1": true
+  },
+  "lep": {
+    "kind": "vocabulary",
+    "sl": "lep",
+    "gloss": "beautiful, nice",
+    "predictableError": "'lep' agrees as an adjective ('lepa hiša', 'lepo mesto'), while 'lepo' as a standalone is the adverb ('lepo poje')",
+    "core": false,
+    "a1": true
+  },
+  "velik": {
+    "kind": "vocabulary",
+    "sl": "velik",
+    "gloss": "big, large",
+    "predictableError": "agreement — 'velika hiša', 'veliko stanovanje'; and beware that neuter-looking 'veliko' separately means 'a lot of' + genitive ('veliko ljudi')",
+    "core": false,
+    "a1": true
+  },
+  "dela_3sg": {
+    "kind": "vocabulary",
+    "sl": "dela",
+    "gloss": "(he/she) works; is doing / making — 3sg of 'delati'",
+    "predictableError": "one form covers both English tenses — 'dela' is 'he works' and 'he is working', so there is no auxiliary to add; the slip is answering 'Kaj dela?' with the 1sg 'delam', or reaching for 'deluje', which is 'functions/operates', not 'works for a living'",
+    "core": false,
+    "a1": true
+  },
+  "govori_3sg": {
+    "kind": "vocabulary",
+    "sl": "govori",
+    "gloss": "(he/she) speaks, is talking — 3sg of 'govoriti'",
+    "predictableError": "'talking WITH someone' is 'z' + instrumental — 'govori z ženo', not 'govori s žena'; the language is an adverb ('govori slovensko')",
+    "core": false,
+    "a1": true
+  },
+  "je_3sg": {
+    "kind": "vocabulary",
+    "sl": "jesti",
+    "gloss": "to eat — 3sg 'je' (he/she eats), identical in form to 'je' = is",
+    "predictableError": "the 3sg 'je' is spelt exactly like 'je' = is — only the accusative object separates them ('Moški je sendvič.' = the man is EATING a sandwich; in careful writing you will see it marked 'jé'). The 3pl is the irregular 'jedo'.",
+    "core": false,
+    "a1": true
+  },
+  "pije_3sg": {
+    "kind": "pattern",
+    "sl": "Pije ___.",
+    "gloss": "(he/she) drinks, is drinking — 3sg of 'piti'",
+    "predictableError": "the drink goes accusative — 'pije kavo', not 'pije kava'; 3pl is 'pijejo'",
+    "core": false,
+    "a1": true
+  },
+  "kupuje_3sg": {
+    "kind": "pattern",
+    "sl": "Kupuje ___.",
+    "gloss": "(he/she) is buying — 3sg of imperfective 'kupovati'",
+    "predictableError": "for an action in progress you need the imperfective 'kupuje'; the perfective 'kupi' means 'buys/will buy' the once, so a picture is always 'kupuje'",
+    "core": false,
+    "a1": true
+  },
+  "caka_3sg": {
+    "kind": "vocabulary",
+    "sl": "čaka",
+    "gloss": "(he/she) is waiting — 3sg of 'čakati'",
+    "predictableError": "'waiting for' is 'na' + accusative or nothing at all — 'čaka na avtobus' / 'čaka avtobus' — never the English-shaped 'čaka za avtobus'",
+    "core": false,
+    "a1": true
+  },
+  "sedi_3sg": {
+    "kind": "vocabulary",
+    "sl": "sedi",
+    "gloss": "(he/she) is sitting — 3sg of 'sedeti'",
+    "predictableError": "'sedi' is the state of sitting; sitting DOWN is the different verb 'usede se'. Where they sit is locative — 'sedi na klopi', 'sedi v kavarni'",
+    "core": false,
+    "a1": true
+  },
+  "stoji_3sg": {
+    "kind": "vocabulary",
+    "sl": "stoji",
+    "gloss": "(he/she/it) is standing — 3sg of 'stati'",
+    "predictableError": "Slovene has two verbs spelt 'stati' — this one gives 'stoji' (stands), the other gives 'stane' (costs); they are not forms of one word",
+    "core": false,
+    "a1": true
+  },
+  "kuha_3sg": {
+    "kind": "pattern",
+    "sl": "Kuha ___.",
+    "gloss": "(he/she) is cooking — 3sg of 'kuhati'",
+    "predictableError": "the dish goes accusative — 'kuha juho'; and note 'kuha kavo' is how Slovene says 'makes coffee'",
+    "core": false,
+    "a1": true
+  },
+  "gleda_3sg": {
+    "kind": "pattern",
+    "sl": "Gleda ___.",
+    "gloss": "(he/she) is watching, looking at — 3sg of 'gledati'",
+    "predictableError": "no preposition and an accusative object — 'gleda televizijo', 'gleda otroke', not 'gleda na televizijo'",
+    "core": false,
+    "a1": true
+  },
+  "pogovarjata_se": {
+    "kind": "chunk",
+    "sl": "Pogovarjata se.",
+    "gloss": "the two of them are talking / chatting (to each other) — dual",
+    "predictableError": "exactly two people take the DUAL 'pogovarjata se'; three or more take 'pogovarjajo se'. The reflexive 'se' can never be dropped, and it never comes first — it is a second-position clitic ('Pogovarjata se.', 'Dva moška se pogovarjata.').",
+    "core": false,
+    "a1": true
+  },
+  "trije_stirje": {
+    "kind": "chunk",
+    "sl": "trije / štirje ljudje",
+    "gloss": "three / four people (the masculine-plural numeral forms)",
+    "predictableError": "masculine 3 and 4 have their own shapes — 'trije ljudje', 'štirje moški' — not the neuter/feminine 'tri'/'štiri'; from five up it flips to the genitive plural, 'pet ljudi'",
+    "core": false,
+    "a1": true
+  },
+  "dve_osebi": {
+    "kind": "chunk",
+    "sl": "dve osebi",
+    "gloss": "two people (dual)",
+    "predictableError": "the dual, not the plural — 'dve osebi', never 'dve osebe'; and 'oseba' is feminine, so it is 'dve', never 'dva'",
+    "core": false,
+    "a1": true
+  },
+  "banka": {
+    "kind": "vocabulary",
+    "sl": "banka",
+    "gloss": "bank (fem.)",
+    "predictableError": "being there is locative 'v banki'; going there is accusative 'v banko' — the -i/-o ending is the whole difference",
+    "core": false,
+    "a1": true
+  },
+  "posta": {
+    "kind": "vocabulary",
+    "sl": "pošta",
+    "gloss": "post office (fem.); also 'the post/mail'",
+    "predictableError": "the post office takes 'na', not 'v' — 'na pošti' (at), 'na pošto' (to)",
+    "core": false,
+    "a1": true
+  },
+  "trgovina": {
+    "kind": "vocabulary",
+    "sl": "trgovina",
+    "gloss": "shop (fem.)",
+    "predictableError": "'v trgovini' (in the shop) vs 'v trgovino' (to the shop); the activity of shopping is the separate word 'nakupovanje'",
+    "core": false,
+    "a1": true
+  },
+  "lekarna": {
+    "kind": "vocabulary",
+    "sl": "lekarna",
+    "gloss": "pharmacy (fem.)",
+    "predictableError": "'v lekarni' / 'v lekarno'; a 'drogerija' is a toiletries shop and does not dispense medicine",
+    "core": false,
+    "a1": true
+  },
+  "kino": {
+    "kind": "vocabulary",
+    "sl": "kino",
+    "gloss": "cinema (masc., despite the -o)",
+    "predictableError": "it is masculine even though it ends in -o — 'v kino' (to the cinema), 'v kinu' (at the cinema); not neuter 'v kinem'",
+    "core": false,
+    "a1": true
+  },
+  "trznica": {
+    "kind": "vocabulary",
+    "sl": "tržnica",
+    "gloss": "(open-air) market (fem.)",
+    "predictableError": "the market takes 'na' — 'na tržnici' (at), 'na tržnico' (to) — never 'v tržnici'",
+    "core": false,
+    "a1": true
+  },
+  "hotel": {
+    "kind": "vocabulary",
+    "sl": "hotel",
+    "gloss": "hotel (masc.)",
+    "predictableError": "'v hotelu' (at the hotel, locative) vs 'v hotel' (to the hotel); inanimate, so the accusative equals the nominative",
+    "core": false,
+    "a1": true
+  },
+  "postaja": {
+    "kind": "vocabulary",
+    "sl": "postaja",
+    "gloss": "station; bus/tram stop (fem.)",
+    "predictableError": "it takes 'na' — 'na postaji' (at the stop), 'na postajo' (to the stop); and 'do postaje' is genitive after 'do'",
+    "core": false,
+    "a1": true
+  },
+  "sola": {
+    "kind": "vocabulary",
+    "sl": "šola",
+    "gloss": "school (fem.)",
+    "predictableError": "'v šoli' (at school) vs 'v šolo' (to school); Slovene uses no article, so it is just 'grem v šolo'",
+    "core": false,
+    "a1": true
+  },
+  "v_na_lok": {
+    "kind": "pattern",
+    "sl": "v / na ___",
+    "gloss": "in / at ___ — where something IS: locative ('v trgovini', 'na pošti')",
+    "predictableError": "location takes the LOCATIVE ('v trgovini', 'na pošti'), while motion towards takes the accusative ('grem v trgovino') — and which preposition is lexical: 'v banki / v trgovini / v šoli' but 'na pošti / na tržnici / na postaji'",
+    "core": true,
+    "a1": true
+  },
+  "doma": {
+    "kind": "vocabulary",
+    "sl": "doma",
+    "gloss": "at home",
+    "predictableError": "'doma' already means 'at home' — no preposition ('Sem doma', never 'v doma'); going home is the separate word 'domov'",
+    "core": false,
+    "a1": true
+  },
+  "zunaj": {
+    "kind": "vocabulary",
+    "sl": "zunaj",
+    "gloss": "outside (static)",
+    "predictableError": "'zunaj' is being outside; going out is 'ven' — 'Otroci so zunaj' vs 'Gremo ven'",
+    "core": false,
+    "a1": true
+  },
+  "mesto": {
+    "kind": "vocabulary",
+    "sl": "mesto",
+    "gloss": "town, city (neut.); also 'a place/spot'",
+    "predictableError": "'v mestu' (in town) — locative, neuter; and watch the second sense, 'prosto mesto' is a free SPOT, not a free city",
+    "core": false,
+    "a1": true
+  },
+  "ulica": {
+    "kind": "vocabulary",
+    "sl": "ulica",
+    "gloss": "street (fem.)",
+    "predictableError": "an address takes 'na' + locative and the street name is an adjective that agrees — 'na Slovenski ulici', not 'na Slovenska ulica'",
+    "core": false,
+    "a1": true
+  },
+  "stanovanje": {
+    "kind": "vocabulary",
+    "sl": "stanovanje",
+    "gloss": "flat, apartment (neut.)",
+    "predictableError": "neuter locative after 'v' — 'Živim v stanovanju', not 'v stanovanji' or 'v stanovanje'",
+    "core": false,
+    "a1": true
+  },
+  "hisa": {
+    "kind": "vocabulary",
+    "sl": "hiša",
+    "gloss": "house (fem.)",
+    "predictableError": "'v hiši' (in the house); a 'hiša' is a whole detached house — the flat you rent in a building is 'stanovanje', not 'hiša'",
+    "core": false,
+    "a1": true
+  },
+  "soba": {
+    "kind": "vocabulary",
+    "sl": "soba",
+    "gloss": "room (fem.)",
+    "predictableError": "'v sobi' (locative); 'soba' alone is just 'a room' — a living room is 'dnevna soba' and a bedroom is 'spalnica'",
+    "core": false,
+    "a1": true
+  },
+  "kuhinja": {
+    "kind": "vocabulary",
+    "sl": "kuhinja",
+    "gloss": "kitchen (fem.)",
+    "predictableError": "locative after 'v' — 'v kuhinji', not 'v kuhinja'",
+    "core": false,
+    "a1": true
+  },
+  "kopalnica": {
+    "kind": "vocabulary",
+    "sl": "kopalnica",
+    "gloss": "bathroom (fem.)",
+    "predictableError": "'kopalnica' is where you wash; the toilet is 'stranišče' and in Slovene flats it is often a separate room — asking for the 'kopalnica' in a bar gets you a puzzled look",
+    "core": false,
+    "a1": true
+  },
+  "blok": {
+    "kind": "vocabulary",
+    "sl": "blok",
+    "gloss": "apartment block (the building)",
+    "predictableError": "'v bloku' (locative) is the building; your own flat inside it is still 'stanovanje' — the two are not interchangeable",
+    "core": false,
+    "a1": true
+  },
+  "drzava_slovenija": {
+    "kind": "vocabulary",
+    "sl": "Slovenija",
+    "gloss": "Slovenia",
+    "predictableError": "the bare nominative only works as a subject — it is 'v Sloveniji' (locative) for 'in Slovenia' and 'iz Slovenije' (genitive) for 'from Slovenia'",
+    "core": false,
+    "a1": true
+  },
+  "drzava_anglija": {
+    "kind": "vocabulary",
+    "sl": "Anglija",
+    "gloss": "England",
+    "predictableError": "genitive after 'iz' — 'Sem iz Anglije', not 'iz Anglija'; and 'Anglija' is England only, the UK is 'Velika Britanija'",
+    "core": false,
+    "a1": true
+  },
+  "drzava_amerika": {
+    "kind": "vocabulary",
+    "sl": "Amerika",
+    "gloss": "America, the USA",
+    "predictableError": "'iz Amerike' (genitive), 'v Ameriki' (locative); everyday Slovene says 'Amerika' where the official name is 'Združene države'",
+    "core": false,
+    "a1": true
+  },
+  "drzava_nemcija": {
+    "kind": "vocabulary",
+    "sl": "Nemčija",
+    "gloss": "Germany",
+    "predictableError": "'iz Nemčije' / 'v Nemčiji'; the nationality is 'Nemec / Nemka' and the language is the adverb 'nemško'",
+    "core": false,
+    "a1": true
+  },
+  "drzava_italija": {
+    "kind": "vocabulary",
+    "sl": "Italija",
+    "gloss": "Italy",
+    "predictableError": "'iz Italije' / 'v Italiji'; the nationality is 'Italijan / Italijanka'",
+    "core": false,
+    "a1": true
+  },
+  "drzava_hrvaska": {
+    "kind": "vocabulary",
+    "sl": "Hrvaška",
+    "gloss": "Croatia",
+    "predictableError": "Croatia takes 'na', not 'v' — 'na Hrvaškem' (in Croatia), 'na Hrvaško' (to Croatia), 's Hrvaške' (from Croatia); it declines like an adjective",
+    "core": false,
+    "a1": true
+  },
+  "drzava_avstrija": {
+    "kind": "vocabulary",
+    "sl": "Avstrija",
+    "gloss": "Austria",
+    "predictableError": "spelt with a v — 'Avstrija' — and not to be confused with 'Avstralija'; 'iz Avstrije' / 'v Avstriji'",
+    "core": false,
+    "a1": true
+  },
+  "sem_anglez": {
+    "kind": "chunk",
+    "sl": "Sem Anglež. / Sem Angležinja.",
+    "gloss": "I'm English (man / woman)",
+    "predictableError": "the nationality is a capitalised NOUN with its own feminine form — a woman says 'Angležinja' — and it takes no preposition: 'Sem Anglež' but 'Sem iz Anglije'",
+    "core": false,
+    "a1": true
+  },
+  "rad_verb": {
+    "kind": "pattern",
+    "sl": "Rad / Rada ___.",
+    "gloss": "I like ___ing (rad + a finite verb)",
+    "predictableError": "'rad' takes a FINITE verb, not an infinitive — 'Rad berem', 'Rada kuham', never 'rad brati'; and this is not 'rad bi', which is a one-off wish ('I'd like'), so dropping or adding 'bi' changes the meaning entirely",
+    "core": true,
+    "a1": true
+  },
+  "hobi": {
+    "kind": "vocabulary",
+    "sl": "hobi",
+    "gloss": "hobby (masc.; pl. 'hobiji')",
+    "predictableError": "the plural is 'hobiji' ('moji hobiji so …'); in speech Slovenes far more often open with 'V prostem času …' than with 'Moj hobi je …'",
+    "core": false,
+    "a1": true
+  },
+  "sport": {
+    "kind": "vocabulary",
+    "sl": "šport",
+    "gloss": "sport",
+    "predictableError": "'doing sport' is the reflexive verb + instrumental — 'ukvarjam se s športom' — never the calque 'delam šport'",
+    "core": false,
+    "a1": true
+  },
+  "glasba": {
+    "kind": "vocabulary",
+    "sl": "glasba",
+    "gloss": "music (fem.)",
+    "predictableError": "accusative object — 'poslušam glasbo', not 'poslušam glasba'; 'muzika' is a loose colloquialism, 'glasba' is the word",
+    "core": false,
+    "a1": true
+  },
+  "branje": {
+    "kind": "vocabulary",
+    "sl": "branje",
+    "gloss": "reading (the activity; neuter verbal noun)",
+    "predictableError": "the natural spoken line is the verb — 'Rad berem' — with the noun 'branje' kept for listing; and it is neuter ('branje me veseli')",
+    "core": false,
+    "a1": true
+  },
+  "kuhanje": {
+    "kind": "vocabulary",
+    "sl": "kuhanje",
+    "gloss": "cooking (the activity; neuter verbal noun)",
+    "predictableError": "same as 'branje' — say 'Rada kuham' rather than 'Moj hobi je kuhanje'; the noun is neuter",
+    "core": false,
+    "a1": true
+  },
+  "sprehod": {
+    "kind": "vocabulary",
+    "sl": "sprehod",
+    "gloss": "a walk, a stroll",
+    "predictableError": "'go for a walk' is 'grem na sprehod' — 'na' + accusative — not 'za sprehod' or 'v sprehod'",
+    "core": false,
+    "a1": true
+  },
+  "zena": {
+    "kind": "vocabulary",
+    "sl": "žena",
+    "gloss": "wife (fem.)",
+    "predictableError": "'žena' is specifically a WIFE — a woman in general is 'ženska'; accusative 'ženo', instrumental 'z ženo'",
+    "core": false,
+    "a1": true
+  },
+  "moz": {
+    "kind": "vocabulary",
+    "sl": "mož",
+    "gloss": "husband (masc.)",
+    "predictableError": "'mož' is specifically a HUSBAND — a man in general is 'moški'; it is animate, so the accusative is 'moža' ('imam moža')",
+    "core": false,
+    "a1": true
+  },
+  "sin": {
+    "kind": "vocabulary",
+    "sl": "sin",
+    "gloss": "son",
+    "predictableError": "animate masculine — 'imam sina', not 'imam sin'; the plural is the irregular 'sinovi'",
+    "core": false,
+    "a1": true
+  },
+  "hci": {
+    "kind": "vocabulary",
+    "sl": "hči",
+    "gloss": "daughter (fem., irregular)",
+    "predictableError": "it declines off a different stem — accusative 'hčer', plural 'hčere' — and in everyday Ljubljana speech people mostly just say 'hčerka'",
+    "core": false,
+    "a1": true
+  },
+  "brat": {
+    "kind": "vocabulary",
+    "sl": "brat",
+    "gloss": "brother",
+    "predictableError": "animate — 'imam brata', not 'imam brat'; the plural is the irregular 'bratje'",
+    "core": false,
+    "a1": true
+  },
+  "sestra": {
+    "kind": "vocabulary",
+    "sl": "sestra",
+    "gloss": "sister",
+    "predictableError": "accusative 'sestro'; the counted forms are 'dve sestri' (dual) and the genitive plural 'pet sester'",
+    "core": false,
+    "a1": true
+  },
+  "porocen_sem": {
+    "kind": "chunk",
+    "sl": "Poročen sem. / Poročena sem.",
+    "gloss": "I'm married (man / woman)",
+    "predictableError": "gender — a man says 'poročen', a woman 'poročena'; 'married TO someone' is 'poročen z' + instrumental, and the opposite is 'samski / samska'",
+    "core": false,
+    "a1": true
+  },
+  "stevilo_enote_desetice": {
+    "kind": "pattern",
+    "sl": "___indvajset / ___intrideset",
+    "gloss": "compound numerals 21–99: the UNIT first, then -in-, then the whole tens word, all as one word — shown here on the 20s and 30s, and the same rule runs to 99 (enaindvajset 21, petintrideset 35, devetindevetdeset 99)",
+    "predictableError": "English order — saying the tens first ('dvajset ena'). Slovene puts the UNIT first and glues it on with -in- to the full tens word, all as ONE written word: 21 = ena+in+dvajset 'enaindvajset', 35 'petintrideset', 45 'petinštirideset', 99 'devetindevetdeset'.",
+    "core": false,
+    "a1": true
+  },
+  "stevilo_enaindvajset": {
+    "kind": "vocabulary",
+    "sl": "enaindvajset",
+    "gloss": "twenty-one (21)",
+    "predictableError": "the Listening paper's three-way trap — 'dvanajst' (12), 'enaindvajset' (21), 'trideset' (30); 21 is built on 'dvajset', so its ending sounds nothing like the teen's '-najst'",
+    "core": false,
+    "a1": true
+  },
+  "konec_tedna": {
+    "kind": "chunk",
+    "sl": "konec tedna",
+    "gloss": "weekend (standard/written register; colloquial is 'vikend')",
+    "predictableError": "'konec' takes the GENITIVE — 'konec tedna', never 'konec teden'; 'at the weekend' is 'ob koncu tedna' (locative), and this is the form you meet on signs and in print, not in the bar",
+    "core": false,
+    "a1": true
   }
 }

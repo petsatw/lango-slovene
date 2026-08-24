@@ -1,0 +1,822 @@
+{
+  "learnables": [
+    {
+      "id": "stevilo_enajst",
+      "kind": "vocabulary",
+      "sl": "enajst",
+      "gloss": "eleven (11)",
+      "predictableError": "the teen is en- + -najst: 'enajst'; like 5+ it takes the genitive plural ('enajst evrov'). Don't confuse it with 'ena' (1).",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "stevilo_dvanajst",
+      "kind": "vocabulary",
+      "sl": "dvanajst",
+      "gloss": "twelve (12)",
+      "predictableError": "hearing/saying it as 'dvajset' (20) — the exam's classic 12-vs-20-vs-21 trap; the teen has -najst, while twenty is the irregular 'dvajset' (the other tens are -deset).",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "stevilo_trinajst",
+      "kind": "vocabulary",
+      "sl": "trinajst",
+      "gloss": "thirteen (13)",
+      "predictableError": "confusing it with 'trideset' (30) — the -najst / -deset pair is the whole difference",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "stevilo_stirinajst",
+      "kind": "vocabulary",
+      "sl": "štirinajst",
+      "gloss": "fourteen (14)",
+      "predictableError": "dropping the -i- to 'štirnajst', and confusing it with 'štirideset' (40)",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "stevilo_petnajst",
+      "kind": "vocabulary",
+      "sl": "petnajst",
+      "gloss": "fifteen (15)",
+      "predictableError": "confusing it with 'petdeset' (50); also 'petnajst minut' — genitive plural after it",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "stevilo_sestnajst",
+      "kind": "vocabulary",
+      "sl": "šestnajst",
+      "gloss": "sixteen (16)",
+      "predictableError": "confusing it with 'šestdeset' (60) — beginners hear only the 'šest-'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "stevilo_sedemnajst",
+      "kind": "vocabulary",
+      "sl": "sedemnajst",
+      "gloss": "seventeen (17)",
+      "predictableError": "swallowing the -e- to 'sedmnajst'; the full 'sedem-' stays: 'sedemnajst'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "stevilo_osemnajst",
+      "kind": "vocabulary",
+      "sl": "osemnajst",
+      "gloss": "eighteen (18)",
+      "predictableError": "swallowing the -e- to 'osmnajst'; the full 'osem-' stays: 'osemnajst'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "stevilo_devetnajst",
+      "kind": "vocabulary",
+      "sl": "devetnajst",
+      "gloss": "nineteen (19)",
+      "predictableError": "confusing it with 'devetdeset' (90)",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "stevilo_sestdeset",
+      "kind": "vocabulary",
+      "sl": "šestdeset",
+      "gloss": "sixty (60)",
+      "predictableError": "confusing it with 'šestnajst' (16); the tens end in -deset",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "stevilo_sedemdeset",
+      "kind": "vocabulary",
+      "sl": "sedemdeset",
+      "gloss": "seventy (70)",
+      "predictableError": "the -e- of 'sedem' is kept — 'sedemdeset', not 'sedmdeset'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "stevilo_osemdeset",
+      "kind": "vocabulary",
+      "sl": "osemdeset",
+      "gloss": "eighty (80)",
+      "predictableError": "the -e- of 'osem' is kept — 'osemdeset', not 'osmdeset'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "stevilo_devetdeset",
+      "kind": "vocabulary",
+      "sl": "devetdeset",
+      "gloss": "ninety (90)",
+      "predictableError": "spelt with both t and d, but said as one voiced stop — 'devet-deset' comes out [devéd-desét], the way 'petdeset' is [pedesét]; the confusable is 'devetnajst' (19).",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "evro",
+      "kind": "vocabulary",
+      "sl": "evro",
+      "gloss": "euro (masc.)",
+      "predictableError": "the counted forms — 'en evro, dva evra, trije evri, pet evrov'; from five up it is the genitive plural 'evrov', never 'pet evro'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "cent",
+      "kind": "vocabulary",
+      "sl": "cent",
+      "gloss": "cent",
+      "predictableError": "genitive plural from five up — 'petdeset centov', not 'petdeset cent'; in speech the price is often just 'pet petdeset' with no currency word at all",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "vrstilni_prvi",
+      "kind": "vocabulary",
+      "sl": "prvi",
+      "gloss": "first (1.)",
+      "predictableError": "an ordinal is an adjective and must agree — 'prvo nadstropje' (neut.), 'prva vrsta' (fem.) — not the frozen masc. 'prvi'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "vrstilni_drugi",
+      "kind": "vocabulary",
+      "sl": "drugi",
+      "gloss": "second (2.); also 'the other'",
+      "predictableError": "reading 'drugi' as 'other' where a floor directory or a date means 'second' — context decides, and it still agrees ('drugo nadstropje')",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "vrstilni_tretji",
+      "kind": "vocabulary",
+      "sl": "tretji",
+      "gloss": "third (3.)",
+      "predictableError": "soft stem — neuter is 'tretje' and feminine 'tretja' ('tretje nadstropje'), not 'tretjo'/'tretji' everywhere",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "vrstilni_cetrti",
+      "kind": "vocabulary",
+      "sl": "četrti",
+      "gloss": "fourth (4.)",
+      "predictableError": "confusing 'četrti' (fourth) with 'četrt' (a quarter of an hour) — and with 'četrtek' (Thursday)",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "vrstilni_peti",
+      "kind": "vocabulary",
+      "sl": "peti",
+      "gloss": "fifth (5.)",
+      "predictableError": "reusing the cardinal — 'pet nadstropje' instead of the ordinal 'peto nadstropje'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "vrstilni_sesti",
+      "kind": "vocabulary",
+      "sl": "šesti",
+      "gloss": "sixth (6.)",
+      "predictableError": "in writing Slovene marks an ordinal with a full stop — '6. nadstropje' is read 'šesto nadstropje', not 'šest'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "vrstilni_sedmi",
+      "kind": "vocabulary",
+      "sl": "sedmi",
+      "gloss": "seventh (7.)",
+      "predictableError": "the -e- of 'sedem' drops in the ordinal — 'sedmi', not 'sedemi'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "vrstilni_osmi",
+      "kind": "vocabulary",
+      "sl": "osmi",
+      "gloss": "eighth (8.)",
+      "predictableError": "the -e- of 'osem' drops in the ordinal — 'osmi', not 'osemi'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "vrstilni_deveti",
+      "kind": "vocabulary",
+      "sl": "deveti",
+      "gloss": "ninth (9.)",
+      "predictableError": "after 'v' the ordinal goes locative — 'v devetem razredu', not 'v deveti razred'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "vrstilni_deseti",
+      "kind": "vocabulary",
+      "sl": "deseti",
+      "gloss": "tenth (10.)",
+      "predictableError": "a calendar date puts the ordinal in the genitive — 'desetega maja', not nominative 'deseti maj'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "vrstilni_enajsti",
+      "kind": "vocabulary",
+      "sl": "enajsti",
+      "gloss": "eleventh (11.)",
+      "predictableError": "formed straight off 'enajst' — 'enajsti', not 'enajstni'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "vrstilni_dvanajsti",
+      "kind": "vocabulary",
+      "sl": "dvanajsti",
+      "gloss": "twelfth (12.)",
+      "predictableError": "mixing it with the clock — twelve o'clock is 'ob dvanajstih', while 'dvanajsti' is the twelfth (floor, date, grade)",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "pritlicje",
+      "kind": "vocabulary",
+      "sl": "pritličje",
+      "gloss": "ground floor (neut.)",
+      "predictableError": "calling it 'prvo nadstropje' on the English model — in Slovenia the ground floor is 'pritličje' and 'prvo nadstropje' is one flight up; location is locative 'v pritličju'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "nadstropje",
+      "kind": "vocabulary",
+      "sl": "nadstropje",
+      "gloss": "floor, storey (neut.)",
+      "predictableError": "'v prvem nadstropju' — locative after 'v', with the ordinal agreeing in the neuter; not 'v prvo nadstropje'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "razred",
+      "kind": "vocabulary",
+      "sl": "razred",
+      "gloss": "class, school grade; classroom",
+      "predictableError": "'v tretjem razredu' (locative) for which grade you are in; a university year is 'letnik', not 'razred'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "ponedeljek",
+      "kind": "vocabulary",
+      "sl": "ponedeljek",
+      "gloss": "Monday",
+      "predictableError": "'on Monday' is 'v ponedeljek' — 'v' + ACCUSATIVE; a masculine day looks unchanged because its accusative is identical to the nominative. Not 'na ponedeljek' on the English 'on' model.",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "torek",
+      "kind": "vocabulary",
+      "sl": "torek",
+      "gloss": "Tuesday",
+      "predictableError": "the fleeting -e- drops when it declines — 'od torka do četrtka', not 'od toreka'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "sreda",
+      "kind": "vocabulary",
+      "sl": "sreda",
+      "gloss": "Wednesday (fem.)",
+      "predictableError": "'v' + accusative — 'v sredo', not 'v sreda'; the feminine -o is where the case becomes visible.",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "cetrtek",
+      "kind": "vocabulary",
+      "sl": "četrtek",
+      "gloss": "Thursday",
+      "predictableError": "confusing 'četrtek' (Thursday) with 'četrt' (a quarter of an hour); 'on Thursday' is 'v četrtek'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "petek",
+      "kind": "vocabulary",
+      "sl": "petek",
+      "gloss": "Friday",
+      "predictableError": "confusing 'petek' (Friday) with 'pet' (five); the genitive in a range is 'do petka'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "sobota",
+      "kind": "vocabulary",
+      "sl": "sobota",
+      "gloss": "Saturday (fem.)",
+      "predictableError": "'v' + accusative 'v soboto' for 'on Saturday'; genitive 'do sobote' in a range.",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "nedelja",
+      "kind": "vocabulary",
+      "sl": "nedelja",
+      "gloss": "Sunday (fem.)",
+      "predictableError": "'v' + accusative 'v nedeljo'; and it is the LAST day of the Slovene week, listed after 'sobota', not the first.",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "januar",
+      "kind": "vocabulary",
+      "sl": "januar",
+      "gloss": "January",
+      "predictableError": "'in January' is the bare genitive 'januarja' (or 'v januarju') — never 'v januar'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "februar",
+      "kind": "vocabulary",
+      "sl": "februar",
+      "gloss": "February",
+      "predictableError": "English-shaped 'februari'; it is 'februar', and 'in February' is 'februarja'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "marec",
+      "kind": "vocabulary",
+      "sl": "marec",
+      "gloss": "March",
+      "predictableError": "the fleeting -e- drops — the genitive is 'marca' ('marca 2026'), not 'mareca'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "april",
+      "kind": "vocabulary",
+      "sl": "april",
+      "gloss": "April",
+      "predictableError": "'in April' is 'aprila'; beginners add a preposition and say 'v april'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "maj",
+      "kind": "vocabulary",
+      "sl": "maj",
+      "gloss": "May",
+      "predictableError": "'in May' is 'maja' — the same form as the girl's name Maja, which throws learners off; it is still the plain genitive",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "junij",
+      "kind": "vocabulary",
+      "sl": "junij",
+      "gloss": "June",
+      "predictableError": "confusing it by ear with 'julij' (July); genitive 'junija' loses nothing",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "julij",
+      "kind": "vocabulary",
+      "sl": "julij",
+      "gloss": "July",
+      "predictableError": "confusing it by ear with 'junij' (June) — the one letter is the whole difference",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "avgust",
+      "kind": "vocabulary",
+      "sl": "avgust",
+      "gloss": "August",
+      "predictableError": "spelt and said with a v — 'avgust', not the English-looking 'august'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "september",
+      "kind": "vocabulary",
+      "sl": "september",
+      "gloss": "September",
+      "predictableError": "the fleeting -e- drops — 'septembra' for 'in September', not 'septemberja'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "oktober",
+      "kind": "vocabulary",
+      "sl": "oktober",
+      "gloss": "October",
+      "predictableError": "the fleeting -e- drops — 'oktobra', not 'oktoberja'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "november",
+      "kind": "vocabulary",
+      "sl": "november",
+      "gloss": "November",
+      "predictableError": "the fleeting -e- drops — 'novembra', not 'novemberja'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "december",
+      "kind": "vocabulary",
+      "sl": "december",
+      "gloss": "December",
+      "predictableError": "the fleeting -e- drops — 'decembra', not 'decemberja'; and month names are lowercase in Slovene",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "teden",
+      "kind": "vocabulary",
+      "sl": "teden",
+      "gloss": "week",
+      "predictableError": "'this week' is the bare 'ta teden' with no preposition; and the fleeting -e- drops in the plural — 'pet tednov', not 'pet tedenov'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "mesec",
+      "kind": "vocabulary",
+      "sl": "mesec",
+      "gloss": "month",
+      "predictableError": "'for a month' / 'in a month' is 'en mesec' / 'čez en mesec'; and 'mesec' also means moon — the month is meant only in a time phrase",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "leto",
+      "kind": "vocabulary",
+      "sl": "leto",
+      "gloss": "year (neut.)",
+      "predictableError": "the genitive plural is irregular 'let' — 'pet let', not 'pet letov'; dual is 'dve leti'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "vikend",
+      "kind": "vocabulary",
+      "sl": "vikend",
+      "gloss": "weekend (colloquial; standard 'konec tedna')",
+      "predictableError": "'over the weekend' is 'čez vikend' or 'za vikend' — not 'na vikend' on the English 'on' model",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "od_do",
+      "kind": "pattern",
+      "sl": "od ___ do ___",
+      "gloss": "from ___ to ___ (hours, days, dates, places)",
+      "predictableError": "BOTH 'od' and 'do' take the genitive — 'od ponedeljka do petka', 'od osmih do štirih' — not nominative 'od ponedeljek do petek'",
+      "core": true,
+      "a1": true
+    },
+    {
+      "id": "pol_gen",
+      "kind": "pattern",
+      "sl": "pol ___",
+      "gloss": "half past (the hour BEFORE ___); 'pol sedmih' = 6:30",
+      "predictableError": "Slovene counts forward to the COMING hour, so 'pol sedmih' is 6:30, not 7:30; the hour goes genitive plural ('pol sedmih', 'pol desetih').",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "cetrt",
+      "kind": "vocabulary",
+      "sl": "četrt",
+      "gloss": "a quarter (of an hour)",
+      "predictableError": "counting backwards like English — 'četrt na sedem' is 6:15 and 'tri četrt na sedem' is 6:45, both pointing at the COMING hour; in speech you'll also hear 'petnajst čez šest' and 'petnajst do sedmih'.",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "minuta",
+      "kind": "vocabulary",
+      "sl": "minuta",
+      "gloss": "minute (fem.)",
+      "predictableError": "genitive plural from five up — 'pet minut', not 'pet minute'; the dual is 'dve minuti'",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "tocno",
+      "kind": "vocabulary",
+      "sl": "točno",
+      "gloss": "exactly, sharp (of a time)",
+      "predictableError": "putting it after the time on the English 'five o'clock sharp' model — Slovene says 'točno ob petih', with 'točno' in front",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "zamuda",
+      "kind": "vocabulary",
+      "sl": "zamuda",
+      "gloss": "delay (a train's, a bus's)",
+      "predictableError": "a person is late with the verb — 'zamujam' — while 'zamuda' is the delay itself: 'Vlak ima deset minut zamude.' (genitive after the number).",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "in",
+      "kind": "vocabulary",
+      "sl": "in",
+      "gloss": "and",
+      "predictableError": "leaving a bare pause between two clauses instead of joining them with 'in' — the speaking rubric listens for it; note that inside a number 'in' is written as one word ('enaindvajset')",
+      "core": true,
+      "a1": true
+    },
+    {
+      "id": "potem",
+      "kind": "vocabulary",
+      "sl": "potem",
+      "gloss": "then, after that (sequencing)",
+      "predictableError": "'potem' sequences what comes next ('Najprej ..., potem ...'); it is not the cause word — that is 'ker' — nor the result word 'zato'.",
+      "core": true,
+      "a1": true
+    },
+    {
+      "id": "ampak",
+      "kind": "vocabulary",
+      "sl": "ampak",
+      "gloss": "but",
+      "predictableError": "putting it at the end of the clause like English 'though', or reaching for 'pa' — 'ampak' opens the contrasting clause after a comma: 'Rad bi kavo, ampak nimam denarja.'",
+      "core": true,
+      "a1": true
+    },
+    {
+      "id": "zato",
+      "kind": "vocabulary",
+      "sl": "zato",
+      "gloss": "so, therefore (gives the result)",
+      "predictableError": "swapping it with 'ker' — 'ker' gives the cause, 'zato' the result ('Dežuje, zato ostanem doma'); and it is not the question word 'zakaj'",
+      "core": true,
+      "a1": true
+    },
+    {
+      "id": "ali_or",
+      "kind": "pattern",
+      "sl": "___ ali ___?",
+      "gloss": "___ or ___? (offering two options)",
+      "predictableError": "the same word also opens a yes/no question; between two nouns it is plainly 'or' — 'Kavo ali čaj?', and both options take the same case.",
+      "core": false,
+      "a1": true
+    },
+    {
+      "id": "to_je",
+      "kind": "pattern",
+      "sl": "To je ___.",
+      "gloss": "This / that is ___.",
+      "predictableError": "agreeing 'to' with the noun ('Ta je knjiga', 'Ta je moja žena') — 'to' stays the invariable neuter, and two or more things take 'To so ___.'",
+      "core": true,
+      "a1": true
+    },
+    {
+      "id": "na_sliki",
+      "kind": "pattern",
+      "sl": "Na sliki je / so ___.",
+      "gloss": "In the picture there is / are ___.",
+      "predictableError": "'na slika' — after 'na' for a location it is the locative 'na sliki'; and the verb switches to 'so' for two or more ('Na sliki so trije ljudje.')",
+      "core": true,
+      "a1": true
+    },
+    {
+      "id": "tukaj_je",
+      "kind": "pattern",
+      "sl": "Tukaj je ___.",
+      "gloss": "___ is here / here's where ___ is (pointing something out)",
+      "predictableError": "this is the LOCATIONAL 'here is' — pointing at where a thing stands ('Tukaj je banka.'). Handing something over is 'Izvolite', not 'Tukaj je'.",
+      "core": true,
+      "a1": true
+    }
+  ],
+  "a1": [
+    {
+      "competencyId": "phonology_numbers",
+      "learnableIds": [
+        "stevilo_enajst",
+        "stevilo_dvanajst",
+        "stevilo_trinajst",
+        "stevilo_stirinajst",
+        "stevilo_petnajst",
+        "stevilo_sestnajst",
+        "stevilo_sedemnajst",
+        "stevilo_osemnajst",
+        "stevilo_devetnajst",
+        "stevilo_sestdeset",
+        "stevilo_sedemdeset",
+        "stevilo_osemdeset",
+        "stevilo_devetdeset",
+        "evro",
+        "cent",
+        "vrstilni_prvi",
+        "vrstilni_drugi",
+        "vrstilni_tretji",
+        "vrstilni_cetrti",
+        "vrstilni_peti",
+        "vrstilni_sesti",
+        "vrstilni_sedmi",
+        "vrstilni_osmi",
+        "vrstilni_deveti",
+        "vrstilni_deseti",
+        "vrstilni_enajsti",
+        "vrstilni_dvanajsti",
+        "minuta",
+        "pol_gen",
+        "cetrt",
+        "leto"
+      ]
+    },
+    {
+      "competencyId": "morphosyntax",
+      "learnableIds": [
+        "od_do",
+        "to_je",
+        "na_sliki",
+        "tukaj_je",
+        "in",
+        "potem",
+        "ampak",
+        "zato",
+        "ali_or",
+        "pritlicje",
+        "nadstropje",
+        "razred",
+        "vrstilni_prvi",
+        "vrstilni_tretji",
+        "vrstilni_deseti",
+        "pol_gen"
+      ]
+    },
+    {
+      "competencyId": "pragmatics",
+      "learnableIds": [
+        "in",
+        "potem",
+        "ampak",
+        "zato",
+        "ali_or"
+      ]
+    },
+    {
+      "competencyId": "everyday_free_time",
+      "learnableIds": [
+        "ponedeljek",
+        "torek",
+        "sreda",
+        "cetrtek",
+        "petek",
+        "sobota",
+        "nedelja",
+        "januar",
+        "februar",
+        "marec",
+        "april",
+        "maj",
+        "junij",
+        "julij",
+        "avgust",
+        "september",
+        "oktober",
+        "november",
+        "december",
+        "teden",
+        "mesec",
+        "leto",
+        "vikend",
+        "od_do",
+        "pol_gen",
+        "cetrt",
+        "minuta",
+        "tocno",
+        "zamuda",
+        "vrstilni_prvi",
+        "vrstilni_drugi",
+        "vrstilni_tretji",
+        "vrstilni_cetrti",
+        "vrstilni_peti",
+        "vrstilni_sesti",
+        "vrstilni_sedmi",
+        "vrstilni_osmi",
+        "vrstilni_deveti",
+        "vrstilni_deseti",
+        "vrstilni_enajsti",
+        "vrstilni_dvanajsti"
+      ]
+    },
+    {
+      "competencyId": "shopping_services",
+      "learnableIds": [
+        "stevilo_enajst",
+        "stevilo_dvanajst",
+        "stevilo_trinajst",
+        "stevilo_stirinajst",
+        "stevilo_petnajst",
+        "stevilo_sestnajst",
+        "stevilo_sedemnajst",
+        "stevilo_osemnajst",
+        "stevilo_devetnajst",
+        "stevilo_sestdeset",
+        "stevilo_sedemdeset",
+        "stevilo_osemdeset",
+        "stevilo_devetdeset",
+        "evro",
+        "cent",
+        "od_do",
+        "ponedeljek",
+        "torek",
+        "sreda",
+        "cetrtek",
+        "petek",
+        "sobota",
+        "nedelja",
+        "ali_or",
+        "januar",
+        "februar",
+        "marec",
+        "april",
+        "maj",
+        "junij",
+        "julij",
+        "avgust",
+        "september",
+        "oktober",
+        "november",
+        "december"
+      ]
+    },
+    {
+      "competencyId": "transport_orientation",
+      "learnableIds": [
+        "pritlicje",
+        "nadstropje",
+        "tukaj_je",
+        "zamuda",
+        "tocno",
+        "od_do",
+        "pol_gen",
+        "minuta"
+      ]
+    },
+    {
+      "competencyId": "housing_environment",
+      "learnableIds": [
+        "pritlicje",
+        "nadstropje",
+        "to_je",
+        "tukaj_je"
+      ]
+    },
+    {
+      "competencyId": "education",
+      "learnableIds": [
+        "razred",
+        "vrstilni_prvi",
+        "vrstilni_tretji",
+        "vrstilni_osmi",
+        "leto",
+        "september"
+      ]
+    },
+    {
+      "competencyId": "personal_identity",
+      "learnableIds": [
+        "to_je",
+        "leto",
+        "na_sliki"
+      ]
+    },
+    {
+      "competencyId": "work_profession",
+      "learnableIds": [
+        "od_do",
+        "ponedeljek",
+        "petek",
+        "tocno"
+      ]
+    },
+    {
+      "competencyId": "food_drink",
+      "learnableIds": [
+        "ali_or",
+        "in",
+        "evro",
+        "cent"
+      ]
+    }
+  ]
+}

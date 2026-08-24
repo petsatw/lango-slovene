@@ -36,8 +36,13 @@ function die(msg: string): never {
 
 // ---- Input shape --------------------------------------------------------------------------------
 // {
-//   "learnables": [ { id, kind, sl, gloss, predictableError?, core?, rank?, paretoCategory?:[...] } ],
-//   "a1": [ { competencyId, learnableIds: [id, ...] } ]     // optional A1 placement (folds into a1-map.json)
+//   "learnables": [ { id, kind, sl, gloss, predictableError?, core?, a1?, rank?, paretoCategory?:[...] } ],
+//   "a1": [ { competencyId, learnableIds: [id, ...] } ]     // A1 placement (folds into a1-map.json)
+//
+// `a1: true` on a learnable is the Tagged-A1 decision (docs/dialogue-difficulty-model.md §2) — what the
+// difficulty classifier counts as A1. The `"a1"` array is the separate COVERAGE placement — which readiness
+// competency shows it. A core and/or A1-tagged item needs both, and `lint:a1` fails if the placement is
+// missing: unmapped, it can be mastered with nothing moving on the readiness screen.
 // }
 
 const inputArg = process.argv.slice(2).find((a) => !a.startsWith("--"));
@@ -83,6 +88,7 @@ for (const e of input.learnables) {
   const clean: any = { kind, sl: e.sl, gloss: e.gloss };
   if (typeof e.predictableError === "string" && e.predictableError) clean.predictableError = e.predictableError;
   if (typeof e.core === "boolean") clean.core = e.core;
+  if (typeof e.a1 === "boolean") clean.a1 = e.a1; // Tagged-A1 decision, made at mint (docs §2)
   if (typeof e.rank === "number") clean.rank = e.rank;
   if (Array.isArray(e.paretoCategory)) clean.paretoCategory = e.paretoCategory;
   toMint[e.id] = clean;
