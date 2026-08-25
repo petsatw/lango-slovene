@@ -434,7 +434,7 @@
             "n12"
           ],
           "learnables": [
-            "govorim_dobro_lang"
+            "govorim_lang"
           ]
         },
         "n12": {
@@ -451,7 +451,7 @@
           ],
           "learnables": [
             "ampak",
-            "ne_govorim_dobro"
+            "govorim_lang"
           ]
         },
         "n13": {
@@ -480,7 +480,7 @@
           "en": "I don't speak Slovene well.",
           "glossPolicy": "after",
           "learnables": [
-            "ne_govorim_dobro"
+            "govorim_lang"
           ],
           "next": [
             "n14"
@@ -512,7 +512,7 @@
           "en": "I speak English well.",
           "glossPolicy": "after",
           "learnables": [
-            "govorim_dobro_lang"
+            "govorim_lang"
           ],
           "next": [
             "n16"
@@ -556,25 +556,16 @@
         "reuse": [
           "zivjo",
           "sem_ime",
-          "adijo",
-          "ne_govorim_dobro"
+          "adijo"
         ],
         "new": [
           {
             "id": "govorim_lang",
             "kind": "pattern",
-            "sl": "Govorim ___.",
-            "gloss": "I speak ___ (a language)",
-            "predictableError": "the slot takes the ADVERB — 'slovensko', 'angleško' — not the noun 'slovenščino' or the adjective 'angleški'",
+            "sl": "(Ne) govorim (dobro) ___.",
+            "gloss": "I speak / I do not speak (well) ___ — the slot takes the language adverb: slovensko, angleško",
+            "predictableError": "the slot takes the ADVERB — slovensko, angleško — not the noun slovenščino or the adjective angleški; and dobro goes BEFORE the language, not after it on the English pattern",
             "core": true,
-            "a1": true
-          },
-          {
-            "id": "govorim_dobro_lang",
-            "kind": "pattern",
-            "sl": "Govorim dobro ___.",
-            "gloss": "I speak ___ well",
-            "predictableError": "English word order — 'Govorim angleško dobro' — instead of 'dobro' before the language adverb",
             "a1": true
           }
         ]
@@ -974,11 +965,6 @@
       "learnableId": "govorim_lang",
       "competencyId": "personal_identity",
       "note": "Saying which language you speak is core self-description; the PATTERN is the core item, its instances are not."
-    },
-    {
-      "learnableId": "govorim_dobro_lang",
-      "competencyId": "pragmatics",
-      "note": "Saying how well you speak a language tells an interlocutor how to pitch their Slovene — a positioning/repair move."
     },
     {
       "learnableId": "od_kod_si",

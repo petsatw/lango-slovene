@@ -1039,14 +1039,6 @@
     "core": true,
     "a1": true
   },
-  "ne_govorim_dobro": {
-    "kind": "chunk",
-    "sl": "Ne govorim dobro slovensko.",
-    "gloss": "I don't speak Slovene well",
-    "predictableError": "adverb 'dobro'; 'slovensko' (adv.), not the noun 'slovenščino'",
-    "core": true,
-    "a1": true
-  },
   "hocem": {
     "kind": "pattern",
     "sl": "Hočem ___.",
@@ -1743,19 +1735,11 @@
   },
   "govorim_lang": {
     "kind": "pattern",
-    "sl": "Govorim ___.",
-    "gloss": "I speak ___ (a language)",
-    "predictableError": "the slot takes the ADVERB — 'slovensko', 'angleško' — not the noun 'slovenščino' or the adjective 'angleški'",
+    "sl": "(Ne) govorim (dobro) ___.",
+    "gloss": "I speak / I do not speak (well) ___ — the slot takes the language adverb: slovensko, angleško",
+    "predictableError": "the slot takes the ADVERB — slovensko, angleško — not the noun slovenščino or the adjective angleški; and dobro goes BEFORE the language, not after it on the English pattern",
     "core": true,
     "a1": true
-  },
-  "govorim_dobro_lang": {
-    "kind": "pattern",
-    "sl": "Govorim dobro ___.",
-    "gloss": "I speak ___ well",
-    "predictableError": "English word order — 'Govorim angleško dobro' — instead of 'dobro' before the language adverb",
-    "a1": true,
-    "core": true
   },
   "stevilo_enajst": {
     "kind": "vocabulary",

@@ -19,9 +19,7 @@
     }
   ],
   "introduces": [
-    "govorim_dobro_lang",
     "govorim_lang",
-    "ne_govorim_dobro",
     "zivjo"
   ],
   "audio": "ready",
@@ -292,7 +290,7 @@
         "n12"
       ],
       "learnables": [
-        "govorim_dobro_lang"
+        "govorim_lang"
       ]
     },
     "n12": {
@@ -309,7 +307,7 @@
       ],
       "learnables": [
         "ampak",
-        "ne_govorim_dobro"
+        "govorim_lang"
       ]
     },
     "n13": {
@@ -338,7 +336,7 @@
       "en": "I don't speak Slovene well.",
       "glossPolicy": "after",
       "learnables": [
-        "ne_govorim_dobro"
+        "govorim_lang"
       ],
       "next": [
         "n14"
@@ -370,7 +368,7 @@
       "en": "I speak English well.",
       "glossPolicy": "after",
       "learnables": [
-        "govorim_dobro_lang"
+        "govorim_lang"
       ],
       "next": [
         "n16"
