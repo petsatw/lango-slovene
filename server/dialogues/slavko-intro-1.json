@@ -55,6 +55,11 @@
       ],
       "next": [
         "c1"
+      ],
+      "learnables": [
+        "zivjo",
+        "kako",
+        "kako_ime"
       ]
     },
     "c1": {
@@ -84,6 +89,10 @@
       ],
       "next": [
         "c2"
+      ],
+      "learnables": [
+        "me_veseli",
+        "sem_ime"
       ]
     },
     "c2": {
@@ -115,6 +124,9 @@
       ],
       "next": [
         "c3"
+      ],
+      "learnables": [
+        "adijo"
       ]
     },
     "c3": {

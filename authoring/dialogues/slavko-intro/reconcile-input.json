@@ -63,6 +63,11 @@
           ],
           "next": [
             "c1"
+          ],
+          "learnables": [
+            "zivjo",
+            "kako",
+            "kako_ime"
           ]
         },
         "c1": {
@@ -92,6 +97,10 @@
           ],
           "next": [
             "c2"
+          ],
+          "learnables": [
+            "me_veseli",
+            "sem_ime"
           ]
         },
         "c2": {
@@ -123,6 +132,9 @@
           ],
           "next": [
             "c3"
+          ],
+          "learnables": [
+            "adijo"
           ]
         },
         "c3": {
@@ -184,6 +196,9 @@
           ],
           "next": [
             "c1"
+          ],
+          "learnables": [
+            "zivjo"
           ]
         },
         "c1": {
@@ -206,6 +221,9 @@
           "glossPolicy": "after",
           "next": [
             "n3"
+          ],
+          "learnables": [
+            "sem_ime"
           ]
         },
         "n3": {
@@ -225,6 +243,10 @@
           ],
           "next": [
             "c2"
+          ],
+          "learnables": [
+            "kako",
+            "kako_ime"
           ]
         },
         "c2": {
@@ -247,6 +269,10 @@
           "glossPolicy": "after",
           "next": [
             "n5"
+          ],
+          "learnables": [
+            "ja",
+            "seveda"
           ]
         },
         "n5": {
@@ -259,6 +285,9 @@
           "glossPolicy": "after",
           "next": [
             "n6"
+          ],
+          "learnables": [
+            "govorim_lang"
           ]
         },
         "n6": {
@@ -284,6 +313,9 @@
           ],
           "next": [
             "c3"
+          ],
+          "learnables": [
+            "govorim_lang"
           ]
         },
         "c3": {
@@ -306,6 +338,9 @@
           "glossPolicy": "after",
           "next": [
             "n8"
+          ],
+          "learnables": [
+            "govorim_lang"
           ]
         },
         "n8": {
@@ -325,7 +360,8 @@
           ],
           "next": [
             "c4"
-          ]
+          ],
+          "learnables": []
         },
         "c4": {
           "speaker": "client",
@@ -356,6 +392,9 @@
           ],
           "next": [
             "c5"
+          ],
+          "learnables": [
+            "se_enkrat"
           ]
         },
         "c5": {
@@ -378,6 +417,9 @@
           "glossPolicy": "after",
           "next": [
             "n11"
+          ],
+          "learnables": [
+            "govorim_lang"
           ]
         },
         "n11": {
@@ -390,6 +432,9 @@
           "glossPolicy": "after",
           "next": [
             "n12"
+          ],
+          "learnables": [
+            "govorim_dobro_lang"
           ]
         },
         "n12": {
@@ -403,6 +448,10 @@
           "glossPolicy": "after",
           "next": [
             "n13"
+          ],
+          "learnables": [
+            "ampak",
+            "ne_govorim_dobro"
           ]
         },
         "n13": {
@@ -422,7 +471,8 @@
           ],
           "next": [
             "c6"
-          ]
+          ],
+          "learnables": []
         },
         "c6": {
           "speaker": "client",
@@ -453,7 +503,8 @@
           ],
           "next": [
             "c7"
-          ]
+          ],
+          "learnables": []
         },
         "c7": {
           "speaker": "client",
@@ -484,6 +535,10 @@
           ],
           "next": [
             "c9"
+          ],
+          "learnables": [
+            "ja",
+            "adijo"
           ]
         },
         "c9": {
@@ -868,6 +923,7 @@
           "focusSpan": "od kod sem",
           "learnables": [
             "od_kod",
+            "in",
             "govorim_lang",
             "adijo"
           ],
