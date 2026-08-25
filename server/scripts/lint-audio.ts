@@ -1,7 +1,19 @@
 // lint-audio — does every dialogue that CLAIMS its audio is built actually have the bytes?
 //
-//   npm run lint:audio                 # every dialogue
-//   npm run lint:audio -- slavko-intro # one scenario
+//   npm run lint:audio                            # every dialogue — are the bytes ON DISK?
+//   npm run lint:audio -- slavko-intro            # one scenario
+//   npm run lint:audio -- --shipped               # are the bytes IN THE BRANCH? (the deploy question)
+//   npm run lint:audio -- slavko-intro --shipped
+//
+// TWO DIFFERENT QUESTIONS. By default this asks whether a clip is in the local store — the question that
+// matters while authoring. `--shipped` asks whether it is committed to the branch — the question that
+// matters at release, and a strictly harder one: `assets/` is GITIGNORED and its contents are force-added
+// (docs/DEPLOY.md), so a clip can be present, playing perfectly on localhost, and absent from every deploy.
+//
+// That gap cannot be found by diffing. A gitignored file never appears in `git diff` until someone has
+// already force-added it, so any release check keyed on "does the diff touch assets/audio?" goes quiet
+// exactly when the bytes are missing and speaks up only once they are not. The question has to be asked
+// per REQUIRED KEY, against the index — which is what --shipped does.
 //
 // WHY THIS EXISTS. A spoken scene degrades silently. When a clip is missing, `/api/speak` returns 502,
 // the browser's <audio> fires `onerror`, and the renderer's `await sceneSay(...)` resolves INSTANTLY —
@@ -22,6 +34,7 @@
 
 import "dotenv/config"; // voice bindings live in env — without this every computed key is wrong
 import { readdirSync, readFileSync, existsSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { getE3 } from "../adapters/index";
@@ -36,9 +49,34 @@ const MANIFEST = path.join(ROOT, "assets", "manifest.jsonl");
 type Miss = {
   scenarioId: string; level: number; node: string; field: string;
   voiceProfile: string; text: string; key: string; rekeyFrom: string | null;
+  /** --shipped only: the bytes ARE on disk, they are simply not committed. A completely different fix —
+   *  force-add them, never re-synthesize something already paid for and already sitting there. */
+  uncommitted: boolean;
 };
 
-const only = process.argv.slice(2).find((a) => !a.startsWith("--"));
+const argv = process.argv.slice(2);
+const only = argv.find((a) => !a.startsWith("--"));
+/** Ask the BRANCH, not the disk — the release question (see the header). */
+const shipped = argv.includes("--shipped");
+
+/** Every audio key committed under assets/audio, by key. Empty outside a git work tree, which is itself
+ *  reported rather than silently passing — a check that cannot see the index has not checked anything. */
+function loadTrackedKeys(): Set<string> | null {
+  try {
+    const out = execFileSync("git", ["ls-files", "-z", "assets/audio"], { cwd: ROOT, maxBuffer: 1 << 28 });
+    return new Set(
+      out.toString("utf8").split("\0").filter(Boolean)
+        .map((p) => path.basename(p).replace(/\.mp3$/, "")),
+    );
+  } catch {
+    return null;
+  }
+}
+const trackedKeys = shipped ? loadTrackedKeys() : null;
+if (shipped && !trackedKeys) {
+  console.error(`\n❌ lint:audio --shipped: not a git work tree (or git unavailable) — cannot tell what the branch carries.\n`);
+  process.exit(1);
+}
 
 // Every text already synthesized, whatever key it landed under — the re-key oracle. If a missing clip's
 // TEXT is in here, the bytes exist and were paid for; only the key changed.
@@ -81,12 +119,17 @@ function voiceTag(profile: string): string {
 function checkClip(d: any, node: string, field: string, profile: string, text: string): void {
   checkedClips++;
   const key = store.audioKey(e3.name, voiceTag(profile), text);
-  if (store.read(key, "audio")) return;
+  const onDisk = store.has(key, "audio");
+  // Default mode asks the store; --shipped asks the branch. A clip must clear BOTH to reach a deploy, and
+  // --shipped is the stricter of the two: everything the disk check would fail, it fails as well.
+  const present = shipped ? trackedKeys!.has(key) : onDisk;
+  if (present) return;
   const prior = manifestTexts.get(text) ?? null;
   misses.push({
     scenarioId: d.scenarioId, level: d.level, node, field,
     voiceProfile: profile, text, key,
     rekeyFrom: prior && prior !== key ? prior : null,
+    uncommitted: shipped && onDisk,
   });
 }
 
@@ -125,8 +168,10 @@ for (const f of files) {
 
 // ---- Report ----------------------------------------------------------------------------------------
 const rel = (p: string) => path.relative(ROOT, p);
-console.log(`\nlint:audio — ${e3.name}${only ? `  (scenario: ${only})` : ""}`);
-console.log(`  ${readyLevels} level(s) marked "ready", ${checkedClips} clip(s) checked\n`);
+console.log(`\nlint:audio — ${e3.name}${only ? `  (scenario: ${only})` : ""}${shipped ? "  [--shipped: asking the BRANCH, not the disk]" : ""}`);
+console.log(`  ${readyLevels} level(s) marked "ready", ${checkedClips} clip(s) checked`);
+if (shipped) console.log(`  ${trackedKeys!.size} clip(s) committed under assets/audio\n`);
+else console.log("");
 
 for (const note of pendingNotes) console.log(`  ℹ️  ${note}`);
 if (pendingNotes.length) console.log("");
@@ -138,15 +183,30 @@ if (bindingErrors.length) {
 }
 
 if (!misses.length) {
-  console.log(`✅ PASS — every "ready" level has all of its clips in the store.\n`);
+  console.log(shipped
+    ? `✅ PASS — every "ready" level has all of its clips COMMITTED to this branch.\n`
+    : `✅ PASS — every "ready" level has all of its clips in the store.\n`);
   process.exit(0);
 }
 
-const rekeys = misses.filter((m) => m.rekeyFrom);
-const fresh = misses.filter((m) => !m.rekeyFrom);
+const uncommitted = misses.filter((m) => m.uncommitted);
+const rekeys = misses.filter((m) => !m.uncommitted && m.rekeyFrom);
+const fresh = misses.filter((m) => !m.uncommitted && !m.rekeyFrom);
+
+// The whole point of --shipped: these clips exist, sound right, and cost money already. They are simply
+// not in the branch, so the deploy would serve nothing for them. Report them first and separately — the
+// fix is one force-add, and confusing this with "needs synthesis" would re-bill for bytes on disk.
+if (uncommitted.length) {
+  const scenarios = [...new Set(uncommitted.map((m) => m.scenarioId))];
+  console.error(`❌ ${uncommitted.length} clip(s) are ON DISK but NOT COMMITTED — the deploy would ship without them.`);
+  console.error(`   scenario(s): ${scenarios.join(", ")}`);
+  console.error(`   assets/ is gitignored by design (docs/DEPLOY.md); clips are force-added. These never were.`);
+  console.error(`   Nothing needs generating — the bytes exist and are already paid for.\n`);
+  console.error(`   fix: git add -f assets/audio assets/align && git commit -m "chore(assets): ship the clips"\n`);
+}
 
 const byLevel = new Map<string, Miss[]>();
-for (const m of misses) {
+for (const m of misses.filter((x) => !x.uncommitted)) {
   const k = `${m.scenarioId} L${m.level}`;
   (byLevel.get(k) ?? byLevel.set(k, []).get(k)!).push(m);
 }
@@ -169,7 +229,9 @@ for (const [level, ms] of byLevel) {
   console.error(`   fix: npm run build:dialogue-assets -- ${scenarioId} --level ${lvl}\n`);
 }
 
-console.error(`❌ FAIL — ${misses.length} missing clip(s): ${fresh.length} need synthesis (bills), ${rekeys.length} are re-keys (free).`);
+console.error(`❌ FAIL — ${misses.length} missing clip(s): `
+  + `${uncommitted.length} on disk but uncommitted (free — force-add), `
+  + `${fresh.length} need synthesis (bills), ${rekeys.length} are re-keys (free).`);
 console.error(`   A "ready" level with missing audio ships a scene that plays SILENT and too fast without erroring.`);
 console.error(`   Either generate the clips, or set the level's "audio" back to "pending" so it is honestly declared.\n`);
 process.exit(1);

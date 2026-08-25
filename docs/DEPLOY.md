@@ -80,13 +80,29 @@ map per-scenario through the dialogue's `voices` block, then confirm with recipe
 a git deploy on its own. After generating a scenario's clips, add them explicitly:
 
 ```bash
-git add -f assets/audio          # content-addressed dialogue clips
+git add -f assets/audio assets/align    # content-addressed dialogue clips + their word timings
 git commit -m "chore(assets): ship <scenario> audio"
 ```
 
-Commit `assets/audio` only. Keep `assets/sessions/`, `assets/turnlog/`, `assets/learner.json` out — they hold
-learner PII and have no place in the deploy. Images stay out too (scene backgrounds that the app uses live under
-`public/backgrounds/` and ship there).
+Commit `assets/audio` and `assets/align` only. Keep `assets/sessions/`, `assets/turnlog/`, `assets/learner.json`
+out — they hold learner PII and have no place in the deploy. Images stay out too (scene backgrounds that the app
+uses live under `public/backgrounds/` and ship there).
+
+`assets/align` is word-level timings for clips that already exist, and it is **not needed at runtime** — a Key
+Phrases span carries its milliseconds in the dialogue JSON. It ships so `lint:keyphrase-audio` can run on a fresh
+clone, and so a re-rolled clip can still be checked against a real measurement rather than a remembered one.
+
+**Verify the branch, not the disk.** Forgetting this step is invisible locally: the clips are right there, the app
+plays them, and plain `lint:audio` passes — while the deploy carries nothing. Nor can a diff catch it, since a
+gitignored file only appears in one once it has already been force-added. Ask the branch directly:
+
+```bash
+npm run lint:audio -- --shipped
+```
+
+It reports, per level declaring `audio: "ready"`, whether every required key is actually committed — and
+distinguishes clips that merely need force-adding (free) from clips absent under any key (billed synthesis) and
+from re-keys (`npm run rekey:assets` — copy the bytes, never regenerate). `prep-release` runs it as a hard stop.
 
 A spoken intro is a separate file: place its mp3 at `public/intros/<name>.mp3` and reference it as
 `intro.audio` in the dialogue JSON. Being under `public/`, it commits and ships normally.

@@ -1,6 +1,6 @@
 ---
 name: prep-release
-description: Prepare to publish just-committed work to the release branch(es) that Railway deploys. `release/*` and `main` are branch-protected (PR-only), so this emits TWO copy-paste blocks for the operator — first a PUSH block for the source branch, then a PR block that opens a pull request into each release/* branch. Never touches main (legacy). Use right after the commit skill when the user wants to ship the current work to the release branch. Triggers on "prep release", "push to release", "sync release", "publish release", "update the release branch", or /prep-release.
+description: Prepare to publish just-committed work to the release branch(es) that Railway deploys. Verifies the branch actually carries the audio a "ready" lesson claims (gitignored assets are force-added, so a spoken lesson can deploy silent without erroring), then emits TWO copy-paste blocks for the operator — a PUSH block for the source branch and a PR block opening a pull request into each release/* branch, both protected and PR-only. Never touches main (legacy). Use right after the commit skill when the user wants to ship the current work to the release branch. Triggers on "prep release", "push to release", "sync release", "publish release", "update the release branch", or /prep-release.
 ---
 
 # prep-release
@@ -49,6 +49,23 @@ Run all git commands from the repo root. The emitted blocks `cd` there via `$(gi
    - **Not on `main`:** if the current branch is `main`, STOP — legacy is not published here.
    - **Working tree clean:** `git status --porcelain` is empty. (Uncommitted changes mean the commit isn't done — prep-release runs *after* `commit`.)
    - **`origin` exists** (and note every remote found).
+   - **The branch actually carries its audio — `npm run lint:audio -- --shipped`. A non-zero exit is a HARD STOP.**
+
+     This is the check that matters most and the one no diff can perform. `assets/` is **gitignored** (docs/DEPLOY.md) and its clips are force-added, so a clip can be on disk, playing perfectly on localhost and passing plain `lint:audio`, while being absent from every deploy. A gitignored file never shows up in `git diff` until somebody has already force-added it — so any release check keyed on "does the diff touch `assets/audio`?" goes quiet exactly when the bytes are missing. `--shipped` asks the opposite way round: for every level declaring `audio: "ready"`, is its required key committed?
+
+     **Why this is a stop and not a warning.** A missing clip does not break loudly. `/api/speak` 502s, the `<audio>` element fires `onerror`, and the renderer's `await sceneSay(...)` resolves *instantly* — so a spoken lesson plays fully captioned, completely silent, and far too fast, with every clip-length pause collapsed to zero. Nothing throws and nothing is skipped. It looks like it works. Shipping that is worse than not shipping.
+
+     **On a failure, do NOT emit the push or PR blocks.** Emit the force-add block instead and say the operator must run it, commit, and re-run prep-release:
+
+     ```bash
+     cd "$(git rev-parse --show-toplevel)"
+     git add -f assets/audio assets/align
+     git commit -m "chore(assets): ship the audio store"
+     ```
+
+     The lint distinguishes three causes and only one of them is this block's job: clips **on disk but uncommitted** (force-add — free, the bytes are already paid for), clips **absent under any key** (synthesis needed — this bills, so it is the operator's call, never automatic), and **re-keys** (`npm run rekey:assets` — copy the bytes, never regenerate). Report which you are looking at; never tell the operator to re-synthesize something the store already holds.
+
+     `assets/align` rides along in the same force-add. Those artifacts are **not** needed at runtime — a span's milliseconds are baked into the dialogue JSON — so their absence is not a deploy blocker. They ship so that `lint:keyphrase-audio` can run on a fresh clone and so a re-rolled clip can still be checked against a real measurement.
    - **Per release branch, classify the PR (report, never a hard stop):** for each `release/*`, compute `git rev-list --count "$r".."$T"` (commits `T` adds) and `git rev-list --count "$T".."$r"` (commits the release branch has that `T` lacks).
      - adds == 0 → the release branch already contains `T`; **no PR needed** — say so and omit it from the PR block.
      - adds > 0 → a PR is warranted; it will carry those commits. Divergence (the release branch having its own commits, e.g. a `CODEOWNERS` merge) is **fine** — the PR merge reconciles both sides with no force and no data loss. Unlike the old `branch -f` flow, this is not a stop condition.
@@ -77,7 +94,9 @@ Run all git commands from the repo root. The emitted blocks `cd` there via `$(gi
 
 6. **Railway redeploy advisory — always state it. The deploy fires on PR MERGE, not on the source-branch push.** Diff what will ship when the PR merges: `git diff --name-only origin/release/mvp-alpha <T>`.
    - If the diff is docs-only (`docs/**`, `*.md`), say so: a redeploy still fires on merge but has **no runtime effect** — the operator may choose not to merge if they don't want the redeploy.
-   - If it touches audio, the asset store, or voice/model config (`assets/audio/**`, `server/adapters/**`, anything changing the serve-time env contract), point to **docs/DEPLOY.md** — the deploy only serves new audio if the branch carries the clips (gitignored `assets/` must be force-committed) and Railway's voice-id env matches the build. Remind the operator to re-run DEPLOY.md's recipe B (live probe) after the merge/redeploy.
+   - **Do not use this diff to reason about whether the audio is present.** It cannot answer that — see step 3. `assets/` is gitignored, so missing clips are invisible here by construction and force-added ones show up as a wall of hashes that says nothing about completeness. Step 3's `--shipped` lint is the only thing that knows.
+   - If the diff touches **voice or model config** (`server/adapters/**`, `E3_PROVIDER`, `ELEVENLABS_MODEL_ID`, a profile's voice-id env var, anything changing the serve-time env contract), point to **docs/DEPLOY.md**. An audio key is `sha256(provider|voiceTag|text)`, so a voice-id or model change **re-keys every clip**: the files stay on disk but nothing can reach them, and Railway's env must match the build or the deploy serves nothing. Remind the operator to re-run DEPLOY.md's recipe B (live probe) after the merge/redeploy.
+   - **If any `advance: "audio"` level is in the diff, say so explicitly and name it.** A spoken lesson is the one surface that fails silently rather than visibly (step 3), so it is the one worth a live listen after the redeploy rather than a glance at the page.
 
 7. **Always emit the "Populating `$TOKEN`" block — last, after the PR/merge blocks.** The PR and merge blocks use `$TOKEN`; in a fresh shell that variable is unset. So every prep-release run ends with this block, stated as the thing to run first if `$TOKEN` is empty. It reads the keychain PAT without printing it:
 
@@ -94,6 +113,7 @@ Run all git commands from the repo root. The emitted blocks `cd` there via `$(gi
 - **It does not force-update or discard.** Release branches move only by PR merge; a diverged release branch is reconciled by the merge, never overwritten.
 - **It does not merge the PR for you.** Merging is a deliberate, deploy-triggering step the operator (or agent, on request) takes after review.
 - **It does not configure Railway env or run the DEPLOY.md verification** — it only advises when the diff warrants it.
+- **It does not generate audio, and never force-adds on the operator's behalf.** When the `--shipped` lint fails it emits the force-add block and stops; the operator runs it. Where the lint says clips are absent from the store entirely, that is a **billed synthesis** and the skill only reports it — generation is always the operator's instruction.
 
 ## Notes
 
