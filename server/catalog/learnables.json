@@ -5,9 +5,6 @@
     "gloss": "good day (greeting)",
     "core": true,
     "rank": 19,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "zacnemo": {
@@ -30,9 +27,6 @@
     "core": true,
     "rank": 13,
     "predictableError": "nominative 'ena kava' instead of the accusative 'eno kavo' the frame requires",
-    "paretoCategory": [
-      "transaction"
-    ],
     "a1": true
   },
   "kava": {
@@ -66,10 +60,6 @@
     "gloss": "how much is it?",
     "core": true,
     "rank": 14,
-    "paretoCategory": [
-      "question",
-      "transaction"
-    ],
     "a1": true
   },
   "hvala_nasvidenje": {
@@ -85,9 +75,6 @@
     "gloss": "I don't understand",
     "core": true,
     "rank": 8,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "se_enkrat": {
@@ -96,9 +83,6 @@
     "gloss": "again, please",
     "core": true,
     "rank": 10,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "kako_se_rece": {
@@ -107,9 +91,6 @@
     "gloss": "how do you say ___?",
     "core": true,
     "rank": 7,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "prosim": {
@@ -118,10 +99,6 @@
     "gloss": "please",
     "core": true,
     "rank": 19,
-    "paretoCategory": [
-      "transaction",
-      "social_glue"
-    ],
     "a1": true
   },
   "hvala": {
@@ -130,9 +107,6 @@
     "gloss": "thank you",
     "core": true,
     "rank": 19,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "ja": {
@@ -141,9 +115,6 @@
     "gloss": "yes",
     "core": true,
     "rank": 20,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "ne": {
@@ -152,9 +123,6 @@
     "gloss": "no",
     "core": true,
     "rank": 20,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "moram_inf": {
@@ -173,9 +141,6 @@
     "core": true,
     "rank": 3,
     "predictableError": "wrong gender form ('rad' vs 'rada') for the speaker",
-    "paretoCategory": [
-      "transaction"
-    ],
     "a1": true
   },
   "en_masacc": {
@@ -184,9 +149,6 @@
     "gloss": "one ___, please (masc.)",
     "predictableError": "using feminine 'eno' with a masculine noun ('eno kruh') instead of 'en kruh'",
     "core": true,
-    "paretoCategory": [
-      "transaction"
-    ],
     "a1": true
   },
   "dve_dualacc": {
@@ -195,9 +157,6 @@
     "gloss": "two ___, please (dual)",
     "predictableError": "plural instead of the dual ('dve žemlje' instead of 'dve žemlji'), or masculine 'dva' for a feminine noun",
     "core": true,
-    "paretoCategory": [
-      "transaction"
-    ],
     "a1": true
   },
   "kruh": {
@@ -224,9 +183,6 @@
     "gloss": "can I pay by card?",
     "predictableError": "'s kartico' — using nominative 'kartica' instead of the instrumental after 's'",
     "core": true,
-    "paretoCategory": [
-      "transaction"
-    ],
     "a1": true
   },
   "ali_imate": {
@@ -235,10 +191,6 @@
     "gloss": "do you have ___?",
     "predictableError": "calquing English 'do you have' with an extra auxiliary; it's just 'Ali imate ___?', and the object stays accusative",
     "core": true,
-    "paretoCategory": [
-      "question",
-      "transaction"
-    ],
     "a1": true
   },
   "pol_kilograma": {
@@ -367,9 +319,6 @@
     "gloss": "sorry / excuse me (vi)",
     "predictableError": "'oprostite' is for apology/getting attention; not 'žal mi je' (which is regret/condolence)",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "lepo_vreme": {
@@ -561,10 +510,6 @@
     "gloss": "I am ___ (introducing yourself)",
     "predictableError": "the 'Moje ime je ___' calque instead of the natural 'Sem ___'; jaz is usually dropped",
     "core": true,
-    "paretoCategory": [
-      "identity",
-      "verb_core"
-    ],
     "a1": true
   },
   "pisem_se": {
@@ -573,9 +518,6 @@
     "gloss": "my surname is ___",
     "predictableError": "calquing 'moje ime je' for the surname; dropping the reflexive 'se'",
     "core": true,
-    "paretoCategory": [
-      "identity"
-    ],
     "a1": true
   },
   "zivim_v": {
@@ -584,10 +526,6 @@
     "gloss": "I live in ___",
     "predictableError": "locative after 'v' ('v Ljubljani', not 'v Ljubljana')",
     "core": true,
-    "paretoCategory": [
-      "identity",
-      "verb_core"
-    ],
     "a1": true
   },
   "sem_iz": {
@@ -596,9 +534,6 @@
     "gloss": "I am from ___",
     "predictableError": "genitive after 'iz' ('iz Amerike', not 'iz Amerika')",
     "core": true,
-    "paretoCategory": [
-      "identity"
-    ],
     "a1": true
   },
   "star_sem_let": {
@@ -607,9 +542,6 @@
     "gloss": "I am ___ years old",
     "predictableError": "gender ('star' masc. / 'stara' fem.); genitive plural 'let' after 5+",
     "core": true,
-    "paretoCategory": [
-      "identity"
-    ],
     "a1": true
   },
   "imam": {
@@ -618,10 +550,6 @@
     "gloss": "I have ___",
     "predictableError": "accusative object; negation is 'nimam', not 'ne imam'",
     "core": true,
-    "paretoCategory": [
-      "identity",
-      "verb_core"
-    ],
     "a1": true
   },
   "delam_kot": {
@@ -630,10 +558,6 @@
     "gloss": "I work as ___",
     "predictableError": "'kot' + nominative profession; gender of the profession noun",
     "core": true,
-    "paretoCategory": [
-      "identity",
-      "verb_core"
-    ],
     "a1": true
   },
   "kdo": {
@@ -641,9 +565,6 @@
     "sl": "kdo",
     "gloss": "who",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "kaj": {
@@ -651,9 +572,6 @@
     "sl": "kaj",
     "gloss": "what",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "kje": {
@@ -662,9 +580,6 @@
     "gloss": "where (location)",
     "predictableError": "'kje' (where at) vs 'kam' (where to)",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "kdaj": {
@@ -672,9 +587,6 @@
     "sl": "kdaj",
     "gloss": "when",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "kako": {
@@ -682,9 +594,6 @@
     "sl": "kako",
     "gloss": "how",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "koliko": {
@@ -693,9 +602,6 @@
     "gloss": "how much / how many",
     "predictableError": "genitive after 'koliko' ('koliko ljudi')",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "od_kod": {
@@ -703,9 +609,6 @@
     "sl": "od kod",
     "gloss": "from where",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "kam": {
@@ -714,9 +617,6 @@
     "gloss": "where (direction)",
     "predictableError": "'kam' (where to) vs 'kje' (where at)",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "zakaj": {
@@ -725,9 +625,6 @@
     "gloss": "why",
     "predictableError": "'zakaj' (why) vs 'zato' (therefore)",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "kako_ime": {
@@ -736,9 +633,6 @@
     "gloss": "what's your name? (vi)",
     "predictableError": "informal is 'Kako ti je ime?'; set phrase, not a 'what is your name' calque",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "od_kod_ste": {
@@ -747,9 +641,6 @@
     "gloss": "where are you from? (vi)",
     "predictableError": "informal 'Od kod si?'",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "koliko_star": {
@@ -758,9 +649,6 @@
     "gloss": "how old are you? (vi)",
     "predictableError": "informal 'Koliko si star/stara?'; gender star/stara",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "kje_je": {
@@ -769,10 +657,6 @@
     "gloss": "where is ___?",
     "predictableError": "keep the subject nominative ('Kje je postaja?')",
     "core": true,
-    "paretoCategory": [
-      "question",
-      "location_time"
-    ],
     "a1": true
   },
   "kje_zivite": {
@@ -781,9 +665,6 @@
     "gloss": "where do you live? (vi)",
     "predictableError": "informal 'Kje živiš?'",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "kaj_delate": {
@@ -792,9 +673,6 @@
     "gloss": "what do you do? (vi)",
     "predictableError": "informal 'Kaj delaš?'; means your job or your current activity",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "kaj_je_to": {
@@ -802,9 +680,6 @@
     "sl": "Kaj je to?",
     "gloss": "what is this?",
     "core": true,
-    "paretoCategory": [
-      "question"
-    ],
     "a1": true
   },
   "ob_kateri_uri": {
@@ -813,10 +688,6 @@
     "gloss": "at what time ___?",
     "predictableError": "'ob' + locative 'uri'",
     "core": true,
-    "paretoCategory": [
-      "question",
-      "location_time"
-    ],
     "a1": true
   },
   "kako_pridem_do": {
@@ -825,10 +696,6 @@
     "gloss": "how do I get to ___?",
     "predictableError": "genitive after 'do' ('do postaje')",
     "core": true,
-    "paretoCategory": [
-      "question",
-      "location_time"
-    ],
     "a1": true
   },
   "govorite_anglesko": {
@@ -837,10 +704,6 @@
     "gloss": "do you speak English? (vi)",
     "predictableError": "adverb 'angleško', not the noun 'angleščino'; informal 'Ali govoriš angleško?'",
     "core": true,
-    "paretoCategory": [
-      "question",
-      "social_glue"
-    ],
     "a1": true
   },
   "koliko_je_ura": {
@@ -848,10 +711,6 @@
     "sl": "Koliko je ura?",
     "gloss": "what time is it?",
     "core": true,
-    "paretoCategory": [
-      "question",
-      "location_time"
-    ],
     "a1": true
   },
   "kako_ste": {
@@ -860,10 +719,6 @@
     "gloss": "how are you? (vi)",
     "predictableError": "informal 'Kako si?'; 'kako' + copula, not a 'how are you doing' calque",
     "core": true,
-    "paretoCategory": [
-      "social_glue",
-      "question"
-    ],
     "a1": true
   },
   "lahko_dobim": {
@@ -872,9 +727,6 @@
     "gloss": "can I get ___? (everyday request)",
     "predictableError": "accusative object ('Lahko dobim kavo?'); 'lahko' + 1sg present is the whole request — no extra 'imam/želim'",
     "core": true,
-    "paretoCategory": [
-      "transaction"
-    ],
     "a1": true
   },
   "zelim": {
@@ -883,9 +735,6 @@
     "gloss": "I would like ___ (formal request)",
     "predictableError": "formal register — at a counter use 'rad bi' / 'lahko dobim', not 'želim'; accusative object",
     "core": true,
-    "paretoCategory": [
-      "transaction"
-    ],
     "a1": true
   },
   "z_gotovino": {
@@ -894,9 +743,6 @@
     "gloss": "with cash",
     "predictableError": "instrumental 'z gotovino', not 'z gotovina'",
     "core": true,
-    "paretoCategory": [
-      "transaction"
-    ],
     "a1": true
   },
   "grem_v": {
@@ -905,10 +751,6 @@
     "gloss": "I'm going to ___",
     "predictableError": "'v' vs 'na'; accusative of direction ('grem na pošto')",
     "core": true,
-    "paretoCategory": [
-      "location_time",
-      "verb_core"
-    ],
     "a1": true
   },
   "avtobus_gre": {
@@ -917,9 +759,6 @@
     "gloss": "the bus goes at ___",
     "predictableError": "'gre' and 'pelje' both natural; clock time is 'ob' + locative number ('ob petih')",
     "core": true,
-    "paretoCategory": [
-      "location_time"
-    ],
     "a1": true
   },
   "ob_uri": {
@@ -928,9 +767,6 @@
     "gloss": "at ___ o'clock",
     "predictableError": "clock time is 'ob' + LOCATIVE of the number ('ob petih', 'ob treh'), not 'ob ___ uri'",
     "core": true,
-    "paretoCategory": [
-      "location_time"
-    ],
     "a1": true
   },
   "zjutraj": {
@@ -938,9 +774,6 @@
     "sl": "zjutraj",
     "gloss": "in the morning",
     "core": true,
-    "paretoCategory": [
-      "location_time"
-    ],
     "a1": true
   },
   "popoldne": {
@@ -948,9 +781,6 @@
     "sl": "popoldne",
     "gloss": "in the afternoon",
     "core": true,
-    "paretoCategory": [
-      "location_time"
-    ],
     "a1": true
   },
   "zvecer": {
@@ -958,9 +788,6 @@
     "sl": "zvečer",
     "gloss": "in the evening",
     "core": true,
-    "paretoCategory": [
-      "location_time"
-    ],
     "a1": true
   },
   "jutri": {
@@ -968,9 +795,6 @@
     "sl": "jutri",
     "gloss": "tomorrow",
     "core": true,
-    "paretoCategory": [
-      "location_time"
-    ],
     "a1": true
   },
   "danes": {
@@ -978,9 +802,6 @@
     "sl": "danes",
     "gloss": "today",
     "core": true,
-    "paretoCategory": [
-      "location_time"
-    ],
     "a1": true
   },
   "stevilo_nic": {
@@ -1087,9 +908,6 @@
     "sl": "Živjo",
     "gloss": "hi / bye (informal)",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "zdravo": {
@@ -1097,9 +915,6 @@
     "sl": "Zdravo",
     "gloss": "hi / bye (informal)",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "adijo": {
@@ -1107,9 +922,6 @@
     "sl": "Adijo",
     "gloss": "bye (informal)",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "hej": {
@@ -1117,9 +929,6 @@
     "sl": "Hej",
     "gloss": "hi (informal)",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "cau": {
@@ -1127,9 +936,6 @@
     "sl": "Čau",
     "gloss": "hi / bye (casual)",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "lahko_noc": {
@@ -1137,9 +943,6 @@
     "sl": "Lahko noč.",
     "gloss": "good night",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "nasvidenje": {
@@ -1147,9 +950,6 @@
     "sl": "Nasvidenje",
     "gloss": "goodbye",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "ponovite_prosim": {
@@ -1158,9 +958,6 @@
     "gloss": "please repeat (vi)",
     "predictableError": "informal 'Ponovi, prosim.'; distinct from 'Še enkrat, prosim.' (repeat vs again)",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "pocasi_prosim": {
@@ -1168,9 +965,6 @@
     "sl": "Počasi, prosim.",
     "gloss": "slowly, please",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "da": {
@@ -1179,9 +973,6 @@
     "gloss": "yes (affirmation)",
     "predictableError": "'da' is the more formal/emphatic 'yes'; the colloquial default is 'ja' — both are used",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "vsec_mi_je": {
@@ -1190,9 +981,6 @@
     "gloss": "I like ___",
     "predictableError": "dative 'mi'; a plural liked-thing takes 'všeč so mi'",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "ni_mi_vsec": {
@@ -1200,9 +988,6 @@
     "sl": "Ni mi všeč.",
     "gloss": "I don't like it",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "oprosti": {
@@ -1211,9 +996,6 @@
     "gloss": "sorry / excuse me (ti)",
     "predictableError": "the 'ti' form; 'oprostite' is the 'vi' form — both used",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "hvala_lepa": {
@@ -1222,9 +1004,6 @@
     "gloss": "thank you very much",
     "predictableError": "'lepa' agrees with fem. 'hvala' — the slip is 'hvala lepo'",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "me_veseli": {
@@ -1232,9 +1011,6 @@
     "sl": "Me veseli.",
     "gloss": "nice to meet you",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "ne_vem": {
@@ -1243,9 +1019,6 @@
     "gloss": "I don't know",
     "predictableError": "distinct from 'Ne razumem.' (don't know vs don't understand)",
     "core": true,
-    "paretoCategory": [
-      "verb_core"
-    ],
     "a1": true
   },
   "jem": {
@@ -1254,9 +1027,6 @@
     "gloss": "I eat ___",
     "predictableError": "accusative object ('jem juho')",
     "core": true,
-    "paretoCategory": [
-      "verb_core"
-    ],
     "a1": true
   },
   "pijem": {
@@ -1265,9 +1035,6 @@
     "gloss": "I drink ___",
     "predictableError": "accusative object ('pijem vodo')",
     "core": true,
-    "paretoCategory": [
-      "verb_core"
-    ],
     "a1": true
   },
   "gledam": {
@@ -1276,9 +1043,6 @@
     "gloss": "I watch / look at ___",
     "predictableError": "accusative object",
     "core": true,
-    "paretoCategory": [
-      "verb_core"
-    ],
     "a1": true
   },
   "kupim": {
@@ -1287,10 +1051,6 @@
     "gloss": "I'd like to buy ___",
     "predictableError": "bare 'kupim' reads future/generic; use 'rad bi kupil' / 'kupil bom'; gender on the l-participle + accusative object",
     "core": true,
-    "paretoCategory": [
-      "verb_core",
-      "transaction"
-    ],
     "a1": true
   },
   "ne_govorim_dobro": {
@@ -1299,9 +1059,6 @@
     "gloss": "I don't speak Slovene well",
     "predictableError": "adverb 'dobro'; 'slovensko' (adv.), not the noun 'slovenščino'",
     "core": true,
-    "paretoCategory": [
-      "social_glue"
-    ],
     "a1": true
   },
   "hocem": {
@@ -1310,9 +1067,6 @@
     "gloss": "I want ___",
     "predictableError": "'hočem' is blunt for a request — use 'rad bi' / 'lahko dobim' politely; accusative object",
     "core": true,
-    "paretoCategory": [
-      "verb_core"
-    ],
     "a1": true
   },
   "izposoditi_si": {
@@ -3495,6 +3249,20 @@
     "gloss": "daughter (everyday; the standard/written form is 'hči')",
     "predictableError": "'hčerka' declines regularly — 'imam hčerko', 'dve hčerki' — while the standard 'hči' does not: its accusative is 'hčer' and its plural 'hčere'. It is not a diminutive; that is 'hčerkica'.",
     "core": false,
+    "a1": true
+  },
+  "od_kod_si": {
+    "kind": "chunk",
+    "sl": "Od kod si?",
+    "gloss": "Where are you from? (informal, ti)",
+    "predictableError": "beginners build it off English and say 'Od kje si?' or 'Kje si od?'; the fixed phrase is 'od kod' — and with a friend it's the ti-form 'si', not 'Od kod ste?'",
+    "a1": true
+  },
+  "nisem_iz": {
+    "kind": "pattern",
+    "sl": "Nisem iz ___.",
+    "gloss": "I'm not from ___.",
+    "predictableError": "beginners split the negative into 'ne sem' on the English model; it's the one fused word 'nisem', and the country stays genitive after 'iz' — 'iz Slovenije', not 'iz Slovenija'",
     "a1": true
   }
 }

@@ -25,6 +25,10 @@
         {
           "level": 2,
           "levelLabel": "Basic"
+        },
+        {
+          "level": 3,
+          "levelLabel": "Basic"
         }
       ]
     },
