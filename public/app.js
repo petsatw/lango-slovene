@@ -809,8 +809,11 @@ let sceneSlowPass = null;
 function sceneSay(text) {
   if (scene.audio !== "ready") return Promise.resolve();
   return new Promise((resolve) => {
-    scenePendingSay?.();  // whatever is playing is about to be stopped — release its awaiter first
+    // STOP FIRST, then release. `done` clears `dialogueAudio`, so releasing the awaiter ahead of the
+    // stop leaves `stopDialogueAudio` with nothing to pause and the old clip playing on underneath
+    // the new one — two voices at once, which is what an interrupting re-speak would otherwise be.
     stopDialogueAudio();
+    scenePendingSay?.();
     const params = new URLSearchParams({ text });
     if (scene.voice) params.set("voice", scene.voice);
     const audio = new Audio(`/api/speak?${params.toString()}`);
@@ -1016,9 +1019,11 @@ async function scenePlayBeat(npc, { replay = false } = {}) {
   gloss.textContent = "";
   $("scene-prompt").classList.remove("shown");
   sceneSetPhase("speaking");              // the button stays put and shows that the character has the floor
-  // The tortoise lights only once the line has been SAID — "slower" is not an answer to a sentence the
-  // learner has not heard yet, and a re-speak that cuts across the first pass would be two voices.
-  sceneChips({ slower: false, back: scene.trailAt > 0, skip: !npc.terminal });
+  // The tortoise is live from the character's first syllable. Someone who needs it slower knows within
+  // two words, and making them sit through the rest of a sentence they are not following before they
+  // may ask is the opposite of help. Tapping it INTERRUPTS: the natural pass stops mid-word and the
+  // slow one starts.
+  sceneChips({ slower: !!npc.slowSL, back: scene.trailAt > 0, skip: !npc.terminal });
 
   // The line lands as SOUND, then the silence is held, and only then does it become text (beats 19-22).
   // These are three steps in sequence, not three timers racing: a hold that runs concurrently with the
@@ -1029,14 +1034,16 @@ async function scenePlayBeat(npc, { replay = false } = {}) {
   // whole sentence, and the learner cannot match what they hear to what they are reading.
   sceneCaption(npc.sl, { focus: npc.focusSpan });
   if (npc.captionLeadMs) await sleep(npc.captionLeadMs);
-  await sceneSay(npc.sl);
+  await sceneAwaitSlow();     // asked for before he even started: the slow pass goes first, uncut
   if (!live()) return;
-
-  // The slow re-speak is NOT automatic. Replaying every line slower taught that the first pass need not
-  // be listened to, and it spent the beat that should belong to the learner's silence. It now happens
-  // only when it is asked for: the learner lets the wait run out (the `respeak` stall rung) or taps the
-  // tortoise, which lights here.
-  sceneChips({ slower: !!npc.slowSL, back: scene.trailAt > 0, skip: !npc.terminal });
+  await sceneSay(npc.sl);
+  // The tortoise may have cut that line short — `sceneSay` returns the moment the re-speak takes the
+  // channel, so without this the beat would carry on over the top of the slow version it just started.
+  // The slow re-speak is NOT automatic: replaying every line slower taught that the first pass need not
+  // be listened to, and it spent the beat that should belong to the learner's silence. It happens only
+  // when it is asked for — the `respeak` stall rung, or the tortoise.
+  await sceneAwaitSlow();
+  if (!live()) return;
 
   // The gloss comes second when it comes at all — Slovene first, English confirming (beats 64-65, 82).
   if (npc.glossPolicy === "after") {
