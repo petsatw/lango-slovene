@@ -23,6 +23,7 @@ import { pacingFor } from "./pacing";
 import { advanceDialogue } from "./adapters/dialogue-scripted";
 import { getLearnable, LEARNABLES } from "./learnables";
 import { buildGalleryHtml } from "./scripts/gallery";
+import { frameFor } from "./scripts/dialogue-lib";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -196,23 +197,49 @@ app.post("/api/scene", (req, res) => {
   // the sentence they said.
   const keyPhrases = () => {
     const e3 = getE3();
-    const voiceTag = e3.voiceTagFor(scene.voices.client);
     const rows: { new: any[]; review: any[] } = { new: [], review: [] };
     const seen = new Set<string>();
+
+    // Resolve a client line's authored voicing pointer into something the renderer can play: the SOURCE
+    // clip's text (what /api/speak keys on), the voice it was built in, and the window to play.
+    //
+    // The learner's own lines are never synthesized, so the button can only ever replay a clip of the
+    // CHARACTER saying the phrase — here or in another level of the same scenario. Which delivery, and
+    // which words of it, was judged upstream by `voice-key-phrases` and checked by `lint:keyphrase-audio`;
+    // nothing is decided here. This resolves and, crucially, VERIFIES: a pointer at a node that no longer
+    // exists, is not the character's, or has no clip on disk yields no button rather than a broken one or
+    // a billed live synthesis.
+    const resolvePlay = (n: (typeof scene.nodes)[string]) => {
+      const v = n.audio;
+      if (!v) return null;
+      const src = spoken.find((d) => d.level === v.level);
+      const node = src?.nodes[v.from];
+      if (!src || !node || node.speaker !== "npc") return null;
+      const voice = src.voices.npc;
+      if (!store.has(store.audioKey(e3.name, e3.voiceTagFor(voice), node.sl), "audio")) return null;
+      return {
+        text: node.sl,
+        voice,
+        ...(v.kind === "span" ? { startMs: v.startMs, endMs: v.endMs } : {}),
+      };
+    };
+
     for (const n of Object.values(scene.nodes)) {
       // A turn that expects no Slovene (the learner saying their own name) is not a phrase they met.
       if (n.speaker !== "client" || !/\p{L}/u.test(n.sl) || seen.has(n.sl)) continue;
       seen.add(n.sl);
       const isNew = (n.learnables ?? []).some((id) => scene.introduces.includes(id));
+      const play = resolvePlay(n);
       rows[isNew ? "new" : "review"].push({
-        sl: n.sl,
+        // Where the delivery fills the frame's slot with the character's own word, the phrase is shown as
+        // the SHAPE — "Ne govorim dobro ___." — so no word is on screen that the ear will not hear. The
+        // shape is what the lesson taught; the filler never was.
+        sl: play && n.audio?.heard ? frameFor(n.sl, n.audio.heard) : n.sl,
         en: n.en,
-        // The play affordance appears only where the bytes are already on disk. A miss would live-
-        // synthesize, and audio is built on the operator's instruction alone.
-        playable: store.has(store.audioKey(e3.name, voiceTag, n.sl), "audio"),
+        play,
       });
     }
-    return { voice: scene.voices.client, ...rows };
+    return { ...rows };
   };
 
   try {

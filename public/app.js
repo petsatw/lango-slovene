@@ -1181,18 +1181,47 @@ function renderKeyPhrases(phrases) {
       en.textContent = r.en;
       sl.addEventListener("click", () => en.classList.remove("held"));
       row.appendChild(sl);
-      if (r.playable) {
+      // `play` names the CHARACTER's clip that models this phrase, and — when the phrase is only part of
+      // that line — the window within it. Absent means there is no honest way to voice this one, which is
+      // a real answer and not a failure: a badly-cut excerpt teaches wrong prosody.
+      if (r.play) {
         const play = document.createElement("button");
         play.type = "button";
         play.className = "replay";
         play.title = "Hear it";
         play.textContent = "▶";
         play.addEventListener("click", () => {
-          const params = new URLSearchParams({ text: r.sl });
-          if (phrases.voice) params.set("voice", phrases.voice);
+          const params = new URLSearchParams({ text: r.play.text });
+          if (r.play.voice) params.set("voice", r.play.voice);
           stopDialogueAudio();
-          dialogueAudio = new Audio(`/api/speak?${params.toString()}`);
-          dialogueAudio.play().catch(() => {});
+          const audio = new Audio(`/api/speak?${params.toString()}`);
+          dialogueAudio = audio;
+          if (typeof r.play.startMs === "number") {
+            // A span is padded — 60ms before, 120ms after. Cut exactly on the measured boundaries and the
+            // onset consonant is clipped and the final one swallowed, which in a language lesson is
+            // precisely the wrong thing to lose. The pad also absorbs mp3 seek granularity.
+            const from = Math.max(0, (r.play.startMs - 60) / 1000);
+            const to = (r.play.endMs + 120) / 1000;
+            // Only ever stop OUR clip. Another phrase pressed meanwhile replaces `dialogueAudio`, and a
+            // stop still pending from this one would cut that one off mid-word.
+            const stopIfMine = () => { if (dialogueAudio === audio) stopDialogueAudio(); };
+            // Seeking before the browser knows the duration silently does nothing, so the seek waits for
+            // metadata rather than firing on click.
+            audio.addEventListener("loadedmetadata", () => { audio.currentTime = from; }, { once: true });
+            // `timeupdate` fires only about four times a second, so stopping on it alone overruns the end
+            // of the span by up to ~250ms — measured. Every span in slavko-intro happens to be
+            // sentence-final, so the overrun lands in silence; one that is not would leak the onset of the
+            // next word, which is precisely the kind of "sounds fine, teaches wrong" failure this whole
+            // design guards against. So the stop is a TIMER armed the moment playback actually begins,
+            // with timeupdate kept as the backstop for a throttled or suspended tab.
+            let timer = null;
+            audio.addEventListener("playing", () => {
+              clearTimeout(timer);
+              timer = setTimeout(stopIfMine, Math.max(0, (to - audio.currentTime) * 1000));
+            });
+            audio.addEventListener("timeupdate", () => { if (audio.currentTime >= to) stopIfMine(); });
+          }
+          audio.play().catch(() => {});
         });
         row.appendChild(play);
       }
