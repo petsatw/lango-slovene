@@ -50,7 +50,9 @@ Answers to **AGENTS.md › How the lessons teach**. Read it first; it is the law
 - **Not yet reused** — from **Said before**, every id the learner has produced **only in the lesson that introduced it** and in no lesson since. Each is a candidate for this lesson: include it if there is a good, natural way to, doing something different from last time rather than recited. Where several fit naturally, prefer the one that has gone longest without being reused. Where one does not fit, leave it out and give a one-line reason — "no room" is not a reason, so name what took the room.
 - **The closing line** — what the character says as this conversation ends. It belongs to this lesson: it uses this lesson's material, and it reads as a person finishing a conversation.
 
-Size against the level's band (AGENTS.md › Lesson shape). Beginner: 9–18 nodes, turns ≈ two-thirds of nodes, one new shape. Where in the band it lands follows from how much play the shape offers, never from a length target.
+Size against the level's band (AGENTS.md › Lesson shape). Beginner: 9–18 nodes, one new shape. Where in the band it lands follows from how much play the shape offers, never from a length target.
+
+**The split is a floor, not a target.** Beginner: at least two learner turns for every three npc nodes. Clear it, then improve on it wherever the rest of the lesson allows. The floor exists because a beginner needs the situation set and the language modelled before they can say anything — it is what that scaffolding costs, not what to aim for. The learner's own voice is the main event; every node above the floor is a node that has to earn its place against a turn.
 
 ### 1 — Parse the manifest-shaped brief (J)
 Fix: the **situation**, a **register** (ti/vi + pogovorni/knjižni), the tutor **role** (Slovene role noun, e.g. `natakarica`, or a named character who appears as himself), the **voices** (`npc` + `client` catalog voice profiles — and the learner's gender, which fixes first-person forms), the **advance mode**, and the **levels** to author (each: a `levelLabel`, a `title`, and its ordered **objectives** as EN meanings + the grammar point each teaches). Pick a kebab/lowercase `scenarioId`. If the scenario already exists, you are EXTENDING it — read its manifest + existing levels first so new levels don't re-introduce covered learnables.
@@ -70,6 +72,8 @@ Set `dialogueAdvance` in the reconcile input to match. Absent ⇒ `"tap"`.
 
 ### 2 — Design the per-level tree skeletons (J)
 From the **template + sizing** in docs/rehearsal-dialogues.md (L1 Survival ≈16 nodes, L2 Basic-A1 ≈26, L3 Full-A1 ≈52; spine = npc node → **2 client choices** → each client's single `next` = the npc response → branches **re-converge** onto shared later nodes; `root` is an `npc` node; every path ends at `next: []`). For each level author the node graph as `{ <id>: { speaker, intentEN, next } }` — ids + who speaks + the English intent + the branching. Ensure each level's objectives are each demonstrated on a reachable path, and are distinct across the scenario's levels.
+
+**Count turns and npc nodes before you dispatch.** This is the last point where the shape is free to change: once LS has written the level, changing it costs a re-dispatch, and once the audio is built it costs clips. If you are sitting on the floor, walk the npc nodes and ask which is doing work a turn could do — a line the learner could say instead of hear, a confirmation they could give, an answer they could supply. Two npc beats in a row are worth a second look; four in a row are a stretch the learner spends standing still.
 
 **For an `advance: "audio"` scene, timing is a PROFILE, not per-node numbers.** Every engineered silence
 in a spoken lesson lives in `server/catalog/pacing.json` — the on-ramp dwell, the caption lead, the read
