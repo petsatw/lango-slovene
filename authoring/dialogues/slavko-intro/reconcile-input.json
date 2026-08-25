@@ -594,10 +594,10 @@
         },
         "n16": {
           "speaker": "npc",
-          "sl": "Ja, ja! Adijo!",
-          "en": "Yes, yes! Bye!",
-          "deliverySL": "[laughing] Ja, ja! Adijo!",
-          "glossPolicy": "tap",
+          "sl": "Ti pa dobro angleško! Adijo!",
+          "en": "You, though — good English! Bye!",
+          "deliverySL": "[amused] Ti pa dobro angleško! Adijo!",
+          "glossPolicy": "after",
           "stallHandlers": [
             {
               "kind": "pulse"
@@ -611,7 +611,8 @@
             "c9"
           ],
           "learnables": [
-            "ja",
+            "pa",
+            "govorim_lang",
             "adijo"
           ]
         },
