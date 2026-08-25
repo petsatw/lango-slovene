@@ -16,8 +16,9 @@
 // longer reachable. This lint reports that as a re-key (copy the bytes) rather than sending you off to
 // regenerate audio you have already paid for.
 //
-// Client nodes are never checked: in a spoken scene the client line is what the LEARNER says aloud and
-// is never played back, so it has no clip by design.
+// Client nodes are never checked: in a spoken scene the client line is what the LEARNER says aloud, so it
+// is never synthesized and has no clip of its own by design. Where the close screen offers to play one, it
+// is replaying a clip of the CHARACTER saying the same shape — `lint:keyphrase-audio` checks those.
 
 import "dotenv/config"; // voice bindings live in env — without this every computed key is wrong
 import { readdirSync, readFileSync, existsSync } from "node:fs";

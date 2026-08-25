@@ -307,7 +307,10 @@ same `kruh` the learner has been building all along.
   `npc` node**; every path ends at `next: []`.
 - **`deliverySL`:** optional, **npc lines only** — the same line with **one** eleven_v3 delivery tag matching
   the character (the restaurant waiter uses a warm `[warmly] …`; the bakery uses `[hesitant]`). **Client
-  lines carry no `deliverySL`** (the learner's own voice needs no direction).
+  lines carry no `deliverySL`** — a client line is a line the learner will say, not a performance to
+  direct. (In a **spoken** scene client lines are not synthesized at all. Nothing in this app records or
+  plays back the learner's own voice; where the close screen offers to play a phrase, it is replaying the
+  character's clip — see [keyphrase-span-playback.md](keyphrase-span-playback.md).)
 - **Register + voices:** hold the declared register across every line (a toast among friends is naturally
   `ti` and is not a break). Match the client lines to the **learner's gender** (the restaurant client Slavko
   is male: `rad bi`, `vzel bom`, `zame`).
