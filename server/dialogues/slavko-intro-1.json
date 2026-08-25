@@ -104,7 +104,19 @@
       ],
       "next": [
         "n3"
-      ]
+      ],
+      "audio": {
+        "from": "n2",
+        "level": 2,
+        "kind": "span",
+        "words": [
+          2,
+          3
+        ],
+        "startMs": 1459,
+        "endMs": 2139,
+        "heard": "Sem Slavko."
+      }
     },
     "n3": {
       "speaker": "npc",
@@ -136,7 +148,18 @@
       "learnables": [
         "adijo"
       ],
-      "next": []
+      "next": [],
+      "audio": {
+        "from": "n3",
+        "level": 1,
+        "kind": "span",
+        "words": [
+          5,
+          5
+        ],
+        "startMs": 2240,
+        "endMs": 2659
+      }
     }
   }
 }

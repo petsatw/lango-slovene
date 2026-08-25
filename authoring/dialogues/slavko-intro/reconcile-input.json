@@ -112,7 +112,19 @@
           ],
           "next": [
             "n3"
-          ]
+          ],
+          "audio": {
+            "from": "n2",
+            "level": 2,
+            "kind": "span",
+            "words": [
+              2,
+              3
+            ],
+            "startMs": 1459,
+            "endMs": 2139,
+            "heard": "Sem Slavko."
+          }
         },
         "n3": {
           "speaker": "npc",
@@ -144,7 +156,18 @@
           "learnables": [
             "adijo"
           ],
-          "next": []
+          "next": [],
+          "audio": {
+            "from": "n3",
+            "level": 1,
+            "kind": "span",
+            "words": [
+              5,
+              5
+            ],
+            "startMs": 2240,
+            "endMs": 2659
+          }
         }
       },
       "catalog": {
@@ -211,7 +234,12 @@
           ],
           "next": [
             "n2"
-          ]
+          ],
+          "audio": {
+            "from": "n1",
+            "level": 2,
+            "kind": "whole"
+          }
         },
         "n2": {
           "speaker": "npc",
@@ -259,7 +287,19 @@
           ],
           "next": [
             "n4"
-          ]
+          ],
+          "audio": {
+            "from": "n2",
+            "level": 2,
+            "kind": "span",
+            "words": [
+              2,
+              3
+            ],
+            "startMs": 1459,
+            "endMs": 2139,
+            "heard": "Sem Slavko."
+          }
         },
         "n4": {
           "speaker": "npc",
@@ -328,7 +368,13 @@
           ],
           "next": [
             "n7"
-          ]
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 2,
+            "kind": "whole",
+            "heard": "Govorim slovensko."
+          }
         },
         "n7": {
           "speaker": "npc",
@@ -373,7 +419,12 @@
           ],
           "next": [
             "n9"
-          ]
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 2,
+            "kind": "whole"
+          }
         },
         "n9": {
           "speaker": "npc",
@@ -407,7 +458,12 @@
           ],
           "next": [
             "n10"
-          ]
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 2,
+            "kind": "whole"
+          }
         },
         "n10": {
           "speaker": "npc",
@@ -484,7 +540,19 @@
           ],
           "next": [
             "n14"
-          ]
+          ],
+          "audio": {
+            "from": "n12",
+            "level": 2,
+            "kind": "span",
+            "words": [
+              3,
+              6
+            ],
+            "startMs": 3220,
+            "endMs": 4639,
+            "heard": "Ne govorim dobro angleško."
+          }
         },
         "n14": {
           "speaker": "npc",
@@ -516,7 +584,13 @@
           ],
           "next": [
             "n16"
-          ]
+          ],
+          "audio": {
+            "from": "n11",
+            "level": 2,
+            "kind": "whole",
+            "heard": "Govorim dobro slovensko."
+          }
         },
         "n16": {
           "speaker": "npc",
@@ -549,7 +623,18 @@
           "learnables": [
             "adijo"
           ],
-          "next": []
+          "next": [],
+          "audio": {
+            "from": "n3",
+            "level": 1,
+            "kind": "span",
+            "words": [
+              5,
+              5
+            ],
+            "startMs": 2240,
+            "endMs": 2659
+          }
         }
       },
       "catalog": {
@@ -628,7 +713,12 @@
           ],
           "next": [
             "n2"
-          ]
+          ],
+          "audio": {
+            "from": "n1",
+            "level": 2,
+            "kind": "whole"
+          }
         },
         "n2": {
           "speaker": "npc",
@@ -703,7 +793,18 @@
           ],
           "next": [
             "n5"
-          ]
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 3,
+            "kind": "span",
+            "words": [
+              1,
+              1
+            ],
+            "startMs": 839,
+            "endMs": 979
+          }
         },
         "n5": {
           "speaker": "npc",
@@ -747,7 +848,18 @@
           ],
           "next": [
             "n6"
-          ]
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 3,
+            "kind": "span",
+            "words": [
+              7,
+              9
+            ],
+            "startMs": 4480,
+            "endMs": 5859
+          }
         },
         "n6": {
           "speaker": "npc",
@@ -805,7 +917,19 @@
           ],
           "next": [
             "n7"
-          ]
+          ],
+          "audio": {
+            "from": "n9",
+            "level": 3,
+            "kind": "span",
+            "words": [
+              1,
+              3
+            ],
+            "startMs": 1139,
+            "endMs": 1919,
+            "heard": "Sem iz Ljubljane."
+          }
         },
         "n7": {
           "speaker": "npc",
@@ -844,7 +968,12 @@
           ],
           "next": [
             "n8"
-          ]
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 2,
+            "kind": "whole"
+          }
         },
         "n8": {
           "speaker": "npc",
@@ -887,7 +1016,18 @@
           ],
           "next": [
             "n9"
-          ]
+          ],
+          "audio": {
+            "from": "n6b",
+            "level": 3,
+            "kind": "span",
+            "words": [
+              2,
+              4
+            ],
+            "startMs": 1399,
+            "endMs": 1879
+          }
         },
         "n9": {
           "speaker": "npc",
@@ -939,7 +1079,18 @@
           "learnables": [
             "adijo"
           ],
-          "next": []
+          "next": [],
+          "audio": {
+            "from": "n3",
+            "level": 1,
+            "kind": "span",
+            "words": [
+              5,
+              5
+            ],
+            "startMs": 2240,
+            "endMs": 2659
+          }
         }
       },
       "catalog": {
