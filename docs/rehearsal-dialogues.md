@@ -332,12 +332,15 @@ same `kruh` the learner has been building all along.
 - Mint in **citation form** — vocabulary = nom. sg. lemma; pattern = a frame with `___`; chunk = the fixed
   phrase — with a `gloss` and the **one predictable beginner error**. Propose a snake_case id; the reconcile
   owns final id assignment.
-- **Cite a phrase addressed to "you" in the FAMILIAR (ti) form.** The polite twin is not a second learnable,
-  for the same reason every conjugation of a verb is not: politeness is one system, carried by `vikanje`,
-  and a lesson teaches it directly. So `Kje živiš?` is the entry and `Kje živite?` is that entry spoken
-  politely. A **vi line reuses the ti-cited learnable**, exactly as `kavo` reuses `kava` — it is the same
-  lexical item, inflected. A formal scenario's lines stay in vi and tag the ti entry; that is reuse, not
-  unminted language.
+- **A phrase addressed to "you" is cited ONCE, in the form the learner will actually say it.** The other
+  register is not a second learnable, for the same reason every conjugation of a verb is not: politeness is
+  one system, carried by `vikanje`, and a lesson teaches it directly.
+  Which form that is depends on who the phrase is said to. Things you say to friends are cited in **ti** —
+  `Kje živiš?`, `Kako si?`, `Kaj delaš?`. Things you only ever say to a stranger are cited in **vi**, because
+  a learner who produces the familiar form there will not be understood as intending it —
+  `Ali govorite angleško?`, `Ponovite, prosim.`, `Ali imate ___?`. Pick by usage, never by a default register.
+  The other register then **reuses** the entry, exactly as `kavo` reuses `kava` — same lexical item,
+  inflected. A line in the register the entry is not cited in is reuse, not unminted language.
   Plural that is genuinely **plural** is untouched by this: `Ali ste odprti?` addresses a business and its
   staff, so it stays plural — the rule is about vi-as-politeness, not about the plural.
 

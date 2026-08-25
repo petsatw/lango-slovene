@@ -686,8 +686,8 @@
   },
   "govorite_anglesko": {
     "kind": "chunk",
-    "sl": "Ali govoriš angleško?",
-    "gloss": "do you speak English? (ti)",
+    "sl": "Ali govorite angleško?",
+    "gloss": "do you speak English? (vi — you ask a stranger)",
     "predictableError": "the slot takes the ADVERB 'angleško', never the noun 'angleščino' or the adjective 'angleški'",
     "core": true,
     "a1": true
@@ -940,9 +940,9 @@
   },
   "ponovite_prosim": {
     "kind": "chunk",
-    "sl": "Ponovi, prosim.",
-    "gloss": "please repeat that (ti)",
-    "predictableError": "distinct from 'Še enkrat, prosim.' (once more, please) — 'Ponovi' asks for the same words back; the ti imperative is the bare 'Ponovi', with no added 'ti'",
+    "sl": "Ponovite, prosim.",
+    "gloss": "please repeat that (vi — usually to a stranger)",
+    "predictableError": "distinct from 'Še enkrat, prosim.' (once more, please) — 'Ponovite' asks for the same words back",
     "core": true,
     "a1": true
   },
@@ -1431,9 +1431,9 @@
   },
   "ali_mi_poveste": {
     "kind": "pattern",
-    "sl": "Ali mi lahko poveš ___?",
-    "gloss": "could you tell me ___? (ti)",
-    "predictableError": "dropping the dative clitic 'mi' (to me) — 'Ali lahko poveš' — where the whole point of the frame is that you are being told something",
+    "sl": "Ali mi lahko poveste ___?",
+    "gloss": "could you tell me ___? (vi — asking a stranger)",
+    "predictableError": "dropping the dative clitic 'mi' (to me) — 'Ali lahko poveste' — where the whole point of the frame is that you are being told something",
     "core": true,
     "a1": true
   },
