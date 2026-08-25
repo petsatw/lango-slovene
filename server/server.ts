@@ -440,6 +440,28 @@ app.get("/api/speak", async (req, res) => {
     res.setHeader("Content-Type", "audio/mpeg");
     res.setHeader("Cache-Control", "no-store");
     res.setHeader("X-Audio-Cache", "hit");
+    // A cached clip is SEEKABLE. Key Phrases plays a word range of one of the character's lines by
+    // setting `currentTime`, and a media element will only seek a resource whose server advertises byte
+    // ranges — without `Accept-Ranges` the assignment is silently ignored, the clip plays from 0, and the
+    // learner hears the whole sentence instead of their phrase. It fails quietly and looks like nothing
+    // happened, which is why it is handled here rather than left to the renderer to work around.
+    //
+    // Only the cache-hit path can do this: a live synthesis is streamed as it arrives, with no length to
+    // report and nothing to seek within. That is fine — nothing seeks a live clip.
+    res.setHeader("Accept-Ranges", "bytes");
+    const range = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range ?? ""));
+    if (range) {
+      const last = cached.length - 1;
+      const start = range[1] ? Number(range[1]) : 0;
+      const end = range[2] ? Math.min(Number(range[2]), last) : last;
+      if (!Number.isFinite(start) || start > last || end < start) {
+        res.setHeader("Content-Range", `bytes */${cached.length}`);
+        return res.status(416).end();
+      }
+      res.status(206);
+      res.setHeader("Content-Range", `bytes ${start}-${end}/${cached.length}`);
+      return res.end(cached.subarray(start, end + 1));
+    }
     return res.end(cached);
   }
 
