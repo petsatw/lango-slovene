@@ -292,7 +292,8 @@
         "lep_pozdrav",
         "hvala_za",
         "veselim_se",
-        "pozor"
+        "pozor",
+        "vikanje"
       ],
       "scenarios": [
         {
@@ -344,7 +345,6 @@
         "koliko_star",
         "naslov",
         "ne_govorim_dobro",
-        "od_kod_ste",
         "od_kod_si",
         "pisem_se",
         "potni_list",
@@ -353,7 +353,6 @@
         "nisem_iz",
         "star_sem_let",
         "zivim_v",
-        "govorim_slovensko",
         "to_je",
         "leto",
         "na_sliki",

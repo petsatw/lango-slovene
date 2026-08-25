@@ -14,12 +14,6 @@
     "a1": true,
     "core": true
   },
-  "govorim_slovensko": {
-    "kind": "chunk",
-    "sl": "Govorim slovensko.",
-    "gloss": "I speak Slovene.",
-    "a1": true
-  },
   "eno_femacc": {
     "kind": "pattern",
     "sl": "Eno ___, prosim.",
@@ -628,26 +622,18 @@
     "a1": true
   },
   "kako_ime": {
-    "kind": "chunk",
-    "sl": "Kako vam je ime?",
-    "gloss": "what's your name? (vi)",
-    "predictableError": "informal is 'Kako ti je ime?'; set phrase, not a 'what is your name' calque",
-    "core": true,
-    "a1": true
-  },
-  "od_kod_ste": {
-    "kind": "chunk",
-    "sl": "Od kod ste?",
-    "gloss": "where are you from? (vi)",
-    "predictableError": "informal 'Od kod si?'",
+    "kind": "pattern",
+    "sl": "Kako ___ je ime?",
+    "gloss": "what is ___ name? — the slot takes the dative pronoun (ti / vam = your, mu = his, ji = her)",
+    "predictableError": "the slot takes the DATIVE — never a possessive; 'Kako je tvoje ime?' is the English calque",
     "core": true,
     "a1": true
   },
   "koliko_star": {
     "kind": "chunk",
-    "sl": "Koliko ste stari?",
-    "gloss": "how old are you? (vi)",
-    "predictableError": "informal 'Koliko si star/stara?'; gender star/stara",
+    "sl": "Koliko si star / stara?",
+    "gloss": "how old are you? (ti — 'star' to a man, 'stara' to a woman)",
+    "predictableError": "the adjective agrees with the person you are ASKING, not with you — 'Koliko si star?' to a man, 'Koliko si stara?' to a woman",
     "core": true,
     "a1": true
   },
@@ -661,17 +647,17 @@
   },
   "kje_zivite": {
     "kind": "chunk",
-    "sl": "Kje živite?",
-    "gloss": "where do you live? (vi)",
-    "predictableError": "informal 'Kje živiš?'",
+    "sl": "Kje živiš?",
+    "gloss": "where do you live? (ti)",
+    "predictableError": "'kje' (where at) not 'kam' (where to); the answer takes the locative — 'Živim v Ljubljani', not 'v Ljubljana'",
     "core": true,
     "a1": true
   },
   "kaj_delate": {
     "kind": "chunk",
-    "sl": "Kaj delate?",
-    "gloss": "what do you do? (vi)",
-    "predictableError": "informal 'Kaj delaš?'; means your job or your current activity",
+    "sl": "Kaj delaš?",
+    "gloss": "what do you do? / what are you doing? (ti — job or current activity, context decides)",
+    "predictableError": "reaching for 'deluješ' (you function/operate) instead of 'delaš'; one form covers both English tenses, so there is no auxiliary to add",
     "core": true,
     "a1": true
   },
@@ -700,9 +686,9 @@
   },
   "govorite_anglesko": {
     "kind": "chunk",
-    "sl": "Ali govorite angleško?",
-    "gloss": "do you speak English? (vi)",
-    "predictableError": "adverb 'angleško', not the noun 'angleščino'; informal 'Ali govoriš angleško?'",
+    "sl": "Ali govoriš angleško?",
+    "gloss": "do you speak English? (ti)",
+    "predictableError": "the slot takes the ADVERB 'angleško', never the noun 'angleščino' or the adjective 'angleški'",
     "core": true,
     "a1": true
   },
@@ -715,9 +701,9 @@
   },
   "kako_ste": {
     "kind": "chunk",
-    "sl": "Kako ste?",
-    "gloss": "how are you? (vi)",
-    "predictableError": "informal 'Kako si?'; 'kako' + copula, not a 'how are you doing' calque",
+    "sl": "Kako si?",
+    "gloss": "how are you? (ti)",
+    "predictableError": "a real question expecting a real answer, not an English-style greeting filler; 'Kako se imaš?' is Croatian-flavoured",
     "core": true,
     "a1": true
   },
@@ -954,9 +940,9 @@
   },
   "ponovite_prosim": {
     "kind": "chunk",
-    "sl": "Ponovite, prosim.",
-    "gloss": "please repeat (vi)",
-    "predictableError": "informal 'Ponovi, prosim.'; distinct from 'Še enkrat, prosim.' (repeat vs again)",
+    "sl": "Ponovi, prosim.",
+    "gloss": "please repeat that (ti)",
+    "predictableError": "distinct from 'Še enkrat, prosim.' (once more, please) — 'Ponovi' asks for the same words back; the ti imperative is the bare 'Ponovi', with no added 'ti'",
     "core": true,
     "a1": true
   },
@@ -1445,17 +1431,17 @@
   },
   "ali_mi_poveste": {
     "kind": "pattern",
-    "sl": "Ali mi lahko, prosim, poveste ___?",
-    "gloss": "Could you please tell me ___? (vi)",
-    "predictableError": "dropping the dative clitic 'mi' ('Ali lahko poveste'), or using the ti-form 'poveš' to a stranger instead of vi 'poveste'",
+    "sl": "Ali mi lahko poveš ___?",
+    "gloss": "could you tell me ___? (ti)",
+    "predictableError": "dropping the dative clitic 'mi' (to me) — 'Ali lahko poveš' — where the whole point of the frame is that you are being told something",
     "core": true,
     "a1": true
   },
   "ali_ste_odprti": {
     "kind": "chunk",
     "sl": "Ali ste odprti?",
-    "gloss": "Are you open? (vi)",
-    "predictableError": "adjective agreement — the polite vi takes plural 'odprti'; beginners say singular 'Ali ste odprt?'",
+    "gloss": "Are you open? (addressed to the business — plural, not politeness)",
+    "predictableError": "you are addressing the shop and its staff, so it is plural 'odprti'; the singular 'Ali si odprt?' asks a PERSON whether they are open-minded. Locals just as often say 'Ali imate odprto?'",
     "a1": true,
     "core": true
   },
@@ -3255,14 +3241,23 @@
     "kind": "chunk",
     "sl": "Od kod si?",
     "gloss": "Where are you from? (informal, ti)",
-    "predictableError": "beginners build it off English and say 'Od kje si?' or 'Kje si od?'; the fixed phrase is 'od kod' — and with a friend it's the ti-form 'si', not 'Od kod ste?'",
-    "a1": true
+    "predictableError": "beginners build it off English and say 'Od kje si?' or 'Kje si od?'; the fixed phrase is 'od kod'",
+    "a1": true,
+    "core": true
   },
   "nisem_iz": {
     "kind": "pattern",
     "sl": "Nisem iz ___.",
     "gloss": "I'm not from ___.",
     "predictableError": "beginners split the negative into 'ne sem' on the English model; it's the one fused word 'nisem', and the country stays genitive after 'iz' — 'iz Slovenije', not 'iz Slovenija'",
+    "a1": true
+  },
+  "vikanje": {
+    "kind": "pattern",
+    "sl": "-š → -te",
+    "gloss": "vikanje — the polite 'vi': address ONE stranger with the plural verb ('Kako si?' → 'Kako ste?'; 'Kje živiš?' → 'Kje živite?')",
+    "predictableError": "using the ti-form with a stranger, an official or anyone older; the polite form is the PLURAL verb even for one person, and everything agreeing with it goes plural too — 'Ste bili?', not 'Ste bil?'",
+    "core": true,
     "a1": true
   }
 }

@@ -332,6 +332,14 @@ same `kruh` the learner has been building all along.
 - Mint in **citation form** — vocabulary = nom. sg. lemma; pattern = a frame with `___`; chunk = the fixed
   phrase — with a `gloss` and the **one predictable beginner error**. Propose a snake_case id; the reconcile
   owns final id assignment.
+- **Cite a phrase addressed to "you" in the FAMILIAR (ti) form.** The polite twin is not a second learnable,
+  for the same reason every conjugation of a verb is not: politeness is one system, carried by `vikanje`,
+  and a lesson teaches it directly. So `Kje živiš?` is the entry and `Kje živite?` is that entry spoken
+  politely. A **vi line reuses the ti-cited learnable**, exactly as `kavo` reuses `kava` — it is the same
+  lexical item, inflected. A formal scenario's lines stay in vi and tag the ti entry; that is reuse, not
+  unminted language.
+  Plural that is genuinely **plural** is untouched by this: `Ali ste odprti?` addresses a business and its
+  staff, so it stays plural — the rule is about vi-as-politeness, not about the plural.
 
 ### Register a new scenario — the checklist
 
