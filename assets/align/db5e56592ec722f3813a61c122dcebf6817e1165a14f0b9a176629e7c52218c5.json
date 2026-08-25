@@ -1,0 +1,39 @@
+{
+  "key": "db5e56592ec722f3813a61c122dcebf6817e1165a14f0b9a176629e7c52218c5",
+  "text": "Živjo, živjo! Te že čakam!",
+  "words": [
+    {
+      "text": "Živjo,",
+      "start": 0.159,
+      "end": 0.56,
+      "loss": 0.8010762532552084
+    },
+    {
+      "text": "živjo!",
+      "start": 0.68,
+      "end": 1.139,
+      "loss": 0.8233846028645834
+    },
+    {
+      "text": "Te",
+      "start": 1.439,
+      "end": 1.539,
+      "loss": 0.630859375
+    },
+    {
+      "text": "že",
+      "start": 1.559,
+      "end": 1.699,
+      "loss": 0.111328125
+    },
+    {
+      "text": "čakam!",
+      "start": 1.74,
+      "end": 2.2,
+      "loss": 0.16840616861979166
+    }
+  ],
+  "loss": 0.5390455539409931,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T13:21:42.018Z"
+}

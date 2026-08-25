@@ -1,0 +1,33 @@
+{
+  "key": "a05c7752ae1daf3397b2604fc2851ecc74e2f78012d41e13b7e494d3f7e28a2f",
+  "text": "Umbrella? To je dežnik!",
+  "words": [
+    {
+      "text": "Umbrella?",
+      "start": 0.14,
+      "end": 0.759,
+      "loss": 0.11245452033148871
+    },
+    {
+      "text": "To",
+      "start": 1.259,
+      "end": 1.399,
+      "loss": 0.11492919921875
+    },
+    {
+      "text": "je",
+      "start": 1.48,
+      "end": 1.659,
+      "loss": 0.00780487060546875
+    },
+    {
+      "text": "dežnik!",
+      "start": 1.699,
+      "end": 2.299,
+      "loss": 0.26995413643973215
+    }
+  ],
+  "loss": 0.13816991059676462,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T13:21:48.337Z"
+}

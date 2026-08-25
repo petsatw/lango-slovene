@@ -1,0 +1,87 @@
+{
+  "key": "b0bc40e29808d1450fa03231cd49ff0bcc76f7bab69e4a52680333227be624ad",
+  "text": "Ups. Preveč, ne? Poglej — če grem prehitro, mi kar reci: Počasi, prosim.",
+  "words": [
+    {
+      "text": "Ups.",
+      "start": 0.359,
+      "end": 0.74,
+      "loss": 0.9904632568359375
+    },
+    {
+      "text": "Preveč,",
+      "start": 1.299,
+      "end": 1.699,
+      "loss": 0.014904839651925223
+    },
+    {
+      "text": "ne?",
+      "start": 1.779,
+      "end": 1.939,
+      "loss": 0.0398712158203125
+    },
+    {
+      "text": "Poglej",
+      "start": 3.199,
+      "end": 3.5,
+      "loss": 0.22436078389485678
+    },
+    {
+      "text": "—",
+      "start": 3.579,
+      "end": 3.58,
+      "loss": 8.75
+    },
+    {
+      "text": "če",
+      "start": 4.159,
+      "end": 4.239,
+      "loss": 0.04815673828125
+    },
+    {
+      "text": "grem",
+      "start": 4.279,
+      "end": 4.44,
+      "loss": 0.0007052719593048096
+    },
+    {
+      "text": "prehitro,",
+      "start": 4.519,
+      "end": 5,
+      "loss": 0.0059477488199869795
+    },
+    {
+      "text": "mi",
+      "start": 5.219,
+      "end": 5.339,
+      "loss": 0.04965925216674805
+    },
+    {
+      "text": "kar",
+      "start": 5.38,
+      "end": 5.539,
+      "loss": 0.5514373779296875
+    },
+    {
+      "text": "reci:",
+      "start": 5.559,
+      "end": 5.9,
+      "loss": 1.3796390533447265
+    },
+    {
+      "text": "Počasi,",
+      "start": 6.339,
+      "end": 6.899,
+      "loss": 0.5012800352913993
+    },
+    {
+      "text": "prosim.",
+      "start": 6.98,
+      "end": 7.319,
+      "loss": 0.023538725716727122
+    }
+  ],
+  "loss": 0.4961179925335778,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T13:21:43.381Z"
+}

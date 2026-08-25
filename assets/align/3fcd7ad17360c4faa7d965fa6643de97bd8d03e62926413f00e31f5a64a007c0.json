@@ -1,0 +1,39 @@
+{
+  "key": "3fcd7ad17360c4faa7d965fa6643de97bd8d03e62926413f00e31f5a64a007c0",
+  "text": "To je moj novi dežnik!",
+  "words": [
+    {
+      "text": "To",
+      "start": 0.179,
+      "end": 0.359,
+      "loss": 0.06409454345703125
+    },
+    {
+      "text": "je",
+      "start": 0.439,
+      "end": 0.62,
+      "loss": 0.00057220458984375
+    },
+    {
+      "text": "moj",
+      "start": 0.659,
+      "end": 0.879,
+      "loss": 0.0006477038065592448
+    },
+    {
+      "text": "novi",
+      "start": 1.079,
+      "end": 1.439,
+      "loss": 0.0026307106018066406
+    },
+    {
+      "text": "dežnik!",
+      "start": 1.459,
+      "end": 2.079,
+      "loss": 0.3174334934779576
+    }
+  ],
+  "loss": 0.10772464492104271,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T13:21:46.690Z"
+}
