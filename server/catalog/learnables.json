@@ -3243,5 +3243,13 @@
     "predictableError": "using the ti-form with a stranger, an official or anyone older; the polite form is the PLURAL verb even for one person, and everything agreeing with it goes plural too — 'Ste bili?', not 'Ste bil?'",
     "core": true,
     "a1": true
+  },
+  "pa": {
+    "kind": "vocabulary",
+    "sl": "pa",
+    "gloss": "though / on the other hand — the contrastive particle, second in its clause",
+    "predictableError": "English speakers put it first, on the model of 'but' ('Pa ti dobro angleško'), or reach for 'ampak'. 'pa' is a SECOND-POSITION particle that attaches to the thing being contrasted — 'Ti pa dobro angleško', 'Jaz pa ne'. 'ampak' opens a whole contrasting clause; 'pa' contrasts one element inside one.",
+    "core": false,
+    "a1": false
   }
 }
