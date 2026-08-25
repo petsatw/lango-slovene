@@ -803,6 +803,8 @@ let scenePendingSay = null;
 // The run's generation. Bumped whenever an in-flight beat is superseded; the player re-checks it after
 // every await and returns rather than racing the beat that replaced it.
 let sceneGen = 0;
+// The slow re-speak currently playing, if any. The beat player waits on it before it advances.
+let sceneSlowPass = null;
 
 function sceneSay(text) {
   if (scene.audio !== "ready") return Promise.resolve();
@@ -831,6 +833,7 @@ function sceneCancel() {
   sceneGen++;
   sceneClearStalls();
   scene.armed = false;
+  sceneSlowPass = null;
   $("scene-slower").classList.remove("blinking");
   const pending = scenePendingSay;
   scenePendingSay = null;
@@ -889,10 +892,10 @@ function sceneArmStalls(handlers, npc) {
 // the voice; on screen that reads as studio notation and means nothing to a learner. So the clean
 // sentence stays up — spaced a little, with the tortoise blinking beside it — while the chunked text
 // goes to the synthesiser only.
-async function scenePlaySlow(npc) {
-  if (!npc?.slowSL) return;
+function scenePlaySlow(npc) {
+  if (!npc?.slowSL) return Promise.resolve();
   const chip = $("scene-slower");
-  if (chip.classList.contains("blinking")) return;   // already re-speaking; a second tap is not a queue
+  if (chip.classList.contains("blinking")) return Promise.resolve();  // a second tap is not a queue
   const gen = sceneGen;
   // The character takes the floor back for a moment: the button says so, then returns the turn.
   const handed = scene.armed;
@@ -900,14 +903,26 @@ async function scenePlaySlow(npc) {
   if (handed) sceneSetPhase("speaking");
   chip.classList.add("blinking");
   sceneCaption(npc.sl, { slow: true, focus: npc.focusSpan });
-  await sceneSay(npc.slowSL);
-  chip.classList.remove("blinking");
-  // The run may have moved on underneath a late tap — a skip, or a beat that hands to nobody reaching
-  // its own hold. Restoring this node's caption over the next node's line would be worse than not
-  // restoring it at all.
-  if (gen !== sceneGen || scene.node !== npc) return;
-  sceneCaption(npc.sl, { focus: npc.focusSpan });
-  if (handed && scene.armed) sceneSetPhase("ready", label);
+  const run = (async () => {
+    await sceneSay(npc.slowSL);
+    chip.classList.remove("blinking");
+    // The run may have moved on underneath a late tap — a skip, a ✕, a `«`. Restoring this node's
+    // caption over the next node's line would be worse than not restoring it at all.
+    if (gen !== sceneGen || scene.node !== npc) return;
+    sceneCaption(npc.sl, { focus: npc.focusSpan });
+    if (handed && scene.armed) sceneSetPhase("ready", label);
+  })();
+  const gate = run.then(() => { if (sceneSlowPass === gate) sceneSlowPass = null; });
+  sceneSlowPass = gate;
+  return gate;
+}
+
+// The beat's own clock is not the learner's. A re-speak asked for during a hold used to run against the
+// timer the beat was already on, so the next line arrived on schedule and cut the slow one off mid-word
+// — the learner asked to hear it again and got half of it. Nothing progresses until the re-speak has
+// finished; the loop covers a second one started while the first was settling.
+async function sceneAwaitSlow() {
+  while (sceneSlowPass) await sceneSlowPass;
 }
 
 // Beats 1-11 — the English on-ramp, before any Slovene is spoken. Where you are, that nothing is being
@@ -1037,6 +1052,7 @@ async function scenePlayBeat(npc, { replay = false } = {}) {
   // ends — the button never invites a turn that does not exist.
   if (npc.terminal) {
     await sleep(pace.closeHoldMs);
+    await sceneAwaitSlow();     // the goodbye is not over while it is still being said again
     if (!live()) return;
     sceneFinish();
     return;
@@ -1051,6 +1067,7 @@ async function scenePlayBeat(npc, { replay = false } = {}) {
     // scaled to how much there is to read, rather than for the hand-over's pause-before-an-offer.
     const shown = Math.max(npc.sl.length, npc.glossPolicy === "after" ? npc.en.length : 0);
     await sleep(pace.beatHoldMs + pace.beatCharMs * shown);
+    await sceneAwaitSlow();     // this line does not give way while it is still being said again
     if (!live()) return;
     await sceneStep(npc.id, null);
     return;
@@ -1058,6 +1075,7 @@ async function scenePlayBeat(npc, { replay = false } = {}) {
 
   // The turn is handed over. The pause first, so the hand-over reads as an offer rather than a cue.
   await sleep(pace.handoverMs);
+  await sceneAwaitSlow();     // the turn is not offered over the top of the line being said again
   if (!live()) return;
   // What they are being asked to say — their own line, beside the button that produces it. When the turn
   // expects no Slovene (the learner says their own name) there is no stem, and the English instruction
