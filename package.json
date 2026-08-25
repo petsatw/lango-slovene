@@ -30,6 +30,8 @@
     "lint:a1": "tsx server/scripts/lint-a1.ts",
     "lint:audio": "tsx server/scripts/lint-audio.ts",
     "reconcile:dialogue": "tsx server/scripts/reconcile-dialogue.ts",
+    "reconcile:keyphrase-audio": "tsx server/scripts/reconcile-keyphrase-audio.ts",
+    "lint:keyphrase-audio": "tsx server/scripts/lint-keyphrase-audio.ts",
     "seed:catalog": "tsx server/scripts/seed-catalog.ts",
     "prune:assets": "tsx server/scripts/prune-assets.ts",
     "render:asset": "tsx server/scripts/render-asset.ts",

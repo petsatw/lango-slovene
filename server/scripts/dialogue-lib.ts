@@ -42,6 +42,39 @@ export function normalizeKind(raw: string): CanonicalKind | null {
   return KIND_ALIASES[raw?.toLowerCase?.().trim()] ?? null;
 }
 
+/** Split a Slovene line into comparable word tokens — punctuation stripped, case folded. Used to line a
+ *  learner's phrase up against the character delivery that voices it, word for word. */
+export function words(s: string): string[] {
+  return s
+    .toLowerCase()
+    .replace(/[.,!?¿¡;:"'()«»/]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+/** Render a key phrase as the SHAPE it teaches, given the delivery that will actually voice it.
+ *
+ *  A phrase can be modelled by the character saying the same frame with his own filler — the learner's
+ *  "Ne govorim dobro slovensko." voiced by his "Ne govorim dobro angleško.". Printing the learner's own
+ *  wording beside that button would put a word on screen the ear does not hear. Printing the raw catalog
+ *  frame would be worse ("(Ne) govorim (dobro) ___."). So the phrase is shown as ITSELF with the one
+ *  varying word blanked: `Ne govorim dobro ___.`
+ *
+ *  Deliberately conservative. It only blanks when the two lines are the same length word for word and the
+ *  fixed words all agree — exactly the guardrail the pointer was allowed under. Anything else returns the
+ *  phrase untouched rather than guessing which word is the slot. */
+export function frameFor(sl: string, heard: string): string {
+  const a = words(sl), b = words(heard);
+  if (a.length !== b.length) return sl;
+  const differ = a.map((w, i) => w !== b[i]).reduce<number[]>((acc, d, i) => (d ? [...acc, i] : acc), []);
+  if (differ.length !== 1) return sl; // no substitution, or more than one — not a single-slot frame
+  const slot = differ[0]!;
+  let i = -1;
+  // Rebuilt over the ORIGINAL string so capitals, punctuation and the trailing full stop survive: only the
+  // slot's own letters are replaced.
+  return sl.replace(/[\p{L}\p{M}\p{N}]+/gu, (m) => (++i === slot ? "___" : m));
+}
+
 // ---- Tree analysis (a dialogue node graph) --------------------------------------------------------
 // A minimal structural view of a node so these helpers work on both the runtime Dialogue and a draft.
 
@@ -226,9 +259,16 @@ export function bandRank(band: DialogueBand): number {
 }
 
 /** Does this node become an audio clip? In a SPOKEN scene (`advance: "audio"`) the client lines are what
- *  the LEARNER says aloud — they are never synthesized and never played back, so they own no clip and can
- *  collide with nothing. Every tool that reasons about clips asks this rather than re-deriving it, so the
- *  asset builder and `lint:dialogue` agree on which files exist. */
+ *  the LEARNER says aloud, so they are never synthesized: we would be billing for the character's voice on
+ *  the learner's line. They own no clip and can collide with nothing.
+ *
+ *  "Owns no clip" is not "is never heard". The Key Phrases panel can voice a client line by replaying the
+ *  portion of one of the CHARACTER's clips where he says the same shape (see DialogueVoicing) — the
+ *  character's recording, explicitly pointed at. Nothing in this app has ever recorded or played back the
+ *  learner's own voice, and nothing here implies it does.
+ *
+ *  Every tool that reasons about clips asks this rather than re-deriving it, so the asset builder and
+ *  `lint:dialogue` agree on which files exist. */
 export function isSynthesized(
   dialogue: { advance?: string },
   node: { speaker: "npc" | "client" },

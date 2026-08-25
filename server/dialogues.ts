@@ -63,6 +63,41 @@ export interface DialogueStallHandler {
   label?: string;
 }
 
+/** Where a CLIENT line's play button gets its sound from (docs/keyphrase-span-playback.md §3.5).
+ *
+ *  In a spoken scene the learner's lines are never synthesized — we own no recording of them, and putting
+ *  the character's voice on their line and calling it theirs would be a lie. But the Key Phrases panel
+ *  still wants a "hear it": the phrase was TAUGHT, and the character models it himself somewhere in the
+ *  scenario. So this points at the npc node that says it, and — when only part of that line is the phrase —
+ *  at the word range within it. Nothing is ever synthesized to satisfy a pointer; it can only ever aim at
+ *  a clip that already exists.
+ *
+ *  The join it records is an ID EQUALITY, made upstream by the `voice-key-phrases` skill and re-checked by
+ *  `lint:keyphrase-audio`: the client node and the npc node share a catalog learnable, and the catalog
+ *  frame for it declares where the slot is. Fixed words are fixed; only the slot may differ. */
+export interface DialogueVoicing {
+  /** The npc node id whose clip is played. A node id, never raw text, so a reviewer reading the diff sees
+   *  WHICH of the character's lines this phrase was taken from. */
+  from: string;
+  /** Which level of this scenario `from` lives in. Sourcing across levels is allowed — the best delivery
+   *  of a phrase is not always in the lesson that teaches it. */
+  level: number;
+  /** `"whole"` — play the clip end to end (the phrase IS the whole line: no seek, no cut, true prosody).
+   *  `"span"` — play only a word range of it. */
+  kind: "whole" | "span";
+  /** For `"span"`: the inclusive first/last word index into that clip's stored alignment. THIS is what the
+   *  skill chooses; the milliseconds below are derived from it and gate-checked against it, so a
+   *  hand-edited or invented timestamp fails rather than plays. */
+  words?: [number, number];
+  /** For `"span"`: the derived play window, in milliseconds from the start of the clip. */
+  startMs?: number;
+  endMs?: number;
+  /** The words the learner will ACTUALLY hear, when they differ from the phrase on screen — the frame's
+   *  slot filled with the character's own word ("Sem ___." heard as "Sem Slavko."). Present ⇒ the panel
+   *  shows the phrase as its catalog FRAME, so nothing on screen contradicts the ear. */
+  heard?: string;
+}
+
 export interface DialogueNode {
   speaker: DialogueSpeaker;
   /** The line, in Slovene. This is the DISPLAY caption AND the audio cache key. */
@@ -123,6 +158,9 @@ export interface DialogueNode {
    *  — the character is the one who fills the silence while awaiting the learner's turn. Each carries a
    *  real spoken line, so `build:dialogue-assets` gives each its own clip. */
   stallHandlers?: DialogueStallHandler[];
+  /** Where this CLIENT line's Key Phrases play button gets its sound. Absent → no button, which is a valid
+   *  and often correct answer: a badly-cut excerpt teaches wrong prosody, which is worse than silence. */
+  audio?: DialogueVoicing;
   /** Next node ids. On an npc node: the client-reply choices the learner picks between (may be more than
    *  two — the renderer scrolls). On a client node: the npc's response (one id). Empty = end. */
   next: string[];
@@ -325,6 +363,33 @@ export function validateDialogue(file: string, raw: any): Dialogue {
     if (n.context !== undefined) {
       asString(file, n, "context", where);
       if (n.speaker !== "client") fail(file, `${where}: "context" is only valid on a client choice`);
+    }
+    if (n.audio !== undefined) {
+      const aw = `${where} "audio"`;
+      if (!n.audio || typeof n.audio !== "object") fail(file, `${aw}: must be an object { from, level, kind, … }`);
+      // Only the LEARNER's line needs a voicing pointer. The character's own lines have their own clips;
+      // pointing one at another would be a way of playing the wrong bytes under the right caption.
+      if (n.speaker !== "client") fail(file, `${aw}: only valid on a client node (it voices the LEARNER's phrase with a clip of the character's)`);
+      asString(file, n.audio, "from", aw);
+      if (typeof n.audio.level !== "number" || !Number.isInteger(n.audio.level) || n.audio.level < 1)
+        fail(file, `${aw}: "level" must be a positive integer (which level "${n.audio.from}" lives in)`);
+      if (n.audio.kind !== "whole" && n.audio.kind !== "span") fail(file, `${aw}: "kind" must be "whole" | "span"`);
+      if (n.audio.heard !== undefined) asString(file, n.audio, "heard", aw);
+      if (n.audio.kind === "span") {
+        // A span without its word indices cannot be checked against the alignment, which is the only thing
+        // standing between a real measurement and an invented number.
+        const w = n.audio.words;
+        if (!Array.isArray(w) || w.length !== 2 || !w.every((i: any) => Number.isInteger(i) && i >= 0))
+          fail(file, `${aw}: a "span" needs "words": [firstIndex, lastIndex] into the clip's alignment`);
+        if (w[1] < w[0]) fail(file, `${aw}: "words" [${w[0]}, ${w[1]}] runs backwards`);
+        for (const k of ["startMs", "endMs"]) {
+          if (typeof n.audio[k] !== "number" || !Number.isFinite(n.audio[k]) || n.audio[k] < 0)
+            fail(file, `${aw}: a "span" needs a non-negative "${k}" derived from the alignment`);
+        }
+        if (n.audio.endMs <= n.audio.startMs) fail(file, `${aw}: "endMs" (${n.audio.endMs}) must be after "startMs" (${n.audio.startMs})`);
+      } else if (n.audio.words !== undefined || n.audio.startMs !== undefined || n.audio.endMs !== undefined) {
+        fail(file, `${aw}: a "whole" voicing plays the clip end to end — it must carry no "words"/"startMs"/"endMs"`);
+      }
     }
     if (!Array.isArray(n.next)) fail(file, `${where}: next must be an array of node ids`);
     for (const id of n.next) {
