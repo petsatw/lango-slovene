@@ -116,9 +116,19 @@ one-line **why**. Where you choose no button, the reason is the deliverable.
 
 ### 2 — Critique, independently (J)
 
-Dispatch the **`keyphrase-critic`** subagent with the phrase, the full text of the chosen utterance with
-the span marked, and what will be heard. It answers one question — *would a beginner hearing this excerpt
-learn the right thing?* — and returns a verdict. It never edits and it never sees your reasoning.
+Dispatch the **`keyphrase-critic`** subagent **once per LEVEL, with that level's whole panel** — every
+phrase in close-screen order, each with the full text of its chosen utterance with the span marked and
+what will be heard. Include the rows you decided get **no button**, and say so; they are part of the panel
+the learner sees. It never edits and it never sees your reasoning.
+
+**Never dispatch it one phrase at a time.** The critic reviews the panel as a set first and only then row
+by row, and the set pass is the point: a phrase judged alone cannot reveal that **two rows are the same
+taught shape** — the frame and the same frame with a filler, listed as if they were two lessons. That
+defect is invisible to a per-phrase call by construction, not by oversight, and it has shipped. One call
+per level, both passes inside it.
+
+It returns `{ panel: { verdict, findings }, phrases: [...] }`. A `panel.verdict` of `revise` stands even
+when every individual excerpt passes.
 
 Fold its rejections in. Where you disagree, keep your choice and carry both positions into the
 ReviewPackage; the operator rules.

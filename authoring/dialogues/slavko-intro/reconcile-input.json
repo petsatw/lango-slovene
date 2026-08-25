@@ -1109,9 +1109,885 @@
         ],
         "new": []
       }
+    },
+    {
+      "level": 4,
+      "levelLabel": "Basic",
+      "title": "Slow down, please",
+      "frameEN": [
+        "Fourth time with Slavko.",
+        "He gets excited and talks much too fast — that's him, not you.",
+        "Today you get the words to stop him."
+      ],
+      "objectives": [
+        {
+          "label": "Slow him down",
+          "descriptorEN": "Stop Slavko mid-flow with 'Počasi, prosim.' when he speeds up."
+        },
+        {
+          "label": "Say you didn't understand",
+          "descriptorEN": "Say 'Ne razumem.' out loud instead of nodding along."
+        },
+        {
+          "label": "Ask for the whole thing again",
+          "descriptorEN": "Use 'Še enkrat, prosim.' to get a line said over."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Živjo, živjo! Te že čakam!",
+          "en": "Hi, hi! I've been waiting for you!",
+          "deliverySL": "[delighted, bright] Živjo, živjo! Te že čakam!",
+          "glossPolicy": "after",
+          "learnables": [
+            "zivjo"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Say hi back"
+            }
+          ],
+          "next": [
+            "c1"
+          ]
+        },
+        "c1": {
+          "speaker": "client",
+          "sl": "Živjo",
+          "en": "Hi",
+          "glossPolicy": "tap",
+          "learnables": [
+            "zivjo"
+          ],
+          "next": [
+            "n2"
+          ],
+          "audio": {
+            "from": "n1",
+            "level": 2,
+            "kind": "whole"
+          }
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Uf, spet sem pozabil! Jaz? Sem iz Ljubljane. In ti? Od kod si?",
+          "en": "Ugh, I've forgotten again! Me? I'm from Ljubljana. And you? Where are you from?",
+          "deliverySL": "[sheepishly] Uf, spet sem pozabil! [warmly] Jaz? Sem iz Ljubljane. [curious] In ti? Od kod si?",
+          "slowSL": "Uf, spet sem pozabil … Jaz? … Sem iz Ljubljane … In ti? … Od kod si?",
+          "deliverySlowSL": "[sheepishly, slower] Uf, spet sem pozabil … Jaz? … [deliberately, drawn out] Sem iz Ljubljane … In ti? … [very slowly, drawn out] Od kod si?",
+          "glossPolicy": "after",
+          "focusSpan": "Sem iz",
+          "learnables": [
+            "sem_iz",
+            "od_kod",
+            "od_kod_si",
+            "in"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Tell him your country"
+            }
+          ],
+          "next": [
+            "c2"
+          ]
+        },
+        "c2": {
+          "speaker": "client",
+          "sl": "Sem iz ___.",
+          "en": "I'm from ___ — say your own country however you can. Only the two words 'Sem iz' have to be Slovene.",
+          "glossPolicy": "after",
+          "focusSpan": "Sem iz",
+          "learnables": [
+            "sem_iz"
+          ],
+          "next": [
+            "n3"
+          ],
+          "audio": {
+            "from": "n9",
+            "level": 3,
+            "kind": "span",
+            "words": [
+              1,
+              3
+            ],
+            "startMs": 1139,
+            "endMs": 1919,
+            "heard": "Sem iz Ljubljane."
+          }
+        },
+        "n3": {
+          "speaker": "npc",
+          "sl": "Ojoj, ne me basat! Tam je pa ful lepo, a veš, jaz sem že tolikokrat gledal slike, pa tiste hiše, pa tista hrana, pa ljudje, in jaz bi šel takoj, res takoj, samo veš kaj, letala so draga, pa jezika ne znam, ampak vseeno me ful mika!",
+          "en": "Oh wow, you're kidding! It's so lovely there, you know, I've looked at pictures so many times, and those houses, and that food, and the people, and I'd go right now, really right now, only you know what, flights are expensive, and I don't know the language, but I'm still dying to go!",
+          "deliverySL": "[excited, rushing, breathless] Ojoj, ne me basat! Tam je pa ful lepo, a veš, jaz sem že tolikokrat gledal slike, pa tiste hiše, pa tista hrana, pa ljudje, in jaz bi šel takoj, res takoj, samo veš kaj, letala so draga, pa jezika ne znam, ampak vseeno me ful mika!",
+          "glossPolicy": "after",
+          "learnables": [
+            "pa",
+            "in",
+            "ampak"
+          ],
+          "next": [
+            "n4"
+          ]
+        },
+        "n4": {
+          "speaker": "npc",
+          "sl": "Ups. Preveč, ne? Poglej — če grem prehitro, mi kar reci: Počasi, prosim.",
+          "en": "Oops. Too much, right? Look — if I go too fast, just tell me: Slowly, please.",
+          "deliverySL": "[warmly, catching himself] Ups. Preveč, ne? [kindly] Poglej — če grem prehitro, mi kar reci: Počasi, prosim.",
+          "slowSL": "Ups. Preveč, ne? … Poglej … če grem prehitro … mi kar reci … Počasi, prosim.",
+          "deliverySlowSL": "[warmly, slower] Ups. Preveč, ne? … Poglej … [deliberately] če grem prehitro … mi kar reci … [very slowly, drawn out] Počasi, prosim.",
+          "glossPolicy": "after",
+          "focusSpan": "Počasi, prosim",
+          "learnables": [
+            "pocasi_prosim",
+            "ne"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Stop him"
+            }
+          ],
+          "next": [
+            "c3"
+          ]
+        },
+        "c3": {
+          "speaker": "client",
+          "sl": "Počasi, prosim.",
+          "en": "Slowly, please.",
+          "glossPolicy": "after",
+          "focusSpan": "Počasi, prosim",
+          "learnables": [
+            "pocasi_prosim"
+          ],
+          "next": [
+            "n5"
+          ],
+          "audio": {
+            "from": "n4",
+            "level": 4,
+            "kind": "span",
+            "words": [
+              11,
+              12
+            ],
+            "startMs": 6339,
+            "endMs": 7319
+          }
+        },
+        "n5": {
+          "speaker": "npc",
+          "sl": "Ha, super! Vidiš, pa res deluje! Zdaj grem počasi.",
+          "en": "Ha, great! See, it really does work! Now I'll go slowly.",
+          "deliverySL": "[delighted, then settling down] Ha, super! Vidiš, pa res deluje! Zdaj grem počasi.",
+          "glossPolicy": "after",
+          "learnables": [
+            "pa"
+          ],
+          "next": [
+            "n6"
+          ]
+        },
+        "n6": {
+          "speaker": "npc",
+          "sl": "Torej, počasi. Tvoja dežela je lepa. Dežela? Nova beseda, ne? Reci mi: Ne razumem.",
+          "en": "So, slowly. Your land is beautiful. 'Dežela'? A new word, right? Tell me: I don't understand.",
+          "deliverySL": "[slowly, kindly] Torej, počasi. Tvoja dežela je lepa. [noticing] Dežela? Nova beseda, ne? [encouraging] Reci mi: Ne razumem.",
+          "slowSL": "Torej, počasi … Tvoja država je lepa … Država? … Nova beseda, ne? … Reci mi … Ne razumem.",
+          "deliverySlowSL": "[slower] Torej, počasi … [deliberately] Tvoja država je lepa … [noticing] Država? … Nova beseda, ne? … Reci mi … [very slowly, drawn out] Ne razumem.",
+          "glossPolicy": "after",
+          "focusSpan": "Ne razumem",
+          "learnables": [
+            "ne_razumem",
+            "ne"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Say you didn't get that"
+            }
+          ],
+          "next": [
+            "c4"
+          ]
+        },
+        "c4": {
+          "speaker": "client",
+          "sl": "Ne razumem.",
+          "en": "I don't understand.",
+          "glossPolicy": "after",
+          "focusSpan": "Ne razumem",
+          "learnables": [
+            "ne_razumem"
+          ],
+          "next": [
+            "n7"
+          ],
+          "audio": {
+            "from": "n6",
+            "level": 4,
+            "kind": "span",
+            "words": [
+              12,
+              13
+            ],
+            "startMs": 8539,
+            "endMs": 9000
+          }
+        },
+        "n7": {
+          "speaker": "npc",
+          "sl": "Točno tako! Dežela je država. Tvoja država je lepa.",
+          "en": "Exactly! 'Dežela' means country. Your country is beautiful.",
+          "deliverySL": "[warmly, pleased] Točno tako! Dežela je država. Tvoja država je lepa.",
+          "glossPolicy": "after",
+          "learnables": [
+            "drzava_slovenija"
+          ],
+          "next": [
+            "n8"
+          ]
+        },
+        "n8": {
+          "speaker": "npc",
+          "sl": "In veš kaj, jaz bi enkrat prišel k tebi, samo da vidim, kako je tam, pa da poskusim hrano, pa da grem povsod, pa da …",
+          "en": "And you know what, I'd come and visit you one day, just to see what it's like there, and to try the food, and to go everywhere, and to …",
+          "deliverySL": "[starting calm, then speeding up, carried away] In veš kaj, jaz bi enkrat prišel k tebi, samo da vidim, kako je tam, pa da poskusim hrano, pa da grem povsod, pa da …",
+          "glossPolicy": "after",
+          "learnables": [
+            "in",
+            "pa"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Stop him again"
+            }
+          ],
+          "next": [
+            "c5"
+          ]
+        },
+        "c5": {
+          "speaker": "client",
+          "sl": "Počasi, prosim.",
+          "en": "Slowly, please.",
+          "glossPolicy": "tap",
+          "focusSpan": "Počasi, prosim",
+          "learnables": [
+            "pocasi_prosim"
+          ],
+          "next": [
+            "n9"
+          ],
+          "audio": {
+            "from": "n4",
+            "level": 4,
+            "kind": "span",
+            "words": [
+              11,
+              12
+            ],
+            "startMs": 6339,
+            "endMs": 7319
+          }
+        },
+        "n9": {
+          "speaker": "npc",
+          "sl": "Haha, spet sem ušel! Nemogoč sem. Če hočeš vse še enkrat, mi reci: Še enkrat, prosim.",
+          "en": "Haha, off I went again! I'm impossible. If you want the whole thing again, tell me: Once more, please.",
+          "deliverySL": "[laughing at himself] Haha, spet sem ušel! Nemogoč sem. [kindly] Če hočeš vse še enkrat, mi reci: Še enkrat, prosim.",
+          "slowSL": "Haha, spet sem ušel … Nemogoč sem … Če hočeš vse še enkrat … mi reci … Še enkrat, prosim.",
+          "deliverySlowSL": "[amused, slower] Haha, spet sem ušel … Nemogoč sem … [deliberately] Če hočeš vse še enkrat … mi reci … [very slowly, drawn out] Še enkrat, prosim.",
+          "glossPolicy": "after",
+          "focusSpan": "Še enkrat, prosim",
+          "learnables": [
+            "se_enkrat"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask for it again"
+            }
+          ],
+          "next": [
+            "c6"
+          ]
+        },
+        "c6": {
+          "speaker": "client",
+          "sl": "Še enkrat, prosim.",
+          "en": "Once more, please.",
+          "glossPolicy": "after",
+          "focusSpan": "Še enkrat, prosim",
+          "learnables": [
+            "se_enkrat"
+          ],
+          "next": [
+            "n10"
+          ],
+          "audio": {
+            "from": "n9",
+            "level": 4,
+            "kind": "span",
+            "words": [
+              13,
+              15
+            ],
+            "startMs": 7639,
+            "endMs": 8500
+          }
+        },
+        "n10": {
+          "speaker": "npc",
+          "sl": "Z veseljem. Tvoja država je lepa.",
+          "en": "Gladly. Your country is beautiful.",
+          "deliverySL": "[pleased, slowly and clearly] Z veseljem. Tvoja država je lepa.",
+          "glossPolicy": "after",
+          "learnables": [],
+          "next": [
+            "n11"
+          ]
+        },
+        "n11": {
+          "speaker": "npc",
+          "sl": "Drugič grem počasi, obljubim. Počasi, Slavko, prosim! Adijo!",
+          "en": "Next time I'll go slowly, I promise. Slowly, Slavko, please! Bye!",
+          "deliverySL": "[warmly promising] Drugič grem počasi, obljubim. [scolding himself, playful] Počasi, Slavko, prosim! [brightly] Adijo!",
+          "glossPolicy": "after",
+          "learnables": [
+            "pocasi_prosim",
+            "adijo"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Say bye"
+            }
+          ],
+          "next": [
+            "c7"
+          ]
+        },
+        "c7": {
+          "speaker": "client",
+          "sl": "Adijo",
+          "en": "Bye",
+          "glossPolicy": "tap",
+          "learnables": [
+            "adijo"
+          ],
+          "next": [],
+          "audio": {
+            "from": "n3",
+            "level": 1,
+            "kind": "span",
+            "words": [
+              5,
+              5
+            ],
+            "startMs": 2240,
+            "endMs": 2659
+          }
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "zivjo",
+          "sem_iz",
+          "pocasi_prosim",
+          "ne_razumem",
+          "se_enkrat",
+          "adijo"
+        ],
+        "new": []
+      }
+    },
+    {
+      "level": 5,
+      "levelLabel": "Basic",
+      "title": "How do you say...?",
+      "frameEN": [
+        "Slavko has something to show you.",
+        "You won't know the word for it — that's the point.",
+        "Today you learn how to ask for a word you haven't got."
+      ],
+      "objectives": [
+        {
+          "label": "Ask for a word you haven't got",
+          "descriptorEN": "Use the frame 'Kako se reče ___?' with the English word in the slot."
+        },
+        {
+          "label": "Ask on your own initiative",
+          "descriptorEN": "Turn the same question on a second word, without being told to."
+        },
+        {
+          "label": "Ask for the last word yourself",
+          "descriptorEN": "End the conversation by asking how to say 'thank you' — then use the answer he gives you."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Ej, ravno prav! Poglej, kaj imam.",
+          "en": "Hey, just in time! Look what I've got.",
+          "deliverySL": "[excited] Ej, ravno prav! Poglej, kaj imam.",
+          "glossPolicy": "after",
+          "learnables": [],
+          "next": [
+            "n2"
+          ]
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "To je moj novi dežnik!",
+          "en": "This is my new dežnik!",
+          "deliverySL": "[proudly] To je moj novi dežnik!",
+          "glossPolicy": "held",
+          "learnables": [
+            "to_je"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Tell him you're lost"
+            }
+          ],
+          "next": [
+            "c1"
+          ]
+        },
+        "c1": {
+          "speaker": "client",
+          "sl": "Ne razumem.",
+          "en": "I don't understand. — say it out loud; it's your line from last time.",
+          "glossPolicy": "after",
+          "focusSpan": "Ne razumem",
+          "learnables": [
+            "ne_razumem"
+          ],
+          "next": [
+            "n3"
+          ],
+          "audio": {
+            "from": "n6",
+            "level": 4,
+            "kind": "span",
+            "words": [
+              12,
+              13
+            ],
+            "startMs": 8539,
+            "endMs": 9000
+          }
+        },
+        "n3": {
+          "speaker": "npc",
+          "sl": "Odlično! Točno tako. Dežnik.",
+          "en": "Excellent! Exactly right. Dežnik.",
+          "deliverySL": "[delighted] Odlično! Točno tako. Dežnik.",
+          "slowSL": "Odlično … Točno tako … Dežnik.",
+          "deliverySlowSL": "[delighted] Odlično … [slower] Točno tako … [deliberately, drawn out] Dežnik.",
+          "glossPolicy": "held",
+          "learnables": [],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask him to say it again"
+            }
+          ],
+          "next": [
+            "c2"
+          ]
+        },
+        "c2": {
+          "speaker": "client",
+          "sl": "Še enkrat, prosim.",
+          "en": "Once more, please.",
+          "glossPolicy": "after",
+          "focusSpan": "Še enkrat, prosim",
+          "learnables": [
+            "se_enkrat"
+          ],
+          "next": [
+            "n4"
+          ],
+          "audio": {
+            "from": "n9",
+            "level": 4,
+            "kind": "span",
+            "words": [
+              13,
+              15
+            ],
+            "startMs": 7639,
+            "endMs": 8500
+          }
+        },
+        "n4": {
+          "speaker": "npc",
+          "sl": "Dežnik. Dežnik.",
+          "en": "Dežnik. Dežnik.",
+          "deliverySL": "[clearly] Dežnik. Dežnik.",
+          "slowSL": "Dežnik … dežnik … dežnik.",
+          "deliverySlowSL": "[very slowly, drawn out] Dežnik … [very slowly, drawn out] dežnik … [very slowly, drawn out] dežnik.",
+          "glossPolicy": "held",
+          "learnables": [],
+          "next": [
+            "n5"
+          ]
+        },
+        "n5": {
+          "speaker": "npc",
+          "sl": "Aha, počakaj! Ti to slišiš, samo ne veš, kaj to je. Vprašaj me takole: Kako se reče umbrella?",
+          "en": "Ah, hang on! You can hear it, you just don't know what it is. Ask me like this: How do you say umbrella?",
+          "deliverySL": "[realizing] Aha, počakaj! Ti to slišiš, samo ne veš, kaj to je. Vprašaj me takole: Kako se reče umbrella?",
+          "slowSL": "Aha, počakaj … Ti to slišiš … samo ne veš, kaj to je … Vprašaj me takole … Kako se reče umbrella?",
+          "deliverySlowSL": "[realizing] Aha, počakaj … [slower] Ti to slišiš … [slower] samo ne veš, kaj to je … [slower] Vprašaj me takole … [deliberately, drawn out] Kako se reče umbrella?",
+          "glossPolicy": "after",
+          "focusSpan": "Kako se reče",
+          "learnables": [
+            "kako_se_rece"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask him for the word"
+            }
+          ],
+          "next": [
+            "c3"
+          ]
+        },
+        "c3": {
+          "speaker": "client",
+          "sl": "Kako se reče umbrella?",
+          "en": "Ask him for the word: say 'Kako se reče' and then the English word — umbrella.",
+          "glossPolicy": "after",
+          "focusSpan": "Kako se reče",
+          "learnables": [
+            "kako_se_rece"
+          ],
+          "next": [
+            "n6"
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 5,
+            "kind": "span",
+            "words": [
+              14,
+              17
+            ],
+            "startMs": 6699,
+            "endMs": 8420
+          }
+        },
+        "n6": {
+          "speaker": "npc",
+          "sl": "Umbrella? To je dežnik!",
+          "en": "Umbrella? That's 'dežnik'!",
+          "deliverySL": "[delighted] Umbrella? To je dežnik!",
+          "glossPolicy": "after",
+          "learnables": [
+            "to_je"
+          ],
+          "next": [
+            "n7"
+          ]
+        },
+        "n7": {
+          "speaker": "npc",
+          "sl": "Daj, vprašaj me še kaj! Rain, na primer?",
+          "en": "Go on, ask me something else! Rain, for instance?",
+          "deliverySL": "[playfully] Daj, vprašaj me še kaj! Rain, na primer?",
+          "glossPolicy": "after",
+          "learnables": [],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask him for another word"
+            }
+          ],
+          "next": [
+            "c4"
+          ]
+        },
+        "c4": {
+          "speaker": "client",
+          "sl": "Kako se reče rain?",
+          "en": "Ask him again, this time for a different word: 'Kako se reče' plus the English word — rain.",
+          "glossPolicy": "tap",
+          "focusSpan": "Kako se reče",
+          "learnables": [
+            "kako_se_rece"
+          ],
+          "next": [
+            "n8"
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 5,
+            "kind": "span",
+            "words": [
+              14,
+              17
+            ],
+            "startMs": 6699,
+            "endMs": 8420,
+            "heard": "Kako se reče umbrella?"
+          }
+        },
+        "n8": {
+          "speaker": "npc",
+          "sl": "Dež! Pri nas v Ljubljani je dosti dežja, zato imam vedno dežnik, in ko dežuje, grem ven in...",
+          "en": "Rain! Here in Ljubljana there's lots of rain, so I always have an umbrella, and when it rains I go out and...",
+          "deliverySL": "[fast, tumbling over himself] Dež! Pri nas v Ljubljani je dosti dežja, zato imam vedno dežnik, in ko dežuje, grem ven in...",
+          "glossPolicy": "after",
+          "learnables": [
+            "in"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Slow him down"
+            }
+          ],
+          "next": [
+            "c5"
+          ]
+        },
+        "c5": {
+          "speaker": "client",
+          "sl": "Počasi, prosim.",
+          "en": "Slowly, please.",
+          "glossPolicy": "tap",
+          "focusSpan": "Počasi, prosim",
+          "learnables": [
+            "pocasi_prosim"
+          ],
+          "next": [
+            "n9"
+          ],
+          "audio": {
+            "from": "n4",
+            "level": 4,
+            "kind": "span",
+            "words": [
+              11,
+              12
+            ],
+            "startMs": 6339,
+            "endMs": 7319
+          }
+        },
+        "n9": {
+          "speaker": "npc",
+          "sl": "Ha, ja, oprosti! Počasi: dež. Dež. No, moram iti.",
+          "en": "Ha, yes, sorry! Slowly: rain. Rain. Right, I have to go.",
+          "deliverySL": "[laughing, then calm] Ha, ja, oprosti! Počasi: dež. Dež. No, moram iti.",
+          "slowSL": "Ha, ja, oprosti … Počasi … dež … Dež … No, moram iti.",
+          "deliverySlowSL": "[very slowly, drawn out] Ha, ja, oprosti … [very slowly, drawn out] Počasi … [very slowly, drawn out] dež … [very slowly, drawn out] Dež … [very slowly, drawn out] No, moram iti.",
+          "glossPolicy": "after",
+          "learnables": [
+            "ja",
+            "oprosti",
+            "pocasi_prosim"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask how to say goodbye"
+            }
+          ],
+          "next": [
+            "c6"
+          ]
+        },
+        "c6": {
+          "speaker": "client",
+          "sl": "Kako se reče thank you?",
+          "en": "One more — your own question this time: say 'Kako se reče' and then the English words in the slot — thank you.",
+          "glossPolicy": "tap",
+          "focusSpan": "Kako se reče",
+          "learnables": [
+            "kako_se_rece"
+          ],
+          "next": [
+            "n10"
+          ]
+        },
+        "n10": {
+          "speaker": "npc",
+          "sl": "Thank you? Hvala! In hvala tebi! Adijo!",
+          "en": "Thank you? 'Hvala'! And thank you too! Bye!",
+          "deliverySL": "[delighted] Thank you? Hvala! In hvala tebi! Adijo!",
+          "glossPolicy": "after",
+          "learnables": [
+            "hvala",
+            "in",
+            "adijo"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Say bye"
+            }
+          ],
+          "next": [
+            "c7"
+          ]
+        },
+        "c7": {
+          "speaker": "client",
+          "sl": "Hvala.",
+          "en": "Use the word he just gave you — just the one word.",
+          "glossPolicy": "after",
+          "learnables": [
+            "hvala"
+          ],
+          "next": [],
+          "audio": {
+            "from": "n10",
+            "level": 5,
+            "kind": "span",
+            "words": [
+              2,
+              2
+            ],
+            "startMs": 1620,
+            "endMs": 2059
+          }
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "ne_razumem",
+          "se_enkrat",
+          "kako_se_rece",
+          "pocasi_prosim",
+          "hvala"
+        ],
+        "new": []
+      }
     }
   ],
-  "criticFixes": [],
+  "criticFixes": [
+    {
+      "level": 4,
+      "nodeId": "n6",
+      "field": "sl",
+      "oldExact": "Torej, počasi. Tvoja dežela je lepa. Dežela? Nova beseda, ne? Reci mi: Ne razumem.",
+      "newExact": "Torej, počasi. Tvoja država je lepa. Država? Nova beseda, ne? Reci mi: Ne razumem."
+    },
+    {
+      "level": 4,
+      "nodeId": "n6",
+      "field": "en",
+      "oldExact": "So, slowly. Your land is beautiful. 'Dežela'? A new word, right? Tell me: I don't understand.",
+      "newExact": "So, slowly. Your country is beautiful. 'Država'? A new word, right? Tell me: I don't understand."
+    },
+    {
+      "level": 4,
+      "nodeId": "n6",
+      "field": "deliverySL",
+      "oldExact": "[slowly, kindly] Torej, počasi. Tvoja dežela je lepa. [noticing] Dežela? Nova beseda, ne? [encouraging] Reci mi: Ne razumem.",
+      "newExact": "[slowly, kindly] Torej, počasi. Tvoja država je lepa. [noticing] Država? Nova beseda, ne? [encouraging] Reci mi: Ne razumem."
+    },
+    {
+      "level": 4,
+      "nodeId": "n7",
+      "field": "sl",
+      "oldExact": "Točno tako! Dežela je država. Tvoja država je lepa.",
+      "newExact": "Točno tako! Poglej: Slovenija je država. Anglija je država. Tvoja država je lepa."
+    },
+    {
+      "level": 4,
+      "nodeId": "n7",
+      "field": "en",
+      "oldExact": "Exactly! 'Dežela' means country. Your country is beautiful.",
+      "newExact": "Exactly! Look: Slovenia is a country. England is a country. Your country is beautiful."
+    },
+    {
+      "level": 4,
+      "nodeId": "n7",
+      "field": "deliverySL",
+      "oldExact": "[warmly, pleased] Točno tako! Dežela je država. Tvoja država je lepa.",
+      "newExact": "[warmly, pleased] Točno tako! [slowly, deliberately] Poglej: Slovenija je država. Anglija je država. [warmly] Tvoja država je lepa."
+    }
+  ],
   "a1Candidates": [
     {
       "learnableId": "govorim_lang",

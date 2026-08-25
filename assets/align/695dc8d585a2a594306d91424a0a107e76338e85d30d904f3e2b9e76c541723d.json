@@ -1,0 +1,45 @@
+{
+  "key": "695dc8d585a2a594306d91424a0a107e76338e85d30d904f3e2b9e76c541723d",
+  "text": "Z veseljem. Tvoja država je lepa.",
+  "words": [
+    {
+      "text": "Z",
+      "start": 0.259,
+      "end": 0.319,
+      "loss": 0.052734375
+    },
+    {
+      "text": "veseljem.",
+      "start": 0.5,
+      "end": 1.319,
+      "loss": 0.629036373562283
+    },
+    {
+      "text": "Tvoja",
+      "start": 2.279,
+      "end": 2.819,
+      "loss": 0.0418510913848877
+    },
+    {
+      "text": "država",
+      "start": 2.98,
+      "end": 3.819,
+      "loss": 0.0002994537353515625
+    },
+    {
+      "text": "je",
+      "start": 3.879,
+      "end": 4.079,
+      "loss": 0.0003762245178222656
+    },
+    {
+      "text": "lepa.",
+      "start": 4.119,
+      "end": 4.519,
+      "loss": 0.02069549560546875
+    }
+  ],
+  "loss": 0.2618335738326564,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T13:21:45.668Z"
+}

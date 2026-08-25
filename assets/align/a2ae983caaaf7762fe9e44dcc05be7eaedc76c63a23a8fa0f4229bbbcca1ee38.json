@@ -1,0 +1,63 @@
+{
+  "key": "a2ae983caaaf7762fe9e44dcc05be7eaedc76c63a23a8fa0f4229bbbcca1ee38",
+  "text": "Ha, ja, oprosti! Počasi: dež. Dež. No, moram iti.",
+  "words": [
+    {
+      "text": "Ha,",
+      "start": 0.099,
+      "end": 0.299,
+      "loss": 1.435302734375
+    },
+    {
+      "text": "ja,",
+      "start": 0.419,
+      "end": 0.56,
+      "loss": 0.57763671875
+    },
+    {
+      "text": "oprosti!",
+      "start": 1.259,
+      "end": 1.759,
+      "loss": 0.6381454467773438
+    },
+    {
+      "text": "Počasi:",
+      "start": 2.639,
+      "end": 3.159,
+      "loss": 0.6627982003348214
+    },
+    {
+      "text": "dež.",
+      "start": 4.259,
+      "end": 4.659,
+      "loss": 2.0107421875
+    },
+    {
+      "text": "Dež.",
+      "start": 5.96,
+      "end": 6.379,
+      "loss": 1.720703125
+    },
+    {
+      "text": "No,",
+      "start": 7.519,
+      "end": 7.639,
+      "loss": 0.14127604166666666
+    },
+    {
+      "text": "moram",
+      "start": 8.159,
+      "end": 8.399,
+      "loss": 0.170263671875
+    },
+    {
+      "text": "iti.",
+      "start": 8.42,
+      "end": 8.639,
+      "loss": 0.4500732421875
+    }
+  ],
+  "loss": 0.715168622075295,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T13:21:49.413Z"
+}

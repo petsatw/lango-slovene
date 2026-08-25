@@ -1,0 +1,33 @@
+{
+  "key": "ff7c75e706cccc86c12ed938e7a1bb60be6c9a1ecece3f70877bd20533c98494",
+  "text": "Odlično! Točno tako. Dežnik.",
+  "words": [
+    {
+      "text": "Odlično!",
+      "start": 0.179,
+      "end": 0.919,
+      "loss": 0.40517330169677734
+    },
+    {
+      "text": "Točno",
+      "start": 1.22,
+      "end": 1.599,
+      "loss": 0.052154922485351564
+    },
+    {
+      "text": "tako.",
+      "start": 1.699,
+      "end": 2.059,
+      "loss": 0.40877532958984375
+    },
+    {
+      "text": "Dežnik.",
+      "start": 2.519,
+      "end": 3.139,
+      "loss": 0.22280447823660715
+    }
+  ],
+  "loss": 0.2552943229675293,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T13:21:47.025Z"
+}

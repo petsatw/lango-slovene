@@ -132,6 +132,11 @@ level these are construction rules, not polish:
   tense. Hearing *govoriš* licenses saying *govoriš* and nothing else.
 - **The slot always carries Slovene; it is never empty.** An empty slot risks the learner producing nothing,
   which is the failure state — not the advanced one.
+- **Keep a slot filler to ONE word, and voice the frame with a filler in it.** This looks like a detail and
+  is not: at stage 11 `voice-key-phrases` may only substitute inside a declared slot, and only word for
+  word, so a client line whose filler is two words (`Kako se reče thank you?`) can never be voiced from a
+  delivery whose filler is one — the phrase silently loses its play button, and nothing fails to tell you.
+  Same trap if the character only ever utters the frame unfilled. Decide it here, where it is free.
 - **Gloss withdrawal is a `glossPolicy`.** Every node carries a non-empty `en`, and the policy says when
   the learner sees it. A client line the learner produces for the first time carries `"after"` — the
   English follows the Slovene on its own. The same line later carries `"tap"`, held until they ask for it.
@@ -193,7 +198,12 @@ R replies **approve** or **reject(notes)**. Do not generate audio before approve
 - **Core promotions (L):** if R approves any core-promotion recommendation from stage 9, add those ids to `server/catalog/a1-map.json` and re-run `npm run lint:a1` — the affected bands recalibrate (a Basic-aimed level that was carried at Intermediate now lands Basic). Items R does not promote stay in the tagged superset via their `a1: true` tag; nothing else changes. The operator owns the core; the run never grows it on its own.
 - **Audio (G):** `npm run build:dialogue-assets -- <scenarioId> [--level n]` (lines) + `npm run build:dialogue-intros -- <scenarioId> [--level n]` (intro monologues). Each is **preflight-gated** (fails fast if a voice binding is unset — D7ii), idempotent, and billed only for new clips; the line build flips a clean level `audio: "pending" → "ready"`. **Interactive:** the operator runs these. **Headless:** run them as part of the flow (operator intent assumed). For a cheap pre-commit voice/delivery check, `build:dialogue-assets --nodes <id,id>` auditions a few lines without flipping `ready`.
 - **Verify the generation landed (L) — REQUIRED, and the run is not done until it is green:** `npm run lint:audio -- <scenarioId>`. This is the only check that a level claiming `audio: "ready"` actually has its bytes; every other gate inspects JSON, not the store. **A headless run must not report success until this passes**, because the failure it catches is invisible at runtime — a missing clip makes the scene play silent and too fast without ever erroring, so a run that skipped it would report a working lesson that is broken for every learner. If it fails: generate the named clips, or re-key the ones it flags as already-paid-for, or set the level back to `audio: "pending"` so the state is at least honest. Never mark a level `"ready"` to make this pass.
-- **Ship the audio (release):** line clips land in the gitignored `assets/audio/` store, force-committed for a deploy (`git add -f assets/audio`); intro clips land in `public/intros/` and ship as normal git-tracked files. See docs/DEPLOY.md for the ship + serve-env contract.
+- **Hand off to `voice-key-phrases` (J) — a spoken level is not finished until its Key Phrases have play buttons.** A level that reaches `audio: "ready"` has a close screen listing the lines the learner produced, and every one of them is **silent**: their lines are never synthesized, so the button can only replay the character modelling the phrase — and nothing has chosen which delivery yet. Left undone this ships quietly: the screen renders, the phrases are there, they just do nothing.
+  ```
+  npm run build:alignments -- <scenarioId>     # measures the clips already on disk — never synthesizes
+  ```
+  then invoke the **`voice-key-phrases`** skill for the levels just built. It generates nothing and bills nothing (forced alignment reads the existing bytes), so it is safe to run as part of the flow. **Interactive:** offer it; the operator approves the spans. **Headless:** run it, and carry its no-button decisions into the final report — a phrase with no honest source is a correct outcome, not a failure.
+- **Ship the audio (release):** line clips land in the gitignored `assets/audio/` store, force-committed for a deploy (`git add -f assets/audio`); intro clips land in `public/intros/` and ship as normal git-tracked files. Alignments live beside them in `assets/align/` and ship the same way. See docs/DEPLOY.md for the ship + serve-env contract.
 - **Restart the server** to load the new JSON (data loads only at startup — D7i).
 
 ## Scope (do not add)

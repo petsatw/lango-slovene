@@ -1,0 +1,87 @@
+{
+  "key": "9a786206ddc6599df3e5ae110af0f24225f2664aeff8a484c1b2dd9d15e1d652",
+  "text": "Uf, spet sem pozabil! Jaz? Sem iz Ljubljane. In ti? Od kod si?",
+  "words": [
+    {
+      "text": "Uf,",
+      "start": 0.119,
+      "end": 0.379,
+      "loss": 1.6240234375
+    },
+    {
+      "text": "spet",
+      "start": 0.56,
+      "end": 0.859,
+      "loss": 0.0024167299270629883
+    },
+    {
+      "text": "sem",
+      "start": 0.919,
+      "end": 1.139,
+      "loss": 0.001007080078125
+    },
+    {
+      "text": "pozabil!",
+      "start": 1.179,
+      "end": 1.679,
+      "loss": 0.4910033643245697
+    },
+    {
+      "text": "Jaz?",
+      "start": 2.859,
+      "end": 3.199,
+      "loss": 0.3154144287109375
+    },
+    {
+      "text": "Sem",
+      "start": 3.879,
+      "end": 4.059,
+      "loss": 0.11942545572916667
+    },
+    {
+      "text": "iz",
+      "start": 4.119,
+      "end": 4.219,
+      "loss": 0.00202178955078125
+    },
+    {
+      "text": "Ljubljane.",
+      "start": 4.259,
+      "end": 4.759,
+      "loss": 0.04283251762390137
+    },
+    {
+      "text": "In",
+      "start": 5.739,
+      "end": 5.839,
+      "loss": 0.4915618896484375
+    },
+    {
+      "text": "ti?",
+      "start": 5.96,
+      "end": 6.139,
+      "loss": 0.030696868896484375
+    },
+    {
+      "text": "Od",
+      "start": 6.94,
+      "end": 7.059,
+      "loss": 0.04095458984375
+    },
+    {
+      "text": "kod",
+      "start": 7.139,
+      "end": 7.299,
+      "loss": 1.5915679931640625
+    },
+    {
+      "text": "si?",
+      "start": 7.359,
+      "end": 7.5,
+      "loss": 0.05267333984375
+    }
+  ],
+  "loss": 0.2922974132722424,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T13:21:42.497Z"
+}

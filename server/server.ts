@@ -224,10 +224,32 @@ app.post("/api/scene", (req, res) => {
       };
     };
 
+    // ONE ROW PER TAUGHT ITEM. The panel is the lesson's takeaway list, not a transcript of every line
+    // the learner said. Deduping on the raw `sl` is not enough: a shape is a frame with a slot, so the
+    // SAME taught item surfaces as several different sentences — a different filler in the slot
+    // ("Govorim slovensko." / "Govorim angleško.") and the catalog's optional segments present or absent
+    // ("Ne govorim dobro slovensko."). Those are the two axes that vary WITHIN one shape, and listing
+    // each as its own row showed the learner one lesson as four. So the identity of a row is the catalog
+    // item underneath it, never its wording. (A line carrying no catalog item is its own row — there is
+    // nothing to collapse it onto.)
+    const groups = new Map<string, typeof scene.nodes[string][]>();
     for (const n of Object.values(scene.nodes)) {
       // A turn that expects no Slovene (the learner saying their own name) is not a phrase they met.
       if (n.speaker !== "client" || !/\p{L}/u.test(n.sl) || seen.has(n.sl)) continue;
       seen.add(n.sl);
+      const ids = n.learnables ?? [];
+      const key = ids.length ? [...ids].sort().join("+") : `sl:${n.sl}`;
+      (groups.get(key) ?? groups.set(key, []).get(key)!).push(n);
+    }
+
+    // Which wording survives for the group. A concrete instance the learner actually produced, whose
+    // filler is the word they will hear, is the most useful thing to say again — so it beats the same
+    // shape rendered as a bare frame, and anything playable beats a silent row. Ties keep met order.
+    const rank = (n: (typeof scene.nodes)[string]) =>
+      !resolvePlay(n) ? 0 : n.audio?.heard ? 1 : 2;
+
+    for (const g of groups.values()) {
+      const n = g.reduce((best, x) => (rank(x) > rank(best) ? x : best), g[0]!);
       const isNew = (n.learnables ?? []).some((id) => scene.introduces.includes(id));
       const play = resolvePlay(n);
       rows[isNew ? "new" : "review"].push({

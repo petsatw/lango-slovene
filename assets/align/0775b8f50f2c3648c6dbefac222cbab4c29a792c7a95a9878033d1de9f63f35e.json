@@ -1,0 +1,87 @@
+{
+  "key": "0775b8f50f2c3648c6dbefac222cbab4c29a792c7a95a9878033d1de9f63f35e",
+  "text": "Točno tako! Poglej: Slovenija je država. Anglija je država. Tvoja država je lepa.",
+  "words": [
+    {
+      "text": "Točno",
+      "start": 0.099,
+      "end": 0.56,
+      "loss": 0.09973411560058594
+    },
+    {
+      "text": "tako!",
+      "start": 0.659,
+      "end": 1.1,
+      "loss": 0.26381721496582033
+    },
+    {
+      "text": "Poglej:",
+      "start": 2.2,
+      "end": 2.539,
+      "loss": 0.3773988996233259
+    },
+    {
+      "text": "Slovenija",
+      "start": 3.24,
+      "end": 3.839,
+      "loss": 0.017943064371744793
+    },
+    {
+      "text": "je",
+      "start": 4.119,
+      "end": 4.199,
+      "loss": 0.0130615234375
+    },
+    {
+      "text": "država.",
+      "start": 4.259,
+      "end": 4.739,
+      "loss": 0.12980542864118302
+    },
+    {
+      "text": "Anglija",
+      "start": 5.739,
+      "end": 6.259,
+      "loss": 0.019220624651227678
+    },
+    {
+      "text": "je",
+      "start": 6.559,
+      "end": 6.619,
+      "loss": 0.01055908203125
+    },
+    {
+      "text": "država.",
+      "start": 6.679,
+      "end": 7.139,
+      "loss": 0.033535003662109375
+    },
+    {
+      "text": "Tvoja",
+      "start": 8.359,
+      "end": 8.659,
+      "loss": 0.036804580688476564
+    },
+    {
+      "text": "država",
+      "start": 8.739,
+      "end": 9.199,
+      "loss": 0.0016244252522786458
+    },
+    {
+      "text": "je",
+      "start": 9.279,
+      "end": 9.38,
+      "loss": 0.0009860992431640625
+    },
+    {
+      "text": "lepa.",
+      "start": 9.42,
+      "end": 9.779,
+      "loss": 0.03477020263671875
+    }
+  ],
+  "loss": 0.0789887934555242,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T13:21:44.531Z"
+}
