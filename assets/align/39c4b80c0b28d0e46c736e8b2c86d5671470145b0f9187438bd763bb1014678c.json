@@ -1,0 +1,33 @@
+{
+  "key": "39c4b80c0b28d0e46c736e8b2c86d5671470145b0f9187438bd763bb1014678c",
+  "text": "Ne verjamem! Še enkrat!",
+  "words": [
+    {
+      "text": "Ne",
+      "start": 0.239,
+      "end": 0.399,
+      "loss": 0.6978759765625
+    },
+    {
+      "text": "verjamem!",
+      "start": 0.419,
+      "end": 1.22,
+      "loss": 1.0379570855034723
+    },
+    {
+      "text": "Še",
+      "start": 1.259,
+      "end": 1.36,
+      "loss": 0.685546875
+    },
+    {
+      "text": "enkrat!",
+      "start": 1.399,
+      "end": 1.659,
+      "loss": 0.6199951171875
+    }
+  ],
+  "loss": 0.7422166907269022,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:02.797Z"
+}

@@ -1,0 +1,21 @@
+{
+  "key": "a04afedb32c8f6e6b0503ddd7f0f67363fbbb02d53a17750577146d1afb3adb7",
+  "text": "Ja, seveda!",
+  "words": [
+    {
+      "text": "Ja,",
+      "start": 0.219,
+      "end": 0.459,
+      "loss": 0.9352213541666666
+    },
+    {
+      "text": "seveda!",
+      "start": 0.579,
+      "end": 1.12,
+      "loss": 0.30746023995535715
+    }
+  ],
+  "loss": 0.4507633556019176,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:00.964Z"
+}

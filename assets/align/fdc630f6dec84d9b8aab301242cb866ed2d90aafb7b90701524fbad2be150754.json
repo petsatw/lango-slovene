@@ -1,0 +1,27 @@
+{
+  "key": "fdc630f6dec84d9b8aab301242cb866ed2d90aafb7b90701524fbad2be150754",
+  "text": "Ja, ja! Adijo!",
+  "words": [
+    {
+      "text": "Ja,",
+      "start": 0.68,
+      "end": 0.879,
+      "loss": 1.0885416666666667
+    },
+    {
+      "text": "ja!",
+      "start": 1,
+      "end": 1.22,
+      "loss": 1.277587890625
+    },
+    {
+      "text": "Adijo!",
+      "start": 1.639,
+      "end": 2.139,
+      "loss": 0.3909505208333333
+    }
+  ],
+  "loss": 0.6786093030657087,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:04.992Z"
+}

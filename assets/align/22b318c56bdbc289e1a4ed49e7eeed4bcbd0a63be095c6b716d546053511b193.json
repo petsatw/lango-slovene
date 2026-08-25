@@ -1,0 +1,63 @@
+{
+  "key": "22b318c56bdbc289e1a4ed49e7eeed4bcbd0a63be095c6b716d546053511b193",
+  "text": "A si tudi ti iz Slovenije? Ja ali ne?",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.14,
+      "end": 0.219,
+      "loss": 0.4921875
+    },
+    {
+      "text": "si",
+      "start": 0.299,
+      "end": 0.359,
+      "loss": 0.003177642822265625
+    },
+    {
+      "text": "tudi",
+      "start": 0.439,
+      "end": 0.699,
+      "loss": 0.002933502197265625
+    },
+    {
+      "text": "ti",
+      "start": 0.74,
+      "end": 0.859,
+      "loss": 0.0048370361328125
+    },
+    {
+      "text": "iz",
+      "start": 0.899,
+      "end": 1.039,
+      "loss": 0.068115234375
+    },
+    {
+      "text": "Slovenije?",
+      "start": 1.059,
+      "end": 1.579,
+      "loss": 0.014455223083496093
+    },
+    {
+      "text": "Ja",
+      "start": 2.779,
+      "end": 2.919,
+      "loss": 0.916412353515625
+    },
+    {
+      "text": "ali",
+      "start": 3.019,
+      "end": 3.199,
+      "loss": 0.013668378194173178
+    },
+    {
+      "text": "ne?",
+      "start": 3.24,
+      "end": 3.359,
+      "loss": 0.39598337809244794
+    }
+  ],
+  "loss": 0.17498890129295555,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:06.323Z"
+}
