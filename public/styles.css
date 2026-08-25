@@ -599,8 +599,35 @@ body.in-scene header { display: none; }
    and never explained: the bright text is your turn. The line stays legible — it is still the model. */
 .scene-caption.receded.shown { opacity: 0.55; }
 .scene-gloss.receded.shown { opacity: 0.5; }
-/* The chunked-slow re-speak is the same words, spaced — the caption widens to match the voice. */
+/* The slow re-speak is the same words, spoken slower — the caption widens to match the voice. The TEXT
+   does not change: `slowSL` carries ` … ` separators that direct the voice, and a learner who reads
+   "Prav … Počasi … Sem … iz Ljubljane." is being shown studio notation. Spacing and the blinking
+   tortoise carry "slower"; the sentence stays the sentence. */
 .scene-caption.slow { letter-spacing: 0.02em; word-spacing: 0.25em; }
+
+/* The run controls: available every beat, and deliberately the quietest thing on screen. Held in their
+   own absolutely-positioned layer so they can never disturb .scene-controls, which must not move. */
+.scene-chips {
+  position: absolute; z-index: 2;
+  top: calc(14px + env(safe-area-inset-top)); right: 16px;
+  display: flex; gap: 8px;
+}
+.scene-chip {
+  width: 40px; height: 40px; border-radius: 20px; padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.22); background: rgba(10, 12, 16, 0.45);
+  color: #fff; font-size: 17px; line-height: 1;
+  display: grid; place-items: center; cursor: pointer;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  transition: opacity 200ms ease, background 140ms ease;
+}
+.scene-chip:active { background: rgba(255, 255, 255, 0.16); }
+/* Unavailable, not absent — a beat with no slow clip dims the tortoise rather than removing it, so the
+   cluster keeps its shape and nothing slides sideways between beats. */
+.scene-chip[aria-disabled="true"] { opacity: 0.25; pointer-events: none; }
+/* While the slow clip plays, the tortoise is the whole signal that this is the slow pass. */
+@keyframes scene-tortoise { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.scene-chip.blinking { animation: scene-tortoise 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .scene-chip.blinking { animation-duration: 3s; } }
 
 .scene-talk {
   position: relative; flex-shrink: 0;

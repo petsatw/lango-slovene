@@ -69,6 +69,15 @@
        only control, and nothing here judges what the learner says. -->
   <main id="scene" class="scene" hidden>
     <div id="scene-bg" class="scene-bg"></div>
+    <!-- The three things the learner can always do TO THE RUN — hear the line slower, move on, leave.
+         They live in their own layer over the background rather than beside the talk button: that button
+         is the one fixed object in the run and nothing is allowed to push it. Quiet, small, upper right —
+         always available, never the thing being asked for. -->
+    <div id="scene-chips" class="scene-chips">
+      <button id="scene-slower" class="scene-chip" type="button" title="Say it slower" aria-label="Say it slower">🐢</button>
+      <button id="scene-skip" class="scene-chip" type="button" title="Skip to the next line" aria-label="Skip to the next line">»</button>
+      <button id="scene-quit" class="scene-chip" type="button" title="Close the lesson" aria-label="Close the lesson">✕</button>
+    </div>
     <!-- The on-ramp: the English that tells a first-time learner what this is, what is about to happen,
          what to do, and that nothing is at stake yet. This is what earns the right to withhold English
          once the character starts speaking. It fades before the scene begins. -->

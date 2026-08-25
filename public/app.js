@@ -791,19 +791,55 @@ function writeFocused(el, text, span) {
 // This is the same gate the rehearsal tree puts on its play buttons, and it matters more here: the
 // scene asks for `sl`, while the build asks for `deliverySL` under the `sl` key, so a miss would both
 // bill and permanently seat undirected audio where the directed clip belongs.
+//
+// A clip is ABORTABLE. The promise settles on `onended`/`onerror`, and `pause()` fires neither — so a
+// beat whose audio is cut (the skip chip, the ✕, a new lesson) would otherwise sit awaiting a promise
+// that can never settle, and the run would hang mid-sentence. The pending resolve is therefore held on
+// a module handle that `sceneCancel` can release by hand.
+let scenePendingSay = null;
+// The run's generation. Bumped whenever an in-flight beat is superseded; the player re-checks it after
+// every await and returns rather than racing the beat that replaced it.
+let sceneGen = 0;
+
 function sceneSay(text) {
   if (scene.audio !== "ready") return Promise.resolve();
   return new Promise((resolve) => {
+    scenePendingSay?.();  // whatever is playing is about to be stopped — release its awaiter first
     stopDialogueAudio();
     const params = new URLSearchParams({ text });
     if (scene.voice) params.set("voice", scene.voice);
     const audio = new Audio(`/api/speak?${params.toString()}`);
     dialogueAudio = audio;
-    const done = () => { if (dialogueAudio === audio) dialogueAudio = null; resolve(); };
+    const done = () => {
+      if (dialogueAudio === audio) dialogueAudio = null;
+      if (scenePendingSay === done) scenePendingSay = null;
+      resolve();
+    };
+    scenePendingSay = done;
     audio.onended = done;
     audio.onerror = done;
     audio.play().catch(done);
   });
+}
+
+// Cut the run short: stop the voice, release whoever is awaiting it, disarm the stall ladder, and
+// supersede the beat that is in flight. Everything that interrupts a beat goes through here.
+function sceneCancel() {
+  sceneGen++;
+  sceneClearStalls();
+  scene.armed = false;
+  $("scene-slower").classList.remove("blinking");
+  const pending = scenePendingSay;
+  scenePendingSay = null;
+  stopDialogueAudio();
+  pending?.();
+}
+
+// Which run controls this beat offers. Set on every beat, so a node with no slow clip and the closing
+// node both dim rather than disappear. ✕ is never dimmed — the way out is always live.
+function sceneChips({ slower = false, skip = false } = {}) {
+  $("scene-slower").setAttribute("aria-disabled", slower ? "false" : "true");
+  $("scene-skip").setAttribute("aria-disabled", skip ? "false" : "true");
 }
 
 function sceneCaption(text, { slow = false, focus = null } = {}) {
@@ -833,18 +869,41 @@ function sceneArmStalls(handlers, npc) {
         void cap.offsetWidth; // restart the animation
         cap.classList.add("pulse");
       } else if (h.kind === "respeak" && npc.slowSL) {
-        // The character takes the floor back for a moment: the button says so, then returns the turn.
-        const label = $("scene-talk-label").textContent;
-        sceneSetPhase("speaking");
-        sceneCaption(npc.slowSL, { slow: true, focus: npc.focusSpan });
-        await sceneSay(npc.slowSL);
-        sceneCaption(npc.sl, { focus: npc.focusSpan });
-        if (scene.armed) sceneSetPhase("ready", label);
+        await scenePlaySlow(npc);
       } else if (h.kind === "soften" && h.label) {
         $("scene-talk-label").textContent = h.label;
       }
     }, h.afterMs));
   }
+}
+
+// The slow re-speak — the same sentence, spoken slower. It is ASKED FOR, never volunteered: either the
+// learner was handed the turn and let the wait run out (the `respeak` rung), or they tapped the tortoise.
+// Playing it after every line taught that the first pass need not be listened to.
+//
+// What changes on screen is the TORTOISE, not the words. `slowSL` chunks the line with ` … ` to direct
+// the voice; on screen that reads as studio notation and means nothing to a learner. So the clean
+// sentence stays up — spaced a little, with the tortoise blinking beside it — while the chunked text
+// goes to the synthesiser only.
+async function scenePlaySlow(npc) {
+  if (!npc?.slowSL) return;
+  const chip = $("scene-slower");
+  if (chip.classList.contains("blinking")) return;   // already re-speaking; a second tap is not a queue
+  const gen = sceneGen;
+  // The character takes the floor back for a moment: the button says so, then returns the turn.
+  const handed = scene.armed;
+  const label = $("scene-talk-label").textContent;
+  if (handed) sceneSetPhase("speaking");
+  chip.classList.add("blinking");
+  sceneCaption(npc.sl, { slow: true, focus: npc.focusSpan });
+  await sceneSay(npc.slowSL);
+  chip.classList.remove("blinking");
+  // The run may have moved on underneath a late tap — a skip, or a beat that hands to nobody reaching
+  // its own hold. Restoring this node's caption over the next node's line would be worse than not
+  // restoring it at all.
+  if (gen !== sceneGen || scene.node !== npc) return;
+  sceneCaption(npc.sl, { focus: npc.focusSpan });
+  if (handed && scene.armed) sceneSetPhase("ready", label);
 }
 
 // Beats 1-11 — the English on-ramp, before any Slovene is spoken. Where you are, that nothing is being
@@ -916,6 +975,11 @@ function scenePromptGloss(npc) {
 
 async function scenePlayBeat(npc) {
   const pace = scene.pacing;
+  // This beat's claim on the run. A skip or a ✕ bumps the generation; every await below is followed by
+  // a check, so a beat that has been superseded stops instead of playing on over the one that replaced
+  // it. Without it, skipping mid-clip leaves two beats driving the same caption.
+  const gen = sceneGen;
+  const live = () => gen === sceneGen;
   scene.node = npc;
   scene.armed = false;
   const cap = $("scene-caption");
@@ -925,6 +989,9 @@ async function scenePlayBeat(npc) {
   gloss.textContent = "";
   $("scene-prompt").classList.remove("shown");
   sceneSetPhase("speaking");              // the button stays put and shows that the character has the floor
+  // The tortoise lights only once the line has been SAID — "slower" is not an answer to a sentence the
+  // learner has not heard yet, and a re-speak that cuts across the first pass would be two voices.
+  sceneChips({ slower: false, skip: !npc.terminal });
 
   // The line lands as SOUND, then the silence is held, and only then does it become text (beats 19-22).
   // These are three steps in sequence, not three timers racing: a hold that runs concurrently with the
@@ -936,20 +1003,18 @@ async function scenePlayBeat(npc) {
   sceneCaption(npc.sl, { focus: npc.focusSpan });
   if (npc.captionLeadMs) await sleep(npc.captionLeadMs);
   await sceneSay(npc.sl);
+  if (!live()) return;
 
-  // Chunked-slow re-speak: same words, slower, with the caption chunking in step (beats 23-27). The
-  // caption has to be READ in its plain form first — setting it and re-setting it in the same tick means
-  // the learner only ever sees the chunked one, and the "appears, then re-speaks" beat collapses.
-  if (npc.slowSL) {
-    await sleep(pace.captionReadMs);
-    sceneCaption(npc.slowSL, { slow: true, focus: npc.focusSpan });
-    await sceneSay(npc.slowSL);
-    sceneCaption(npc.sl, { focus: npc.focusSpan });
-  }
+  // The slow re-speak is NOT automatic. Replaying every line slower taught that the first pass need not
+  // be listened to, and it spent the beat that should belong to the learner's silence. It now happens
+  // only when it is asked for: the learner lets the wait run out (the `respeak` stall rung) or taps the
+  // tortoise, which lights here.
+  sceneChips({ slower: !!npc.slowSL, skip: !npc.terminal });
 
   // The gloss comes second when it comes at all — Slovene first, English confirming (beats 64-65, 82).
   if (npc.glossPolicy === "after") {
     await sleep(pace.glossDelayMs);
+    if (!live()) return;
     gloss.textContent = npc.en;
     gloss.classList.add("shown");
   } else if (npc.glossPolicy === "tap") {
@@ -960,6 +1025,7 @@ async function scenePlayBeat(npc) {
   // ends — the button never invites a turn that does not exist.
   if (npc.terminal) {
     await sleep(pace.closeHoldMs);
+    if (!live()) return;
     sceneFinish();
     return;
   }
@@ -973,12 +1039,14 @@ async function scenePlayBeat(npc) {
     // scaled to how much there is to read, rather than for the hand-over's pause-before-an-offer.
     const shown = Math.max(npc.sl.length, npc.glossPolicy === "after" ? npc.en.length : 0);
     await sleep(pace.beatHoldMs + pace.beatCharMs * shown);
+    if (!live()) return;
     await sceneStep(npc.id, null);
     return;
   }
 
   // The turn is handed over. The pause first, so the hand-over reads as an offer rather than a cue.
   await sleep(pace.handoverMs);
+  if (!live()) return;
   // What they are being asked to say — their own line, beside the button that produces it. When the turn
   // expects no Slovene (the learner says their own name) there is no stem, and the English instruction
   // stands on its own rather than under a bold blank.
@@ -998,6 +1066,9 @@ async function scenePlayBeat(npc) {
 // must not START until it has finished — `sceneSay` stops whatever is playing, so without this the
 // "Mhm." is cut off within ~50ms and the instant-acknowledgement beat never reaches the learner at all.
 async function sceneStep(from, ack) {
+  // The fetch outlives a skip that lands while it is in flight, and its reply would otherwise overwrite
+  // the state of the beat that superseded it.
+  const gen = sceneGen;
   const res = await fetch("/api/scene", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -1005,6 +1076,7 @@ async function sceneStep(from, ack) {
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  if (gen !== sceneGen) return;
   scene.voice = data.voice;
   if (data.audio) scene.audio = data.audio;
   if (data.level) scene.level = data.level;
@@ -1024,6 +1096,9 @@ async function sceneStep(from, ack) {
 function sceneFinish() {
   sceneClearStalls();
   scene.armed = false;
+  // Nothing is playing and there is nothing after this line, so both dim. ✕ stays live — it is the way
+  // out from a close screen whose other button is "Next lesson".
+  sceneChips({});
   learnerStarted = true;
   $("scene-controls").hidden = true;
   $("scene-phrases").hidden = true;
@@ -1090,6 +1165,9 @@ function renderKeyPhrases(phrases) {
 }
 
 async function openScene(scenarioId, level = null) {
+  // Whatever the previous run was doing stops here — a beat still awaiting a clip would otherwise play
+  // on over the lesson that replaced it.
+  sceneCancel();
   scene = { scenarioId, level, voice: null, audio: null, node: null, stalls: [], armed: false,
             backchannel: null, pacing: null, nextLevel: null, keyPhrases: null };
   showScreen("scene");
@@ -1104,6 +1182,7 @@ async function openScene(scenarioId, level = null) {
   $("scene-prompt").classList.remove("shown");
   // The button is on screen from the first frame, anchored, showing that it is not yet the learner's.
   sceneSetPhase("speaking", "");
+  sceneChips({});
   try {
     await sceneStep(null, null);
   } catch (err) {
@@ -1140,6 +1219,31 @@ function wireSceneAdvance() {
   // A plain click: no hold, so a slipped thumb cannot end the turn early and there is no gesture to
   // learn. `click` also covers keyboard activation for free.
   btn.addEventListener("click", advance);
+}
+
+// The three run controls. None of them is a lesson action — they act on the RUN: hear that again slower,
+// I'm done with this line, I'm done for now. They are wired once and stay wired; which of them is
+// available in a given beat is `sceneChips`'s job, not a matter of adding and removing listeners.
+function wireSceneChips() {
+  $("scene-slower").addEventListener("click", () => scenePlaySlow(scene.node));
+
+  // Skip: cut the voice, take the same step the talk button takes. `sceneCancel` first, because the
+  // beat being abandoned is awaiting a clip that `pause()` will never end.
+  $("scene-skip").addEventListener("click", async () => {
+    const from = scene.node?.id;
+    if (!from || scene.node.terminal) return;
+    sceneCancel();
+    // Both chips go dark until the next beat lights them again. A second tap landing while the step is
+    // still in flight would cancel the beat it just asked for — the line would be cut a few frames in
+    // and a node skipped that the learner never asked to skip.
+    sceneChips({});
+    sceneSetPhase("speaking");
+    $("scene-prompt").classList.remove("shown");
+    try { await sceneStep(from, null); } catch (err) { obs.error(`scene: ${err.message}`); }
+  });
+
+  // Leave: the same exit as "Done" on the close screen.
+  $("scene-quit").addEventListener("click", () => { sceneCancel(); openHome(); });
 }
 
 // ---- ③ Replays: play back a captured live session turn-by-turn, free (audio served from the store) ----
@@ -1335,6 +1439,7 @@ async function init() {
   btn.addEventListener("pointerleave", stop);
 
   wireSceneAdvance();
+  wireSceneChips();
 
   // Boot metadata: providers (for obs) + the zero-state flag (empty learner → tutor routes to the seed).
   try {
