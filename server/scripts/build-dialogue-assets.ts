@@ -103,15 +103,21 @@ for (const { file, d } of files) {
 
   for (const [id, node] of Object.entries(d.nodes) as [string, Dialogue["nodes"][string]][]) {
     if (auditionNodes && !auditionNodes.has(id)) continue;
-    // In a SPOKEN scene the client lines are what the LEARNER says aloud — they are never played back,
-    // and synthesizing them would bill for clips nobody hears, in the character's voice rather than the
-    // learner's. Only the character is voiced here. Shared with the lints so the rule cannot drift.
+    // In a SPOKEN scene the client lines are what the LEARNER says aloud, so synthesizing them would bill
+    // for the character's voice reading the learner's line. Only the character is voiced here. (A client
+    // line can still be HEARD on the close screen — by pointing at a clip of the character saying the same
+    // shape. That is his recording, never a playback of the learner.) Shared with the lints so the rule
+    // cannot drift.
     if (!isSynthesized(d, node)) continue;
     const voiceProfile = d.voices[node.speaker];
     const voiceTag = e3.voiceTagFor(voiceProfile);
     const key = store.audioKey(e3.name, voiceTag, node.sl); // KEY on the clean display line
     const genText = node.deliverySL ?? node.sl;              // SYNTHESIZE the delivery-tagged text if any
-    if (regen) store.remove(key, "audio");
+    // A re-roll must take the clip's ALIGNMENT with it. The align artifact is keyed by the audio key, so
+    // deleting only the audio leaves stale word timings under the new bytes, and every key-phrase span cut
+    // from this clip drifts — silently, since nothing sounds broken until you listen. removeAudioAndAlign
+    // is the only sanctioned way to drop a clip.
+    if (regen) store.removeAudioAndAlign(key);
     try {
       const { hit } = await store.getOrCreate(
         key,
@@ -144,7 +150,7 @@ for (const { file, d } of files) {
 
     for (const x of extras) {
       const xKey = store.audioKey(e3.name, voiceTag, x.text);
-      if (regen) store.remove(xKey, "audio");
+      if (regen) store.removeAudioAndAlign(xKey);
       try {
         const { hit } = await store.getOrCreate(
           xKey,
