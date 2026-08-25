@@ -762,8 +762,11 @@ async function seedTurn(audioBase64) {
 // — there are no timing constants in this file. Pacing is a teaching decision, so it lives with the rest
 // of the pedagogy, is named, and is dialed per lesson; a renderer that invents its own durations is how
 // the ladder drifted eleven seconds out of true in the first place.
+// `trail` is every line the character has said this run, in order, with `trailAt` pointing at the one on
+// screen. It exists so `«` can put a line back WITHOUT asking the server: /api/scene only ever walks
+// forward, and there is no beat to re-fetch — the client already holds the shaped node it played.
 let scene = { scenarioId: null, level: null, voice: null, audio: null, node: null, stalls: [], armed: false,
-              backchannel: null, pacing: null, nextLevel: null, keyPhrases: null };
+              backchannel: null, pacing: null, nextLevel: null, keyPhrases: null, trail: [], trailAt: -1 };
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -835,10 +838,11 @@ function sceneCancel() {
   pending?.();
 }
 
-// Which run controls this beat offers. Set on every beat, so a node with no slow clip and the closing
-// node both dim rather than disappear. ✕ is never dimmed — the way out is always live.
-function sceneChips({ slower = false, skip = false } = {}) {
+// Which run controls this beat offers. Set on every beat, so a node with no slow clip, the first line
+// and the closing one dim rather than disappear. ✕ is never dimmed — the way out is always live.
+function sceneChips({ slower = false, back = false, skip = false } = {}) {
   $("scene-slower").setAttribute("aria-disabled", slower ? "false" : "true");
+  $("scene-back").setAttribute("aria-disabled", back ? "false" : "true");
   $("scene-skip").setAttribute("aria-disabled", skip ? "false" : "true");
 }
 
@@ -973,8 +977,16 @@ function scenePromptGloss(npc) {
   $("scene-prompt").onclick = () => { en.classList.remove("held"); sceneSay(npc.sl); };
 }
 
-async function scenePlayBeat(npc) {
+async function scenePlayBeat(npc, { replay = false } = {}) {
   const pace = scene.pacing;
+  // A line arriving from the server is a new place in the run; a line arriving from `«` is one the
+  // learner has already been to. Only the first extends the trail, and it ends whatever forward path a
+  // `«` had left behind — the run they are on is the one they are actually playing.
+  if (!replay) {
+    scene.trail.length = scene.trailAt + 1;
+    scene.trail.push(npc);
+    scene.trailAt = scene.trail.length - 1;
+  }
   // This beat's claim on the run. A skip or a ✕ bumps the generation; every await below is followed by
   // a check, so a beat that has been superseded stops instead of playing on over the one that replaced
   // it. Without it, skipping mid-clip leaves two beats driving the same caption.
@@ -991,7 +1003,7 @@ async function scenePlayBeat(npc) {
   sceneSetPhase("speaking");              // the button stays put and shows that the character has the floor
   // The tortoise lights only once the line has been SAID — "slower" is not an answer to a sentence the
   // learner has not heard yet, and a re-speak that cuts across the first pass would be two voices.
-  sceneChips({ slower: false, skip: !npc.terminal });
+  sceneChips({ slower: false, back: scene.trailAt > 0, skip: !npc.terminal });
 
   // The line lands as SOUND, then the silence is held, and only then does it become text (beats 19-22).
   // These are three steps in sequence, not three timers racing: a hold that runs concurrently with the
@@ -1009,7 +1021,7 @@ async function scenePlayBeat(npc) {
   // be listened to, and it spent the beat that should belong to the learner's silence. It now happens
   // only when it is asked for: the learner lets the wait run out (the `respeak` stall rung) or taps the
   // tortoise, which lights here.
-  sceneChips({ slower: !!npc.slowSL, skip: !npc.terminal });
+  sceneChips({ slower: !!npc.slowSL, back: scene.trailAt > 0, skip: !npc.terminal });
 
   // The gloss comes second when it comes at all — Slovene first, English confirming (beats 64-65, 82).
   if (npc.glossPolicy === "after") {
@@ -1096,9 +1108,10 @@ async function sceneStep(from, ack) {
 function sceneFinish() {
   sceneClearStalls();
   scene.armed = false;
-  // Nothing is playing and there is nothing after this line, so both dim. ✕ stays live — it is the way
-  // out from a close screen whose other button is "Next lesson".
-  sceneChips({});
+  // Nothing is playing and there is nothing after this line. `«` stays live — the goodbye is exactly
+  // where someone realises they missed the line before it — and so does ✕, which is the way out from a
+  // close screen whose other button is "Next lesson".
+  sceneChips({ back: scene.trailAt > 0 });
   learnerStarted = true;
   $("scene-controls").hidden = true;
   $("scene-phrases").hidden = true;
@@ -1169,7 +1182,7 @@ async function openScene(scenarioId, level = null) {
   // on over the lesson that replaced it.
   sceneCancel();
   scene = { scenarioId, level, voice: null, audio: null, node: null, stalls: [], armed: false,
-            backchannel: null, pacing: null, nextLevel: null, keyPhrases: null };
+            backchannel: null, pacing: null, nextLevel: null, keyPhrases: null, trail: [], trailAt: -1 };
   showScreen("scene");
   $("scene-close").hidden = true;
   $("scene-phrases").hidden = true;
@@ -1240,6 +1253,25 @@ function wireSceneChips() {
     sceneSetPhase("speaking");
     $("scene-prompt").classList.remove("shown");
     try { await sceneStep(from, null); } catch (err) { obs.error(`scene: ${err.message}`); }
+  });
+
+  // Back: the mirror of skip. Cut the voice and put the previous line back — replayed from the trail
+  // rather than re-fetched, because /api/scene only walks forward and asking it for a beat again would
+  // plant that beat's learnables as a second attempt for a line the learner is merely re-hearing.
+  // It also un-ends a finished run: the goodbye is exactly where someone realises they missed the line
+  // before it, and the close screen must give way to the lesson again.
+  $("scene-back").addEventListener("click", async () => {
+    if (scene.trailAt < 1) return;
+    sceneCancel();
+    sceneChips({});
+    $("scene-close").hidden = true;
+    $("scene-phrases").hidden = true;
+    $("scene-controls").hidden = false;
+    sceneSetPhase("speaking");
+    $("scene-prompt").classList.remove("shown");
+    scene.trailAt -= 1;
+    try { await scenePlayBeat(scene.trail[scene.trailAt], { replay: true }); }
+    catch (err) { obs.error(`scene: ${err.message}`); }
   });
 
   // Leave: the same exit as "Done" on the close screen.
