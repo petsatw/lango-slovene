@@ -285,7 +285,7 @@ learnables is a **gated step of the authoring pass**, a byproduct of writing the
    the dialogue files + the manifest, and emits candidate A1 mappings. Then the gates must all exit 0:
    **`lint:dialogue`** (the DRY invariant + `introduces` integrity + coverage), **`lint:tree`** (tree
    structure + manifest consistency), **`lint:a1`** (a1-map ref-integrity + a difficulty/coverage readout — the
-   curated Pareto core is never force-filled; a per-learnable `a1` tag is the Tagged-A1 superset), **`test:dialogue`**.
+   curated core is never force-filled; a per-learnable `a1` tag is the Tagged-A1 superset), **`test:dialogue`**.
 
 The same three-part shape as the scenario engine (author → critic → deterministic reconcile + lint), extended
 to grow the catalog. Because a word is minted once and referenced by id (step 1's reuse rule + the reconcile's

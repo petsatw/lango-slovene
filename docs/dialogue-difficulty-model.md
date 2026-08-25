@@ -13,14 +13,14 @@ else is a **readout**: the band per dialogue, and its core/A1 line counts.
 
 ## 2. Two-tier A1 — a core flag, a tagged superset
 
-- **CORE** = the learnable's own **`core: true`** flag: a small Pareto set of the highest-frequency,
+- **CORE** = the learnable's own **`core: true`** flag: a small set of the highest-frequency,
   highest-leverage survival language. One flag, one source of truth, read by the classifier, mastery
   selection and the authoring gates alike. It **grows by deliberate promotion** (§7), which keeps its
   signal sharp.
 - **Tagged-A1** = catalog learnables carrying the `a1: true` tag — the **superset** of "also A1 material"
   (CORE ⊆ Tagged-A1). The tag is the **primary signal** the classifier reads, and a run grows it freely.
 - A new learnable gets a **deliberate A1 decision as it is minted**: tag it `a1: true` when it is A1 material.
-  The tag is the standard home for A1 material; the core stays the Pareto few, entered by promotion.
+  The tag is the standard home for A1 material; the core stays the few, entered by promotion.
 
 ### What the a1-map is
 

@@ -1,7 +1,7 @@
 // seed-catalog — the catalog-seed writer (the scenario-INDEPENDENT sibling of reconcile-dialogue).
 //
-// Some learnables aren't born in a dialogue tree — the A1 "Pareto set" of context-independent stems, glue,
-// interrogatives and verb cores (docs/a1-pareto-set.md) is authored as a standalone catalog delta, reviewed
+// Some learnables aren't born in a dialogue tree — a set of context-independent stems, glue,
+// interrogatives and verb cores is authored as a standalone catalog delta, reviewed
 // by slovenian-author (+ operator R), then merged here. Same J/L split as reconcile-dialogue: the fuzzy
 // language calls happen UPSTREAM (author/critic/R); this script does the mechanical merge and is FAIL-LOUD
 // on every invariant — it never guesses.
@@ -27,8 +27,6 @@ const ROOT = path.join(__dirname, "..", "..");
 const LEARNABLES_FILE = path.join(__dirname, "..", "catalog", "learnables.json");
 const A1_FILE = path.join(__dirname, "..", "catalog", "a1-map.json");
 
-const PARETO_CATEGORIES = new Set(["identity", "question", "transaction", "location_time", "social_glue", "verb_core"]);
-
 function die(msg: string): never {
   console.error(`\n❌ seed-catalog: ${msg}\n`);
   process.exit(1);
@@ -36,7 +34,7 @@ function die(msg: string): never {
 
 // ---- Input shape --------------------------------------------------------------------------------
 // {
-//   "learnables": [ { id, kind, sl, gloss, predictableError?, core?, a1?, rank?, paretoCategory?:[...] } ],
+//   "learnables": [ { id, kind, sl, gloss, predictableError?, core?, a1?, rank? } ],
 //   "a1": [ { competencyId, learnableIds: [id, ...] } ]     // A1 placement (folds into a1-map.json)
 //
 // `a1: true` on a learnable is the Tagged-A1 decision (docs/dialogue-difficulty-model.md §2) — what the
@@ -68,12 +66,6 @@ for (const e of input.learnables) {
   const kind = normalizeKind(e.kind);
   if (!kind) die(`learnable "${e.id}" has unknown kind "${e.kind}" (known: vocab/vocabulary, chunk/phrase, pattern/frame)`);
 
-  if (e.paretoCategory !== undefined) {
-    if (!Array.isArray(e.paretoCategory) || !e.paretoCategory.length) die(`learnable "${e.id}": paretoCategory must be a non-empty array`);
-    for (const c of e.paretoCategory) if (!PARETO_CATEGORIES.has(c)) die(`learnable "${e.id}": unknown paretoCategory "${c}"`);
-    if (e.core !== true) die(`learnable "${e.id}": a paretoCategory member must be core:true`);
-  }
-
   const surf = normSurface(e.sl);
   if (existing[e.id]) { // already in catalog by id → idempotent skip iff surface matches
     if (normSurface(existing[e.id].sl) !== surf)
@@ -90,7 +82,6 @@ for (const e of input.learnables) {
   if (typeof e.core === "boolean") clean.core = e.core;
   if (typeof e.a1 === "boolean") clean.a1 = e.a1; // Tagged-A1 decision, made at mint (docs §2)
   if (typeof e.rank === "number") clean.rank = e.rank;
-  if (Array.isArray(e.paretoCategory)) clean.paretoCategory = e.paretoCategory;
   toMint[e.id] = clean;
   mintedIds.push(e.id);
   surfaceToId.set(surf, e.id);

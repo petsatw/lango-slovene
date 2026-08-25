@@ -79,7 +79,7 @@ const frontier = A1_MAP.filter((c) => c.learnables.length === 0).map((c) => c.id
 console.log(`  frontier domains (0 learnables, awaiting a scenario): ${frontier.join(", ") || "none"}`);
 
 // 4. Difficulty band per dialogue (the YARDSTICK — informational, never a gate; docs/dialogue-difficulty-model.md §3).
-//    CORE is the learnable's own `core: true` flag — the single source of truth for Pareto-unlock membership;
+//    CORE is the learnable's own `core: true` flag — the single source of truth for core membership;
 //    Tagged-A1 = CORE ∪ ids carrying the `a1` tag. The band is measured per line and should match the
 //    written levelLabel (reconcile computes both from this same function).
 const coreIds = new Set<string>(Object.entries(LEARNABLES).filter(([, l]) => (l as any).core === true).map(([id]) => id));

@@ -182,7 +182,7 @@ for (const lvl of [...input.levels].sort((a: any, b: any) => a.level - b.level))
 }
 
 // ---- Difficulty bands (docs/dialogue-difficulty-model.md §3): computed, not authored ---------------
-// CORE is the learnable's own `core: true` flag — the one source of truth for Pareto-unlock membership.
+// CORE is the learnable's own `core: true` flag — the one source of truth for core membership.
 // Tagged-A1 = CORE ∪ ids carrying the `a1` tag (in the existing catalog OR minted this run). The band is
 // measured PER LINE and OVERRIDES the author's `levelLabel` target — the author aims, the classifier labels.
 //
