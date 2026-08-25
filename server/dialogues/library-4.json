@@ -2,7 +2,7 @@
   "id": "library-l4",
   "scenarioId": "library",
   "level": 4,
-  "levelLabel": "Advanced",
+  "levelLabel": "Above A1",
   "title": "Using the space",
   "objectives": [
     {
@@ -27,23 +27,15 @@
     }
   ],
   "introduces": [
-    "ali_lahko",
     "ali_moram",
     "citalnica",
-    "dober_dan",
-    "hvala",
-    "hvala_za_pomoc",
     "katerikoli",
     "miren",
-    "nasvidenje",
     "odlicno",
     "potrebovati",
     "prijaviti_se",
-    "prosim",
     "prost",
     "racunalnik",
-    "rad_bi",
-    "rezervirati",
     "sedez",
     "uporabljati",
     "usesti_se"
@@ -69,6 +61,11 @@
       "next": [
         "c1a",
         "c1b"
+      ],
+      "learnables": [
+        "dober_dan",
+        "izvolite",
+        "kako"
       ]
     },
     "c1a": {
@@ -77,6 +74,12 @@
       "en": "Good day. I'd like to sign in to the reading room.",
       "next": [
         "n2r"
+      ],
+      "learnables": [
+        "dober_dan",
+        "rad_bi",
+        "prijaviti_se",
+        "citalnica"
       ]
     },
     "c1b": {
@@ -85,6 +88,12 @@
       "en": "Good day. Can I use a computer?",
       "next": [
         "n2c"
+      ],
+      "learnables": [
+        "dober_dan",
+        "ali_lahko",
+        "uporabljati",
+        "racunalnik"
       ]
     },
     "n2r": {
@@ -95,6 +104,13 @@
       "next": [
         "c2r1",
         "c2r2"
+      ],
+      "learnables": [
+        "seveda",
+        "prosim",
+        "izkaznica",
+        "in",
+        "sedez"
       ]
     },
     "c2r1": {
@@ -103,6 +119,10 @@
       "en": "Seat B2, please.",
       "next": [
         "n3r"
+      ],
+      "learnables": [
+        "sedez",
+        "prosim"
       ]
     },
     "c2r2": {
@@ -111,6 +131,12 @@
       "en": "Any quiet seat, please.",
       "next": [
         "n3r"
+      ],
+      "learnables": [
+        "katerikoli",
+        "miren",
+        "sedez",
+        "prosim"
       ]
     },
     "n3r": {
@@ -121,6 +147,13 @@
       "next": [
         "cz1",
         "cz2"
+      ],
+      "learnables": [
+        "sedez",
+        "rezervirati",
+        "vstop",
+        "prijaviti_se",
+        "izkaznica"
       ]
     },
     "n2c": {
@@ -131,6 +164,13 @@
       "next": [
         "c2c1",
         "c2c2"
+      ],
+      "learnables": [
+        "seveda",
+        "racunalnik",
+        "v_na_lok",
+        "vrstilni_prvi",
+        "nadstropje"
       ]
     },
     "c2c1": {
@@ -139,6 +179,10 @@
       "en": "Do I have to reserve one?",
       "next": [
         "n3c"
+      ],
+      "learnables": [
+        "ali_moram",
+        "rezervirati"
       ]
     },
     "c2c2": {
@@ -147,6 +191,12 @@
       "en": "Thanks. Is there anything I need?",
       "next": [
         "n3c"
+      ],
+      "learnables": [
+        "hvala",
+        "kaj",
+        "ali_potrebujem",
+        "potrebovati"
       ]
     },
     "n3c": {
@@ -157,6 +207,10 @@
       "next": [
         "c3c1",
         "c3c2"
+      ],
+      "learnables": [
+        "rezervirati",
+        "ne"
       ]
     },
     "c3c1": {
@@ -166,6 +220,11 @@
       "context": "no reservation needed",
       "next": [
         "n4free"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "usesti_se",
+        "prost"
       ]
     },
     "c3c2": {
@@ -175,6 +234,11 @@
       "context": "a reservation is required",
       "next": [
         "n4res"
+      ],
+      "learnables": [
+        "in",
+        "moram_inf",
+        "rezervirati"
       ]
     },
     "n4free": {
@@ -185,6 +249,12 @@
       "next": [
         "cz1",
         "cz2"
+      ],
+      "learnables": [
+        "tocno",
+        "rezervacija",
+        "prost",
+        "uporabljati"
       ]
     },
     "n4res": {
@@ -195,6 +265,12 @@
       "next": [
         "cz1",
         "cz2"
+      ],
+      "learnables": [
+        "da",
+        "rezervacija",
+        "potrebovati",
+        "izkaznica"
       ]
     },
     "cz1": {
@@ -203,6 +279,11 @@
       "en": "Great, thank you. Goodbye.",
       "next": [
         "nBye"
+      ],
+      "learnables": [
+        "odlicno",
+        "hvala",
+        "nasvidenje"
       ]
     },
     "cz2": {
@@ -211,6 +292,10 @@
       "en": "Thanks for your help. Goodbye.",
       "next": [
         "nBye"
+      ],
+      "learnables": [
+        "hvala_za_pomoc",
+        "nasvidenje"
       ]
     },
     "nBye": {
@@ -218,7 +303,10 @@
       "sl": "Nasvidenje, prijeten študij!",
       "en": "Goodbye, enjoy your studying!",
       "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Nasvidenje, prijeten študij!",
-      "next": []
+      "next": [],
+      "learnables": [
+        "nasvidenje"
+      ]
     }
   }
 }

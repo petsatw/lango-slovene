@@ -2,7 +2,7 @@
   "id": "library-l6",
   "scenarioId": "library",
   "level": 6,
-  "levelLabel": "Advanced",
+  "levelLabel": "Above A1",
   "title": "Registration & membership",
   "objectives": [
     {
@@ -27,37 +27,19 @@
     }
   ],
   "introduces": [
-    "da",
-    "dober_dan",
     "dolgovati",
     "enako_kot_prej",
-    "hvala",
-    "hvala_za_pomoc",
     "izdati",
     "izgubiti",
-    "izkaznica",
-    "ja",
     "kaj_naj_naredim",
     "knjiznica",
     "koliko",
-    "najlepsa_hvala",
-    "naslednjic",
     "naslov",
-    "nasvidenje",
     "nimam",
-    "placati",
-    "poravnati",
     "poteci",
     "pridem_drugic",
-    "prosim",
-    "rad_bi",
-    "razumem",
-    "seveda",
-    "takoj",
     "taksa",
     "tukaj_imate",
-    "urediti",
-    "v_redu",
     "vpisati_se",
     "zal"
   ],
@@ -83,6 +65,10 @@
         "c1a",
         "c1b",
         "c1c"
+      ],
+      "learnables": [
+        "dober_dan",
+        "kaj"
       ]
     },
     "c1a": {
@@ -91,6 +77,12 @@
       "en": "Good day. I'd like to register at the library.",
       "next": [
         "n2reg"
+      ],
+      "learnables": [
+        "dober_dan",
+        "rad_bi",
+        "vpisati_se",
+        "knjiznica"
       ]
     },
     "c1b": {
@@ -99,6 +91,11 @@
       "en": "Good day. My card has expired.",
       "next": [
         "n2ren"
+      ],
+      "learnables": [
+        "dober_dan",
+        "izkaznica",
+        "poteci"
       ]
     },
     "c1c": {
@@ -107,6 +104,12 @@
       "en": "Good day. I've lost my card, what should I do?",
       "next": [
         "n2lost"
+      ],
+      "learnables": [
+        "dober_dan",
+        "izgubiti",
+        "izkaznica",
+        "kaj_naj_naredim"
       ]
     },
     "n2reg": {
@@ -117,6 +120,11 @@
       "next": [
         "c2r1",
         "c2r2"
+      ],
+      "learnables": [
+        "seveda",
+        "ali_imate",
+        "dokument"
       ]
     },
     "c2r1": {
@@ -126,6 +134,10 @@
       "context": "his ID is in hand",
       "next": [
         "n3ok"
+      ],
+      "learnables": [
+        "ja",
+        "tukaj_imate"
       ]
     },
     "c2r2": {
@@ -135,6 +147,10 @@
       "context": "he has no ID with him",
       "next": [
         "n3noid"
+      ],
+      "learnables": [
+        "zal",
+        "nimam"
       ]
     },
     "n3ok": {
@@ -145,6 +161,12 @@
       "next": [
         "cz1",
         "cz2"
+      ],
+      "learnables": [
+        "odlicno",
+        "v_redu",
+        "tukaj_je",
+        "izkaznica"
       ]
     },
     "n3noid": {
@@ -155,6 +177,11 @@
       "next": [
         "czBad1",
         "czBad2"
+      ],
+      "learnables": [
+        "zal",
+        "dokument",
+        "vpisati_se"
       ]
     },
     "n2ren": {
@@ -165,6 +192,9 @@
       "next": [
         "c2n1",
         "c2n2"
+      ],
+      "learnables": [
+        "poteci"
       ]
     },
     "c2n1": {
@@ -174,6 +204,10 @@
       "context": "his account is clear",
       "next": [
         "n3renok"
+      ],
+      "learnables": [
+        "da",
+        "prosim"
       ]
     },
     "c2n2": {
@@ -183,6 +217,11 @@
       "context": "there's an unpaid late fine",
       "next": [
         "n3fine"
+      ],
+      "learnables": [
+        "da",
+        "kaj",
+        "dolgovati"
       ]
     },
     "n3renok": {
@@ -193,6 +232,10 @@
       "next": [
         "c3a1",
         "c3a2"
+      ],
+      "learnables": [
+        "naslov",
+        "prosim"
       ]
     },
     "c3a1": {
@@ -201,6 +244,10 @@
       "en": "The address is the same as before.",
       "next": [
         "n4ren"
+      ],
+      "learnables": [
+        "naslov",
+        "enako_kot_prej"
       ]
     },
     "c3a2": {
@@ -209,6 +256,11 @@
       "en": "Yes, Slovenska cesta 5, the same as before.",
       "next": [
         "n4ren"
+      ],
+      "learnables": [
+        "ja",
+        "stevilo_pet",
+        "enako_kot_prej"
       ]
     },
     "n4ren": {
@@ -219,6 +271,12 @@
       "next": [
         "cz1",
         "cz2"
+      ],
+      "learnables": [
+        "odlicno",
+        "izkaznica",
+        "stevilo_ena",
+        "leto"
       ]
     },
     "n3fine": {
@@ -229,6 +287,12 @@
       "next": [
         "c3f1",
         "c3f2"
+      ],
+      "learnables": [
+        "zamudnina",
+        "stevilo_dva",
+        "evro",
+        "poravnati"
       ]
     },
     "c3f1": {
@@ -237,6 +301,11 @@
       "en": "Of course, I'll settle it right away.",
       "next": [
         "n4ren"
+      ],
+      "learnables": [
+        "seveda",
+        "takoj",
+        "poravnati"
       ]
     },
     "c3f2": {
@@ -245,6 +314,10 @@
       "en": "And how much do I owe?",
       "next": [
         "n4fineamt"
+      ],
+      "learnables": [
+        "koliko",
+        "dolgovati"
       ]
     },
     "n4fineamt": {
@@ -255,6 +328,12 @@
       "next": [
         "c4f1",
         "c4f2"
+      ],
+      "learnables": [
+        "zamudnina",
+        "stevilo_dva",
+        "evro",
+        "poravnati"
       ]
     },
     "c4f1": {
@@ -263,6 +342,11 @@
       "en": "Alright, I'll pay right now.",
       "next": [
         "n4ren"
+      ],
+      "learnables": [
+        "v_redu",
+        "placati",
+        "takoj"
       ]
     },
     "c4f2": {
@@ -272,6 +356,10 @@
       "context": "he leaves the fine unpaid",
       "next": [
         "n4later"
+      ],
+      "learnables": [
+        "placati",
+        "naslednjic"
       ]
     },
     "n4later": {
@@ -282,6 +370,13 @@
       "next": [
         "czBad1",
         "czBad2"
+      ],
+      "learnables": [
+        "v_redu",
+        "izkaznica",
+        "poteci",
+        "zamudnina",
+        "poravnati"
       ]
     },
     "n2lost": {
@@ -292,6 +387,12 @@
       "next": [
         "c2l1",
         "c2l2"
+      ],
+      "learnables": [
+        "izdati",
+        "taksa",
+        "stevilo_dva",
+        "evro"
       ]
     },
     "c2l1": {
@@ -300,6 +401,11 @@
       "en": "Alright, here's the fee.",
       "next": [
         "n3lost"
+      ],
+      "learnables": [
+        "v_redu",
+        "tukaj_je",
+        "taksa"
       ]
     },
     "c2l2": {
@@ -308,6 +414,11 @@
       "en": "Alright, please issue me a new one.",
       "next": [
         "n3lost"
+      ],
+      "learnables": [
+        "v_redu",
+        "prosim",
+        "izdati"
       ]
     },
     "n3lost": {
@@ -318,6 +429,13 @@
       "next": [
         "cz1",
         "cz2"
+      ],
+      "learnables": [
+        "hvala",
+        "tukaj_je",
+        "izkaznica",
+        "star",
+        "zdaj"
       ]
     },
     "cz1": {
@@ -326,6 +444,10 @@
       "en": "Thank you very much. Goodbye.",
       "next": [
         "nBye"
+      ],
+      "learnables": [
+        "najlepsa_hvala",
+        "nasvidenje"
       ]
     },
     "cz2": {
@@ -334,6 +456,10 @@
       "en": "Thanks for your help. Goodbye.",
       "next": [
         "nBye"
+      ],
+      "learnables": [
+        "hvala_za_pomoc",
+        "nasvidenje"
       ]
     },
     "nBye": {
@@ -341,7 +467,13 @@
       "sl": "Nasvidenje in dobrodošli v knjižnici!",
       "en": "Goodbye and welcome to the library!",
       "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Nasvidenje in dobrodošli v knjižnici!",
-      "next": []
+      "next": [],
+      "learnables": [
+        "nasvidenje",
+        "in",
+        "v_na_lok",
+        "knjiznica"
+      ]
     },
     "czBad1": {
       "speaker": "client",
@@ -349,6 +481,11 @@
       "en": "I understand, I'll come another time. Thank you.",
       "next": [
         "nByeBad"
+      ],
+      "learnables": [
+        "razumem",
+        "pridem_drugic",
+        "hvala"
       ]
     },
     "czBad2": {
@@ -357,6 +494,11 @@
       "en": "Alright, I'll sort it out. Goodbye.",
       "next": [
         "nByeBad"
+      ],
+      "learnables": [
+        "v_redu",
+        "urediti",
+        "nasvidenje"
       ]
     },
     "nByeBad": {
@@ -364,7 +506,10 @@
       "sl": "Se vidimo kmalu, pazite nase!",
       "en": "See you soon, take care!",
       "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Se vidimo kmalu, pazite nase!",
-      "next": []
+      "next": [],
+      "learnables": [
+        "kmalu"
+      ]
     }
   }
 }

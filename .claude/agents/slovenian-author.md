@@ -64,6 +64,14 @@ The same authoring role, a different **surface**. Here C (the `create-dialogue` 
 - `sl` — the natural Ljubljana line for that intent (native-not-textbook, register-held). For **client** nodes this is what the LEARNER says; for **npc** nodes it is the character's line.
 - `en` — a faithful short English gloss.
 - `deliverySL` — OPTIONAL, **npc lines only**: the same `sl` with **one** eleven_v3 delivery tag (e.g. `[warmly] …`) matching the character's persona. Client lines carry NO `deliverySL`.
+- `slowSL` — OPTIONAL, and **only for the nodes C marks**: the same line **chunked and re-spoken slowly**, for a beat that says it once at natural speed and then again slower. Break it where a **native actually pauses** — at the phrase seam, not between every word — using ` … ` between chunks (e.g. `Jaz sem … Slavko.`). It must read as the same sentence, and its text must **differ from `sl`** (it is a separate audio clip keyed on its own text).
+- `deliverySlowSL` — OPTIONAL but **strongly wanted whenever you write a `slowSL`**: the same `slowSL` text with inline delivery tags, which is what actually gets synthesized while `slowSL` stays the caption. Measured: the ` … ` separator **alone does not slow eleven_v3 down** (two authored slow lines came back at 1.00× and 0.92× their natural clips — one identical, one faster). Slower speech must be DIRECTED. Add tags only — the words must match `slowSL` exactly, a lint checks it.
+
+### A spoken scene (`advance: "audio"`)
+C may hand you a **linear spine** instead of a branching tree, where the `client` nodes are what the learner is expected to **say aloud** rather than a menu to pick from. Two things change:
+- Write client lines as the learner's own speech at the level a beginner can actually produce on a first hearing — the line they were just shown how to say. Keep them short enough for one breath.
+- **You are never asked for stall lines.** The quiet-learner ladder carries **no Slovene at all** — its rungs flash the caption, replay the node's existing slow clip, or lower the button's label in English. Someone who has not spoken is not short of Slovene; they are stuck, and more of the language they do not have is the one thing that must not arrive. If a brief asks you for stall lines, say so in `concerns` and return none.
+- **A client node's `en` is shown to the LEARNER**, not just to us. At the moment their turn opens the app surfaces the upcoming client line as their prompt: the `sl` is their target, and where there is no Slovene stem to show — a bare `"___"`, the learner saying their own name — the **English carries the whole beat alone**. Write it as an instruction a nervous adult can act on ("your own name, spoken on its own"), not as a translation of a blank.
 
 ### The catalog delta (the minting rubric — this is where over/under-minting happens)
 Alongside the nodes, return the learnables **this level introduces**, split into `reuse` and `new`:

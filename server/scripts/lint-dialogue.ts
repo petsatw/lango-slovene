@@ -17,7 +17,7 @@
 //
 // Exit code 0 = pass, 1 = at least one integrity error (so the authoring procedure can gate on it).
 
-import { normSurface } from "./dialogue-lib";
+import { normSurface, isSynthesized } from "./dialogue-lib";
 
 async function main() {
   const errors: string[] = [];
@@ -25,8 +25,9 @@ async function main() {
 
   // Loading the modules runs their startup validation. A hard schema/id error throws here — surface it
   // as a lint failure rather than an uncaught stack.
-  type LintNode = { speaker: "npc" | "client"; sl: string; deliverySL?: string };
-  type LintDialogue = { id: string; introduces: string[]; voices: { npc: string; client: string }; nodes: Record<string, LintNode> };
+  type LintNode = { speaker: "npc" | "client"; sl: string; deliverySL?: string; slowSL?: string;
+                    deliverySlowSL?: string };
+  type LintDialogue = { id: string; introduces: string[]; advance?: string; voices: { npc: string; client: string }; nodes: Record<string, LintNode> };
   let LEARNABLES: Record<string, { id: string; kind: string; sl: string }>;
   let DIALOGUES: Record<string, LintDialogue[]>;
   try {
@@ -64,6 +65,26 @@ async function main() {
   console.log(`  ${introducedBy.size}/${Object.keys(LEARNABLES).length} learnables are introduced by a dialogue.`);
   console.log(`  not introduced by any dialogue (may be owned by the seed/scenarios): ${orphans.join(", ") || "none"}`);
 
+  // 3b. DELIVERY DRIFT (error). `deliverySL` is the same line as `sl`, only with inline delivery tags —
+  //     so stripping the bracketed tags must give back `sl`. When it doesn't, the two have drifted:
+  //     `sl` is the caption AND the cache key, `deliverySL` is what gets SYNTHESIZED, so the clip says
+  //     one thing while the screen and the key say another, silently and only in the audio. The way this
+  //     happens is an edit that lands on `sl` and misses `deliverySL` beside it.
+  const stripTags = (s: string) => s.replace(/\[[^\]]*\]/g, " ").replace(/\s+/g, " ").trim();
+  for (const d of dialogues) {
+    for (const [nid, n] of Object.entries(d.nodes ?? {})) {
+      const lines: { sl: string; delivery?: string; where: string }[] = [
+        { sl: n.sl, delivery: n.deliverySL, where: `${d.id}:${nid}` },
+        ...(n.slowSL ? [{ sl: n.slowSL, delivery: n.deliverySlowSL, where: `${d.id}:${nid}:slow` }] : []),
+      ];
+      for (const l of lines) {
+        if (!l.delivery) continue;
+        if (stripTags(l.delivery) !== stripTags(l.sl))
+          errors.push(`delivery drift at ${l.where}: deliverySL is not sl + tags — synthesized "${stripTags(l.delivery)}" vs caption/key "${l.sl}"`);
+      }
+    }
+  }
+
   // 4. Delivery-tag / audio-key collision (WARN). Group every node by (voice profile, clean sl) — its
   //    audio-clip identity. If a group's members were authored with more than one delivery (deliverySL ??
   //    sl), they collapse to a single clip and only the first built is heard. Flag it so the author makes
@@ -73,8 +94,20 @@ async function main() {
     for (const [nid, n] of Object.entries(d.nodes ?? {})) {
       const voice = d.voices?.[n.speaker];
       if (!voice || !n.sl) continue;
-      const key = `${voice} :: ${n.sl}`; // clip identity: same (voice, clean sl) => same audio key
-      (byClip.get(key) ?? byClip.set(key, []).get(key)!).push({ where: `${d.id}:${nid}`, say: n.deliverySL ?? n.sl, voice, sl: n.sl });
+      // A node that is never synthesized owns no clip, so it cannot collide with one. Without this a
+      // spoken scene warns about its own client lines sharing a key with the character's.
+      if (!isSynthesized(d, n)) continue;
+      // Every clean line this node owns is its own clip: the line itself, its chunked-slow re-speak, and
+      // each stall handler. They share one key space, so a stall line that matches a node line in the
+      // same voice is the same collision the warning below exists for.
+      const lines: { sl: string; say: string; where: string }[] = [
+        { sl: n.sl, say: n.deliverySL ?? n.sl, where: `${d.id}:${nid}` },
+        ...(n.slowSL ? [{ sl: n.slowSL, say: n.deliverySlowSL ?? n.slowSL, where: `${d.id}:${nid}:slow` }] : []),
+      ];
+      for (const l of lines) {
+        const key = `${voice} :: ${l.sl}`; // clip identity: same (voice, clean sl) => same audio key
+        (byClip.get(key) ?? byClip.set(key, []).get(key)!).push({ where: l.where, say: l.say, voice, sl: l.sl });
+      }
     }
   }
   for (const members of byClip.values()) {

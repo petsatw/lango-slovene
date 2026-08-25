@@ -2,7 +2,7 @@
   "id": "library-l1",
   "scenarioId": "library",
   "level": 1,
-  "levelLabel": "Basic",
+  "levelLabel": "Advanced",
   "title": "Welcome — a first look around",
   "objectives": [
     {
@@ -60,6 +60,12 @@
       "next": [
         "c1a",
         "c1b"
+      ],
+      "learnables": [
+        "dober_dan",
+        "prvic",
+        "kako",
+        "urediti"
       ]
     },
     "c1a": {
@@ -68,6 +74,13 @@
       "en": "Good day. Yes, it's my first time here. Thank you!",
       "next": [
         "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "ja",
+        "prvic",
+        "tukaj",
+        "hvala"
       ]
     },
     "c1b": {
@@ -76,6 +89,11 @@
       "en": "Good day. Yes — where do I start?",
       "next": [
         "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "ja",
+        "kje_zacnem"
       ]
     },
     "n2": {
@@ -86,6 +104,11 @@
       "next": [
         "c2a",
         "c2b"
+      ],
+      "learnables": [
+        "tukaj_je",
+        "tukaj",
+        "knjiga"
       ]
     },
     "c2a": {
@@ -94,6 +117,12 @@
       "en": "Aha, I understand. And what's over there?",
       "next": [
         "n3"
+      ],
+      "learnables": [
+        "razumem",
+        "in",
+        "kaj",
+        "tam"
       ]
     },
     "c2b": {
@@ -102,6 +131,11 @@
       "en": "Great. And where are the books?",
       "next": [
         "n3"
+      ],
+      "learnables": [
+        "in",
+        "kje_je",
+        "knjiga"
       ]
     },
     "n3": {
@@ -112,6 +146,13 @@
       "next": [
         "c3a",
         "c3b"
+      ],
+      "learnables": [
+        "tam",
+        "knjiga",
+        "in",
+        "citalnica",
+        "racunalnik"
       ]
     },
     "c3a": {
@@ -120,6 +161,11 @@
       "en": "And where is the toilet?",
       "next": [
         "n4"
+      ],
+      "learnables": [
+        "in",
+        "kje_je",
+        "stranisce"
       ]
     },
     "c3b": {
@@ -128,6 +174,10 @@
       "en": "And where can I sit and read?",
       "next": [
         "n4"
+      ],
+      "learnables": [
+        "kje_lahko_sedim",
+        "in"
       ]
     },
     "n4": {
@@ -138,6 +188,10 @@
       "next": [
         "c4a",
         "c4b"
+      ],
+      "learnables": [
+        "stranisce",
+        "miren"
       ]
     },
     "c4a": {
@@ -146,6 +200,10 @@
       "en": "Thank you very much for your help!",
       "next": [
         "nBye"
+      ],
+      "learnables": [
+        "najlepsa_hvala",
+        "hvala_za_pomoc"
       ]
     },
     "c4b": {
@@ -154,6 +212,10 @@
       "en": "Great, thanks. I'll just have a little look around.",
       "next": [
         "nBye"
+      ],
+      "learnables": [
+        "hvala",
+        "bom_pogledal"
       ]
     },
     "nBye": {
@@ -161,7 +223,12 @@
       "sl": "Kar razglejte se. Če boste kaj potrebovali, sem tukaj.",
       "en": "Do have a look around. If you need anything, I'm here.",
       "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Kar razglejte se. Če boste kaj potrebovali, sem tukaj.",
-      "next": []
+      "next": [],
+      "learnables": [
+        "kaj",
+        "potrebovati",
+        "tukaj"
+      ]
     }
   }
 }

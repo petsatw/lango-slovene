@@ -9,7 +9,9 @@
       "tutorEN": "Hello! I'm your teacher. When you walk in, you say: Dober dan. Now you.",
       "targetSL": "Dober dan.",
       "targetEN": "Good day.",
-      "learnables": ["dober_dan"]
+      "learnables": [
+        "dober_dan"
+      ]
     },
     {
       "id": "begin",
@@ -18,7 +20,9 @@
       "tutorEN": "To get going we say: Začnemo? Ask me. Say: Začnemo?",
       "targetSL": "Začnemo?",
       "targetEN": "Shall we begin?",
-      "learnables": ["zacnemo"]
+      "learnables": [
+        "zacnemo"
+      ]
     },
     {
       "id": "please",
@@ -27,7 +31,9 @@
       "tutorEN": "When you ask for something, you add: Prosim. Now you. Say: Prosim.",
       "targetSL": "Prosim.",
       "targetEN": "Please.",
-      "learnables": ["prosim"]
+      "learnables": [
+        "prosim"
+      ]
     },
     {
       "id": "thanks",
@@ -36,7 +42,9 @@
       "tutorEN": "Nice. And when you receive something, you say: Hvala. Now you. Say: Hvala.",
       "targetSL": "Hvala.",
       "targetEN": "Thank you.",
-      "learnables": ["hvala"]
+      "learnables": [
+        "hvala"
+      ]
     },
     {
       "id": "yes",
@@ -45,7 +53,9 @@
       "tutorEN": "Ja means yes. Ne means no. Say: Ja.",
       "targetSL": "Ja.",
       "targetEN": "Yes.",
-      "learnables": ["ja"]
+      "learnables": [
+        "ja"
+      ]
     },
     {
       "id": "order_coffee",
@@ -54,7 +64,10 @@
       "tutorEN": "Now you order a coffee. You say: Eno kavo, prosim. Now you.",
       "targetSL": "Eno kavo, prosim.",
       "targetEN": "One coffee, please.",
-      "learnables": ["eno_femacc", "kava"]
+      "learnables": [
+        "eno_femacc",
+        "kava"
+      ]
     },
     {
       "id": "dont_understand",
@@ -63,7 +76,9 @@
       "tutorEN": "Sometimes you don't understand. Then you say: Ne razumem. Now you.",
       "targetSL": "Ne razumem.",
       "targetEN": "I don't understand.",
-      "learnables": ["ne_razumem"]
+      "learnables": [
+        "ne_razumem"
+      ]
     },
     {
       "id": "repeat",
@@ -72,7 +87,9 @@
       "tutorEN": "Want to hear it again? You say: Še enkrat, prosim. Now you.",
       "targetSL": "Še enkrat, prosim.",
       "targetEN": "Once more, please.",
-      "learnables": ["se_enkrat"]
+      "learnables": [
+        "se_enkrat"
+      ]
     },
     {
       "id": "how_say",
@@ -81,7 +98,9 @@
       "tutorEN": "Don't know a word? You ask: How do you say coffee? Now you.",
       "targetSL": "Kako se reče coffee?",
       "targetEN": "How do you say coffee?",
-      "learnables": ["kako_se_rece"]
+      "learnables": [
+        "kako_se_rece"
+      ]
     },
     {
       "id": "greet_recall",
@@ -90,7 +109,9 @@
       "tutorEN": "Let's remember. You walk into the café. What do you say?",
       "targetSL": "Dober dan.",
       "targetEN": "Good day.",
-      "learnables": ["dober_dan"]
+      "learnables": [
+        "dober_dan"
+      ]
     },
     {
       "id": "order_coffee_recall",
@@ -99,7 +120,10 @@
       "tutorEN": "Great. The waiter is waiting. You order a coffee. What do you say?",
       "targetSL": "Eno kavo, prosim.",
       "targetEN": "One coffee, please.",
-      "learnables": ["eno_femacc", "kava"]
+      "learnables": [
+        "eno_femacc",
+        "kava"
+      ]
     },
     {
       "id": "thanks_goodbye",
@@ -108,7 +132,9 @@
       "tutorEN": "You get your coffee. You leave. You say: Hvala, nasvidenje. Now you.",
       "targetSL": "Hvala, nasvidenje.",
       "targetEN": "Thanks, goodbye.",
-      "learnables": ["hvala_nasvidenje"]
+      "learnables": [
+        "hvala_nasvidenje"
+      ]
     },
     {
       "id": "speak_slovensko",
@@ -117,7 +143,9 @@
       "tutorEN": "Well done! Next time I'll speak only Slovene. If you get lost, tap the chat bubble and you'll see the English. And now: I speak Slovene. Do you speak Slovene?",
       "targetSL": "Govorim slovensko.",
       "targetEN": "I speak Slovene.",
-      "learnables": ["govorim_slovensko"]
+      "learnables": [
+        "govorim_lang"
+      ]
     }
   ]
 }

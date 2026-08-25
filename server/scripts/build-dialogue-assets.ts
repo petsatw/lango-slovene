@@ -6,6 +6,9 @@
 // "[hesitant] Dober dan…"), THAT is what gets synthesized, while the key stays node.sl. So delivery
 // direction steers the voice without ever showing on screen or changing the cache key.
 //
+// A node may also carry `slowSL` — the same line chunked and re-spoken slowly. That is DIFFERENT text,
+// so it is naturally its own key and its own clip, and it gets built alongside the natural one.
+//
 // After a level's nodes are all built (no failures), it flips that level's `audio` to "ready" so the
 // client starts showing play buttons for it. Idempotent + FREE on re-run (disk hits). Bills only on new
 // lines. Use --regen to force a re-roll (e.g. after changing a delivery note).
@@ -26,6 +29,7 @@ import path from "node:path";
 import { getE3 } from "../adapters/index";
 import * as store from "../assets/store";
 import { validateDialogue, type Dialogue } from "../dialogues";
+import { isSynthesized } from "./dialogue-lib";
 
 const args = process.argv.slice(2);
 const scenarioId = args.find(
@@ -85,6 +89,10 @@ const e3 = getE3();
   console.log(`\n✓ preflight ok — ${profiles.size} voice profile(s) bound: ${[...profiles].join(", ")}`);
 }
 
+// Rate control for the chunked-slow re-speak. Not in the cache key (the client finds a clip by
+// text+voice), so changing it means --regen on the affected clips.
+const SLOW_SPEED = 0.75;
+
 let hits = 0, made = 0, failures = 0;
 
 if (auditionNodes) console.log(`\n♪ audition mode — synthesizing only [${[...auditionNodes].join(", ")}]; audio state left unchanged`);
@@ -95,11 +103,21 @@ for (const { file, d } of files) {
 
   for (const [id, node] of Object.entries(d.nodes) as [string, Dialogue["nodes"][string]][]) {
     if (auditionNodes && !auditionNodes.has(id)) continue;
+    // In a SPOKEN scene the client lines are what the LEARNER says aloud, so synthesizing them would bill
+    // for the character's voice reading the learner's line. Only the character is voiced here. (A client
+    // line can still be HEARD on the close screen — by pointing at a clip of the character saying the same
+    // shape. That is his recording, never a playback of the learner.) Shared with the lints so the rule
+    // cannot drift.
+    if (!isSynthesized(d, node)) continue;
     const voiceProfile = d.voices[node.speaker];
     const voiceTag = e3.voiceTagFor(voiceProfile);
     const key = store.audioKey(e3.name, voiceTag, node.sl); // KEY on the clean display line
     const genText = node.deliverySL ?? node.sl;              // SYNTHESIZE the delivery-tagged text if any
-    if (regen) store.remove(key, "audio");
+    // A re-roll must take the clip's ALIGNMENT with it. The align artifact is keyed by the audio key, so
+    // deleting only the audio leaves stale word timings under the new bytes, and every key-phrase span cut
+    // from this clip drifts — silently, since nothing sounds broken until you listen. removeAudioAndAlign
+    // is the only sanctioned way to drop a clip.
+    if (regen) store.removeAudioAndAlign(key);
     try {
       const { hit } = await store.getOrCreate(
         key,
@@ -116,6 +134,39 @@ for (const { file, d } of files) {
     } catch (err: any) {
       failures++; levelFailures++;
       console.log(`   ❌  ${id} [${node.speaker}]: ${err?.message}`);
+    }
+
+    // Every OTHER spoken line this node owns, each keyed on its own clean text exactly as `sl` is:
+    //   • slowSL       — the chunked-slow re-speak. Different text ⇒ its own key and its own clip (the
+    //                    loader rejects a slowSL equal to sl, which would collapse the two into one).
+    //                    Synthesized as written: the chunking IS the delivery direction.
+    //   • stallHandlers — the lines that fill a learner's silence. They are spoken at the moment the
+    //                    learner has gone quiet, so they must be on disk before the scene runs; a live
+    //                    synthesis there would bill mid-turn and arrive late.
+    const extras: { text: string; say: string; label: string; suffix: string; speed?: number }[] = [];
+    if (node.slowSL) extras.push({ text: node.slowSL, say: node.deliverySlowSL ?? node.slowSL, label: "🐢", suffix: "slow", speed: SLOW_SPEED });
+    // Stall rungs carry no Slovene of their own — they pulse the caption, re-speak the node's existing
+    // slow clip, or soften the button label. Nothing to synthesize.
+
+    for (const x of extras) {
+      const xKey = store.audioKey(e3.name, voiceTag, x.text);
+      if (regen) store.removeAudioAndAlign(xKey);
+      try {
+        const { hit } = await store.getOrCreate(
+          xKey,
+          "audio",
+          { provider: e3.name, voiceOrModel: voiceTag, text: x.text, scenarioId: d.scenarioId, objectiveId: `dialogue:${d.id}:${id}:${x.suffix}` },
+          async () => {
+            const r = await e3.synthesize({ text: x.say, voiceProfile, ...(x.speed !== undefined ? { speed: x.speed } : {}) });
+            return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };
+          },
+        );
+        hit ? hits++ : made++;
+        console.log(`   ${hit ? "hit " : "gen "} ${x.label} ${id} [${node.speaker}] ${xKey.slice(0, 10)}…  "${x.text}"`);
+      } catch (err: any) {
+        failures++; levelFailures++;
+        console.log(`   ❌  ${id} [${node.speaker}] ${x.suffix}: ${err?.message}`);
+      }
     }
   }
 

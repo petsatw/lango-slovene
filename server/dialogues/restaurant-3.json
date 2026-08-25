@@ -2,7 +2,7 @@
   "id": "restaurant-l3",
   "scenarioId": "restaurant",
   "level": 3,
-  "levelLabel": "Full A1",
+  "levelLabel": "Basic",
   "title": "Dinner with recommendations",
   "objectives": [
     {
@@ -27,17 +27,17 @@
     }
   ],
   "introduces": [
-    "vzel_bom",
-    "priporocate",
-    "predjed",
     "glavna_jed",
-    "juha",
-    "riba",
     "govedina",
-    "sladica",
-    "postrezba_odlicna",
+    "hvala_za_vecer",
+    "juha",
     "na_tebe",
-    "hvala_za_vecer"
+    "postrezba_odlicna",
+    "predjed",
+    "priporocate",
+    "riba",
+    "sladica",
+    "vzel_bom"
   ],
   "audio": "ready",
   "voices": {
@@ -55,6 +55,10 @@
       "next": [
         "e1a",
         "e1b"
+      ],
+      "learnables": [
+        "dober_vecer",
+        "stevilo_dva"
       ]
     },
     "e1a": {
@@ -63,6 +67,11 @@
       "en": "Good evening, yes, a table by the window, please.",
       "next": [
         "d2"
+      ],
+      "learnables": [
+        "dober_vecer",
+        "ja",
+        "prosim"
       ]
     },
     "e1b": {
@@ -71,6 +80,11 @@
       "en": "Good evening, we have a reservation under the name Slavko. You have a lovely place.",
       "next": [
         "d2"
+      ],
+      "learnables": [
+        "dober_vecer",
+        "rezervacija",
+        "lep"
       ]
     },
     "d2": {
@@ -81,6 +95,10 @@
       "next": [
         "e2a",
         "e2b"
+      ],
+      "learnables": [
+        "izvolite",
+        "kaj"
       ]
     },
     "e2a": {
@@ -89,6 +107,9 @@
       "en": "A glass of red wine, please.",
       "next": [
         "d3"
+      ],
+      "learnables": [
+        "prosim"
       ]
     },
     "e2b": {
@@ -97,6 +118,11 @@
       "en": "Just water for now, thank you.",
       "next": [
         "d3"
+      ],
+      "learnables": [
+        "voda",
+        "zdaj",
+        "hvala"
       ]
     },
     "d3": {
@@ -107,6 +133,11 @@
       "next": [
         "e3a",
         "e3b"
+      ],
+      "learnables": [
+        "predjed",
+        "kaj",
+        "ali_or"
       ]
     },
     "e3a": {
@@ -115,6 +146,11 @@
       "en": "What do you recommend for a starter?",
       "next": [
         "d4"
+      ],
+      "learnables": [
+        "priporocate",
+        "predjed",
+        "kaj"
       ]
     },
     "e3b": {
@@ -123,6 +159,10 @@
       "en": "What's good today, then?",
       "next": [
         "d4"
+      ],
+      "learnables": [
+        "kaj",
+        "danes"
       ]
     },
     "d4": {
@@ -133,6 +173,11 @@
       "next": [
         "e4a",
         "e4b"
+      ],
+      "learnables": [
+        "juha",
+        "ali_or",
+        "odlicno"
       ]
     },
     "e4a": {
@@ -141,6 +186,10 @@
       "en": "I'll take the carpaccio, please.",
       "next": [
         "d5"
+      ],
+      "learnables": [
+        "vzel_bom",
+        "prosim"
       ]
     },
     "e4b": {
@@ -149,6 +198,10 @@
       "en": "I'll take the soup.",
       "next": [
         "d5"
+      ],
+      "learnables": [
+        "vzel_bom",
+        "juha"
       ]
     },
     "d5": {
@@ -159,6 +212,10 @@
       "next": [
         "e5a",
         "e5b"
+      ],
+      "learnables": [
+        "in",
+        "glavna_jed"
       ]
     },
     "e5a": {
@@ -167,6 +224,11 @@
       "en": "What do you recommend as a main course?",
       "next": [
         "d6"
+      ],
+      "learnables": [
+        "priporocate",
+        "glavna_jed",
+        "kaj"
       ]
     },
     "e5b": {
@@ -175,6 +237,10 @@
       "en": "I already know — I'll take the fish.",
       "next": [
         "d7"
+      ],
+      "learnables": [
+        "vzel_bom",
+        "riba"
       ]
     },
     "d6": {
@@ -185,6 +251,9 @@
       "next": [
         "e6a",
         "e6b"
+      ],
+      "learnables": [
+        "ali_or"
       ]
     },
     "e6a": {
@@ -193,6 +262,9 @@
       "en": "I'll take the sea bass.",
       "next": [
         "d7"
+      ],
+      "learnables": [
+        "vzel_bom"
       ]
     },
     "e6b": {
@@ -201,6 +273,11 @@
       "en": "The beef for me, please.",
       "next": [
         "d7"
+      ],
+      "learnables": [
+        "za_mene",
+        "govedina",
+        "prosim"
       ]
     },
     "d7": {
@@ -211,6 +288,11 @@
       "next": [
         "e7a",
         "e7b"
+      ],
+      "learnables": [
+        "odlicno",
+        "glavna_jed",
+        "kaj"
       ]
     },
     "e7a": {
@@ -219,6 +301,10 @@
       "en": "Yes, a glass of the local red, please.",
       "next": [
         "d8"
+      ],
+      "learnables": [
+        "ja",
+        "prosim"
       ]
     },
     "e7b": {
@@ -227,6 +313,11 @@
       "en": "Water is fine, thank you.",
       "next": [
         "d8"
+      ],
+      "learnables": [
+        "voda",
+        "v_redu",
+        "hvala"
       ]
     },
     "d8": {
@@ -237,6 +328,11 @@
       "next": [
         "e8a",
         "e8b"
+      ],
+      "learnables": [
+        "takoj",
+        "izvolite",
+        "predjed"
       ]
     },
     "e8a": {
@@ -245,7 +341,8 @@
       "en": "This looks wonderful.",
       "next": [
         "d9"
-      ]
+      ],
+      "learnables": []
     },
     "e8b": {
       "speaker": "client",
@@ -253,6 +350,9 @@
       "en": "Thank you, it smells amazing.",
       "next": [
         "d9"
+      ],
+      "learnables": [
+        "hvala"
       ]
     },
     "d9": {
@@ -263,6 +363,10 @@
       "next": [
         "e9a",
         "e9b"
+      ],
+      "learnables": [
+        "izvolite",
+        "glavna_jed"
       ]
     },
     "e9a": {
@@ -271,7 +375,8 @@
       "en": "The food is excellent.",
       "next": [
         "d10"
-      ]
+      ],
+      "learnables": []
     },
     "e9b": {
       "speaker": "client",
@@ -279,6 +384,9 @@
       "en": "The service is excellent!",
       "next": [
         "d10"
+      ],
+      "learnables": [
+        "postrezba_odlicna"
       ]
     },
     "d10": {
@@ -289,6 +397,12 @@
       "next": [
         "e10a",
         "e10b"
+      ],
+      "learnables": [
+        "me_veseli",
+        "sladica",
+        "torta",
+        "ali_or"
       ]
     },
     "e10a": {
@@ -297,6 +411,11 @@
       "en": "I'll take the chocolate cake, please.",
       "next": [
         "d11"
+      ],
+      "learnables": [
+        "vzel_bom",
+        "torta",
+        "prosim"
       ]
     },
     "e10b": {
@@ -305,6 +424,10 @@
       "en": "No, thank you, we're full.",
       "next": [
         "d12"
+      ],
+      "learnables": [
+        "ne",
+        "hvala"
       ]
     },
     "d11": {
@@ -315,6 +438,10 @@
       "next": [
         "e11a",
         "e11b"
+      ],
+      "learnables": [
+        "odlicno",
+        "kaj"
       ]
     },
     "e11a": {
@@ -323,6 +450,9 @@
       "en": "Yes, my friend has a birthday.",
       "next": [
         "d12toast"
+      ],
+      "learnables": [
+        "ja"
       ]
     },
     "e11b": {
@@ -331,6 +461,11 @@
       "en": "No, just a lovely evening out.",
       "next": [
         "d12"
+      ],
+      "learnables": [
+        "ne",
+        "lep",
+        "zunaj"
       ]
     },
     "d12": {
@@ -341,6 +476,11 @@
       "next": [
         "e12a",
         "e12b"
+      ],
+      "learnables": [
+        "kaj",
+        "ali_or",
+        "racun"
       ]
     },
     "e12a": {
@@ -349,6 +489,10 @@
       "en": "The bill, please.",
       "next": [
         "d13"
+      ],
+      "learnables": [
+        "racun",
+        "prosim"
       ]
     },
     "e12b": {
@@ -357,6 +501,12 @@
       "en": "Can I pay by card?",
       "next": [
         "d13"
+      ],
+      "learnables": [
+        "placam_s_kartico",
+        "ali_lahko",
+        "z_s_instr",
+        "placati"
       ]
     },
     "d12toast": {
@@ -367,6 +517,9 @@
       "next": [
         "e11c",
         "e11d"
+      ],
+      "learnables": [
+        "sladica"
       ]
     },
     "e11c": {
@@ -375,6 +528,9 @@
       "en": "To you!",
       "next": [
         "d12b"
+      ],
+      "learnables": [
+        "na_tebe"
       ]
     },
     "e11d": {
@@ -383,6 +539,10 @@
       "en": "Cheers, thank you!",
       "next": [
         "d12b"
+      ],
+      "learnables": [
+        "na_zdravje",
+        "hvala"
       ]
     },
     "d12b": {
@@ -393,6 +553,11 @@
       "next": [
         "e12a",
         "e12b"
+      ],
+      "learnables": [
+        "na_zdravje",
+        "zdaj",
+        "racun"
       ]
     },
     "d13": {
@@ -403,6 +568,14 @@
       "next": [
         "e13a",
         "e13b"
+      ],
+      "learnables": [
+        "izvolite",
+        "racun",
+        "seveda",
+        "z_s_instr",
+        "evro",
+        "stevilo_enote_desetice"
       ]
     },
     "e13a": {
@@ -411,6 +584,10 @@
       "en": "Here you are, thank you.",
       "next": [
         "d14"
+      ],
+      "learnables": [
+        "izvolite",
+        "hvala"
       ]
     },
     "e13b": {
@@ -419,6 +596,9 @@
       "en": "Thank you, keep the change.",
       "next": [
         "d14"
+      ],
+      "learnables": [
+        "hvala"
       ]
     },
     "d14": {
@@ -429,6 +609,10 @@
       "next": [
         "e14a",
         "e14b"
+      ],
+      "learnables": [
+        "hvala",
+        "ker"
       ]
     },
     "e14a": {
@@ -437,6 +621,11 @@
       "en": "Thank you for a wonderful evening.",
       "next": [
         "d15"
+      ],
+      "learnables": [
+        "hvala_za_vecer",
+        "hvala_za",
+        "hvala"
       ]
     },
     "e14b": {
@@ -445,6 +634,10 @@
       "en": "Everything was excellent — goodbye!",
       "next": [
         "d15"
+      ],
+      "learnables": [
+        "nasvidenje",
+        "odlicno"
       ]
     },
     "d15": {
@@ -452,7 +645,11 @@
       "sl": "Nasvidenje, pridite spet kmalu!",
       "en": "Goodbye, come again soon!",
       "deliverySL": "[warmly] Nasvidenje, pridite spet kmalu!",
-      "next": []
+      "next": [],
+      "learnables": [
+        "nasvidenje",
+        "kmalu"
+      ]
     }
   }
 }

@@ -1,0 +1,33 @@
+{
+  "key": "5d1ae5c127287787cf734b8a3e080afa757c447f4ac6a84d3ad77781bf5fe66a",
+  "text": "O, spet ti! Živjo!",
+  "words": [
+    {
+      "text": "O,",
+      "start": 0.079,
+      "end": 0.239,
+      "loss": 1.828125
+    },
+    {
+      "text": "spet",
+      "start": 0.34,
+      "end": 0.759,
+      "loss": 0.0852203369140625
+    },
+    {
+      "text": "ti!",
+      "start": 0.779,
+      "end": 1.12,
+      "loss": 0.6038411458333334
+    },
+    {
+      "text": "Živjo!",
+      "start": 1.22,
+      "end": 1.559,
+      "loss": 2.2968343098958335
+    }
+  ],
+  "loss": 1.3614451090494792,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:05.316Z"
+}

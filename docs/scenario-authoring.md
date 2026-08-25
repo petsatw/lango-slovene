@@ -122,7 +122,7 @@ The one place we show the **whole situation**: an establishing depiction of what
 | 5 | `pay_leave` | "Hvala, nasvidenje." | said as the closing, one breath | parting on leaving → the `leave` concept: `CUSTOMER` **over-the-shoulder wave while stepping out** the `DOORWAY` |
 
 - Arc: greet → order → modify → ask price (real exchange) → close. ✓ 5 objectives, first = easy win, last = one-breath closing.
-- `ask_price` and `pay_leave` are **separate** objectives (the old single "Koliko stane? Hvala, nasvidenje." bundled a question needing an answer with the closing — that violates the one-utterance rule).
+- `ask_price` and `pay_leave` are **separate** objectives: bundling them ("Koliko stane? Hvala, nasvidenje.") would put a question needing an answer in the same breath as the closing, which the one-utterance rule forbids.
 - Shared ids: `greet`, `pay_leave` reuse the bakery's audio.
 - Note `greet` vs `pay_leave`: same `CUSTOMER` + `DOORWAY` (the shared `greet`/`leave` concepts), disambiguated **contrastively** by direction (entering vs. leaving) — a bare wave would fail atomicity for both.
 - **Asset bible:** the `cafe` **location concept** (the build-once set) + `BARISTA` (an **actor** → its figure object), `CUSTOMER`, `DOORWAY`, `COFFEE`, `MILK`, `PRICE_TAG`, `EURO_COINS` objects, plus the shared `greet`/`leave` concepts. `CUSTOMER`, `DOORWAY`, `EURO_COINS`, `greet`, `leave` are **shared** by id — identical across café/bakery/butcher, not re-described. Each flashcard minimal-composes only its disambiguating assets; the scene composes the `cafe` set + cast + props in one tableau.

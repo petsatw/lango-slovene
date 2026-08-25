@@ -16,9 +16,87 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { CATALOG } from "./catalog";
 import { LEARNABLES } from "./learnables";
+import { PACING, DEFAULT_PACING, pacingFor } from "./pacing";
 
 export type DialogueSpeaker = "npc" | "client";
 export type DialogueAudioState = "pending" | "ready";
+
+/** How the learner moves a tree forward.
+ *  - `"tap"` (the default, and every dialogue shipped before this existed): the learner PICKS a client
+ *    line. Pure rehearsal — no mic, no server turn, no crediting.
+ *  - `"audio"`: the learner SPEAKS and the tree advances on the audio ARRIVING, never on what it says
+ *    (nothing here inspects or judges the recording). Client nodes are then the expected production
+ *    rather than a menu, and the beat's `learnables` are planted as ATTEMPTS — never masteries.
+ *  Both are driven by the same adapter (adapters/dialogue-scripted.ts). */
+export type DialogueAdvance = "tap" | "audio";
+
+/** When this beat's English gloss reaches the learner.
+ *  - `"tap"` (the default): revealed on tap, the click-to-reveal every rehearsal tree uses.
+ *  - `"after"`: shown on its own once the Slovene has landed — meaning arrives second, so the learner
+ *    meets the Slovene first and the English confirms it.
+ *  - `"held"`: the beat carries its meaning by situation alone, and the gloss stays available to the
+ *    surface without being surfaced here. */
+export type GlossPolicy = "tap" | "after" | "held";
+
+/** One rung of the ladder for a learner who has gone quiet.
+ *
+ *  Crucially these are NOT extra lines of Slovene. Someone who has not spoken is not short of Slovene —
+ *  they are stuck, and answering that with more of the language they don't have is the cruellest thing
+ *  the scene could do. So each rung either draws the eye back to what is already there, models the
+ *  target again, or LOWERS THE BAR in the learner's own language. The bar never disappears.
+ *
+ *  - `"pulse"`   — the caption pulses once, gently. No copy at all.
+ *  - `"respeak"` — the character says the line again, slower (the node's slow clip). Modelling, never
+ *                  prompting: never "are you still there?".
+ *  - `"soften"`  — the button's label softens to `label` (e.g. "Whisper it if you like."). English, on
+ *                  the control, where an instruction belongs. */
+export interface DialogueStallHandler {
+  /** Milliseconds of silence after which this rung fires, measured FROM THE LEARNER'S TURN OPENING
+   *  (i.e. from when the button appears — NOT from the start of the run). Optional, and normally absent:
+   *  the rung takes its timing from the dialogue's pacing profile by position (`stallMs[i]`), so a lesson
+   *  is paced in one place instead of being re-specified on every node. Set it only to override one rung
+   *  of one beat. The original ladder was mis-transcribed as absolute clock times precisely because the
+   *  numbers lived here, per node, with nothing to compare them against. */
+  afterMs?: number;
+  kind: "pulse" | "respeak" | "soften";
+  /** For `"soften"`: the English label the button lowers to. Required for that kind, unused otherwise. */
+  label?: string;
+}
+
+/** Where a CLIENT line's play button gets its sound from (docs/keyphrase-span-playback.md §3.5).
+ *
+ *  In a spoken scene the learner's lines are never synthesized — we own no recording of them, and putting
+ *  the character's voice on their line and calling it theirs would be a lie. But the Key Phrases panel
+ *  still wants a "hear it": the phrase was TAUGHT, and the character models it himself somewhere in the
+ *  scenario. So this points at the npc node that says it, and — when only part of that line is the phrase —
+ *  at the word range within it. Nothing is ever synthesized to satisfy a pointer; it can only ever aim at
+ *  a clip that already exists.
+ *
+ *  The join it records is an ID EQUALITY, made upstream by the `voice-key-phrases` skill and re-checked by
+ *  `lint:keyphrase-audio`: the client node and the npc node share a catalog learnable, and the catalog
+ *  frame for it declares where the slot is. Fixed words are fixed; only the slot may differ. */
+export interface DialogueVoicing {
+  /** The npc node id whose clip is played. A node id, never raw text, so a reviewer reading the diff sees
+   *  WHICH of the character's lines this phrase was taken from. */
+  from: string;
+  /** Which level of this scenario `from` lives in. Sourcing across levels is allowed — the best delivery
+   *  of a phrase is not always in the lesson that teaches it. */
+  level: number;
+  /** `"whole"` — play the clip end to end (the phrase IS the whole line: no seek, no cut, true prosody).
+   *  `"span"` — play only a word range of it. */
+  kind: "whole" | "span";
+  /** For `"span"`: the inclusive first/last word index into that clip's stored alignment. THIS is what the
+   *  skill chooses; the milliseconds below are derived from it and gate-checked against it, so a
+   *  hand-edited or invented timestamp fails rather than plays. */
+  words?: [number, number];
+  /** For `"span"`: the derived play window, in milliseconds from the start of the clip. */
+  startMs?: number;
+  endMs?: number;
+  /** The words the learner will ACTUALLY hear, when they differ from the phrase on screen — the frame's
+   *  slot filled with the character's own word ("Sem ___." heard as "Sem Slavko."). Present ⇒ the panel
+   *  shows the phrase as its catalog FRAME, so nothing on screen contradicts the ear. */
+  heard?: string;
+}
 
 export interface DialogueNode {
   speaker: DialogueSpeaker;
@@ -30,14 +108,74 @@ export interface DialogueNode {
    *  is what gets SYNTHESIZED, while `sl` stays the clean caption + cache key — so the tags steer the
    *  voice without ever showing on screen or changing the key. Null/absent → synthesize `sl` plainly. */
   deliverySL?: string;
+  /** Optional CHUNKED-SLOW variant of this line — the same content re-spoken slowly, broken into chunks
+   *  (e.g. "Jaz sem … Slavko."), for a beat that says the line once at natural speed and then again
+   *  slower. Like `sl` it does double duty: it is the chunked CAPTION and the audio cache KEY for the
+   *  slow clip. It must therefore differ textually from `sl` — identical text would key to the same clip
+   *  and the "slow" version would silently be the natural one. `build:dialogue-assets` emits both. */
+  slowSL?: string;
+  /** Optional `slowSL` WITH inline delivery tags — what actually gets SYNTHESIZED for the slow clip,
+   *  while `slowSL` stays the chunked caption and the cache key. Exactly the `sl`/`deliverySL` split,
+   *  and it exists for a measured reason: a ` … ` separator alone does NOT slow eleven_v3 down (two
+   *  authored slow lines came back 1.00× and 0.92× the length of their natural clips). Slower speech
+   *  has to be DIRECTED, and the direction must not appear on screen. Absent → `slowSL` is synthesized
+   *  as written, which will not be slower. */
+  deliverySlowSL?: string;
+  /** The catalog learnable ids this line IS MADE OF — what the difficulty classifier measures the line
+   *  against (docs/dialogue-difficulty-model.md §3). Valid on every node, npc included, since a band
+   *  counts lines and an npc line is one.
+   *
+   *  On a `client` node it carries a second, narrower job: it is also the allowlist the `"audio"` advance
+   *  mode plants as attempts (the role `SeedStep.learnables` plays in the seed). **Crediting reads it
+   *  only there** — every consumer filters to `speaker === "client"` first — so tagging an npc line
+   *  describes it and never credits the learner for hearing it.
+   *
+   *  MAY BE EMPTY: a beat whose utterance is not Slovene at all (the learner saying their own name)
+   *  exercises no catalog item, and an empty list says so rather than leaving it unanswered. Absent →
+   *  untagged, which leaves the line unmeasured. */
+  learnables?: string[];
   /** Optional short parenthetical CONTEXT for a client choice (docs/dialogue-difficulty-model.md §5) —
    *  the situation that choice selects when one branch depends on context the line itself can't carry
    *  (e.g. "if the book is damaged", "no ID on you"). Rendered as a muted "(…)" tag on the choice, never
    *  spoken. Absent → a plain choice. */
   context?: string;
+  /** The substring of `sl` to render at full weight while the rest of the caption steps down —
+   *  emphasis doing the segmenting a beginner cannot do for themselves. A learner who hears nine words
+   *  and must produce two has nothing on screen telling them which two; contrast tells them, without a
+   *  label, a box or a colour announcing that a lesson is happening.
+   *
+   *  It marks a SHAPE and its variations, wherever they appear — the character's captions included — and
+   *  only while that shape is being INTRODUCED; once a phrase is the learner's it stops being marked.
+   *  Must occur exactly once in `sl`. */
+  focusSpan?: string;
+  /** Milliseconds to hold after this line is spoken before its caption appears — the silent beat that
+   *  lets a line land as sound before it becomes text. Absent/0 → the caption appears with the line. */
+  captionDelayMs?: number;
+  /** When this beat's gloss reaches the learner. Absent → "tap", the click-to-reveal every rehearsal
+   *  tree already uses. */
+  glossPolicy?: GlossPolicy;
+  /** Escalating prompts for a learner who has gone quiet, ascending by `afterMs`. Valid on `npc` nodes
+   *  — the character is the one who fills the silence while awaiting the learner's turn. Each carries a
+   *  real spoken line, so `build:dialogue-assets` gives each its own clip. */
+  stallHandlers?: DialogueStallHandler[];
+  /** Where this CLIENT line's Key Phrases play button gets its sound. Absent → no button, which is a valid
+   *  and often correct answer: a badly-cut excerpt teaches wrong prosody, which is worse than silence. */
+  audio?: DialogueVoicing;
   /** Next node ids. On an npc node: the client-reply choices the learner picks between (may be more than
    *  two — the renderer scrolls). On a client node: the npc's response (one id). Empty = end. */
   next: string[];
+}
+
+/** What the learner is being asked to say, surfaced at the moment their turn opens. It is the upcoming
+ *  CLIENT node's own line — not a translation of what the character just said — which is the whole point:
+ *  a beginner who has just heard nine words and must produce two cannot tell which two, and the caption
+ *  of the character's line cannot tell them. Derived, never authored separately. */
+export interface DialoguePrompt {
+  /** The Slovene stem the learner produces, e.g. "Sem ___." Blank-slot lines are authored as "___". */
+  sl: string;
+  /** Its English, e.g. "I'm ___." — for a non-Slovene turn this is the instruction itself, e.g.
+   *  "(your own name, spoken on its own)". */
+  en: string;
 }
 
 /** A competency this rehearsal level demonstrates — DISPLAY ONLY (no crediting; mastery is earned live).
@@ -77,6 +215,19 @@ export interface Dialogue {
   audio: DialogueAudioState;
   /** Per-speaker voice profile id (catalog voices.json) — the tag pregenerated audio is keyed on. */
   voices: Record<DialogueSpeaker, string>;
+  /** The English lines shown BEFORE the scene opens, then faded (the first thing in the run). This is
+   *  the on-ramp: it names where the learner is, tells them they are not required to do anything yet,
+   *  and promises that forgetting is not their fault. It is what earns the right to withhold English
+   *  once the character starts speaking — a scene that opens straight onto un-glossed Slovene, with no
+   *  frame and nothing to look at, is unusable by the beginner it exists for. Absent → straight in. */
+  frameEN?: string[];
+  /** How the learner advances this level — tapped choices (default) or spoken turns. Absent → "tap", so
+   *  every dialogue authored before this field keeps its behaviour. See DialogueAdvance. */
+  advance?: DialogueAdvance;
+  /** Which PACING PROFILE times this lesson (server/catalog/pacing.json) — every engineered silence in
+   *  the run, named and dialed in one place. Absent → the default profile. Only meaningful for
+   *  `advance: "audio"`; a tapped tree is paced by the learner's own finger. */
+  pacing?: string;
   /** Optional portrait background image for this level's rehearsal — a filename under public/backgrounds/
    *  (e.g. "restaurant-1.jpg"). The conversation scrolls over it while the image stays fixed. Absent →
    *  the plain panel background. */
@@ -131,6 +282,17 @@ export function validateDialogue(file: string, raw: any): Dialogue {
   if (!raw.voices || typeof raw.voices !== "object") fail(file, `"voices" must be an object`);
   asProfile(file, raw.voices, "npc", "voices");
   asProfile(file, raw.voices, "client", "voices");
+  if (raw.advance !== undefined && raw.advance !== "tap" && raw.advance !== "audio")
+    fail(file, `"advance" must be "tap" | "audio"`);
+  if (raw.pacing !== undefined) {
+    asString(file, raw, "pacing", "dialogue");
+    if (!PACING[raw.pacing])
+      fail(file, `"pacing": no such profile "${raw.pacing}" (have: ${Object.keys(PACING).join(", ")})`);
+  }
+  if (raw.frameEN !== undefined) {
+    if (!Array.isArray(raw.frameEN) || !raw.frameEN.length) fail(file, `"frameEN" must be a non-empty array of strings`);
+    for (const l of raw.frameEN) if (typeof l !== "string" || !l) fail(file, `"frameEN": every line must be a non-empty string`);
+  }
   if (raw.background !== undefined) asString(file, raw, "background", "dialogue");
   if (raw.intro !== undefined) {
     if (!raw.intro || typeof raw.intro !== "object") fail(file, `"intro" must be an object { audio, text?, en? }`);
@@ -150,9 +312,84 @@ export function validateDialogue(file: string, raw: any): Dialogue {
     asString(file, n, "sl", where);
     asString(file, n, "en", where);
     if (n.deliverySL !== undefined) asString(file, n, "deliverySL", where);
+    if (n.slowSL !== undefined) {
+      asString(file, n, "slowSL", where);
+      // Same text ⇒ same audio key ⇒ one clip. The slow variant would silently be the natural one.
+      if (n.slowSL === n.sl) fail(file, `${where}: "slowSL" must differ from "sl" (identical text is one audio clip)`);
+    }
+    if (n.deliverySlowSL !== undefined) {
+      asString(file, n, "deliverySlowSL", where);
+      if (!n.slowSL) fail(file, `${where}: "deliverySlowSL" needs a "slowSL" to direct`);
+    }
+    if (n.learnables !== undefined) {
+      if (!Array.isArray(n.learnables)) fail(file, `${where}: "learnables" must be an array of catalog ids`);
+      for (const id of n.learnables) {
+        if (typeof id !== "string" || !LEARNABLES[id]) fail(file, `${where}: learnable "${id}" is not in the catalog`);
+      }
+    }
+    if (n.captionDelayMs !== undefined) {
+      if (typeof n.captionDelayMs !== "number" || !Number.isFinite(n.captionDelayMs) || n.captionDelayMs < 0)
+        fail(file, `${where}: "captionDelayMs" must be a non-negative number of milliseconds`);
+    }
+    if (n.focusSpan !== undefined) {
+      asString(file, n, "focusSpan", where);
+      // Exactly once, or the renderer has to guess which occurrence carries the emphasis — and a span
+      // that isn't in the line at all marks nothing while looking authored.
+      const hits = n.sl.split(n.focusSpan).length - 1;
+      if (hits !== 1) fail(file, `${where}: "focusSpan" occurs ${hits} times in "sl" — it must occur exactly once`);
+    }
+    if (n.glossPolicy !== undefined && !["tap", "after", "held"].includes(n.glossPolicy))
+      fail(file, `${where}: "glossPolicy" must be "tap" | "after" | "held"`);
+    if (n.stallHandlers !== undefined) {
+      if (!Array.isArray(n.stallHandlers)) fail(file, `${where}: "stallHandlers" must be an array`);
+      if (n.speaker !== "npc") fail(file, `${where}: "stallHandlers" is only valid on an npc node (it is the character's silence to fill)`);
+      // The ladder's TIMING lives in the pacing profile, by position; a rung may override its own.
+      const profile = pacingFor(raw.pacing);
+      if (n.stallHandlers.length > profile.stallMs.length)
+        fail(file, `${where}: ${n.stallHandlers.length} stall rungs, but pacing profile "${raw.pacing ?? DEFAULT_PACING}" defines only ${profile.stallMs.length} (stallMs)`);
+      let prev = -1;
+      for (const [i, h] of n.stallHandlers.entries()) {
+        const hw = `${where} stallHandler[${i}]`;
+        if (h?.afterMs !== undefined && (typeof h.afterMs !== "number" || !Number.isFinite(h.afterMs) || h.afterMs <= 0))
+          fail(file, `${hw}: "afterMs" must be a positive number of milliseconds when present`);
+        const atMs = h?.afterMs ?? profile.stallMs[i]!;
+        if (atMs <= prev) fail(file, `${hw}: fires at ${atMs}ms, which is not after the previous rung (${prev}ms)`);
+        prev = atMs;
+        if (!["pulse", "respeak", "soften"].includes(h.kind)) fail(file, `${hw}: "kind" must be "pulse" | "respeak" | "soften"`);
+        if (h.kind === "soften") asString(file, h, "label", hw);
+        if (h.kind === "respeak" && !n.slowSL) fail(file, `${hw}: "respeak" needs the node to have a "slowSL" to re-speak`);
+      }
+    }
     if (n.context !== undefined) {
       asString(file, n, "context", where);
       if (n.speaker !== "client") fail(file, `${where}: "context" is only valid on a client choice`);
+    }
+    if (n.audio !== undefined) {
+      const aw = `${where} "audio"`;
+      if (!n.audio || typeof n.audio !== "object") fail(file, `${aw}: must be an object { from, level, kind, … }`);
+      // Only the LEARNER's line needs a voicing pointer. The character's own lines have their own clips;
+      // pointing one at another would be a way of playing the wrong bytes under the right caption.
+      if (n.speaker !== "client") fail(file, `${aw}: only valid on a client node (it voices the LEARNER's phrase with a clip of the character's)`);
+      asString(file, n.audio, "from", aw);
+      if (typeof n.audio.level !== "number" || !Number.isInteger(n.audio.level) || n.audio.level < 1)
+        fail(file, `${aw}: "level" must be a positive integer (which level "${n.audio.from}" lives in)`);
+      if (n.audio.kind !== "whole" && n.audio.kind !== "span") fail(file, `${aw}: "kind" must be "whole" | "span"`);
+      if (n.audio.heard !== undefined) asString(file, n.audio, "heard", aw);
+      if (n.audio.kind === "span") {
+        // A span without its word indices cannot be checked against the alignment, which is the only thing
+        // standing between a real measurement and an invented number.
+        const w = n.audio.words;
+        if (!Array.isArray(w) || w.length !== 2 || !w.every((i: any) => Number.isInteger(i) && i >= 0))
+          fail(file, `${aw}: a "span" needs "words": [firstIndex, lastIndex] into the clip's alignment`);
+        if (w[1] < w[0]) fail(file, `${aw}: "words" [${w[0]}, ${w[1]}] runs backwards`);
+        for (const k of ["startMs", "endMs"]) {
+          if (typeof n.audio[k] !== "number" || !Number.isFinite(n.audio[k]) || n.audio[k] < 0)
+            fail(file, `${aw}: a "span" needs a non-negative "${k}" derived from the alignment`);
+        }
+        if (n.audio.endMs <= n.audio.startMs) fail(file, `${aw}: "endMs" (${n.audio.endMs}) must be after "startMs" (${n.audio.startMs})`);
+      } else if (n.audio.words !== undefined || n.audio.startMs !== undefined || n.audio.endMs !== undefined) {
+        fail(file, `${aw}: a "whole" voicing plays the clip end to end — it must carry no "words"/"startMs"/"endMs"`);
+      }
     }
     if (!Array.isArray(n.next)) fail(file, `${where}: next must be an array of node ids`);
     for (const id of n.next) {

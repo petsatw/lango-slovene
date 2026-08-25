@@ -5,8 +5,13 @@
 // learner-visible progress surface. A `foundational|thematic` bucket may be EMPTY (a domain the shipped
 // scenarios don't reach yet — the readiness frontier), which is legitimate, not an error.
 //
+// The map answers WHICH LIFE DOMAIN an item serves and HOW FAR the learner is in that domain. It does not
+// answer whether an item is core — that is the learnable's own `core: true` flag. Membership is many-to-many
+// by design (`hvala` serves both pragmatics and personal_relations), which is what makes it a coverage map.
+//
 // Loaded + validated once at startup from server/catalog/a1-map.json. `lint:a1` adds the reverse check
-// the loader can't: every catalog learnable is mapped here or on the explicit `excluded` list.
+// the loader can't: every core and/or A1-tagged learnable is mapped here or on the explicit `excluded`
+// list — an unmapped one can be mastered with nothing moving on the readiness screen.
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";

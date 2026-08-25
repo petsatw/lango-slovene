@@ -13,14 +13,17 @@ import { getE2, getE3, getE4 } from "./adapters/index";
 import * as store from "./assets/store";
 import * as sessions from "./assets/sessions";
 import * as learner from "./assets/learner";
-import { inspect, statusOf } from "./mastery";
+import { inspect, statusOf, applyCredit } from "./mastery";
 import { A1_MAP } from "./a1";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
 import { CATALOG } from "./catalog";
 import { getDialoguesForScenario } from "./dialogues";
+import { pacingFor } from "./pacing";
+import { advanceDialogue } from "./adapters/dialogue-scripted";
 import { getLearnable, LEARNABLES } from "./learnables";
 import { buildGalleryHtml } from "./scripts/gallery";
+import { frameFor } from "./scripts/dialogue-lib";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -103,12 +106,173 @@ app.get("/api/config", (req, res) => {
 app.get("/api/practice", (_req, res) => {
   const scenarios = SCENARIOS.map((s) => ({ s, dialogues: getDialoguesForScenario(s.id) }))
     .filter(({ dialogues }) => dialogues.length > 0)
-    .map(({ s, dialogues }) => ({ id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null, dialogues }));
+    .map(({ s, dialogues }) => ({
+      id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null,
+      // The spoken lessons are the spine of the course, so they have a durable home in the picker
+      // alongside the rehearsal trees. `mode` is what splits the two groups on the screen: a spoken
+      // scenario's levels open the scene surface, a rehearsal scenario's open the click-through tree.
+      mode: dialogues.some((d) => (d.advance ?? "tap") === "audio") ? "spoken" : "rehearsal",
+      dialogues,
+    }));
+  // The scenario that owns the first-run spoken scene, if one is authored — the boot route needs it in
+  // the same call as `started`, so a zero-state learner reaches the scene without a second round trip.
+  const sceneScenario = SCENARIOS.find((s) =>
+    getDialoguesForScenario(s.id).some((d) => (d.advance ?? "tap") === "audio"));
   res.json({
     scenarios,
     providers: { e2: getE2().name, e3: getE3().name },
     started: Object.keys(learner.load().learnables).length > 0,
+    scene: sceneScenario?.id ?? null,
   });
+});
+
+// SPOKEN SCENE — one step of an `advance: "audio"` dialogue. The learner's recording is NEVER sent
+// here: nothing inspects it, so uploading it would be waste, and the turn is unfailable by construction.
+// The client posts the node it is leaving; the server walks the spine, plants that beat's learnables as
+// ATTEMPTS, and returns the next character line with its pacing.
+//
+//   POST /api/scene { scenarioId, level? }        → the opening line (credits nothing)
+//   POST /api/scene { scenarioId, level?, from }  → the learner spoke at `from`; advance
+//
+// `level` picks which spoken level of the scenario to play; absent → the lowest. Without it only the
+// first spoken level of a scenario is reachable, and every level after it ships unplayable.
+app.post("/api/scene", (req, res) => {
+  const { scenarioId, level, from } = req.body ?? {};
+  if (typeof scenarioId !== "string") return res.status(400).json({ error: "scenarioId is required" });
+
+  const spoken = getDialoguesForScenario(scenarioId).filter((d) => (d.advance ?? "tap") === "audio");
+  const scene = typeof level === "number" ? spoken.find((d) => d.level === level) : spoken[0];
+  if (!scene) return res.status(404).json({ error: `No spoken scene for scenario "${scenarioId}"${typeof level === "number" ? ` level ${level}` : ""}` });
+
+  const pacing = pacingFor(scene.pacing);
+
+  const shape = (id: string | null) => {
+    const n = id ? scene.nodes[id] : null;
+    if (!n) return null;
+    // What the learner is asked to say is the upcoming CLIENT node's own line — not a gloss of what the
+    // character just said. A beginner who hears nine words and must produce two cannot tell which two,
+    // and the character's caption can never tell them; their own line can.
+    const client = n.next.map((i) => scene.nodes[i]).find((x) => x?.speaker === "client");
+    // A client line that is nothing but a blank ("___" — the learner saying their own name) has no
+    // Slovene stem to show. Rendering the blank on its own is worse than showing nothing: it is a bold
+    // placeholder that says only "something goes here". In that case the English instruction IS the
+    // prompt, and it carries the beat alone.
+    const stem = client && /\p{L}/u.test(client.sl) ? client.sl : null;
+    return {
+      id,
+      sl: n.sl,
+      en: n.en,
+      slowSL: n.slowSL ?? null,
+      // Resolved here so the renderer never has to know a default: the node's own lead, else the profile's.
+      captionLeadMs: n.captionDelayMs ?? pacing.captionLeadMs,
+      focusSpan: n.focusSpan ?? null,
+      glossPolicy: n.glossPolicy ?? "tap",
+      // Each rung's timing resolved from the profile by position unless the rung overrides it.
+      stallHandlers: (n.stallHandlers ?? []).map((h, i) => ({
+        kind: h.kind,
+        label: h.label ?? null,
+        afterMs: h.afterMs ?? pacing.stallMs[i]!,
+      })),
+      // The Slovene never withdraws; the English does. The client node's own gloss policy rides along so
+      // the surface can show the translation the first time the learner produces a line and hold it
+      // after — the gloss is never dropped from the data, so a tap can always bring it back.
+      prompt: client
+        ? { sl: stem, en: client.en, glossPolicy: client.glossPolicy ?? "tap", focusSpan: client.focusSpan ?? null }
+        : null,
+      // Whether this beat ends in a turn at all. A node that hands to another npc node is the character
+      // carrying himself forward — the renderer plays it and continues rather than arming the button.
+      handsOver: !!client,
+      // A closing beat has nobody to hand the turn to. Without this the renderer armed the button anyway
+      // and the run ended sitting on "Hold and say it" after the character had said goodbye.
+      terminal: !n.next.length,
+    };
+  };
+  // The character's listening noise, already on disk — the client fires it the instant the learner
+  // releases, before anything could have processed what they said.
+  const backchannel = CATALOG.voiceProfiles[scene.voices.npc]?.backchannels?.[0] ?? null;
+
+  // Key Phrases for the close screen: the lines the learner actually produced in this level, in the
+  // order they met them, split by whether the level INTRODUCED them. `introduces` is the split, not the
+  // list — a learnable id is a catalog frame ("Govorim ___.") and what belongs on the close screen is
+  // the sentence they said.
+  const keyPhrases = () => {
+    const e3 = getE3();
+    const rows: { new: any[]; review: any[] } = { new: [], review: [] };
+    const seen = new Set<string>();
+
+    // Resolve a client line's authored voicing pointer into something the renderer can play: the SOURCE
+    // clip's text (what /api/speak keys on), the voice it was built in, and the window to play.
+    //
+    // The learner's own lines are never synthesized, so the button can only ever replay a clip of the
+    // CHARACTER saying the phrase — here or in another level of the same scenario. Which delivery, and
+    // which words of it, was judged upstream by `voice-key-phrases` and checked by `lint:keyphrase-audio`;
+    // nothing is decided here. This resolves and, crucially, VERIFIES: a pointer at a node that no longer
+    // exists, is not the character's, or has no clip on disk yields no button rather than a broken one or
+    // a billed live synthesis.
+    const resolvePlay = (n: (typeof scene.nodes)[string]) => {
+      const v = n.audio;
+      if (!v) return null;
+      const src = spoken.find((d) => d.level === v.level);
+      const node = src?.nodes[v.from];
+      if (!src || !node || node.speaker !== "npc") return null;
+      const voice = src.voices.npc;
+      if (!store.has(store.audioKey(e3.name, e3.voiceTagFor(voice), node.sl), "audio")) return null;
+      return {
+        text: node.sl,
+        voice,
+        ...(v.kind === "span" ? { startMs: v.startMs, endMs: v.endMs } : {}),
+      };
+    };
+
+    for (const n of Object.values(scene.nodes)) {
+      // A turn that expects no Slovene (the learner saying their own name) is not a phrase they met.
+      if (n.speaker !== "client" || !/\p{L}/u.test(n.sl) || seen.has(n.sl)) continue;
+      seen.add(n.sl);
+      const isNew = (n.learnables ?? []).some((id) => scene.introduces.includes(id));
+      const play = resolvePlay(n);
+      rows[isNew ? "new" : "review"].push({
+        // Where the delivery fills the frame's slot with the character's own word, the phrase is shown as
+        // the SHAPE — "Ne govorim dobro ___." — so no word is on screen that the ear will not hear. The
+        // shape is what the lesson taught; the filler never was.
+        sl: play && n.audio?.heard ? frameFor(n.sl, n.audio.heard) : n.sl,
+        en: n.en,
+        play,
+      });
+    }
+    return { ...rows };
+  };
+
+  try {
+    if (typeof from !== "string") {
+      return res.json({ voice: scene.voices.npc, background: scene.background ?? null, backchannel,
+                        pacing, frameEN: scene.frameEN ?? [], npc: shape(scene.root), done: false,
+                        audio: scene.audio,
+                        level: scene.level, title: scene.title,
+                        // What the close screen offers next — the scenario's next spoken level, if one
+                        // is authored. Null ends the run at the close screen.
+                        nextLevel: spoken.find((d) => d.level > scene.level)?.level ?? null,
+                        keyPhrases: keyPhrases() });
+    }
+    const step = advanceDialogue(scene, from, { kind: "audio" });
+    if (step.learnableProgress.length) learner.save(applyCredit(learner.load(), step.learnableProgress));
+    res.json({
+      voice: scene.voices.npc,
+      background: scene.background ?? null,
+      backchannel,
+      pacing,
+      // The level's own declaration that its clips are built. The renderer asks for audio only when it
+      // is "ready": /api/speak synthesizes on a miss (it must — the live tutor's text is unpredictable),
+      // so an unbuilt line played here would BILL, and it would bill for the wrong bytes. This surface
+      // sends `sl`; build:dialogue-assets sends `deliverySL` and keys on `sl`, so the miss fills the
+      // real key with undirected audio and the later build skips it.
+      audio: scene.audio,
+      npc: shape(step.npcNodeId),
+      spoke: step.clientNodeId ? { id: step.clientNodeId, sl: scene.nodes[step.clientNodeId]!.sl } : null,
+      done: step.done,
+    });
+  } catch (err: any) {
+    res.status(400).json({ error: err?.message ?? String(err) });
+  }
 });
 
 // A1 Readiness (MVP destination ④) — the coverage map. Each competency carries REAL progress read from
@@ -303,6 +467,28 @@ app.get("/api/speak", async (req, res) => {
     res.setHeader("Content-Type", "audio/mpeg");
     res.setHeader("Cache-Control", "no-store");
     res.setHeader("X-Audio-Cache", "hit");
+    // A cached clip is SEEKABLE. Key Phrases plays a word range of one of the character's lines by
+    // setting `currentTime`, and a media element will only seek a resource whose server advertises byte
+    // ranges — without `Accept-Ranges` the assignment is silently ignored, the clip plays from 0, and the
+    // learner hears the whole sentence instead of their phrase. It fails quietly and looks like nothing
+    // happened, which is why it is handled here rather than left to the renderer to work around.
+    //
+    // Only the cache-hit path can do this: a live synthesis is streamed as it arrives, with no length to
+    // report and nothing to seek within. That is fine — nothing seeks a live clip.
+    res.setHeader("Accept-Ranges", "bytes");
+    const range = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range ?? ""));
+    if (range) {
+      const last = cached.length - 1;
+      const start = range[1] ? Number(range[1]) : 0;
+      const end = range[2] ? Math.min(Number(range[2]), last) : last;
+      if (!Number.isFinite(start) || start > last || end < start) {
+        res.setHeader("Content-Range", `bytes */${cached.length}`);
+        return res.status(416).end();
+      }
+      res.status(206);
+      res.setHeader("Content-Range", `bytes ${start}-${end}/${cached.length}`);
+      return res.end(cached.subarray(start, end + 1));
+    }
     return res.end(cached);
   }
 

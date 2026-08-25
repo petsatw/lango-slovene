@@ -64,6 +64,58 @@
     <button id="play-fallback" class="play-fallback" hidden>▶ Tap to hear the tutor</button>
   </main>
 
+  <!-- SPOKEN SCENE — the first-meeting surface. Full-bleed image, the character, a caption low on
+       screen, one mic button, and no chrome at all: no header, no back, no counters. The mic is the
+       only control, and nothing here judges what the learner says. -->
+  <main id="scene" class="scene" hidden>
+    <div id="scene-bg" class="scene-bg"></div>
+    <!-- The three things the learner can always do TO THE RUN — hear the line slower, move on, leave.
+         They live in their own layer over the background rather than beside the talk button: that button
+         is the one fixed object in the run and nothing is allowed to push it. Quiet, small, upper right —
+         always available, never the thing being asked for. -->
+    <div id="scene-chips" class="scene-chips">
+      <button id="scene-slower" class="scene-chip" type="button" title="Say it slower" aria-label="Say it slower">🐢</button>
+      <button id="scene-back" class="scene-chip" type="button" title="Back to the previous line" aria-label="Back to the previous line">«</button>
+      <button id="scene-skip" class="scene-chip" type="button" title="Skip to the next line" aria-label="Skip to the next line">»</button>
+      <button id="scene-quit" class="scene-chip" type="button" title="Close the lesson" aria-label="Close the lesson">✕</button>
+    </div>
+    <!-- The on-ramp: the English that tells a first-time learner what this is, what is about to happen,
+         what to do, and that nothing is at stake yet. This is what earns the right to withhold English
+         once the character starts speaking. It fades before the scene begins. -->
+    <!-- The stage holds everything the character says. It is a fixed region so the caption does not
+         slide around as a gloss appears beneath it — the text lands in the same place every beat. -->
+    <div class="scene-stage">
+      <div id="scene-frame" class="scene-frame" hidden></div>
+      <p id="scene-caption" class="scene-caption" aria-live="polite"></p>
+      <p id="scene-gloss" class="scene-gloss"></p>
+    </div>
+    <!-- The controls are ALWAYS on screen and never move. The button is the one fixed object in the run:
+         it changes state (the character is speaking / your turn / recording) rather than appearing and
+         disappearing, so the learner always knows where the thing they act on lives. -->
+    <div id="scene-controls" class="scene-controls">
+      <!-- What the learner is being asked to SAY — their own upcoming line, not a gloss of the
+           character's. Without it a beginner who has heard nine words and must produce two has nothing
+           on screen telling them which two. -->
+      <p id="scene-prompt" class="scene-prompt">
+        <span id="scene-prompt-sl" class="scene-prompt-sl"></span>
+        <span id="scene-prompt-en" class="scene-prompt-en"></span>
+      </p>
+      <button id="scene-talk" class="scene-talk" type="button">
+        <!-- While the character speaks the button carries no words, just a level meter: "sound is
+             happening, and it is not yours". It is the same object that will become your turn. -->
+        <span id="scene-talk-bars" class="scene-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span id="scene-talk-label" class="scene-talk-label"></span>
+      </button>
+    </div>
+    <!-- The close: his last line stays up, unglossed. Key Phrases is a button, not a screen you must
+         pass through — no counts, no badges, nothing that reads as a measure. -->
+    <div id="scene-close" class="scene-close" hidden>
+      <div id="scene-phrases" class="scene-phrases" hidden></div>
+      <button id="scene-phrases-btn" class="scene-close-btn ghost" type="button">Key Phrases</button>
+      <button id="scene-next" class="scene-close-btn" type="button">Next lesson</button>
+    </div>
+  </main>
+
   <!-- ③ REPLAYS — play back a past live session, tutor lines from the store (free). -->
   <main id="replays" class="screen" hidden>
     <h2 class="screen-title">Replays</h2>

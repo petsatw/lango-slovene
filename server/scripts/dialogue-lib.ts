@@ -42,6 +42,39 @@ export function normalizeKind(raw: string): CanonicalKind | null {
   return KIND_ALIASES[raw?.toLowerCase?.().trim()] ?? null;
 }
 
+/** Split a Slovene line into comparable word tokens — punctuation stripped, case folded. Used to line a
+ *  learner's phrase up against the character delivery that voices it, word for word. */
+export function words(s: string): string[] {
+  return s
+    .toLowerCase()
+    .replace(/[.,!?¿¡;:"'()«»/]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+/** Render a key phrase as the SHAPE it teaches, given the delivery that will actually voice it.
+ *
+ *  A phrase can be modelled by the character saying the same frame with his own filler — the learner's
+ *  "Ne govorim dobro slovensko." voiced by his "Ne govorim dobro angleško.". Printing the learner's own
+ *  wording beside that button would put a word on screen the ear does not hear. Printing the raw catalog
+ *  frame would be worse ("(Ne) govorim (dobro) ___."). So the phrase is shown as ITSELF with the one
+ *  varying word blanked: `Ne govorim dobro ___.`
+ *
+ *  Deliberately conservative. It only blanks when the two lines are the same length word for word and the
+ *  fixed words all agree — exactly the guardrail the pointer was allowed under. Anything else returns the
+ *  phrase untouched rather than guessing which word is the slot. */
+export function frameFor(sl: string, heard: string): string {
+  const a = words(sl), b = words(heard);
+  if (a.length !== b.length) return sl;
+  const differ = a.map((w, i) => w !== b[i]).reduce<number[]>((acc, d, i) => (d ? [...acc, i] : acc), []);
+  if (differ.length !== 1) return sl; // no substitution, or more than one — not a single-slot frame
+  const slot = differ[0]!;
+  let i = -1;
+  // Rebuilt over the ORIGINAL string so capitals, punctuation and the trailing full stop survive: only the
+  // slot's own letters are replaced.
+  return sl.replace(/[\p{L}\p{M}\p{N}]+/gu, (m) => (++i === slot ? "___" : m));
+}
+
 // ---- Tree analysis (a dialogue node graph) --------------------------------------------------------
 // A minimal structural view of a node so these helpers work on both the runtime Dialogue and a draft.
 
@@ -97,49 +130,120 @@ export function canReachTerminal(nodes: TreeNodes): Set<string> {
   return ok;
 }
 
-// ---- Difficulty band classification (docs/dialogue-difficulty-model.md) ---------------------------
-// Difficulty is COMPUTED after authoring, not authored. A dialogue's band is measured over its PRODUCED
-// (client) learnables — its `introduces` set — against two A1 tiers:
-//   - CORE      = the curated a1-map mappings (narrow, high-frequency survival core).
+// ---- Difficulty band classification (docs/dialogue-difficulty-model.md §3) ------------------------
+// Difficulty is COMPUTED after authoring, not authored, against two A1 tiers:
+//   - CORE      = the learnable's own `core: true` flag (the narrow, high-frequency survival core).
 //   - Tagged-A1 = the superset "also A1 material" (CORE ⊆ Tagged-A1). A learnable is Tagged-A1 iff it is
 //                 CORE or carries the catalog `a1` tag.
-// Both callers (reconcile — the writer; lint:a1 — the yardstick) share this one function so the band a
-// level ships with is byte-identical to the band the lint reports. Pure: callers pass the two id sets in.
+// Both callers (reconcile — the writer; lint:a1 — the yardstick) share `bandFor` so the band a level ships
+// with is byte-identical to the band the lint reports. Pure: callers pass the two id sets in.
 
-export type DialogueBand = "basic" | "intermediate" | "advanced";
+export type DialogueBand = "basic" | "intermediate" | "advanced" | "above-a1";
 
-/** Basic is reserved for "short & simple" trees (docs §"Open specifics"): a node ceiling (~the L1 sizing)
- *  with no deep nesting. We use total node count as the practical proxy. */
-export const BASIC_NODE_CEILING = 16;
-/** The A1-density threshold both A1-focused bands clear (docs §3). */
+/** The A1-density threshold basic + intermediate clear (docs §3). */
 export const A1_DENSITY_THRESHOLD = 0.8;
+/** The looser A1 density advanced clears, and the core density intermediate clears (docs §3). */
+export const ADVANCED_DENSITY_THRESHOLD = 0.75;
+export const INTERMEDIATE_CORE_THRESHOLD = 0.5;
 
-export interface BandInputs {
-  /** The level's produced/client learnable ids (its `introduces` — the measurement basis). */
-  introduces: string[];
-  /** Total node count in the tree (the "short & simple" proxy for the basic gate). */
-  nodeCount: number;
-  /** Learnable ids that are CORE (mapped by ≥1 a1-map competency). */
-  coreIds: Set<string>;
-  /** Learnable ids that are Tagged-A1 (CORE OR carrying the `a1` tag). */
-  taggedA1Ids: Set<string>;
+/** How one line lands. A CORE line carries at least one core item with everything else A1-or-core — the
+ *  core item is the frame, and A1 vocabulary dropped into its slots rides along. */
+export type LineClass = "core" | "a1" | "outside";
+
+/** Classify one line from the learnable ids it is made of (docs §3 "Classifying one line"). */
+export function classifyLine(ids: string[], coreIds: Set<string>, taggedA1Ids: Set<string>): LineClass {
+  if (ids.some((id) => !coreIds.has(id) && !taggedA1Ids.has(id))) return "outside";
+  return ids.some((id) => coreIds.has(id)) ? "core" : "a1";
 }
 
-/** Classify a dialogue into basic/intermediate/advanced. A level that produces nothing measurable
- *  (introduces == []) is treated as fully-A1 (ratios = 1), so a pure-review short tree lands basic. */
-export function classifyBand({ introduces, nodeCount, coreIds, taggedA1Ids }: BandInputs): DialogueBand {
+export interface BandTally {
+  band: DialogueBand;
+  /** What was counted: one entry per line, or one per `introduces` id on a not-yet-tagged tapped tree. */
+  basis: "line" | "introduces";
+  core: number;
+  a1: number;
+  outside: number;
+  /** Counted units carrying no learnables at all — excluded from the ratios (docs §3, open question). */
+  unmeasured: number;
+  /** core + a1 + outside — the denominator the ratios use. */
+  counted: number;
+}
+
+function tallyToBand(core: number, a1: number, outside: number): DialogueBand {
+  const n = core + a1 + outside;
+  if (n === 0) return "basic";               // nothing measurable: a pure-review tree is not hard
+  const coreRatio = core / n;
+  const a1Ratio = (core + a1) / n;
+  if (coreRatio >= A1_DENSITY_THRESHOLD) return "basic";
+  if (a1Ratio >= A1_DENSITY_THRESHOLD && coreRatio >= INTERMEDIATE_CORE_THRESHOLD) return "intermediate";
+  if (a1Ratio >= ADVANCED_DENSITY_THRESHOLD) return "advanced";
+  return "above-a1";
+}
+
+/** The per-line band (docs §3). `lines` is the learnable ids on each COUNTED line — client nodes only for
+ *  a spoken lesson, every node for a rehearsal dialogue. */
+export function classifyLines(
+  lines: string[][],
+  coreIds: Set<string>,
+  taggedA1Ids: Set<string>,
+): BandTally {
+  let core = 0, a1 = 0, outside = 0, unmeasured = 0;
+  for (const ids of lines) {
+    if (!ids.length) { unmeasured++; continue; }
+    const cls = classifyLine(ids, coreIds, taggedA1Ids);
+    if (cls === "core") core++;
+    else if (cls === "a1") a1++;
+    else outside++;
+  }
+  return { band: tallyToBand(core, a1, outside), basis: "line", core, a1, outside, unmeasured, counted: core + a1 + outside };
+}
+
+/** The per-item band over a level's `introduces` set — the basis for a tapped tree whose nodes carry no
+ *  `learnables` yet. It counts a noun as a demand equal in weight to the frame it sits inside, which is
+ *  what the per-line model exists to fix; a tree reaches `classifyLines` as soon as its nodes are tagged. */
+export function classifyIntroduces(
+  introduces: string[],
+  coreIds: Set<string>,
+  taggedA1Ids: Set<string>,
+): BandTally {
+  let core = 0, a1 = 0, outside = 0;
+  for (const id of introduces) {
+    if (coreIds.has(id)) core++;
+    else if (taggedA1Ids.has(id)) a1++;
+    else outside++;
+  }
   const n = introduces.length;
-  const coreRatio = n === 0 ? 1 : introduces.filter((id) => coreIds.has(id)).length / n;
-  const taggedRatio = n === 0 ? 1 : introduces.filter((id) => taggedA1Ids.has(id)).length / n;
-  if (nodeCount <= BASIC_NODE_CEILING && coreRatio >= A1_DENSITY_THRESHOLD) return "basic";
-  if (taggedRatio >= A1_DENSITY_THRESHOLD) return "intermediate";
-  return "advanced";
+  const coreRatio = n === 0 ? 1 : core / n;
+  const taggedRatio = n === 0 ? 1 : (core + a1) / n;
+  const band: DialogueBand =
+    coreRatio >= A1_DENSITY_THRESHOLD ? "basic"
+    : taggedRatio >= A1_DENSITY_THRESHOLD ? "intermediate"
+    : "advanced";
+  return { band, basis: "introduces", core, a1, outside, unmeasured: 0, counted: n };
+}
+
+export interface BandSubject {
+  /** "audio" = a spoken lesson (client nodes are the denominator); "tap" = a rehearsal dialogue (all nodes). */
+  advance?: string;
+  /** The level's declared catalog delta — the fallback basis while the nodes are untagged. */
+  introduces: string[];
+  nodes: Record<string, { speaker: "npc" | "client"; learnables?: string[] }>;
+}
+
+/** Band one level. Length is not an input: it measures amount, not difficulty. */
+export function bandFor(d: BandSubject, coreIds: Set<string>, taggedA1Ids: Set<string>): BandTally {
+  const spoken = (d.advance ?? "tap") === "audio";
+  const counted = Object.values(d.nodes).filter((n) => !spoken || n.speaker === "client");
+  const tagged = counted.filter((n) => n.learnables?.length);
+  if (!tagged.length) return classifyIntroduces(d.introduces, coreIds, taggedA1Ids);
+  return classifyLines(counted.map((n) => n.learnables ?? []), coreIds, taggedA1Ids);
 }
 
 const BAND_LABELS: Record<DialogueBand, string> = {
   basic: "Basic",
   intermediate: "Intermediate",
   advanced: "Advanced",
+  "above-a1": "Above A1",
 };
 
 /** The human `levelLabel` written onto the dialogue + manifest, derived from the computed band. */
@@ -147,9 +251,27 @@ export function bandToLabel(band: DialogueBand): string {
   return BAND_LABELS[band];
 }
 
-const BAND_ORDER: Record<DialogueBand, number> = { basic: 0, intermediate: 1, advanced: 2 };
+const BAND_ORDER: Record<DialogueBand, number> = { basic: 0, intermediate: 1, advanced: 2, "above-a1": 3 };
 
 /** Ordinal rank of a band (basic < intermediate < advanced) — for the ascending-order check. */
 export function bandRank(band: DialogueBand): number {
   return BAND_ORDER[band];
+}
+
+/** Does this node become an audio clip? In a SPOKEN scene (`advance: "audio"`) the client lines are what
+ *  the LEARNER says aloud, so they are never synthesized: we would be billing for the character's voice on
+ *  the learner's line. They own no clip and can collide with nothing.
+ *
+ *  "Owns no clip" is not "is never heard". The Key Phrases panel can voice a client line by replaying the
+ *  portion of one of the CHARACTER's clips where he says the same shape (see DialogueVoicing) — the
+ *  character's recording, explicitly pointed at. Nothing in this app has ever recorded or played back the
+ *  learner's own voice, and nothing here implies it does.
+ *
+ *  Every tool that reasons about clips asks this rather than re-deriving it, so the asset builder and
+ *  `lint:dialogue` agree on which files exist. */
+export function isSynthesized(
+  dialogue: { advance?: string },
+  node: { speaker: "npc" | "client" },
+): boolean {
+  return !((dialogue.advance ?? "tap") === "audio" && node.speaker === "client");
 }

@@ -14,12 +14,18 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync, unl
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-export type AssetType = "audio" | "image";
+export type AssetType = "audio" | "image" | "align";
 
 // Fixed extension per type so getPath stays deterministic (key+type → path, no manifest read).
 // Images follow the E4 provider's output — Grok returns JPEG. A PNG-output provider would need a
 // migration here; the manifest records the actual mimeType so a mismatch is detectable.
-const EXT: Record<AssetType, string> = { audio: "mp3", image: "jpg" };
+//
+// `align` is word-level timings for a clip that already exists — a MEASUREMENT of audio, never a
+// generation. It is deliberately keyed by THE AUDIO KEY OF THE CLIP IT DESCRIBES: same key, different
+// extension, so an alignment cannot drift from its audio. The corollary is a hard rule: anything that
+// deletes an audio key MUST delete that key's align artifact in the same breath, or a re-rolled clip
+// silently keeps the old timestamps and every span cut from it drifts. `lint:keyphrase-audio` checks it.
+const EXT: Record<AssetType, string> = { audio: "mp3", image: "jpg", align: "json" };
 
 // Gitignored assets/ at repo root by default; override with ASSET_DIR (absolute, or relative to cwd).
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -77,6 +83,47 @@ export function has(key: string, type: AssetType): boolean {
 export function read(key: string, type: AssetType): Buffer | null {
   const p = getPath(key, type);
   return existsSync(p) ? readFileSync(p) : null;
+}
+
+/** One word of a forced alignment: where it falls in the clip, in SECONDS, plus its own alignment loss. */
+export interface AlignWord {
+  text: string;
+  start: number;
+  end: number;
+  loss?: number;
+}
+
+/** The `align` artifact — the stored result of one forced-alignment measurement.
+ *  `text` is the transcript the timings were measured against; a stored alignment whose `text` no longer
+ *  matches the clip's line is stale by definition, which is what the lint checks. */
+export interface Alignment {
+  key: string;
+  text: string;
+  words: AlignWord[];
+  /** Average alignment confidence the provider returned — lower is better. */
+  loss?: number;
+  provider: string;
+  createdAt: string;
+}
+
+/** Read a clip's alignment, or null if it has never been measured. */
+export function readAlign(key: string): Alignment | null {
+  const bytes = read(key, "align");
+  if (!bytes) return null;
+  try {
+    return JSON.parse(bytes.toString("utf8")) as Alignment;
+  } catch {
+    return null; // a corrupt artifact is a miss, not a crash — re-measuring is free to re-run
+  }
+}
+
+/** Delete a clip's audio AND the alignment measured from it. Anything that re-rolls a clip must call
+ *  this rather than `remove(key, "audio")`: an align artifact outliving its audio is the one silent
+ *  failure this design has — the clip changes, the timestamps do not, and every span drifts. */
+export function removeAudioAndAlign(key: string): boolean {
+  const hadAlign = remove(key, "align");
+  const hadAudio = remove(key, "audio");
+  return hadAudio || hadAlign;
 }
 
 // Force-regenerate a single leaf: delete its bytes so the next getOrCreate is a miss (the regenerator

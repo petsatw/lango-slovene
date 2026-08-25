@@ -1,0 +1,33 @@
+{
+  "key": "aaeaff7f2ce6f8af287a8db33a445745778c36bf1f24470a289552e72ebefba5",
+  "text": "Saj govoriš slovensko! Super!",
+  "words": [
+    {
+      "text": "Saj",
+      "start": 0.179,
+      "end": 0.379,
+      "loss": 0.5934244791666666
+    },
+    {
+      "text": "govoriš",
+      "start": 0.419,
+      "end": 0.819,
+      "loss": 0.00907135009765625
+    },
+    {
+      "text": "slovensko!",
+      "start": 0.839,
+      "end": 1.599,
+      "loss": 0.163748836517334
+    },
+    {
+      "text": "Super!",
+      "start": 2.119,
+      "end": 2.7,
+      "loss": 0.02935632069905599
+    }
+  ],
+  "loss": 0.12713376406965585,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:03.224Z"
+}

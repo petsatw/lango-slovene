@@ -51,6 +51,8 @@ the feature is optional per scenario.
                                     // catalog; may be [] for a pure-review level. See "The catalog link".
   "audio": "pending",               // "pending" | "ready" — gates the client's play affordance
   "voices": { "npc": "shop-assistant", "client": "female-speaker" },  // per-speaker catalog voice profile
+  "advance": "tap",                 // "tap" (default, omit) | "audio" — how the learner moves the tree.
+                                    // See "Tapped vs spoken" below.
   "background": "bakery-1.jpg",     // optional portrait scene image under public/backgrounds/ (see below)
   "root": "b1",                     // must be an npc node
   "nodes": {
@@ -75,6 +77,27 @@ the feature is optional per scenario.
     unique to that voice. If a character must sound distinct on an otherwise-common line (a greeting, a
     closing), make the line **textually distinct**. `npm run lint:dialogue` emits a warning for every such
     collision (same voice + `sl`, differing delivery) so it is visible before you generate.
+- **`slowSL`** (optional) is the same line **chunked and re-spoken slowly** (e.g. `Jaz sem … Slavko.`) —
+  for a beat that says a line at natural speed and then again slower. Like `sl` it does double duty: the
+  chunked **caption** and the **audio key** for the slow clip. Because it is different text it is
+  naturally a different key — no key-model change, nothing re-keyed. It must **differ from `sl`**
+  (identical text is one clip, so the "slow" version would silently be the natural one); the loader
+  rejects that. `build:dialogue-assets` emits both clips.
+- **`deliverySlowSL`** (optional) is `slowSL` **with inline delivery tags** — what gets synthesized for
+  the slow clip, while `slowSL` stays the caption and the key. The `sl`/`deliverySL` split, applied to
+  the slow line, and it exists for a **measured** reason: the ` … ` separator alone does **not** slow
+  eleven_v3 down. Two authored slow lines came back at 1.00× and 0.92× the duration of their natural
+  clips — one identical, one *faster*. Slower speech has to be **directed**, and the direction must not
+  reach the screen. Without it, `slowSL` is synthesized as written and the "slow" clip will not be slow.
+- **`learnables`** (optional, on **any** node) is the catalog ids the line **is made of** — what the
+  per-line difficulty band counts (dialogue-difficulty-model.md §3), which is why an npc line carries them
+  too. On a **client** node it doubles as the ids that beat expects the learner to **produce**, the
+  allowlist the `"audio"` advance mode plants as **attempts**; crediting reads it only there, so tagging an
+  npc line describes it and never credits the learner for hearing it. It **may be empty**: a
+  beat whose expected utterance is not Slovene at all (the learner saying their own name) exercises no
+  catalog item. Ignored for crediting in `"tap"` mode, which credits nothing. This is the per-beat allowlist
+  `SeedStep.learnables` plays for the seed; the level-wide `introduces` is a different thing (the
+  free-chat bias set).
 - **`voices`** maps each speaker to a catalog voice profile id (`server/catalog/voices.json`), so the two
   speakers get distinct voices. Adding a voice = one `voices.json` profile + one `PROFILE_ENV` row in the
   E3 adapter + the concrete voice id in `.env` (see [SECRETS.md](SECRETS.md)).
@@ -88,6 +111,68 @@ the feature is optional per scenario.
   the learner meets these items in the tree, then the [handoff](#the-handoff--introduce-then-reinforce)
   hands them into a free chat biased toward exactly this set. Validated at startup (every id must resolve
   in the catalog) and gated by `npm run lint:dialogue`. See [the catalog link](#the-catalog-link--deriving-learnables-from-a-dialogue).
+
+## Tapped vs spoken — one tree, two input modes
+
+A rehearsal tree and a **spoken scene** are the same authored data; they differ only in what moves them
+forward. `advance` names which, and [`server/adapters/dialogue-scripted.ts`](../server/adapters/dialogue-scripted.ts)
+drives both:
+
+| | `"tap"` (default) | `"audio"` |
+|---|---|---|
+| Input | the learner **picks** a client line | the learner **speaks** |
+| Advances on | the tap | the audio **arriving** — never on what it says |
+| Judging | none | **none** — nothing inspects the recording; there is no model in the loop |
+| Crediting | nothing (the [witness contract](free-conversation.md)) | the beat's `learnables`, as **attempts** — never masteries |
+| An npc node's `next` | the choices offered | the **canonical spine is `next[0]`**; further entries are alternates a surface may preview without them advancing anything |
+| npc → npc | not possible — a tap needs a choice | **allowed**: a beat the learner is not asked to answer |
+
+**A spoken spine may run npc → npc.** When an npc node's `next[0]` is another npc node, the character is
+carrying himself forward — an acknowledgement, a slow re-model, a nudge onward — and no turn is demanded:
+`advanceDialogue` returns the next npc line with `clientNodeId: null` and credits nothing, and the
+renderer plays it and continues instead of arming the button (`handsOver: false` on the shaped beat).
+Without this every line the character speaks would demand a response, and the only way to hold a
+supporting beat would be to pack several sentences into one node — which puts far more words in front of
+a beginner than the turn following them is worth. Authoring consequence: **one node is one caption, one
+thing on screen**; if two sentences want different captions or different timing, they are two nodes.
+
+`"audio"` is the seed adapter's contract ([`seed-scripted.ts`](../server/adapters/seed-scripted.ts))
+generalized to a tree: pure, position-derived, unfailable by construction, and **crediting is the
+caller's job** — the adapter returns the allowlist, the orchestrator applies it. Because it never scores,
+the mastery loop is untouched: production on the live mic is still the only place mastery accrues.
+
+A spoken scene renders on its **own surface**, not in the rehearsal overlay: `#scene` in
+[`public/index.html`](../public/index.html) — full-bleed image, one caption low on screen, one mic
+button, and no chrome (the header is hidden while it is up). It is driven by
+[`POST /api/scene`](DATA-MODEL.md), one beat per request. Because a spoken scene is somewhere the app
+*takes* the learner rather than a rehearsal they pick, `/api/practice` leaves it out of the picker, and
+`build:dialogue-assets` voices only the character — the client lines are the learner's own speech.
+
+`advance` is declared on the scenario manifest (`surfaces.dialogue.advance`) **and** on each level's
+file; `lint:tree` checks the two agree, exactly as it does for `voices`. Absent ⇒ `"tap"`, so every
+dialogue authored before the field keeps its behaviour. In `"audio"` mode `lint:tree` drops its
+"single choice" warning — a spoken spine is linear by design.
+
+## Backchannels — a voice's listening noises
+
+A backchannel (`"Mhm."`) is **not a dialogue node**. It belongs to the **voice**, not to any one tree:
+the same clip serves every scene that character appears in, and it has to fire the instant the learner
+stops speaking — before any processing could return. So it is declared on the voice profile and
+pregenerated:
+
+```jsonc
+// server/catalog/voices.json
+"slavko": { "description": "…", "backchannels": ["Mhm."] }
+```
+
+```bash
+npm run build:backchannels                 # every profile that declares them
+npm run build:backchannels -- slavko       # one profile   (--regen to re-roll)
+```
+
+Same content-addressed store, key, and preflight as `build:dialogue-assets`. The key is
+(provider, voiceTag, text), so a surface plays one with the ordinary
+`/api/speak?text=Mhm.&voice=slavko` and gets the pregenerated bytes free.
 
 ## Runtime
 
@@ -195,11 +280,12 @@ learnables is a **gated step of the authoring pass**, a byproduct of writing the
    NOT a distinct lexeme that merely shares a function; `Živjo`/`Zdravo` and `ja`/`da` both coexist).
 3. **Reconcile deterministically.** `npm run reconcile:dialogue -- <reconcile-input.json>` merges the new
    entries into `learnables.json` (skip existing ids; **fail loud** on a duplicate canonical `sl`; normalize
-   `kind`), assigns each level's `introduces` = union(reused + new), applies the critic's exact fixes, writes
+   `kind`), assigns each level's `introduces` = the ids it is the FIRST level to have the learner produce,
+   computes its difficulty band, applies the critic's exact fixes, writes
    the dialogue files + the manifest, and emits candidate A1 mappings. Then the gates must all exit 0:
    **`lint:dialogue`** (the DRY invariant + `introduces` integrity + coverage), **`lint:tree`** (tree
    structure + manifest consistency), **`lint:a1`** (a1-map ref-integrity + a difficulty/coverage readout — the
-   curated Pareto core is never force-filled; a per-learnable `a1` tag is the Tagged-A1 superset), **`test:dialogue`**.
+   curated core is never force-filled; a per-learnable `a1` tag is the Tagged-A1 superset), **`test:dialogue`**.
 
 The same three-part shape as the scenario engine (author → critic → deterministic reconcile + lint), extended
 to grow the catalog. Because a word is minted once and referenced by id (step 1's reuse rule + the reconcile's
@@ -221,7 +307,10 @@ same `kruh` the learner has been building all along.
   `npc` node**; every path ends at `next: []`.
 - **`deliverySL`:** optional, **npc lines only** — the same line with **one** eleven_v3 delivery tag matching
   the character (the restaurant waiter uses a warm `[warmly] …`; the bakery uses `[hesitant]`). **Client
-  lines carry no `deliverySL`** (the learner's own voice needs no direction).
+  lines carry no `deliverySL`** — a client line is a line the learner will say, not a performance to
+  direct. (In a **spoken** scene client lines are not synthesized at all. Nothing in this app records or
+  plays back the learner's own voice; where the close screen offers to play a phrase, it is replaying the
+  character's clip — see [keyphrase-span-playback.md](keyphrase-span-playback.md).)
 - **Register + voices:** hold the declared register across every line (a toast among friends is naturally
   `ti` and is not a break). Match the client lines to the **learner's gender** (the restaurant client Slavko
   is male: `rad bi`, `vzel bom`, `zame`).
@@ -246,6 +335,17 @@ same `kruh` the learner has been building all along.
 - Mint in **citation form** — vocabulary = nom. sg. lemma; pattern = a frame with `___`; chunk = the fixed
   phrase — with a `gloss` and the **one predictable beginner error**. Propose a snake_case id; the reconcile
   owns final id assignment.
+- **A phrase addressed to "you" is cited ONCE, in the form the learner will actually say it.** The other
+  register is not a second learnable, for the same reason every conjugation of a verb is not: politeness is
+  one system, carried by `vikanje`, and a lesson teaches it directly.
+  Which form that is depends on who the phrase is said to. Things you say to friends are cited in **ti** —
+  `Kje živiš?`, `Kako si?`, `Kaj delaš?`. Things you only ever say to a stranger are cited in **vi**, because
+  a learner who produces the familiar form there will not be understood as intending it —
+  `Ali govorite angleško?`, `Ponovite, prosim.`, `Ali imate ___?`. Pick by usage, never by a default register.
+  The other register then **reuses** the entry, exactly as `kavo` reuses `kava` — same lexical item,
+  inflected. A line in the register the entry is not cited in is reuse, not unminted language.
+  Plural that is genuinely **plural** is untouched by this: `Ali ste odprti?` addresses a business and its
+  staff, so it stays plural — the rule is about vi-as-politeness, not about the plural.
 
 ### Register a new scenario — the checklist
 
@@ -269,6 +369,13 @@ Each speaker maps to a catalog voice profile, bound to a concrete ElevenLabs voi
 | `female-speaker` | `ELEVENLABS_VOICE_ID` | teacher/narration; restaurant `npc`; bakery `client` |
 | `male-speaker` | `ELEVENLABS_VOICE_ID_MALE` | restaurant `client` (Slavko) |
 | `shop-assistant` | `ELEVENLABS_VOICE_ID_SHOP_ASSISTANT` | bakery `npc` |
+| `slavko` | `ELEVENLABS_VOICE_ID_MALE` | Slavko the dragon — the companion character |
+
+> **Slavko is deliberately bound to `male-speaker`'s env var.** He *is* the voice the restaurant client
+> already speaks in, so every clip already synthesized for him stays a cache hit (the audio key carries
+> the voice **id**, not the profile name) and nothing is re-keyed or re-generated. Giving him his own
+> env var later is a one-line change that re-keys **all** of his audio. He is also the one profile that
+> declares [backchannels](#backchannels--a-voices-listening-noises).
 
 `build:dialogue-assets` runs a **preflight** before synthesizing: every voice profile the target references
 must resolve to a configured voice id, and the API key must be set — otherwise it **fails fast**, listing

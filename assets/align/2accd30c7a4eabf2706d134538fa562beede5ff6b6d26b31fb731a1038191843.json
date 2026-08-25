@@ -1,0 +1,63 @@
+{
+  "key": "2accd30c7a4eabf2706d134538fa562beede5ff6b6d26b31fb731a1038191843",
+  "text": "Ej, midva se pa razumeva! Dajva skupaj: Govorim slovensko.",
+  "words": [
+    {
+      "text": "Ej,",
+      "start": 0.119,
+      "end": 0.439,
+      "loss": 0.042439778645833336
+    },
+    {
+      "text": "midva",
+      "start": 0.539,
+      "end": 0.799,
+      "loss": 0.12988243103027344
+    },
+    {
+      "text": "se",
+      "start": 0.839,
+      "end": 0.959,
+      "loss": 0.002437591552734375
+    },
+    {
+      "text": "pa",
+      "start": 0.979,
+      "end": 1.059,
+      "loss": 0.037506103515625
+    },
+    {
+      "text": "razumeva!",
+      "start": 1.079,
+      "end": 1.679,
+      "loss": 0.10081603791978624
+    },
+    {
+      "text": "Dajva",
+      "start": 2.539,
+      "end": 2.779,
+      "loss": 1.0173095703125
+    },
+    {
+      "text": "skupaj:",
+      "start": 2.799,
+      "end": 3.119,
+      "loss": 0.5561331340244838
+    },
+    {
+      "text": "Govorim",
+      "start": 3.819,
+      "end": 4.219,
+      "loss": 0.1023926053728376
+    },
+    {
+      "text": "slovensko.",
+      "start": 4.319,
+      "end": 4.9,
+      "loss": 0.07031021118164063
+    }
+  ],
+  "loss": 0.21093436767315044,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:55:40.205Z"
+}

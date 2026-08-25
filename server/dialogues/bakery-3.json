@@ -2,7 +2,7 @@
   "id": "bakery-l3",
   "scenarioId": "bakery",
   "level": 3,
-  "levelLabel": "Full A1",
+  "levelLabel": "Basic",
   "title": "Ordering a cake ahead",
   "objectives": [
     {
@@ -39,17 +39,17 @@
     }
   ],
   "introduces": [
-    "katera_bolj",
-    "ker",
-    "vsebuje",
-    "namesto",
     "alergicen_na",
     "je_tako_prav",
-    "narociti",
-    "za_osebe",
-    "oprostite",
+    "katera_bolj",
+    "ker",
     "lepo_vreme",
-    "torta"
+    "namesto",
+    "narociti",
+    "oprostite",
+    "torta",
+    "vsebuje",
+    "za_osebe"
   ],
   "audio": "ready",
   "voices": {
@@ -67,7 +67,11 @@
         "c1a",
         "c1b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Dober dan, izvolite?"
+      "deliverySL": "[hesitant and a little apathetic] Dober dan, izvolite?",
+      "learnables": [
+        "dober_dan",
+        "izvolite"
+      ]
     },
     "c1a": {
       "speaker": "client",
@@ -75,6 +79,10 @@
       "en": "Good day. I'd like a pretzel, please.",
       "next": [
         "b2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "eno_femacc"
       ]
     },
     "c1b": {
@@ -83,6 +91,10 @@
       "en": "Hello. I'd like a croissant, please.",
       "next": [
         "b2"
+      ],
+      "learnables": [
+        "en_masacc",
+        "rogljicek"
       ]
     },
     "b2": {
@@ -93,7 +105,10 @@
         "c2a",
         "c2b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Izvolite. Še kaj?"
+      "deliverySL": "[hesitant and a little apathetic] Izvolite. Še kaj?",
+      "learnables": [
+        "izvolite"
+      ]
     },
     "c2a": {
       "speaker": "client",
@@ -101,6 +116,13 @@
       "en": "Yes, I'd like to order a cake for tomorrow.",
       "next": [
         "b3"
+      ],
+      "learnables": [
+        "ja",
+        "rad_bi",
+        "narociti",
+        "torta",
+        "jutri"
       ]
     },
     "c2b": {
@@ -109,6 +131,13 @@
       "en": "Yes, can I order a cake for tomorrow?",
       "next": [
         "b3"
+      ],
+      "learnables": [
+        "ja",
+        "ali_lahko",
+        "narociti",
+        "torta",
+        "jutri"
       ]
     },
     "b3": {
@@ -119,7 +148,14 @@
         "c3a",
         "c3b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Seveda. Za kdaj in za koliko oseb?"
+      "deliverySL": "[hesitant and a little apathetic] Seveda. Za kdaj in za koliko oseb?",
+      "learnables": [
+        "seveda",
+        "kdaj",
+        "in",
+        "koliko",
+        "oseba"
+      ]
     },
     "c3a": {
       "speaker": "client",
@@ -127,6 +163,12 @@
       "en": "For tomorrow afternoon, for four people.",
       "next": [
         "b4"
+      ],
+      "learnables": [
+        "jutri",
+        "popoldne",
+        "za_osebe",
+        "stevilo_stiri"
       ]
     },
     "c3b": {
@@ -135,6 +177,11 @@
       "en": "For tomorrow, for a birthday. For six people.",
       "next": [
         "b4"
+      ],
+      "learnables": [
+        "jutri",
+        "za_osebe",
+        "stevilo_sest"
       ]
     },
     "b4": {
@@ -145,7 +192,13 @@
         "c4a",
         "c4b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Prav. Katero torto želite? Imamo čokoladno in sadno."
+      "deliverySL": "[hesitant and a little apathetic] Prav. Katero torto želite? Imamo čokoladno in sadno.",
+      "learnables": [
+        "torta",
+        "zelim",
+        "imam",
+        "in"
+      ]
     },
     "c4a": {
       "speaker": "client",
@@ -153,6 +206,10 @@
       "en": "Which one is fresher?",
       "next": [
         "b5"
+      ],
+      "learnables": [
+        "katera_bolj",
+        "svez"
       ]
     },
     "c4b": {
@@ -161,6 +218,9 @@
       "en": "Which one is cheaper?",
       "next": [
         "b5"
+      ],
+      "learnables": [
+        "katera_bolj"
       ]
     },
     "b5": {
@@ -171,7 +231,11 @@
         "c5a",
         "c5b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Obe sta sveži, danes pečeni. Sadna je malenkost cenejša."
+      "deliverySL": "[hesitant and a little apathetic] Obe sta sveži, danes pečeni. Sadna je malenkost cenejša.",
+      "learnables": [
+        "svez",
+        "danes"
+      ]
     },
     "c5a": {
       "speaker": "client",
@@ -179,6 +243,11 @@
       "en": "Then I'll take the fruit one, because it's cheaper.",
       "next": [
         "b6"
+      ],
+      "learnables": [
+        "potem",
+        "vzel_bom",
+        "ker"
       ]
     },
     "c5b": {
@@ -187,6 +256,10 @@
       "en": "I'll take the chocolate one, because it's tastier.",
       "next": [
         "b6"
+      ],
+      "learnables": [
+        "vzel_bom",
+        "ker"
       ]
     },
     "b6": {
@@ -197,7 +270,11 @@
         "c6a",
         "c6b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Odlična izbira. Vas zanima kaj glede sestavin ali alergenov?"
+      "deliverySL": "[hesitant and a little apathetic] Odlična izbira. Vas zanima kaj glede sestavin ali alergenov?",
+      "learnables": [
+        "kaj",
+        "ali_or"
+      ]
     },
     "c6a": {
       "speaker": "client",
@@ -205,6 +282,10 @@
       "en": "Does the cake contain nuts?",
       "next": [
         "b7"
+      ],
+      "learnables": [
+        "vsebuje",
+        "torta"
       ]
     },
     "c6b": {
@@ -213,6 +294,10 @@
       "en": "I'm allergic to sesame. Does it contain sesame?",
       "next": [
         "b7"
+      ],
+      "learnables": [
+        "alergicen_na",
+        "vsebuje"
       ]
     },
     "b7": {
@@ -223,7 +308,12 @@
         "c7a",
         "c7b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Oreškov ne dodajamo, lahko pa vsebuje sledove oreškov in sezama."
+      "deliverySL": "[hesitant and a little apathetic] Oreškov ne dodajamo, lahko pa vsebuje sledove oreškov in sezama.",
+      "learnables": [
+        "vsebuje",
+        "in",
+        "ne"
+      ]
     },
     "c7a": {
       "speaker": "client",
@@ -231,6 +321,11 @@
       "en": "I see. Then it'll be fine, thanks.",
       "next": [
         "b8"
+      ],
+      "learnables": [
+        "potem",
+        "v_redu",
+        "hvala"
       ]
     },
     "c7b": {
@@ -239,6 +334,9 @@
       "en": "Thanks for telling me. I'll be careful.",
       "next": [
         "b8"
+      ],
+      "learnables": [
+        "hvala"
       ]
     },
     "b8": {
@@ -249,7 +347,14 @@
         "c8a",
         "c8b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Bomo dodali še kaj svežega? Priporočam danish s čokolado in pistacijami."
+      "deliverySL": "[hesitant and a little apathetic] Bomo dodali še kaj svežega? Priporočam danish s čokolado in pistacijami.",
+      "learnables": [
+        "kaj",
+        "svez",
+        "priporocate",
+        "z_s_instr",
+        "in"
+      ]
     },
     "c8a": {
       "speaker": "client",
@@ -257,6 +362,12 @@
       "en": "Yes, two pistachio danishes, please.",
       "next": [
         "b9"
+      ],
+      "learnables": [
+        "ja",
+        "stevilo_dva",
+        "z_s_instr",
+        "prosim"
       ]
     },
     "c8b": {
@@ -265,6 +376,11 @@
       "en": "No, thanks, just the cake.",
       "next": [
         "b10"
+      ],
+      "learnables": [
+        "ne",
+        "hvala",
+        "torta"
       ]
     },
     "b9": {
@@ -275,7 +391,12 @@
         "c9a",
         "c9b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Joj, danish s pistacijami je pošel, nimamo ga več. Imamo pa navadne s čokolado. Bi te?"
+      "deliverySL": "[hesitant and a little apathetic] Joj, danish s pistacijami je pošel, nimamo ga več. Imamo pa navadne s čokolado. Bi te?",
+      "learnables": [
+        "z_s_instr",
+        "nimam",
+        "imam"
+      ]
     },
     "c9a": {
       "speaker": "client",
@@ -283,6 +404,11 @@
       "en": "Can I have two plain danishes instead?",
       "next": [
         "b10"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "namesto",
+        "stevilo_dva"
       ]
     },
     "c9b": {
@@ -291,6 +417,11 @@
       "en": "Alright, one focaccia then.",
       "next": [
         "b10"
+      ],
+      "learnables": [
+        "v_redu",
+        "potem",
+        "eno_femacc"
       ]
     },
     "b10": {
@@ -301,7 +432,10 @@
         "c10a",
         "c10b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] V redu. Je to vse?"
+      "deliverySL": "[hesitant and a little apathetic] V redu. Je to vse?",
+      "learnables": [
+        "v_redu"
+      ]
     },
     "c10a": {
       "speaker": "client",
@@ -309,6 +443,12 @@
       "en": "So: the cake for tomorrow, the rest for now. Is that right?",
       "next": [
         "b11"
+      ],
+      "learnables": [
+        "torta",
+        "jutri",
+        "zdaj",
+        "je_tako_prav"
       ]
     },
     "c10b": {
@@ -317,6 +457,11 @@
       "en": "Yes, that's all, thanks.",
       "next": [
         "b11"
+      ],
+      "learnables": [
+        "ja",
+        "to_je",
+        "hvala"
       ]
     },
     "b11": {
@@ -327,7 +472,14 @@
         "c11a",
         "c11b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Tako je. Skupaj bo osem evrov in petdeset, prosim."
+      "deliverySL": "[hesitant and a little apathetic] Tako je. Skupaj bo osem evrov in petdeset, prosim.",
+      "learnables": [
+        "stevilo_osem",
+        "evro",
+        "in",
+        "stevilo_petdeset",
+        "prosim"
+      ]
     },
     "c11a": {
       "speaker": "client",
@@ -335,6 +487,9 @@
       "en": "I think you made a mistake with the price.",
       "next": [
         "b12"
+      ],
+      "learnables": [
+        "cena"
       ]
     },
     "c11b": {
@@ -343,6 +498,10 @@
       "en": "Alright, here you go.",
       "next": [
         "b13"
+      ],
+      "learnables": [
+        "v_redu",
+        "izvolite"
       ]
     },
     "b12": {
@@ -353,7 +512,17 @@
         "c12a",
         "c12b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Oprostite, imate prav. Sedem evrov in petdeset, ne osem."
+      "deliverySL": "[hesitant and a little apathetic] Oprostite, imate prav. Sedem evrov in petdeset, ne osem.",
+      "learnables": [
+        "oprostite",
+        "imam",
+        "stevilo_sedem",
+        "evro",
+        "in",
+        "stevilo_petdeset",
+        "ne",
+        "stevilo_osem"
+      ]
     },
     "c12a": {
       "speaker": "client",
@@ -361,6 +530,10 @@
       "en": "No worries. Here's ten.",
       "next": [
         "b13"
+      ],
+      "learnables": [
+        "izvolite",
+        "stevilo_deset"
       ]
     },
     "c12b": {
@@ -369,6 +542,12 @@
       "en": "Ah, sorry, I didn't understand. How much, please?",
       "next": [
         "b12b"
+      ],
+      "learnables": [
+        "oprostite",
+        "razumem",
+        "koliko",
+        "prosim"
       ]
     },
     "b12b": {
@@ -378,7 +557,14 @@
       "next": [
         "c12r"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Sedem evrov in petdeset, prosim."
+      "deliverySL": "[hesitant and a little apathetic] Sedem evrov in petdeset, prosim.",
+      "learnables": [
+        "stevilo_sedem",
+        "evro",
+        "in",
+        "stevilo_petdeset",
+        "prosim"
+      ]
     },
     "c12r": {
       "speaker": "client",
@@ -386,6 +572,9 @@
       "en": "Ah, here you go.",
       "next": [
         "b13"
+      ],
+      "learnables": [
+        "izvolite"
       ]
     },
     "b13": {
@@ -396,7 +585,10 @@
         "c13a",
         "c13b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Hvala. Vam dam vrečko?"
+      "deliverySL": "[hesitant and a little apathetic] Hvala. Vam dam vrečko?",
+      "learnables": [
+        "hvala"
+      ]
     },
     "c13a": {
       "speaker": "client",
@@ -404,6 +596,10 @@
       "en": "Yes, please, one bag.",
       "next": [
         "b14"
+      ],
+      "learnables": [
+        "ja",
+        "prosim"
       ]
     },
     "c13b": {
@@ -412,6 +608,11 @@
       "en": "No, thanks, I have my own.",
       "next": [
         "b14"
+      ],
+      "learnables": [
+        "ne",
+        "hvala",
+        "imam"
       ]
     },
     "b14": {
@@ -422,7 +623,12 @@
         "c14a",
         "c14b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Torta bo pa jutri pripravljena. Samo trenutek, vam še natisnem potrdilo za torto."
+      "deliverySL": "[hesitant and a little apathetic] Torta bo pa jutri pripravljena. Samo trenutek, vam še natisnem potrdilo za torto.",
+      "learnables": [
+        "torta",
+        "jutri",
+        "natisniti"
+      ]
     },
     "c14a": {
       "speaker": "client",
@@ -430,6 +636,9 @@
       "en": "Go right ahead, I have time.",
       "next": [
         "b15"
+      ],
+      "learnables": [
+        "imam"
       ]
     },
     "c14b": {
@@ -438,6 +647,10 @@
       "en": "Yes of course, I'm in no hurry.",
       "next": [
         "b15"
+      ],
+      "learnables": [
+        "ja",
+        "seveda"
       ]
     },
     "b15": {
@@ -448,7 +661,11 @@
         "c15a",
         "c15b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Oprostite za trenutek, tiskalnik je danes malo počasen."
+      "deliverySL": "[hesitant and a little apathetic] Oprostite za trenutek, tiskalnik je danes malo počasen.",
+      "learnables": [
+        "oprostite",
+        "danes"
+      ]
     },
     "c15a": {
       "speaker": "client",
@@ -456,6 +673,10 @@
       "en": "The weather really is lovely today, isn't it?",
       "next": [
         "b16a"
+      ],
+      "learnables": [
+        "danes",
+        "lepo_vreme"
       ]
     },
     "c15b": {
@@ -464,7 +685,8 @@
       "en": "No problem, don't worry about it.",
       "next": [
         "b16b"
-      ]
+      ],
+      "learnables": []
     },
     "b16a": {
       "speaker": "npc",
@@ -474,7 +696,12 @@
         "c16a",
         "c16b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Res je, čudovit dan. Tako, zdaj je natisnjeno, izvolite potrdilo."
+      "deliverySL": "[hesitant and a little apathetic] Res je, čudovit dan. Tako, zdaj je natisnjeno, izvolite potrdilo.",
+      "learnables": [
+        "zdaj",
+        "natisniti",
+        "izvolite"
+      ]
     },
     "b16b": {
       "speaker": "npc",
@@ -484,7 +711,13 @@
         "c16a",
         "c16b"
       ],
-      "deliverySL": "[hesitant and a little apathetic] Hvala za potrpljenje. Tako, zdaj je natisnjeno, izvolite potrdilo."
+      "deliverySL": "[hesitant and a little apathetic] Hvala za potrpljenje. Tako, zdaj je natisnjeno, izvolite potrdilo.",
+      "learnables": [
+        "hvala_za",
+        "zdaj",
+        "natisniti",
+        "izvolite"
+      ]
     },
     "c16a": {
       "speaker": "client",
@@ -492,6 +725,10 @@
       "en": "Great, I'll come for the cake tomorrow.",
       "next": [
         "b17"
+      ],
+      "learnables": [
+        "jutri",
+        "torta"
       ]
     },
     "c16b": {
@@ -500,6 +737,10 @@
       "en": "Thank you, see you tomorrow.",
       "next": [
         "b17"
+      ],
+      "learnables": [
+        "hvala",
+        "jutri"
       ]
     },
     "b17": {
@@ -507,7 +748,13 @@
       "sl": "Hvala enako, lep dan še naprej in nasvidenje!",
       "en": "Thank you likewise, have a nice day and goodbye!",
       "next": [],
-      "deliverySL": "[hesitant and a little apathetic] Hvala enako, lep dan še naprej in nasvidenje!"
+      "deliverySL": "[hesitant and a little apathetic] Hvala enako, lep dan še naprej in nasvidenje!",
+      "learnables": [
+        "hvala",
+        "lep",
+        "in",
+        "nasvidenje"
+      ]
     }
   }
 }

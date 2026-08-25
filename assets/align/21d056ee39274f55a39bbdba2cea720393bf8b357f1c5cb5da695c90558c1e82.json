@@ -1,0 +1,33 @@
+{
+  "key": "21d056ee39274f55a39bbdba2cea720393bf8b357f1c5cb5da695c90558c1e82",
+  "text": "A ti? Govorim angleško?",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.099,
+      "end": 0.319,
+      "loss": 0.7265625
+    },
+    {
+      "text": "ti?",
+      "start": 0.359,
+      "end": 0.839,
+      "loss": 1.7729695638020833
+    },
+    {
+      "text": "Govorim",
+      "start": 0.859,
+      "end": 1.199,
+      "loss": 0.37838309151785715
+    },
+    {
+      "text": "angleško?",
+      "start": 1.219,
+      "end": 1.74,
+      "loss": 0.16906314425998265
+    }
+  ],
+  "loss": 0.46562493365743884,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:01.687Z"
+}

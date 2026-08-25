@@ -1,0 +1,27 @@
+{
+  "key": "4588c8e84d0d1c3817901d4f457e20aab568713d633600625c66d68864bfe083",
+  "text": "A ti? Slovensko?",
+  "words": [
+    {
+      "text": "A",
+      "start": 0.14,
+      "end": 0.34,
+      "loss": 2.25
+    },
+    {
+      "text": "ti?",
+      "start": 0.359,
+      "end": 1.079,
+      "loss": 1.6471354166666667
+    },
+    {
+      "text": "Slovensko?",
+      "start": 1.12,
+      "end": 1.639,
+      "loss": 0.1708343505859375
+    }
+  ],
+  "loss": 0.5723552703857422,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:04.250Z"
+}

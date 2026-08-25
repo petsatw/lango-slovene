@@ -16,6 +16,8 @@ GEMINI_MODEL=gemini-3.5-flash
 # higher-latency / access-gated — the e3 probe will confirm access when you add the key.
 ELEVENLABS_API_KEY=
 ELEVENLABS_VOICE_ID=
+# Also voices the `slavko` profile — Slavko is deliberately bound to this same id so he is ONE voice
+# across onboarding, rehearsal dialogues, and the live tutor (see server/adapters/elevenlabs.ts).
 ELEVENLABS_VOICE_ID_MALE=
 ELEVENLABS_VOICE_ID_SHOP_ASSISTANT=
 

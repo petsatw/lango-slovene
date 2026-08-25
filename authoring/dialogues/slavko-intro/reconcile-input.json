@@ -1,0 +1,1131 @@
+{
+  "scenario": {
+    "id": "slavko-intro",
+    "name": "Slavko",
+    "title": "Meeting Slavko",
+    "status": "active",
+    "character": "Slavko, the app's companion — a warm, curious dragon who wants to know who you are",
+    "setup": "The learner's first moments in the app. Slavko meets them for the first time and asks their name; he introduces himself with the same frame he hands back. A relationship opener, not an errand.",
+    "opening": "Živjo! Kako ti je ime?",
+    "register": {
+      "form": "ti",
+      "variety": "pogovorni"
+    }
+  },
+  "dialogueVoices": {
+    "npc": "slavko",
+    "client": "slavko"
+  },
+  "dialogueAdvance": "audio",
+  "dialoguePacing": "onboarding",
+  "levels": [
+    {
+      "level": 1,
+      "levelLabel": "Basic",
+      "title": "Meeting Slavko",
+      "frameEN": [
+        "Hi",
+        "Ready to learn Slovene?",
+        "Let's go!",
+        "Practice Speaking, then press the button to continue"
+      ],
+      "objectives": [
+        {
+          "label": "Say your name",
+          "descriptorEN": "Answer 'Kako ti je ime?' out loud with your own name."
+        },
+        {
+          "label": "Introduce yourself",
+          "descriptorEN": "Use the frame 'Sem ___.' with your own name in the slot."
+        },
+        {
+          "label": "Say goodbye",
+          "descriptorEN": "Return Slavko's farewell with 'Adijo' after hearing him say it."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Živjo! Kako ti je ime?",
+          "en": "Hi! What's your name?",
+          "deliverySL": "[warmly] Živjo! Kako ti je ime?",
+          "slowSL": "Živjo … Kako ti je ime?",
+          "deliverySlowSL": "[slower] Živjo … [slower] Kako ti je ime?",
+          "glossPolicy": "held",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            }
+          ],
+          "next": [
+            "c1"
+          ],
+          "learnables": [
+            "zivjo",
+            "kako",
+            "kako_ime"
+          ]
+        },
+        "c1": {
+          "speaker": "client",
+          "sl": "___",
+          "en": "(your own name, spoken on its own)",
+          "learnables": [],
+          "next": [
+            "n2"
+          ]
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Me veseli! Jaz sem Slavko. Zdaj pa še ti.",
+          "en": "Nice to meet you! I'm Slavko. Now your turn.",
+          "deliverySL": "[cheerfully] Me veseli! Jaz sem Slavko. Zdaj pa še ti.",
+          "slowSL": "Me veseli … Jaz sem Slavko … Zdaj pa še ti.",
+          "deliverySlowSL": "[slower] Me veseli … [deliberately] Jaz sem Slavko … [slower] Zdaj pa še ti.",
+          "glossPolicy": "after",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            }
+          ],
+          "next": [
+            "c2"
+          ],
+          "learnables": [
+            "me_veseli",
+            "sem_ime"
+          ]
+        },
+        "c2": {
+          "speaker": "client",
+          "sl": "Sem ___.",
+          "en": "I'm ___.",
+          "learnables": [
+            "sem_ime"
+          ],
+          "next": [
+            "n3"
+          ],
+          "audio": {
+            "from": "n2",
+            "level": 2,
+            "kind": "span",
+            "words": [
+              2,
+              3
+            ],
+            "startMs": 1459,
+            "endMs": 2139,
+            "heard": "Sem Slavko."
+          }
+        },
+        "n3": {
+          "speaker": "npc",
+          "sl": "Lepo, da sva se spoznala. Adijo!",
+          "en": "Good to have met you. Bye!",
+          "deliverySL": "[warmly] Lepo, da sva se spoznala. [brightly] Adijo!",
+          "slowSL": "Lepo, da sva se spoznala … Adijo.",
+          "deliverySlowSL": "[slower] Lepo, da sva se spoznala … [deliberately] Adijo.",
+          "glossPolicy": "after",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            }
+          ],
+          "next": [
+            "c3"
+          ],
+          "learnables": [
+            "adijo"
+          ]
+        },
+        "c3": {
+          "speaker": "client",
+          "sl": "Adijo",
+          "en": "Bye",
+          "learnables": [
+            "adijo"
+          ],
+          "next": [],
+          "audio": {
+            "from": "n3",
+            "level": 1,
+            "kind": "span",
+            "words": [
+              5,
+              5
+            ],
+            "startMs": 2240,
+            "endMs": 2659
+          }
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "sem_ime",
+          "adijo"
+        ],
+        "new": []
+      }
+    },
+    {
+      "level": 2,
+      "levelLabel": "Answering",
+      "title": "Do you speak Slovene?",
+      "frameEN": [
+        "You've met Slavko before.",
+        "He won't remember your name — that's normal. You'll tell him again."
+      ],
+      "objectives": [
+        {
+          "label": "Greet him back",
+          "descriptorEN": "Return Slavko's 'Živjo' after hearing him say it."
+        },
+        {
+          "label": "Say which language you speak",
+          "descriptorEN": "Use the frame 'Govorim ___.' with slovensko or angleško in the slot."
+        },
+        {
+          "label": "Say how well you speak it",
+          "descriptorEN": "Qualify that frame with 'dobro', and negate it with 'ne', to say how well you speak a language."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Živjo!",
+          "en": "Hi!",
+          "deliverySL": "[warmly] Živjo!",
+          "glossPolicy": "tap",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Say hi back"
+            }
+          ],
+          "next": [
+            "c1"
+          ],
+          "learnables": [
+            "zivjo"
+          ]
+        },
+        "c1": {
+          "speaker": "client",
+          "sl": "Živjo",
+          "en": "Hi",
+          "glossPolicy": "after",
+          "learnables": [
+            "zivjo"
+          ],
+          "next": [
+            "n2"
+          ],
+          "audio": {
+            "from": "n1",
+            "level": 2,
+            "kind": "whole"
+          }
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Se spomniš? Sem Slavko.",
+          "en": "Remember? I'm Slavko.",
+          "deliverySL": "[cheerfully] Se spomniš? Sem Slavko.",
+          "glossPolicy": "after",
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "sem_ime"
+          ]
+        },
+        "n3": {
+          "speaker": "npc",
+          "sl": "Kako ti je že ime?",
+          "en": "What was your name again?",
+          "deliverySL": "[curious] Kako ti je že ime?",
+          "glossPolicy": "after",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Tell him your name"
+            }
+          ],
+          "next": [
+            "c2"
+          ],
+          "learnables": [
+            "kako",
+            "kako_ime"
+          ]
+        },
+        "c2": {
+          "speaker": "client",
+          "sl": "Sem ___.",
+          "en": "I'm ___.",
+          "glossPolicy": "tap",
+          "learnables": [
+            "sem_ime"
+          ],
+          "next": [
+            "n4"
+          ],
+          "audio": {
+            "from": "n2",
+            "level": 2,
+            "kind": "span",
+            "words": [
+              2,
+              3
+            ],
+            "startMs": 1459,
+            "endMs": 2139,
+            "heard": "Sem Slavko."
+          }
+        },
+        "n4": {
+          "speaker": "npc",
+          "sl": "Ja, seveda!",
+          "en": "Yes, of course!",
+          "deliverySL": "[warmly] Ja, seveda!",
+          "glossPolicy": "after",
+          "next": [
+            "n5"
+          ],
+          "learnables": [
+            "ja",
+            "seveda"
+          ]
+        },
+        "n5": {
+          "speaker": "npc",
+          "sl": "Govorim slovensko.",
+          "en": "I speak Slovene.",
+          "deliverySL": "[proudly] Govorim slovensko.",
+          "slowSL": "Govorim … slovensko.",
+          "deliverySlowSL": "[slower] Govorim … [deliberately] slovensko.",
+          "glossPolicy": "after",
+          "next": [
+            "n6"
+          ],
+          "learnables": [
+            "govorim_lang"
+          ]
+        },
+        "n6": {
+          "speaker": "npc",
+          "sl": "A ti? Govorim angleško?",
+          "en": "And you? 'I speak English'?",
+          "deliverySL": "[playfully] A ti? Govorim angleško?",
+          "slowSL": "A ti … Govorim angleško?",
+          "deliverySlowSL": "[slower] A ti … [deliberately] Govorim angleško?",
+          "focusSpan": "Govorim angleško",
+          "glossPolicy": "after",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Read it out loud"
+            }
+          ],
+          "next": [
+            "c3"
+          ],
+          "learnables": [
+            "govorim_lang"
+          ]
+        },
+        "c3": {
+          "speaker": "client",
+          "sl": "Govorim angleško.",
+          "en": "I speak English.",
+          "glossPolicy": "after",
+          "learnables": [
+            "govorim_lang"
+          ],
+          "next": [
+            "n7"
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 2,
+            "kind": "whole",
+            "heard": "Govorim slovensko."
+          }
+        },
+        "n7": {
+          "speaker": "npc",
+          "sl": "Aha! Govoriš angleško.",
+          "en": "Aha! You speak English.",
+          "deliverySL": "[amused] Aha! Govoriš angleško.",
+          "glossPolicy": "after",
+          "next": [
+            "n8"
+          ],
+          "learnables": [
+            "govorim_lang"
+          ]
+        },
+        "n8": {
+          "speaker": "npc",
+          "sl": "Daj, poskusi!",
+          "en": "Go on, try!",
+          "deliverySL": "[encouraging] Daj, poskusi!",
+          "glossPolicy": "after",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Read it out loud"
+            }
+          ],
+          "next": [
+            "c4"
+          ],
+          "learnables": []
+        },
+        "c4": {
+          "speaker": "client",
+          "sl": "Govorim slovensko.",
+          "en": "I speak Slovene.",
+          "glossPolicy": "after",
+          "learnables": [
+            "govorim_lang"
+          ],
+          "next": [
+            "n9"
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 2,
+            "kind": "whole"
+          }
+        },
+        "n9": {
+          "speaker": "npc",
+          "sl": "Ne verjamem! Še enkrat!",
+          "en": "I don't believe it! Again!",
+          "deliverySL": "[playfully] Ne verjamem! Še enkrat!",
+          "glossPolicy": "after",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Say it once more"
+            }
+          ],
+          "next": [
+            "c5"
+          ],
+          "learnables": [
+            "se_enkrat"
+          ]
+        },
+        "c5": {
+          "speaker": "client",
+          "sl": "Govorim slovensko.",
+          "en": "I speak Slovene.",
+          "glossPolicy": "tap",
+          "learnables": [
+            "govorim_lang"
+          ],
+          "next": [
+            "n10"
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 2,
+            "kind": "whole"
+          }
+        },
+        "n10": {
+          "speaker": "npc",
+          "sl": "Saj govoriš slovensko! Super!",
+          "en": "You do speak Slovene! Great!",
+          "deliverySL": "[delighted] Saj govoriš slovensko! Super!",
+          "glossPolicy": "after",
+          "next": [
+            "n11"
+          ],
+          "learnables": [
+            "govorim_lang"
+          ]
+        },
+        "n11": {
+          "speaker": "npc",
+          "sl": "Govorim dobro slovensko.",
+          "en": "I speak Slovene well.",
+          "deliverySL": "[proudly] Govorim dobro slovensko.",
+          "slowSL": "Govorim … dobro slovensko.",
+          "deliverySlowSL": "[slower] Govorim … [deliberately] dobro slovensko.",
+          "glossPolicy": "after",
+          "next": [
+            "n12"
+          ],
+          "learnables": [
+            "govorim_lang"
+          ]
+        },
+        "n12": {
+          "speaker": "npc",
+          "sl": "Ampak angleško? Uf. Ne govorim dobro angleško.",
+          "en": "But English? Ugh. I don't speak English well.",
+          "deliverySL": "[sheepishly] Ampak angleško? Uf. Ne govorim dobro angleško.",
+          "slowSL": "Ampak angleško … Uf … Ne govorim … dobro angleško.",
+          "deliverySlowSL": "[slower] Ampak angleško … [sheepishly] Uf … [deliberately] Ne govorim … [slower] dobro angleško.",
+          "focusSpan": "Ne govorim dobro angleško",
+          "glossPolicy": "after",
+          "next": [
+            "n13"
+          ],
+          "learnables": [
+            "ampak",
+            "govorim_lang"
+          ]
+        },
+        "n13": {
+          "speaker": "npc",
+          "sl": "A ti? Slovensko?",
+          "en": "And you? Slovene?",
+          "deliverySL": "[curious] A ti? Slovensko?",
+          "glossPolicy": "tap",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Read it out loud"
+            }
+          ],
+          "next": [
+            "c6"
+          ],
+          "learnables": []
+        },
+        "c6": {
+          "speaker": "client",
+          "sl": "Ne govorim dobro slovensko.",
+          "en": "I don't speak Slovene well.",
+          "glossPolicy": "after",
+          "learnables": [
+            "govorim_lang"
+          ],
+          "next": [
+            "n14"
+          ],
+          "audio": {
+            "from": "n12",
+            "level": 2,
+            "kind": "span",
+            "words": [
+              3,
+              6
+            ],
+            "startMs": 3220,
+            "endMs": 4639,
+            "heard": "Ne govorim dobro angleško."
+          }
+        },
+        "n14": {
+          "speaker": "npc",
+          "sl": "Ha! In angleško?",
+          "en": "Ha! And English?",
+          "deliverySL": "[amused] Ha! In angleško?",
+          "glossPolicy": "tap",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Read it out loud"
+            }
+          ],
+          "next": [
+            "c7"
+          ],
+          "learnables": []
+        },
+        "c7": {
+          "speaker": "client",
+          "sl": "Govorim dobro angleško.",
+          "en": "I speak English well.",
+          "glossPolicy": "after",
+          "learnables": [
+            "govorim_lang"
+          ],
+          "next": [
+            "n16"
+          ],
+          "audio": {
+            "from": "n11",
+            "level": 2,
+            "kind": "whole",
+            "heard": "Govorim dobro slovensko."
+          }
+        },
+        "n16": {
+          "speaker": "npc",
+          "sl": "Ja, ja! Adijo!",
+          "en": "Yes, yes! Bye!",
+          "deliverySL": "[laughing] Ja, ja! Adijo!",
+          "glossPolicy": "tap",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Say bye"
+            }
+          ],
+          "next": [
+            "c9"
+          ],
+          "learnables": [
+            "ja",
+            "adijo"
+          ]
+        },
+        "c9": {
+          "speaker": "client",
+          "sl": "Adijo",
+          "en": "Bye",
+          "glossPolicy": "tap",
+          "learnables": [
+            "adijo"
+          ],
+          "next": [],
+          "audio": {
+            "from": "n3",
+            "level": 1,
+            "kind": "span",
+            "words": [
+              5,
+              5
+            ],
+            "startMs": 2240,
+            "endMs": 2659
+          }
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "zivjo",
+          "sem_ime",
+          "adijo"
+        ],
+        "new": [
+          {
+            "id": "govorim_lang",
+            "kind": "pattern",
+            "sl": "(Ne) govorim (dobro) ___.",
+            "gloss": "I speak / I do not speak (well) ___ — the slot takes the language adverb: slovensko, angleško",
+            "predictableError": "the slot takes the ADVERB — slovensko, angleško — not the noun slovenščino or the adjective angleški; and dobro goes BEFORE the language, not after it on the English pattern",
+            "core": true,
+            "a1": true
+          }
+        ]
+      }
+    },
+    {
+      "level": 3,
+      "levelLabel": "Basic",
+      "title": "Where are you from?",
+      "frameEN": [
+        "Slavko again — your third time.",
+        "Today he wants to know where you're from.",
+        "If a word slips away, that's normal. He'll say it again."
+      ],
+      "objectives": [
+        {
+          "label": "Say where you're from",
+          "descriptorEN": "Use the frame 'Sem iz ___.' to name the place you come from."
+        },
+        {
+          "label": "Correct a friendly assumption",
+          "descriptorEN": "Put Slavko right with 'Nisem iz Slovenije.' when he guesses you might be Slovenian too."
+        },
+        {
+          "label": "Ask where someone is from",
+          "descriptorEN": "Ask Slavko the question yourself: 'Od kod si?'"
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "O, spet ti! Živjo!",
+          "en": "Oh, you again! Hi!",
+          "deliverySL": "[delighted] O, spet ti! Živjo!",
+          "glossPolicy": "after",
+          "learnables": [
+            "zivjo"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Say hi back"
+            }
+          ],
+          "next": [
+            "c1"
+          ]
+        },
+        "c1": {
+          "speaker": "client",
+          "sl": "Živjo",
+          "en": "Hi",
+          "glossPolicy": "tap",
+          "learnables": [
+            "zivjo"
+          ],
+          "next": [
+            "n2"
+          ],
+          "audio": {
+            "from": "n1",
+            "level": 2,
+            "kind": "whole"
+          }
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Jaz sem Slavko, ja. Sem iz Ljubljane.",
+          "en": "I'm Slavko, yeah. I'm from Ljubljana.",
+          "deliverySL": "[warmly] Jaz sem Slavko, ja. Sem iz Ljubljane.",
+          "slowSL": "Jaz sem Slavko, ja … Sem iz Ljubljane.",
+          "deliverySlowSL": "[slowly] Jaz sem Slavko, ja … [deliberately, drawn out] Sem iz Ljubljane.",
+          "glossPolicy": "after",
+          "focusSpan": "Sem iz Ljubljane",
+          "learnables": [
+            "sem_ime",
+            "sem_iz"
+          ],
+          "next": [
+            "n3"
+          ]
+        },
+        "n3": {
+          "speaker": "npc",
+          "sl": "Iz Ljubljane.",
+          "en": "From Ljubljana.",
+          "deliverySL": "[savouring] Iz Ljubljane.",
+          "slowSL": "Iz Ljubljane … iz Ljubljane.",
+          "deliverySlowSL": "[very slowly] Iz Ljubljane … [deliberately, drawn out] iz Ljubljane.",
+          "glossPolicy": "after",
+          "focusSpan": "Iz Ljubljane",
+          "learnables": [
+            "sem_iz"
+          ],
+          "next": [
+            "n4"
+          ]
+        },
+        "n4": {
+          "speaker": "npc",
+          "sl": "A si tudi ti iz Slovenije? Ja ali ne?",
+          "en": "Are you from Slovenia too? Yes or no?",
+          "deliverySL": "[curious, friendly] A si tudi ti iz Slovenije? [gently offering] Ja ali ne?",
+          "slowSL": "A si tudi ti … iz Slovenije? … Ja ali ne?",
+          "deliverySlowSL": "[slowly] A si tudi ti … [deliberately, drawn out] iz Slovenije? … [very slowly, drawn out] Ja ali ne?",
+          "glossPolicy": "after",
+          "focusSpan": "Ja ali ne",
+          "learnables": [
+            "drzava_slovenija",
+            "ja",
+            "ne"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Answer him — one word"
+            }
+          ],
+          "next": [
+            "c1b"
+          ]
+        },
+        "c1b": {
+          "speaker": "client",
+          "sl": "Ne",
+          "en": "No — one word is the whole answer. Say it even if you're Slovenian; that's the line here.",
+          "glossPolicy": "after",
+          "learnables": [
+            "ne"
+          ],
+          "next": [
+            "n5"
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 3,
+            "kind": "span",
+            "words": [
+              1,
+              1
+            ],
+            "startMs": 839,
+            "endMs": 979
+          }
+        },
+        "n5": {
+          "speaker": "npc",
+          "sl": "Aha, ne. Nič hudega. Potem pa takole: Nisem iz Slovenije.",
+          "en": "Aha, no. No problem. Then say it like this: I'm not from Slovenia.",
+          "deliverySL": "[warmly] Aha, ne. Nič hudega. [encouraging] Potem pa takole: Nisem iz Slovenije.",
+          "slowSL": "Aha, ne … Nič hudega … Potem pa takole … Nisem iz Slovenije.",
+          "deliverySlowSL": "[slowly] Aha, ne … Nič hudega … [encouraging] Potem pa takole … [very slowly, drawn out] Nisem iz Slovenije.",
+          "glossPolicy": "after",
+          "focusSpan": "Nisem iz Slovenije",
+          "learnables": [
+            "ne",
+            "nisem_iz",
+            "drzava_slovenija"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Put him right"
+            }
+          ],
+          "next": [
+            "c2"
+          ]
+        },
+        "c2": {
+          "speaker": "client",
+          "sl": "Nisem iz Slovenije.",
+          "en": "I'm not from Slovenia.",
+          "glossPolicy": "after",
+          "focusSpan": "Nisem iz Slovenije",
+          "learnables": [
+            "nisem_iz",
+            "drzava_slovenija"
+          ],
+          "next": [
+            "n6"
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 3,
+            "kind": "span",
+            "words": [
+              7,
+              9
+            ],
+            "startMs": 4480,
+            "endMs": 5859
+          }
+        },
+        "n6": {
+          "speaker": "npc",
+          "sl": "Okej, pardon. Sem iz Ljubljane.",
+          "en": "Okay, sorry. I'm from Ljubljana.",
+          "deliverySL": "[warmly] Okej, pardon. Sem iz Ljubljane.",
+          "slowSL": "Okej, pardon. … Sem iz Ljubljane.",
+          "deliverySlowSL": "[slowly] Okej, pardon. … [deliberately, drawn out] Sem iz Ljubljane.",
+          "glossPolicy": "after",
+          "focusSpan": "Sem iz Ljubljane",
+          "learnables": [
+            "sem_iz"
+          ],
+          "next": [
+            "n6b"
+          ]
+        },
+        "n6b": {
+          "speaker": "npc",
+          "sl": "In ti? Od kod si?",
+          "en": "And you? Where are you from?",
+          "deliverySL": "[curious] In ti? Od kod si?",
+          "slowSL": "In ti … Od kod si?",
+          "deliverySlowSL": "[slowly] In ti … [deliberately, drawn out] Od kod si?",
+          "glossPolicy": "after",
+          "focusSpan": "Od kod si",
+          "learnables": [
+            "od_kod",
+            "od_kod_si"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Tell him your country"
+            }
+          ],
+          "next": [
+            "c3"
+          ]
+        },
+        "c3": {
+          "speaker": "client",
+          "sl": "Sem iz ___.",
+          "en": "I'm from ___ — say your country however you can. He's just curious.",
+          "glossPolicy": "after",
+          "focusSpan": "Sem iz",
+          "learnables": [
+            "sem_iz"
+          ],
+          "next": [
+            "n7"
+          ],
+          "audio": {
+            "from": "n9",
+            "level": 3,
+            "kind": "span",
+            "words": [
+              1,
+              3
+            ],
+            "startMs": 1139,
+            "endMs": 1919,
+            "heard": "Sem iz Ljubljane."
+          }
+        },
+        "n7": {
+          "speaker": "npc",
+          "sl": "Ej, midva se pa razumeva! Dajva skupaj: Govorim slovensko.",
+          "en": "Hey, the two of us understand each other! Let's say it together: I speak Slovene.",
+          "deliverySL": "[delighted] Ej, midva se pa razumeva! [inviting] Dajva skupaj: Govorim slovensko.",
+          "slowSL": "Ej, midva se pa razumeva … Dajva skupaj … Govorim slovensko.",
+          "deliverySlowSL": "[slowly] Ej, midva se pa razumeva … [inviting] Dajva skupaj … [very slowly, drawn out] Govorim slovensko.",
+          "glossPolicy": "after",
+          "learnables": [
+            "govorim_lang"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Say it with him"
+            }
+          ],
+          "next": [
+            "c4"
+          ]
+        },
+        "c4": {
+          "speaker": "client",
+          "sl": "Govorim slovensko.",
+          "en": "I speak Slovene.",
+          "glossPolicy": "after",
+          "learnables": [
+            "govorim_lang"
+          ],
+          "next": [
+            "n8"
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 2,
+            "kind": "whole"
+          }
+        },
+        "n8": {
+          "speaker": "npc",
+          "sl": "Super! Zdaj pa ti mene vprašaj: Od kod si?",
+          "en": "Great! Now you ask me: Where are you from?",
+          "deliverySL": "[delighted, playful] Super! Zdaj pa ti mene vprašaj: Od kod si?",
+          "slowSL": "Super! Zdaj pa ti mene vprašaj … Od kod si?",
+          "deliverySlowSL": "[slowly] Super! Zdaj pa ti mene vprašaj … [very slowly, drawn out] Od kod si?",
+          "glossPolicy": "after",
+          "focusSpan": "Od kod si",
+          "learnables": [
+            "od_kod",
+            "od_kod_si"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask him the question"
+            }
+          ],
+          "next": [
+            "c5"
+          ]
+        },
+        "c5": {
+          "speaker": "client",
+          "sl": "Od kod si?",
+          "en": "Where are you from?",
+          "glossPolicy": "after",
+          "focusSpan": "Od kod si",
+          "learnables": [
+            "od_kod",
+            "od_kod_si"
+          ],
+          "next": [
+            "n9"
+          ],
+          "audio": {
+            "from": "n6b",
+            "level": 3,
+            "kind": "span",
+            "words": [
+              2,
+              4
+            ],
+            "startMs": 1399,
+            "endMs": 1879
+          }
+        },
+        "n9": {
+          "speaker": "npc",
+          "sl": "Jaz? Sem iz Ljubljane.",
+          "en": "Me? I'm from Ljubljana.",
+          "deliverySL": "[happily] Jaz? Sem iz Ljubljane.",
+          "slowSL": "Jaz? … Sem iz Ljubljane.",
+          "deliverySlowSL": "[slowly] Jaz? … [deliberately, drawn out] Sem iz Ljubljane.",
+          "glossPolicy": "after",
+          "focusSpan": "Sem iz Ljubljane",
+          "learnables": [
+            "sem_iz"
+          ],
+          "next": [
+            "n10"
+          ]
+        },
+        "n10": {
+          "speaker": "npc",
+          "sl": "Zdaj veš, od kod sem. In govoriva slovensko! Adijo!",
+          "en": "Now you know where I'm from. And the two of us are speaking Slovene! Bye!",
+          "deliverySL": "[warmly] Zdaj veš, od kod sem. [delighted] In govoriva slovensko! [brightly] Adijo!",
+          "glossPolicy": "after",
+          "focusSpan": "od kod sem",
+          "learnables": [
+            "od_kod",
+            "in",
+            "govorim_lang",
+            "adijo"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Say bye"
+            }
+          ],
+          "next": [
+            "c6"
+          ]
+        },
+        "c6": {
+          "speaker": "client",
+          "sl": "Adijo",
+          "en": "Bye",
+          "glossPolicy": "tap",
+          "learnables": [
+            "adijo"
+          ],
+          "next": [],
+          "audio": {
+            "from": "n3",
+            "level": 1,
+            "kind": "span",
+            "words": [
+              5,
+              5
+            ],
+            "startMs": 2240,
+            "endMs": 2659
+          }
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "zivjo",
+          "adijo",
+          "sem_ime",
+          "sem_iz",
+          "od_kod",
+          "od_kod_si",
+          "nisem_iz",
+          "drzava_slovenija",
+          "govorim_lang",
+          "ne"
+        ],
+        "new": []
+      }
+    }
+  ],
+  "criticFixes": [],
+  "a1Candidates": [
+    {
+      "learnableId": "govorim_lang",
+      "competencyId": "personal_identity",
+      "note": "Saying which language you speak is core self-description; the PATTERN is the core item, its instances are not."
+    },
+    {
+      "learnableId": "od_kod_si",
+      "competencyId": "personal_identity",
+      "note": "The ti-form of the origin question, beside its vi twin 'Od kod ste?' which already sits here. Asking where someone is from is basic self/other identification."
+    },
+    {
+      "learnableId": "nisem_iz",
+      "competencyId": "personal_identity",
+      "note": "The negated origin frame, beside its affirmative 'Sem iz ___.'; the first place a learner meets the fused negative 'nisem'."
+    }
+  ]
+}

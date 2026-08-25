@@ -12,22 +12,6 @@ import path from "node:path";
 
 export type LearnableKind = "vocabulary" | "chunk" | "pattern";
 
-/** The A1 "Pareto set" categories — the highest-ROI stems/frames/glue that unlock most exam tasks
- *  (docs/a1-pareto-set.md). A learnable in the Pareto set carries one or more of these AND is `core: true`;
- *  the tag extends the existing core/rank high-leverage signal (which drives selection in mastery.ts)
- *  rather than adding a parallel one. Many-to-many: a stem can serve more than one category. */
-export type ParetoCategory =
-  | "identity"
-  | "question"
-  | "transaction"
-  | "location_time"
-  | "social_glue"
-  | "verb_core";
-
-const PARETO_CATEGORIES: ParetoCategory[] = [
-  "identity", "question", "transaction", "location_time", "social_glue", "verb_core",
-];
-
 export interface Learnable {
   id: string;
   kind: LearnableKind;
@@ -35,14 +19,17 @@ export interface Learnable {
    *  "___" (pattern, e.g. "Eno ___, prosim."). */
   sl: string;
   gloss: string; // short English gloss
-  core?: boolean; // high-leverage (US-15); default false
+  /** CORE — the narrow, high-frequency set of survival frames. The single source of truth for core
+   *  membership: the difficulty classifier, mastery selection and the authoring gates all read this flag.
+   *  Default false. */
+  core?: boolean;
   rank?: number; // leverage rank from the core pattern library; consulted only for core patterns
   predictableError?: string; // the one predictable beginner error, surfaced by presentation
-  paretoCategory?: ParetoCategory[]; // A1 Pareto-set membership (implies high-leverage); see ParetoCategory
   /** The "Tagged-A1" superset tag (docs/dialogue-difficulty-model.md §2). A deliberate at-mint decision:
-   *  set true when the item is A1 material even if it is not in the narrow a1-map CORE. It does NOT touch
-   *  the core (CORE ⊆ Tagged-A1); it only widens what the difficulty classifier counts as A1. An item left
-   *  untagged (and not in the a1-map) is above-A1 and simply raises a dialogue's computed band. */
+   *  set true when the item is A1 material even if it is not core (CORE ⊆ Tagged-A1). It widens what the
+   *  difficulty classifier counts as A1; an item that is neither core nor tagged is above-A1 and simply
+   *  raises a dialogue's computed band. Core and/or tagged items must also be placed in the a1-map, which
+   *  is what the A1 Readiness screen reads (`lint:a1` gates on it). */
   a1?: boolean;
 }
 
@@ -73,13 +60,6 @@ export function loadLearnables(): Record<string, Learnable> {
     if (l.rank !== undefined && typeof l.rank !== "number") fail(`learnable "${id}": rank must be a number`);
     if (l.predictableError !== undefined && typeof l.predictableError !== "string")
       fail(`learnable "${id}": predictableError must be a string`);
-    if (l.paretoCategory !== undefined) {
-      if (!Array.isArray(l.paretoCategory) || !l.paretoCategory.length)
-        fail(`learnable "${id}": paretoCategory must be a non-empty array`);
-      for (const c of l.paretoCategory)
-        if (!PARETO_CATEGORIES.includes(c)) fail(`learnable "${id}": unknown paretoCategory "${c}" (known: ${PARETO_CATEGORIES.join(", ")})`);
-      if (l.core !== true) fail(`learnable "${id}": a paretoCategory member must be core:true (the Pareto set extends core)`);
-    }
     out[id] = {
       id,
       kind,
@@ -89,7 +69,6 @@ export function loadLearnables(): Record<string, Learnable> {
       ...(l.a1 !== undefined ? { a1: l.a1 } : {}),
       ...(l.rank !== undefined ? { rank: l.rank } : {}),
       ...(l.predictableError !== undefined ? { predictableError: l.predictableError } : {}),
-      ...(l.paretoCategory !== undefined ? { paretoCategory: l.paretoCategory } : {}),
     };
   }
   return out;

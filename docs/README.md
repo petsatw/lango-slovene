@@ -19,4 +19,7 @@
 
 - [scenario-authoring.md](scenario-authoring.md) — the rubric every scenario must pass.
 - the create-scenario skill ([../.claude/skills/create-scenario/](../.claude/skills/create-scenario/SKILL.md)) — the procedure that authors one.
-- [research/](research/) — the expert-panel research the design rests on (preserved as-is).
+- [research/](research/) — the expert-panel research the design rests on (preserved as-is), including
+  [onboarding-first-two-minutes-2026-08-21/](research/onboarding-first-two-minutes-2026-08-21/SUMMARY.md) —
+  the first-run design (read its [DESIGN-CRITIQUE.md](research/onboarding-first-two-minutes-2026-08-21/DESIGN-CRITIQUE.md)
+  before building: it supersedes the panel's setting).

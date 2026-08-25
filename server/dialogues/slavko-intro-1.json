@@ -1,0 +1,165 @@
+{
+  "id": "slavko-intro-l1",
+  "scenarioId": "slavko-intro",
+  "level": 1,
+  "levelLabel": "Basic",
+  "title": "Meeting Slavko",
+  "objectives": [
+    {
+      "label": "Say your name",
+      "descriptorEN": "Answer 'Kako ti je ime?' out loud with your own name."
+    },
+    {
+      "label": "Introduce yourself",
+      "descriptorEN": "Use the frame 'Sem ___.' with your own name in the slot."
+    },
+    {
+      "label": "Say goodbye",
+      "descriptorEN": "Return Slavko's farewell with 'Adijo' after hearing him say it."
+    }
+  ],
+  "introduces": [
+    "adijo",
+    "sem_ime"
+  ],
+  "audio": "ready",
+  "voices": {
+    "npc": "slavko",
+    "client": "slavko"
+  },
+  "advance": "audio",
+  "pacing": "onboarding",
+  "frameEN": [
+    "Hi",
+    "Ready to learn Slovene?",
+    "Let's go!",
+    "Practice Speaking, then press the button to continue"
+  ],
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Živjo! Kako ti je ime?",
+      "en": "Hi! What's your name?",
+      "deliverySL": "[warmly] Živjo! Kako ti je ime?",
+      "slowSL": "Živjo … Kako ti je ime?",
+      "deliverySlowSL": "[slower] Živjo … [slower] Kako ti je ime?",
+      "glossPolicy": "held",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "respeak"
+        }
+      ],
+      "next": [
+        "c1"
+      ],
+      "learnables": [
+        "zivjo",
+        "kako",
+        "kako_ime"
+      ]
+    },
+    "c1": {
+      "speaker": "client",
+      "sl": "___",
+      "en": "(your own name, spoken on its own)",
+      "learnables": [],
+      "next": [
+        "n2"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Me veseli! Jaz sem Slavko. Zdaj pa še ti.",
+      "en": "Nice to meet you! I'm Slavko. Now your turn.",
+      "deliverySL": "[cheerfully] Me veseli! Jaz sem Slavko. Zdaj pa še ti.",
+      "slowSL": "Me veseli … Jaz sem Slavko … Zdaj pa še ti.",
+      "deliverySlowSL": "[slower] Me veseli … [deliberately] Jaz sem Slavko … [slower] Zdaj pa še ti.",
+      "glossPolicy": "after",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "respeak"
+        }
+      ],
+      "next": [
+        "c2"
+      ],
+      "learnables": [
+        "me_veseli",
+        "sem_ime"
+      ]
+    },
+    "c2": {
+      "speaker": "client",
+      "sl": "Sem ___.",
+      "en": "I'm ___.",
+      "learnables": [
+        "sem_ime"
+      ],
+      "next": [
+        "n3"
+      ],
+      "audio": {
+        "from": "n2",
+        "level": 2,
+        "kind": "span",
+        "words": [
+          2,
+          3
+        ],
+        "startMs": 1459,
+        "endMs": 2139,
+        "heard": "Sem Slavko."
+      }
+    },
+    "n3": {
+      "speaker": "npc",
+      "sl": "Lepo, da sva se spoznala. Adijo!",
+      "en": "Good to have met you. Bye!",
+      "deliverySL": "[warmly] Lepo, da sva se spoznala. [brightly] Adijo!",
+      "slowSL": "Lepo, da sva se spoznala … Adijo.",
+      "deliverySlowSL": "[slower] Lepo, da sva se spoznala … [deliberately] Adijo.",
+      "glossPolicy": "after",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "respeak"
+        }
+      ],
+      "next": [
+        "c3"
+      ],
+      "learnables": [
+        "adijo"
+      ]
+    },
+    "c3": {
+      "speaker": "client",
+      "sl": "Adijo",
+      "en": "Bye",
+      "learnables": [
+        "adijo"
+      ],
+      "next": [],
+      "audio": {
+        "from": "n3",
+        "level": 1,
+        "kind": "span",
+        "words": [
+          5,
+          5
+        ],
+        "startMs": 2240,
+        "endMs": 2659
+      }
+    }
+  }
+}

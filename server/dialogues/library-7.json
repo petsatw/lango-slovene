@@ -2,7 +2,7 @@
   "id": "library-l7",
   "scenarioId": "library",
   "level": 7,
-  "levelLabel": "Advanced",
+  "levelLabel": "Above A1",
   "title": "Opening hours",
   "objectives": [
     {
@@ -27,13 +27,8 @@
     "ali_ste_odprti",
     "danes",
     "delovni_cas",
-    "dober_dan",
-    "hvala",
     "hvala_za_informacijo",
-    "kaj",
     "med_pocitnicami",
-    "odlicno",
-    "prosim",
     "spletna_stran",
     "velja_enak_urnik"
   ],
@@ -58,6 +53,10 @@
       "next": [
         "c1a",
         "c1b"
+      ],
+      "learnables": [
+        "dober_dan",
+        "kako"
       ]
     },
     "c1a": {
@@ -66,6 +65,12 @@
       "en": "Good day. Could you please tell me your opening hours?",
       "next": [
         "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "ali_mi_poveste",
+        "prosim",
+        "delovni_cas"
       ]
     },
     "c1b": {
@@ -74,6 +79,11 @@
       "en": "Good day. Are you open today?",
       "next": [
         "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "ali_ste_odprti",
+        "danes"
       ]
     },
     "n2": {
@@ -84,6 +94,13 @@
       "next": [
         "c2a",
         "c2b"
+      ],
+      "learnables": [
+        "od_do",
+        "ponedeljek",
+        "petek",
+        "sobota",
+        "odprto"
       ]
     },
     "c2a": {
@@ -93,6 +110,11 @@
       "context": "it's summer — he wonders whether the holiday hours differ",
       "next": [
         "n3s"
+      ],
+      "learnables": [
+        "kaj",
+        "med_pocitnicami",
+        "velja_enak_urnik"
       ]
     },
     "c2b": {
@@ -101,6 +123,10 @@
       "en": "Great, thank you.",
       "next": [
         "nBye"
+      ],
+      "learnables": [
+        "odlicno",
+        "hvala"
       ]
     },
     "n3s": {
@@ -111,6 +137,14 @@
       "next": [
         "c3a",
         "c3b"
+      ],
+      "learnables": [
+        "sreda",
+        "odprto",
+        "popoldne",
+        "tocno",
+        "tudi",
+        "spletna_stran"
       ]
     },
     "c3a": {
@@ -119,6 +153,10 @@
       "en": "Perfect, thanks for the information!",
       "next": [
         "nBye"
+      ],
+      "learnables": [
+        "odlicno",
+        "hvala_za_informacijo"
       ]
     },
     "c3b": {
@@ -127,6 +165,11 @@
       "en": "Then I'll check on the website. Thank you.",
       "next": [
         "nBye"
+      ],
+      "learnables": [
+        "potem",
+        "spletna_stran",
+        "hvala"
       ]
     },
     "nBye": {
@@ -134,7 +177,11 @@
       "sl": "Ni za kaj, lepo se imejte!",
       "en": "You're welcome, have a lovely day!",
       "deliverySL": "[soft spoken, whimsical and a little eccentric young librarian] Ni za kaj, lepo se imejte!",
-      "next": []
+      "next": [],
+      "learnables": [
+        "kaj",
+        "lep"
+      ]
     }
   }
 }

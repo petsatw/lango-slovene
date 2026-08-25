@@ -3,6 +3,10 @@
   "profiles": {
     "female-speaker": { "description": "warm female teacher voice — the learner-facing narration + practice voice" },
     "male-speaker": { "description": "warm male voice — for male in-scene characters" },
-    "shop-assistant": { "description": "the shop assistant / baker voice for the bakery rehearsal dialogue" }
+    "shop-assistant": { "description": "the shop assistant / baker voice for the bakery rehearsal dialogue" },
+    "slavko": {
+      "description": "Slavko the dragon — the app's companion character: the one you meet in onboarding, the exemplar in rehearsal dialogues, and the role the live tutor adopts. ONE voice everywhere (bound to the same voice id as male-speaker, which the restaurant client already uses).",
+      "backchannels": ["Mhm."]
+    }
   }
 }

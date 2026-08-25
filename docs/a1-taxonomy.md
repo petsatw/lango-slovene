@@ -192,6 +192,8 @@ weighted scoring is computed now — deferred with the rest of the A1 scoring en
   `functions[]` (CAN-DO) and `exponents[]` (sample formulaic patterns).
 - learnable refs may carry optional `mode[]` (subset of `["reading","listening","writing","speaking"]`) and
   `status: "production"` (default; `recognition` reserved, unused in MVP).
-- optional top-level `excluded[]` list of learnable ids deliberately unmapped (keeps `lint:a1` honest).
-- `loadA1Map`'s existing forward check (every listed learnable exists in the catalog) stays; `lint:a1` adds
-  the **reverse** check (every catalog learnable is mapped or excluded) + ref-resolution + coverage print.
+- optional top-level `excluded[]` list of learnable ids deliberately unmapped.
+- `loadA1Map`'s existing forward check (every listed learnable exists in the catalog) stays; `lint:a1` **gates**
+  on ref-resolution (every `{scenarioId, level}` resolves) and otherwise **reports** — per-dialogue band, and
+  which learnables sit in the tagged-A1 superset vs the curated core. The core grows by deliberate promotion,
+  so the lint reads the map rather than pushing items into it (see dialogue-difficulty-model.md §2, §7).

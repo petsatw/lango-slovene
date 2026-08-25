@@ -21,6 +21,10 @@ fixtures/audio/*.ogg
 # Local workspace — tactical docs, handoffs, scratch notes (not part of the repo)
 .scratch/
 
+# Reconcile emits its A1-mapping worklist beside the input. The input is source; this is a generated
+# review aid, folded into server/catalog/a1-map.json by hand and then spent.
+authoring/**/a1-candidates.json
+
 # Multi-agent consensus runs — local decision logs, not part of the repo
 .consensus-runs/
 

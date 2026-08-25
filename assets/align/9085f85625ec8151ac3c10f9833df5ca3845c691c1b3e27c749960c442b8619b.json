@@ -1,0 +1,27 @@
+{
+  "key": "9085f85625ec8151ac3c10f9833df5ca3845c691c1b3e27c749960c442b8619b",
+  "text": "Aha! Govoriš angleško.",
+  "words": [
+    {
+      "text": "Aha!",
+      "start": 0.219,
+      "end": 0.639,
+      "loss": 0.627349853515625
+    },
+    {
+      "text": "Govoriš",
+      "start": 1.039,
+      "end": 1.599,
+      "loss": 0.06047712053571429
+    },
+    {
+      "text": "angleško.",
+      "start": 1.659,
+      "end": 2.259,
+      "loss": 0.4914177788628472
+    }
+  ],
+  "loss": 0.3362940007990057,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:02.002Z"
+}

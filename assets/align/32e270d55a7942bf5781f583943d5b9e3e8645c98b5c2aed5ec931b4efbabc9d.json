@@ -1,0 +1,45 @@
+{
+  "key": "32e270d55a7942bf5781f583943d5b9e3e8645c98b5c2aed5ec931b4efbabc9d",
+  "text": "Lepo, da sva se spoznala. Adijo!",
+  "words": [
+    {
+      "text": "Lepo,",
+      "start": 0.119,
+      "end": 0.359,
+      "loss": 0.19111328125
+    },
+    {
+      "text": "da",
+      "start": 0.439,
+      "end": 0.519,
+      "loss": 0.00414276123046875
+    },
+    {
+      "text": "sva",
+      "start": 0.56,
+      "end": 0.699,
+      "loss": 0.11687215169270833
+    },
+    {
+      "text": "se",
+      "start": 0.74,
+      "end": 0.839,
+      "loss": 0.00501251220703125
+    },
+    {
+      "text": "spoznala.",
+      "start": 0.859,
+      "end": 1.399,
+      "loss": 0.05063290066189236
+    },
+    {
+      "text": "Adijo!",
+      "start": 2.24,
+      "end": 2.659,
+      "loss": 1.6720123291015625
+    }
+  ],
+  "loss": 0.3720061779022217,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:55:59.744Z"
+}

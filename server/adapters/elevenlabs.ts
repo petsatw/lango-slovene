@@ -17,6 +17,10 @@ const PROFILE_ENV: Record<string, string> = {
   "female-speaker": "ELEVENLABS_VOICE_ID",
   "male-speaker": "ELEVENLABS_VOICE_ID_MALE",
   "shop-assistant": "ELEVENLABS_VOICE_ID_SHOP_ASSISTANT",
+  // Slavko shares male-speaker's binding on purpose: he IS the voice the restaurant client already
+  // speaks in, so every clip already synthesized for him stays a cache hit (the key is the voice ID,
+  // not the profile name). Giving him his own env var later re-keys all of his audio.
+  slavko: "ELEVENLABS_VOICE_ID_MALE",
 };
 
 function requireKey(): string {
@@ -46,7 +50,7 @@ export class ElevenLabsE3 implements E3Adapter {
     return this.voiceTagFor();
   }
 
-  async synthesize(input: { text: string; voiceProfile?: string }): Promise<E3Result> {
+  async synthesize(input: { text: string; voiceProfile?: string; speed?: number }): Promise<E3Result> {
     const key = requireKey();
     const voiceId = this.voiceIdFor(input.voiceProfile);
     if (!voiceId) throw new Error(`No ElevenLabs voice id set for profile "${input.voiceProfile ?? TEACHER_VOICE_PROFILE}" (set ${PROFILE_ENV[input.voiceProfile ?? TEACHER_VOICE_PROFILE]})`);
@@ -61,7 +65,14 @@ export class ElevenLabsE3 implements E3Adapter {
       body: JSON.stringify({
         text: input.text,
         model_id: this.modelId,
-        voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.75,
+          // Provider-side rate control, 0.7–1.2 (1.0 = default). Sent only when asked for; v3's support
+          // for it is undocumented, so the slow-clip path pairs it with a [slower] audio tag, which the
+          // v3 prompting guide names as its pacing lever.
+          ...(input.speed !== undefined ? { speed: input.speed } : {}),
+        },
       }),
     });
 
@@ -97,4 +108,60 @@ export class ElevenLabsE3 implements E3Adapter {
     if (!res.body) throw new Error("ElevenLabs stream returned no body");
     return res.body;
   }
+}
+
+// ---- Forced alignment — a MEASUREMENT of audio we already own, never a generation -------------------
+//
+// POST /v1/forced-alignment, multipart `file` + `text`. It reports where each word falls in an mp3 that
+// already exists; it synthesizes nothing, re-rolls nothing, and costs nothing in TTS credits (it bills at
+// Speech-to-Text rates — $0.22 per HOUR of audio, so a scenario's worth of clips is a fraction of a cent).
+//
+// It is deliberately NOT part of the E3Adapter interface. E3 is "turn text into speech", provider-agnostic;
+// this is an ElevenLabs-specific instrument that the alignment build reaches for directly, after asserting
+// the configured E3 is in fact ElevenLabs. Adding it to the interface would oblige every future provider
+// to have an endpoint most of them don't.
+//
+// The alternative endpoint — /text-to-speech with `with-timestamps` — returns alignment too, but only for
+// audio IT generates: using it would re-synthesize and re-bill every approved clip, and the new bytes
+// would not even be the ones on disk. Forced alignment touches nothing.
+
+const ALIGN_URL = "https://api.elevenlabs.io/v1/forced-alignment";
+
+export interface ForcedAlignmentResult {
+  words: Array<{ text: string; start: number; end: number; loss?: number }>;
+  loss?: number;
+}
+
+/** Align `text` against `mp3`, returning per-word start/end in SECONDS. `text` must be the words actually
+ *  spoken — the clean caption, never a delivery-tagged variant, whose "[hesitant]" is not in the audio. */
+export async function forcedAlign(mp3: Buffer, text: string): Promise<ForcedAlignmentResult> {
+  const key = requireKey();
+  const form = new FormData();
+  form.append("file", new Blob([new Uint8Array(mp3)], { type: "audio/mpeg" }), "clip.mp3");
+  form.append("text", text); // plain string only — the API rejects JSON-wrapped input
+
+  const res = await fetch(ALIGN_URL, { method: "POST", headers: { "xi-api-key": key }, body: form });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`ElevenLabs forced-alignment HTTP ${res.status}: ${body.slice(0, 300)}`);
+  }
+  const json: any = await res.json();
+  if (!Array.isArray(json?.words) || !json.words.length)
+    throw new Error(`ElevenLabs forced-alignment returned no words for "${text.slice(0, 60)}"`);
+  return {
+    // The API interleaves WHITESPACE tokens between the real words — "Se", " ", "spomniš?", " ", … — so a
+    // four-word line comes back as seven entries. Those are dropped here, and dropping them is the whole
+    // reason this returns a shaped result rather than the raw JSON: the indices downstream are chosen by a
+    // human-reviewed judgment ("play words 2–3"), and an index that counts the gaps is unreviewable.
+    //
+    // Nothing is lost by it. A gap token's span is exactly the silence between two words, and a cut wants
+    // the word boundaries — the previous word's `end`, the next word's `start` — not the pause between.
+    //
+    // `characters` comes back too and is an order of magnitude larger; nothing downstream cuts below a word
+    // boundary, so it is dropped rather than stored.
+    words: json.words
+      .filter((w: any) => String(w.text).trim().length > 0)
+      .map((w: any) => ({ text: String(w.text), start: Number(w.start), end: Number(w.end), ...(typeof w.loss === "number" ? { loss: w.loss } : {}) })),
+    ...(typeof json.loss === "number" ? { loss: json.loss } : {}),
+  };
 }

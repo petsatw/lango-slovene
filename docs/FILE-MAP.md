@@ -20,8 +20,8 @@ about *where things are*. For the why, read ARCHITECTURE; for schemas and the HT
 
 | File | What it does |
 |---|---|
-| `public/index.html` | the app shell: talk button, transcript, objective dots, story / practice / runs panels, takeaway |
-| `public/app.js` | the whole front end: push-to-talk capture, `POST /api/turn`, streaming playback, the story player, free-practice, the **rehearsal-dialogue** overlay (branching tree + level tabs + single audio channel), past-runs replay, the live observability overlay |
+| `public/index.html` | the app shell: talk button, transcript, objective dots, story / practice / runs panels, takeaway, and the chrome-free **spoken-scene** surface (`#scene`) |
+| `public/app.js` | the whole front end: push-to-talk capture, `POST /api/turn`, streaming playback, the story player, free-practice, the **rehearsal-dialogue** overlay (branching tree + level tabs + single audio channel), past-runs replay, the **spoken scene** (beat pacing, slow re-speak, stall ladder, discard-on-release mic), the live observability overlay |
 
 The client holds the live `SessionState` in memory and talks only to `/api`. Keys never reach it.
 
@@ -38,6 +38,7 @@ The client holds the live `SessionState` in memory and talks only to `/api`. Key
 | `server/learnables.ts` | loads + validates the **learnable catalog** (`catalog/learnables.json`); `getLearnable`, `LEARNABLES` |
 | `server/seeds.ts` | loads + validates the **seed** onboarding dialogues (`seeds/*.json`); `getSeed`, `SEEDS`, `STARTER_SEED_ID` |
 | `server/dialogues.ts` | loads + validates the **rehearsal dialogues** (`dialogues/*.json`), grouped by scenario, level-sorted; `getDialoguesForScenario`. See [rehearsal-dialogues.md](rehearsal-dialogues.md) |
+| `server/adapters/dialogue-scripted.ts` | the **dialogue-tree adapter** — one step of an authored tree in either input mode: `advanceDialogue` picks the client line (tapped choice, or `next[0]` when spoken), returns the attempts to plant, never judges the audio. Pure; the caller credits |
 | `server/adapters/seed-scripted.ts` | the **seed adapter** — a static-dialogue stand-in for the model: `scriptedSeedTurn` returns the next scripted line + attempts; `converse` uses it when `seedId` is set |
 | `server/mastery.ts` | the durable mastery-layer pure rules: `applyCredit` (threshold/flub), `presentObjectives`, free-conv selection, `inspect` |
 | `server/assets/learner.ts` | the durable **learner model** store — `assets/learner.json` (`LEARNER_PATH`), `load`/`save` |
@@ -104,7 +105,8 @@ Every operator command maps to a file here (or in `server/probes/` / `server/uti
 | `npm run test:learnable` | `server/probes/learnable-test.ts` | durable mastery rules — unit + temp-file store + `--live` end-to-end |
 | `npm run probe:converse` | `server/probes/converse-probe.ts` | one clip through free conversation; verify reply + per-learnable crediting |
 | `npm run build:seed-assets` | `server/scripts/build-seed-assets.ts` | pre-build the seed's teacher-voice line audio for the starter pack (operator-run; bills) |
-| `npm run build:dialogue-assets` | `server/scripts/build-dialogue-assets.ts` | pregenerate a scenario's **rehearsal-dialogue** audio (per-speaker voice; `deliverySL` drives synthesis), flip each level to `audio:ready`; `--level <n>`, `--regen` (operator-run; bills) |
+| `npm run build:dialogue-assets` | `server/scripts/build-dialogue-assets.ts` | pregenerate a scenario's **rehearsal-dialogue** audio (per-speaker voice; `deliverySL` drives synthesis), flip each level to `audio:ready`; `--level <n>`, `--regen` (operator-run; bills). Also emits each node's `slowSL` chunked-slow clip |
+| `npm run build:backchannels` | `server/scripts/build-backchannels.ts` | pregenerate a voice profile's **backchannels** (`"Mhm."`) — declared on `voices.json`, not on any tree; `[<profile>] [--regen]` (operator-run; bills) |
 | `npm run learner` | `server/scripts/learner-show.ts` | print the durable learner model (owned/shaky/unseen) |
 | `npm run build:assets` | `server/scripts/build-assets.ts` | materialize a scenario's audio + images; `--regen` for one leaf |
 | `npm run render:asset` | `server/scripts/render-asset.ts` | render one/more catalog objects or characters by id |

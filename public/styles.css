@@ -90,6 +90,9 @@ main.screen, main.home {
   transition: border-color 0.12s ease;
 }
 .scenario-card:hover { border-color: var(--green); }
+/* Two groups on one screen: the spoken lessons, and the conversations to read through. */
+.scenario-group { margin: 14px 0 0; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.scenario-group:first-child { margin-top: 0; }
 .scenario-name { font-size: 18px; font-weight: 600; flex: 1; }
 .scenario-meta { color: var(--muted); font-size: 13px; }
 
@@ -549,3 +552,195 @@ main {
 .obs-row span { color: var(--muted); width: 78px; flex-shrink: 0; }
 .obs-row b { color: var(--text); font-weight: 500; word-break: break-word; }
 .obs-row.error b { color: var(--error); }
+
+/* ---- Spoken scene: the first-meeting surface -------------------------------------------------
+   Beat 15 is "zero chrome" — so this screen takes the whole viewport, paints over the header, and
+   shows exactly three things: the picture, the caption, and the mic. */
+body.in-scene header { display: none; }
+
+/* Two fixed zones: a stage that holds whatever the character is saying, and controls pinned to the
+   bottom that never move. Pinning them is what keeps the caption still — anything that stacks from the
+   bottom edge shoves it upward mid-beat as the gloss and the button arrive. */
+.scene {
+  position: fixed; inset: 0; z-index: 40;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0 24px calc(40px + env(safe-area-inset-bottom));
+  background: #0a0c10;
+  overflow: hidden;
+}
+.scene-stage {
+  flex: 1; min-height: 0; width: 100%;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  padding-bottom: 8px;
+}
+/* The image is full-bleed, with a bottom gradient so the caption stays legible over any art. */
+.scene-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+}
+.scene-bg::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 45%, rgba(10, 12, 16, 0.85) 88%);
+}
+.scene-caption, .scene-gloss {
+  position: relative; margin: 0; text-align: center; max-width: 32ch;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.7);
+  /* A caption arrives rather than blinks — the silent hold before it is a designed beat. */
+  opacity: 0; transition: opacity 220ms ease;
+}
+.scene-caption { font-size: 25px; line-height: 1.35; font-weight: 600; }
+/* Space is RESERVED for the gloss whether or not one arrives, so the caption above it does not move
+   when the English appears. A caption that shifts mid-beat reads as the app glitching. */
+.scene-gloss { font-size: 15px; color: var(--muted); margin-top: 10px; min-height: 42px; }
+.scene-caption.shown, .scene-gloss.shown { opacity: 1; }
+/* When the turn is handed over, what the CHARACTER said recedes and what the LEARNER must say comes
+   forward. Without this the beginner sees a nine-word sentence in the largest, brightest type on screen
+   and reasonably concludes that all nine words are the assignment. One rule, learned in a single beat
+   and never explained: the bright text is your turn. The line stays legible — it is still the model. */
+.scene-caption.receded.shown { opacity: 0.55; }
+.scene-gloss.receded.shown { opacity: 0.5; }
+/* The slow re-speak is the same words, spoken slower — the caption widens to match the voice. The TEXT
+   does not change: `slowSL` carries ` … ` separators that direct the voice, and a learner who reads
+   "Prav … Počasi … Sem … iz Ljubljane." is being shown studio notation. Spacing and the blinking
+   tortoise carry "slower"; the sentence stays the sentence. */
+.scene-caption.slow { letter-spacing: 0.02em; word-spacing: 0.25em; }
+
+/* The run controls: available every beat, and deliberately the quietest thing on screen. Held in their
+   own absolutely-positioned layer so they can never disturb .scene-controls, which must not move. */
+.scene-chips {
+  position: absolute; z-index: 2;
+  top: calc(14px + env(safe-area-inset-top)); right: 16px;
+  display: flex; gap: 8px;
+}
+.scene-chip {
+  width: 40px; height: 40px; border-radius: 20px; padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.22); background: rgba(10, 12, 16, 0.45);
+  color: #fff; font-size: 17px; line-height: 1;
+  display: grid; place-items: center; cursor: pointer;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  transition: opacity 200ms ease, background 140ms ease;
+}
+.scene-chip:active { background: rgba(255, 255, 255, 0.16); }
+/* Unavailable, not absent — a beat with no slow clip dims the tortoise rather than removing it, so the
+   cluster keeps its shape and nothing slides sideways between beats. */
+.scene-chip[aria-disabled="true"] { opacity: 0.25; pointer-events: none; }
+/* While the slow clip plays, the tortoise is the whole signal that this is the slow pass. */
+@keyframes scene-tortoise { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.scene-chip.blinking { animation: scene-tortoise 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .scene-chip.blinking { animation-duration: 3s; } }
+
+.scene-talk {
+  position: relative; flex-shrink: 0;
+  min-width: 190px; padding: 0 26px; height: 62px; border-radius: 31px;
+  border: 3px solid rgba(255, 255, 255, 0.55); background: rgba(255, 255, 255, 0.1);
+  display: grid; place-items: center; cursor: pointer;
+  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+.scene-talk-label { font-size: 17px; font-weight: 600; color: #fff; white-space: nowrap; }
+/* Held: the button stays expanded for as long as the learner is speaking. No meter, no countdown —
+   beat 49 is explicit that the learner should not be watching a measurement of themselves. */
+/* Pressed feedback for the advance button. The scene never records, so there is deliberately no
+   amber "capturing" state here — nothing on this screen should look like a live microphone. */
+.scene-talk:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.16); animation: none; }
+.scene-talk:disabled { opacity: 0.35; cursor: default; }
+
+/* The English on-ramp, before the scene opens. */
+.scene-frame {
+  position: relative; margin: auto 0; text-align: center; max-width: 30ch;
+  display: flex; flex-direction: column; gap: 18px;
+  opacity: 0; transition: opacity 600ms ease;
+}
+.scene-frame.shown { opacity: 1; }
+/* One line at a time, swapped in place — so there is no size hierarchy to encode. Every line is the
+   only thing on screen while it is up, and gets the same weight. */
+.scene-frame p { margin: 0; font-size: 24px; line-height: 1.45; }
+
+.scene-controls { position: relative; margin-top: 30px; display: grid; justify-items: center; gap: 12px; }
+
+/* The learner's own line, at the moment their turn opens. Deliberately quieter than the character's
+   caption — it is what they are reaching for, not an assignment card. `.bare` is the turn that expects
+   no Slovene at all (the learner says their own name), where the English instruction stands alone
+   rather than sitting under a bold blank. */
+.scene-prompt {
+  margin: 0 0 2px; display: grid; align-content: end; justify-items: center; gap: 3px; text-align: center;
+  /* Reserved whether or not there is a prompt, so the button below never shifts between beats. */
+  min-height: 62px;
+  opacity: 0; transition: opacity 420ms ease;
+}
+.scene-prompt.shown { opacity: 1; }
+/* Deliberately the largest, brightest type on screen while the turn is the learner's — it has to
+   out-weigh the character's caption, which is longer and would otherwise dominate by sheer size. */
+.scene-prompt-sl { font-size: 27px; font-weight: 700; letter-spacing: .01em; color: #fff; line-height: 1.25; }
+.scene-prompt-en { font-size: 15px; color: var(--muted); }
+.scene-prompt.bare .scene-prompt-en { font-size: 18px; color: #e8ecf2; }
+
+/* The level meter the button wears while the CHARACTER is speaking: sound is happening and it is not
+   yours. Four bars, staggered, the universal "audio is playing" shape — not a mouth, not a face, and
+   nothing that could be mistaken for a recording indicator. */
+.scene-bars { display: none; align-items: center; gap: 4px; height: 22px; }
+.scene-bars i {
+  display: block; width: 4px; height: 100%; border-radius: 2px;
+  background: rgba(255, 255, 255, 0.85);
+  transform-origin: center;
+  animation: scene-bar 900ms ease-in-out infinite;
+}
+.scene-bars i:nth-child(2) { animation-delay: 150ms; }
+.scene-bars i:nth-child(3) { animation-delay: 300ms; }
+.scene-bars i:nth-child(4) { animation-delay: 450ms; }
+@keyframes scene-bar {
+  0%, 100% { transform: scaleY(0.28); opacity: .55; }
+  50%      { transform: scaleY(1);    opacity: 1; }
+}
+/* Speaking: no words at all, just the meter, and the button is not actionable. */
+.scene-talk.speaking { cursor: default; border-color: rgba(255, 255, 255, 0.28); background: rgba(255, 255, 255, 0.05); }
+.scene-talk.speaking .scene-bars { display: flex; }
+.scene-talk.speaking .scene-talk-label { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .scene-bars i { animation-duration: 2s; }
+}
+
+/* The button breathes while it waits — a slow pulse, not a flash or a bouncing arrow. */
+@keyframes scene-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }
+.scene-talk.waiting { animation: scene-breathe 2s ease-in-out infinite; }
+/* Stall rung 1: the caption pulses once, drawing the eye back. No copy. */
+@keyframes scene-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+.scene-caption.pulse { animation: scene-pulse 900ms ease-in-out 2; }
+
+/* The focus span: the shape being worked stays at full weight and everything around it steps down.
+   CONTRAST ONLY — no highlight, no colour, no label. It answers "which part is mine?" without
+   announcing that a lesson is happening, and it marks a shape only while that shape is new. */
+.unfocused { opacity: 0.45; font-weight: 400; }
+
+/* The learner's slot is tappable: the English comes back and the character's line replays. Held, not
+   dropped — the Slovene never withdraws, the English does, and a tap always returns it. */
+.scene-prompt { pointer-events: none; }
+.scene-prompt.shown { pointer-events: auto; cursor: pointer; }
+.scene-prompt-en.held { visibility: hidden; }
+
+/* The close screen. Two controls in the same place the button lived, so nothing jumps at the end. */
+.scene-close {
+  position: relative; flex-shrink: 0; width: 100%; max-width: 420px;
+  margin-top: 30px; display: grid; justify-items: center; gap: 10px;
+}
+.scene-close-btn {
+  min-width: 190px; padding: 0 26px; height: 56px; border-radius: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.55); background: rgba(255, 255, 255, 0.1);
+  color: #fff; font-size: 17px; font-weight: 600; cursor: pointer;
+}
+.scene-close-btn.ghost { border-color: rgba(255, 255, 255, 0.22); background: transparent; font-weight: 500; }
+
+/* Key Phrases: a list of what you have MET. No ordering or marking that implies mastery — the moment
+   it ranks, it is a measure. */
+.scene-phrases {
+  width: 100%; max-height: 42vh; overflow-y: auto; text-align: left;
+  background: rgba(10, 12, 16, 0.72); border-radius: 16px; padding: 14px 16px; margin-bottom: 4px;
+}
+.phrases-title { margin: 0 0 10px; font-size: 17px; font-weight: 700; color: #fff; }
+.phrases-sub { margin: 12px 0 4px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.phrase-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; padding: 6px 0; }
+.phrase-sl {
+  justify-self: start; padding: 0; border: 0; background: none; cursor: pointer;
+  color: #fff; font-size: 17px; font-weight: 600; text-align: left;
+}
+.phrase-en { grid-column: 1 / -1; font-size: 14px; color: var(--muted); }
+.phrase-en.held { display: none; }

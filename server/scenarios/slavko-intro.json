@@ -1,0 +1,38 @@
+{
+  "id": "slavko-intro",
+  "name": "Slavko",
+  "title": "Meeting Slavko",
+  "status": "active",
+  "character": "Slavko, the app's companion — a warm, curious dragon who wants to know who you are",
+  "setup": "The learner's first moments in the app. Slavko meets them for the first time and asks their name; he introduces himself with the same frame he hands back. A relationship opener, not an errand.",
+  "opening": "Živjo! Kako ti je ime?",
+  "register": {
+    "form": "ti",
+    "variety": "pogovorni"
+  },
+  "surfaces": {
+    "dialogue": {
+      "voices": {
+        "npc": "slavko",
+        "client": "slavko"
+      },
+      "advance": "audio",
+      "levels": [
+        {
+          "level": 1,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 2,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 3,
+          "levelLabel": "Basic"
+        }
+      ]
+    },
+    "a1": true
+  },
+  "objectives": []
+}

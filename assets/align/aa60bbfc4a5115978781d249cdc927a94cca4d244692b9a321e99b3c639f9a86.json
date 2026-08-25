@@ -1,0 +1,27 @@
+{
+  "key": "aa60bbfc4a5115978781d249cdc927a94cca4d244692b9a321e99b3c639f9a86",
+  "text": "Govorim dobro slovensko.",
+  "words": [
+    {
+      "text": "Govorim",
+      "start": 0.159,
+      "end": 0.56,
+      "loss": 0.3203947884695871
+    },
+    {
+      "text": "dobro",
+      "start": 0.659,
+      "end": 0.959,
+      "loss": 0.00724639892578125
+    },
+    {
+      "text": "slovensko.",
+      "start": 1.039,
+      "end": 1.679,
+      "loss": 0.014833164215087891
+    }
+  ],
+  "loss": 0.10612825552622478,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:03.562Z"
+}
