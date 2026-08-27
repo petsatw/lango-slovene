@@ -1,0 +1,63 @@
+{
+  "key": "7fcc215eb781f5aaef379ddfaf31f074dec74ca79e62075de9c77fbc0a892903",
+  "text": "Ojoj, oprosti! Ti pa nič. Reci mi: Lahko poskusim?",
+  "words": [
+    {
+      "text": "Ojoj,",
+      "start": 0.219,
+      "end": 0.579,
+      "loss": 0.23836669921875
+    },
+    {
+      "text": "oprosti!",
+      "start": 0.779,
+      "end": 1.299,
+      "loss": 0.3811434507369995
+    },
+    {
+      "text": "Ti",
+      "start": 2.46,
+      "end": 2.579,
+      "loss": 0.4907646179199219
+    },
+    {
+      "text": "pa",
+      "start": 2.599,
+      "end": 2.7,
+      "loss": 0.00038170814514160156
+    },
+    {
+      "text": "nič.",
+      "start": 2.74,
+      "end": 3.039,
+      "loss": 0.010648727416992188
+    },
+    {
+      "text": "Reci",
+      "start": 4.079,
+      "end": 4.339,
+      "loss": 0.30205202102661133
+    },
+    {
+      "text": "mi:",
+      "start": 4.36,
+      "end": 4.5,
+      "loss": 2.385810216267904
+    },
+    {
+      "text": "Lahko",
+      "start": 5.219,
+      "end": 5.44,
+      "loss": 0.2492682456970215
+    },
+    {
+      "text": "poskusim?",
+      "start": 5.519,
+      "end": 5.96,
+      "loss": 0.6340401967366537
+    }
+  ],
+  "loss": 0.4141913604736328,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T15:42:44.992Z"
+}

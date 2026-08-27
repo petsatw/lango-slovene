@@ -1942,6 +1942,805 @@
         ],
         "new": []
       }
+    },
+    {
+      "level": 6,
+      "levelLabel": "Basic",
+      "title": "What's this?",
+      "frameEN": [
+        "Slavko's turned up with a bag over his shoulder.",
+        "He's going to take things out of it, one at a time.",
+        "Today you learn how to say what something is — and how to ask."
+      ],
+      "objectives": [
+        {
+          "label": "Say what something is",
+          "descriptorEN": "Use the frame 'To je ___.' with a word you already have."
+        },
+        {
+          "label": "Ask what something is",
+          "descriptorEN": "Use 'Kaj je to?' for a thing he won't name — then again later, unprompted."
+        },
+        {
+          "label": "Put him right",
+          "descriptorEN": "When he calls the umbrella a book, correct him: 'Ne.' followed by 'To je ___.'"
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Živjo! Glej, danes sem prinesel torbo. Notri je nekaj stvari.",
+          "en": "Hi! Look, today I brought a bag. There are a few things in it.",
+          "deliverySL": "[warmly, conspiratorial] Živjo! Glej, danes sem prinesel torbo. Notri je nekaj stvari.",
+          "glossPolicy": "after",
+          "learnables": [],
+          "next": [
+            "n2"
+          ]
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Poglej, to besedo že znaš. To je dežnik. Povej še ti.",
+          "en": "Look, you already know this word. This is an umbrella. Now you say it.",
+          "deliverySL": "[proudly] Poglej, to besedo že znaš. [deliberately] To je dežnik. [warmly] Povej še ti.",
+          "slowSL": "Poglej … to besedo že znaš … To je dežnik … Povej še ti.",
+          "deliverySlowSL": "[warmly, slowly] Poglej … [very slowly] to besedo že znaš … [deliberately, drawn out] To je dežnik … [warmly, slowly] Povej še ti.",
+          "glossPolicy": "after",
+          "focusSpan": "To je",
+          "learnables": [
+            "to_je",
+            "deznik"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Say it back to him"
+            }
+          ],
+          "next": [
+            "c1"
+          ]
+        },
+        "c1": {
+          "speaker": "client",
+          "sl": "To je dežnik.",
+          "en": "Say it back to him: 'To je' plus the word you got out of him last time — dežnik.",
+          "glossPolicy": "after",
+          "focusSpan": "To je",
+          "learnables": [
+            "to_je"
+          ],
+          "next": [
+            "n3"
+          ]
+        },
+        "n3": {
+          "speaker": "npc",
+          "sl": "Dežnik gre nazaj v torbo. Zdaj pa tole: to je ključ. Ključ. Daj, ti.",
+          "en": "The umbrella goes back in the bag. And now this: this is a key. Key. Go on, your turn.",
+          "deliverySL": "[playfully] Dežnik gre nazaj v torbo. Zdaj pa tole: to je ključ. Ključ. Daj, ti.",
+          "slowSL": "Dežnik gre nazaj v torbo … Zdaj pa tole … to je ključ … Ključ … Daj, ti.",
+          "deliverySlowSL": "[very slowly] Dežnik gre nazaj v torbo … [very slowly] Zdaj pa tole … [deliberately, drawn out] to je ključ … [very slowly, drawn out] Ključ … [warmly, slowly] Daj, ti.",
+          "glossPolicy": "after",
+          "focusSpan": "to je",
+          "learnables": [
+            "to_je",
+            "kljuc"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Name the key"
+            }
+          ],
+          "next": [
+            "c2"
+          ]
+        },
+        "c2": {
+          "speaker": "client",
+          "sl": "To je ključ.",
+          "en": "Name it: 'To je' plus the new word he just gave you — ključ.",
+          "glossPolicy": "tap",
+          "focusSpan": "To je",
+          "learnables": [
+            "to_je"
+          ],
+          "next": [
+            "n4"
+          ]
+        },
+        "n4": {
+          "speaker": "npc",
+          "sl": "Odlično! Zdaj pa imam nekaj v roki. Vprašaj me: Kaj je to?",
+          "en": "Excellent! Now I've got something in my hand. Ask me: What is this?",
+          "deliverySL": "[delighted, then teasing] Odlično! Zdaj pa imam nekaj v roki. Vprašaj me: Kaj je to?",
+          "slowSL": "Odlično … Zdaj pa imam nekaj v roki … Vprašaj me … Kaj je to?",
+          "deliverySlowSL": "[delighted] Odlično … [very slowly] Zdaj pa imam nekaj v roki … [very slowly] Vprašaj me … [deliberately, drawn out] Kaj je to?",
+          "glossPolicy": "after",
+          "focusSpan": "Kaj je to",
+          "learnables": [
+            "kaj_je_to"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask him what it is"
+            }
+          ],
+          "next": [
+            "c3"
+          ]
+        },
+        "c3": {
+          "speaker": "client",
+          "sl": "Kaj je to?",
+          "en": "Ask him what it is — the question he just gave you.",
+          "glossPolicy": "after",
+          "focusSpan": "Kaj je to",
+          "learnables": [
+            "kaj_je_to"
+          ],
+          "next": [
+            "n5"
+          ],
+          "audio": {
+            "from": "n4",
+            "level": 6,
+            "kind": "span",
+            "words": [
+              9,
+              11
+            ],
+            "startMs": 4859,
+            "endMs": 5259
+          }
+        },
+        "n5": {
+          "speaker": "npc",
+          "sl": "To je knjiga. Knjiga.",
+          "en": "This is a book. Book.",
+          "deliverySL": "[clearly] To je knjiga. Knjiga.",
+          "slowSL": "To je knjiga … Knjiga.",
+          "deliverySlowSL": "[deliberately, drawn out] To je knjiga … [very slowly, drawn out] Knjiga.",
+          "glossPolicy": "after",
+          "focusSpan": "To je",
+          "learnables": [
+            "to_je",
+            "knjiga"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Say what it is"
+            }
+          ],
+          "next": [
+            "c4"
+          ]
+        },
+        "c4": {
+          "speaker": "client",
+          "sl": "To je knjiga.",
+          "en": "Say what it is: 'To je' plus his new word — knjiga.",
+          "glossPolicy": "tap",
+          "focusSpan": "To je",
+          "learnables": [
+            "to_je"
+          ],
+          "next": [
+            "n6"
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 6,
+            "kind": "span",
+            "words": [
+              0,
+              2
+            ],
+            "startMs": 79,
+            "endMs": 1179
+          }
+        },
+        "n6": {
+          "speaker": "npc",
+          "sl": "V torbi imam še nekaj.",
+          "en": "I've got one more thing in the bag.",
+          "deliverySL": "[mischievous, then waiting] V torbi imam še nekaj.",
+          "glossPolicy": "after",
+          "learnables": [],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask him what it is"
+            }
+          ],
+          "next": [
+            "c5"
+          ]
+        },
+        "c5": {
+          "speaker": "client",
+          "sl": "Kaj je to?",
+          "en": "Ask him yourself this time — he is not going to prompt you.",
+          "glossPolicy": "tap",
+          "focusSpan": "Kaj je to",
+          "learnables": [
+            "kaj_je_to"
+          ],
+          "next": [
+            "n7"
+          ],
+          "audio": {
+            "from": "n4",
+            "level": 6,
+            "kind": "span",
+            "words": [
+              9,
+              11
+            ],
+            "startMs": 4859,
+            "endMs": 5259
+          }
+        },
+        "n7": {
+          "speaker": "npc",
+          "sl": "O, spet dežnik! V roki imam dežnik. To je knjiga.",
+          "en": "Oh, the umbrella again! I've got an umbrella in my hand. This is a book.",
+          "deliverySL": "[flat, deadpan, entirely serious] O, spet dežnik! V roki imam dežnik. To je knjiga.",
+          "glossPolicy": "after",
+          "focusSpan": "To je",
+          "learnables": [
+            "to_je",
+            "deznik",
+            "knjiga"
+          ],
+          "next": [
+            "n8"
+          ]
+        },
+        "n8": {
+          "speaker": "npc",
+          "sl": "Hm. Je to res knjiga? Povej mi.",
+          "en": "Hmm. Is this really a book? Tell me.",
+          "deliverySL": "[innocently, still deadpan] Hm. Je to res knjiga? [inviting] Povej mi.",
+          "glossPolicy": "after",
+          "learnables": [
+            "knjiga"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Tell him what it really is"
+            }
+          ],
+          "next": [
+            "c6"
+          ]
+        },
+        "c6": {
+          "speaker": "client",
+          "sl": "Ne. To je dežnik.",
+          "en": "Put him right: say 'ne', then name it properly.",
+          "glossPolicy": "tap",
+          "focusSpan": "To je",
+          "learnables": [
+            "ne",
+            "to_je",
+            "deznik"
+          ],
+          "next": [
+            "n9"
+          ]
+        },
+        "n9": {
+          "speaker": "npc",
+          "sl": "Ha, ja, seveda! To je dežnik. Malo sem se šalil.",
+          "en": "Ha, yes, of course! This is an umbrella. I was joking a bit.",
+          "deliverySL": "[cracking up, sheepish] Ha, ja, seveda! To je dežnik. Malo sem se šalil.",
+          "glossPolicy": "after",
+          "learnables": [
+            "ja",
+            "seveda",
+            "to_je",
+            "deznik"
+          ],
+          "next": [
+            "n10"
+          ]
+        },
+        "n10": {
+          "speaker": "npc",
+          "sl": "Na, to je tvoja knjiga. Adijo!",
+          "en": "Here, this is your book. Bye!",
+          "deliverySL": "[warmly, on his way out] Na, to je tvoja knjiga. Adijo!",
+          "glossPolicy": "after",
+          "learnables": [
+            "to_je",
+            "knjiga",
+            "adijo"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Thank him and say bye"
+            }
+          ],
+          "next": [
+            "c7"
+          ]
+        },
+        "c7": {
+          "speaker": "client",
+          "sl": "Hvala. Adijo.",
+          "en": "Thank him and say bye — two words you already own.",
+          "glossPolicy": "tap",
+          "learnables": [
+            "hvala",
+            "adijo"
+          ],
+          "next": []
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "to_je",
+          "kaj_je_to",
+          "kljuc",
+          "knjiga",
+          "ne",
+          "hvala",
+          "adijo"
+        ],
+        "new": [
+          {
+            "id": "deznik",
+            "kind": "vocabulary",
+            "sl": "dežnik",
+            "gloss": "umbrella",
+            "predictableError": "learners who met 'dež' (rain) last lesson say 'dež' for the object; the umbrella is 'dežnik' — 'dež' is the weather, 'dežnik' is the thing you hold.",
+            "core": false,
+            "a1": true
+          }
+        ]
+      }
+    },
+    {
+      "level": 7,
+      "levelLabel": "Basic",
+      "title": "May I?",
+      "frameEN": [
+        "Slavko has brought a box, and he won't say what's in it.",
+        "Nothing here is going to be handed to you — you'll have to ask.",
+        "Today you learn how to ask whether you may do something."
+      ],
+      "objectives": [
+        {
+          "label": "Ask to look",
+          "descriptorEN": "Use 'Lahko ___?' with the verb for looking to get him to open the box."
+        },
+        {
+          "label": "Ask to try",
+          "descriptorEN": "Use the same frame with a different verb to get a piece of the cake."
+        },
+        {
+          "label": "Ask before you ask",
+          "descriptorEN": "Open a question of your own with 'Lahko vprašam?' — then ask it."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Nekaj sem ti prinesel! Tukaj, v tej škatli.",
+          "en": "I've brought you something! Here, in this box.",
+          "deliverySL": "[bursting with excitement] Nekaj sem ti prinesel! [conspiratorial] Tukaj, v tej škatli.",
+          "glossPolicy": "after",
+          "learnables": [],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask him what it is"
+            }
+          ],
+          "next": [
+            "c1"
+          ]
+        },
+        "c1": {
+          "speaker": "client",
+          "sl": "Kaj je to?",
+          "en": "Ask him what it is — your question from last time. Say it first, before he tells you.",
+          "glossPolicy": "tap",
+          "focusSpan": "Kaj je to",
+          "learnables": [
+            "kaj_je_to"
+          ],
+          "next": [
+            "n2"
+          ],
+          "audio": {
+            "from": "n4",
+            "level": 6,
+            "kind": "span",
+            "words": [
+              9,
+              11
+            ],
+            "startMs": 4859,
+            "endMs": 5259
+          }
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Ne povem! Presenečenje je. Če hočeš videti, me vprašaj: Lahko pogledam?",
+          "en": "I'm not telling! It's a surprise. If you want to see, ask me: May I look?",
+          "deliverySL": "[teasing, singsong] Ne povem! Presenečenje je. [helpfully] Če hočeš videti, me vprašaj: [clearly] Lahko pogledam?",
+          "slowSL": "Ne povem … presenečenje je … Če hočeš videti … me vprašaj … Lahko pogledam?",
+          "deliverySlowSL": "[teasing, drawn out] Ne povem … [slower] presenečenje je … [slower] Če hočeš videti … [slower, deliberately] me vprašaj … [very slowly, enunciating every syllable] Lahko pogledam?",
+          "glossPolicy": "after",
+          "focusSpan": "Lahko",
+          "learnables": [
+            "ali_lahko",
+            "ne"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask if you may look"
+            }
+          ],
+          "next": [
+            "c2"
+          ]
+        },
+        "c2": {
+          "speaker": "client",
+          "sl": "Lahko pogledam?",
+          "en": "Ask his permission to look — the line he just gave you: 'Lahko' plus 'pogledam'.",
+          "glossPolicy": "after",
+          "focusSpan": "Lahko",
+          "learnables": [
+            "ali_lahko"
+          ],
+          "next": [
+            "n3"
+          ],
+          "audio": {
+            "from": "n2",
+            "level": 7,
+            "kind": "span",
+            "words": [
+              9,
+              10
+            ],
+            "startMs": 6779,
+            "endMs": 7440
+          }
+        },
+        "n3": {
+          "speaker": "npc",
+          "sl": "Kar poglej! To je potica. Potica!",
+          "en": "Go right ahead and look! This is potica. Potica!",
+          "deliverySL": "[delighted, lifting the lid] Kar poglej! [proudly] To je potica. [savouring the word] Potica!",
+          "slowSL": "Kar poglej … To je … potica … Potica.",
+          "deliverySlowSL": "[warmly] Kar poglej … [slower, deliberately] To je … [very slowly, drawn out] potica … [very slowly, drawn out] Potica.",
+          "glossPolicy": "after",
+          "focusSpan": "To je",
+          "learnables": [
+            "to_je"
+          ],
+          "next": [
+            "n4"
+          ]
+        },
+        "n4": {
+          "speaker": "npc",
+          "sl": "Mmm! Dobra je. Mmm!",
+          "en": "Mmm! It's good. Mmm!",
+          "deliverySL": "[mouth full, blissful] Mmm! [savouring, oblivious] Dobra je. [chewing happily] Mmm!",
+          "glossPolicy": "after",
+          "learnables": [
+            "pa"
+          ],
+          "next": [
+            "n5"
+          ]
+        },
+        "n5": {
+          "speaker": "npc",
+          "sl": "Ojoj, oprosti! Ti pa nič. Reci mi: Lahko poskusim?",
+          "en": "Oh no, sorry! And nothing for you. Say to me: May I try some?",
+          "deliverySL": "[suddenly embarrassed] Ojoj, oprosti! [sheepish] Ti pa nič. [encouraging] Reci mi: [clearly] Lahko poskusim?",
+          "slowSL": "Ojoj, oprosti … Ti pa nič … Reci mi … Lahko poskusim?",
+          "deliverySlowSL": "[embarrassed, slowly] Ojoj, oprosti … [slower] Ti pa nič … [slower, deliberately] Reci mi … [very slowly, enunciating every syllable] Lahko poskusim?",
+          "glossPolicy": "after",
+          "focusSpan": "Lahko",
+          "learnables": [
+            "ali_lahko",
+            "oprosti",
+            "pa"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask if you may try some"
+            }
+          ],
+          "next": [
+            "c3"
+          ]
+        },
+        "c3": {
+          "speaker": "client",
+          "sl": "Lahko poskusim?",
+          "en": "Ask if you may try some — same shape as before: 'Lahko' plus 'poskusim'.",
+          "glossPolicy": "after",
+          "focusSpan": "Lahko",
+          "learnables": [
+            "ali_lahko"
+          ],
+          "next": [
+            "n6"
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 7,
+            "kind": "span",
+            "words": [
+              7,
+              8
+            ],
+            "startMs": 5219,
+            "endMs": 5960
+          }
+        },
+        "n6": {
+          "speaker": "npc",
+          "sl": "Seveda! Izvoli.",
+          "en": "Of course! Here you go.",
+          "deliverySL": "[warmly, handing over a piece] Seveda! Izvoli.",
+          "glossPolicy": "after",
+          "learnables": [
+            "izvolite"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Thank him"
+            }
+          ],
+          "next": [
+            "c4"
+          ]
+        },
+        "c4": {
+          "speaker": "client",
+          "sl": "Hvala.",
+          "en": "Thank him — just the one word.",
+          "glossPolicy": "tap",
+          "learnables": [
+            "hvala"
+          ],
+          "next": [
+            "n7"
+          ],
+          "audio": {
+            "from": "n10",
+            "level": 5,
+            "kind": "span",
+            "words": [
+              2,
+              2
+            ],
+            "startMs": 1620,
+            "endMs": 2059
+          }
+        },
+        "n7": {
+          "speaker": "npc",
+          "sl": "Babica jo peče. Vsako nedeljo!",
+          "en": "My grandma bakes it. Every Sunday!",
+          "deliverySL": "[fondly] Babica jo peče. [proudly] Vsako nedeljo!",
+          "glossPolicy": "after",
+          "learnables": [],
+          "next": [
+            "n8"
+          ]
+        },
+        "n8": {
+          "speaker": "npc",
+          "sl": "Če me hočeš kaj vprašati, reci: Lahko vprašam?",
+          "en": "If you want to ask me something, say: May I ask?",
+          "deliverySL": "[helpfully, leaning in] Če me hočeš kaj vprašati, reci: [clearly] Lahko vprašam?",
+          "slowSL": "Če me hočeš kaj vprašati … reci … Lahko vprašam?",
+          "deliverySlowSL": "[patiently, slowly] Če me hočeš kaj vprašati … [slower, deliberately] reci … [very slowly, enunciating every syllable] Lahko vprašam?",
+          "glossPolicy": "after",
+          "focusSpan": "Lahko",
+          "learnables": [
+            "ali_lahko"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask if you may ask him something"
+            }
+          ],
+          "next": [
+            "c5"
+          ]
+        },
+        "c5": {
+          "speaker": "client",
+          "sl": "Lahko vprašam?",
+          "en": "Ask his permission to ask a question — 'Lahko' plus 'vprašam'.",
+          "glossPolicy": "after",
+          "focusSpan": "Lahko",
+          "learnables": [
+            "ali_lahko"
+          ],
+          "next": [
+            "n9"
+          ],
+          "audio": {
+            "from": "n8",
+            "level": 7,
+            "kind": "span",
+            "words": [
+              6,
+              7
+            ],
+            "startMs": 3139,
+            "endMs": 3939
+          }
+        },
+        "n9": {
+          "speaker": "npc",
+          "sl": "Ja, poslušam!",
+          "en": "Yes, I'm listening!",
+          "deliverySL": "[open, attentive, leaning in] Ja, poslušam!",
+          "glossPolicy": "after",
+          "learnables": [],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask him for the word for grandma"
+            }
+          ],
+          "next": [
+            "c6"
+          ]
+        },
+        "c6": {
+          "speaker": "client",
+          "sl": "Kako se reče grandma?",
+          "en": "Ask him a word of your own: 'Kako se reče' and then the English word — grandma.",
+          "glossPolicy": "tap",
+          "focusSpan": "Kako se reče",
+          "learnables": [
+            "kako_se_rece"
+          ],
+          "next": [
+            "n10"
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 5,
+            "kind": "span",
+            "words": [
+              14,
+              17
+            ],
+            "startMs": 6699,
+            "endMs": 8420,
+            "heard": "Kako se reče umbrella?"
+          }
+        },
+        "n10": {
+          "speaker": "npc",
+          "sl": "Grandma? Babica! Zdaj grem k babici. Adijo!",
+          "en": "Grandma? 'Babica'! Now I'm off to my grandma's. Bye!",
+          "deliverySL": "[delighted] Grandma? Babica! [cheerful, already leaving] Zdaj grem k babici. Adijo!",
+          "glossPolicy": "after",
+          "learnables": [
+            "adijo"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Say bye"
+            }
+          ],
+          "next": [
+            "c7"
+          ]
+        },
+        "c7": {
+          "speaker": "client",
+          "sl": "Adijo, Slavko.",
+          "en": "Say bye to him by name.",
+          "glossPolicy": "tap",
+          "learnables": [
+            "adijo"
+          ],
+          "next": []
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "ali_lahko",
+          "kaj_je_to",
+          "kako_se_rece",
+          "hvala",
+          "adijo"
+        ],
+        "new": []
+      }
     }
   ],
   "criticFixes": [
@@ -1986,6 +2785,76 @@
       "field": "deliverySL",
       "oldExact": "[warmly, pleased] Točno tako! Dežela je država. Tvoja država je lepa.",
       "newExact": "[warmly, pleased] Točno tako! [slowly, deliberately] Poglej: Slovenija je država. Anglija je država. [warmly] Tvoja država je lepa."
+    },
+    {
+      "level": 6,
+      "nodeId": "n2",
+      "field": "sl",
+      "oldExact": "Poglej, to besedo že znaš — zadnjič si me jo sam vprašal. To je dežnik. Povej še ti.",
+      "newExact": "Poglej, to besedo že znaš. To je dežnik. Povej še ti."
+    },
+    {
+      "level": 6,
+      "nodeId": "n2",
+      "field": "en",
+      "oldExact": "Look, you already know this word — last time you asked me for it yourself. This is an umbrella. Now you say it.",
+      "newExact": "Look, you already know this word. This is an umbrella. Now you say it."
+    },
+    {
+      "level": 6,
+      "nodeId": "n2",
+      "field": "deliverySL",
+      "oldExact": "[proudly] Poglej, to besedo že znaš — zadnjič si me jo sam vprašal. To je dežnik. Povej še ti.",
+      "newExact": "[proudly] Poglej, to besedo že znaš. [deliberately] To je dežnik. [warmly] Povej še ti."
+    },
+    {
+      "level": 6,
+      "nodeId": "n3",
+      "field": "sl",
+      "oldExact": "Dežnik dam sem. Zdaj pa tole: to je ključ. Ključ. Daj, ti.",
+      "newExact": "Dežnik gre nazaj v torbo. Zdaj pa tole: to je ključ. Ključ. Daj, ti."
+    },
+    {
+      "level": 6,
+      "nodeId": "n3",
+      "field": "en",
+      "oldExact": "I'll put the umbrella here. And now this: this is a key. Key. Go on, your turn.",
+      "newExact": "The umbrella goes back in the bag. And now this: this is a key. Key. Go on, your turn."
+    },
+    {
+      "level": 6,
+      "nodeId": "n3",
+      "field": "deliverySL",
+      "oldExact": "[playfully] Dežnik dam sem. Zdaj pa tole: to je ključ. Ključ. Daj, ti.",
+      "newExact": "[playfully] Dežnik gre nazaj v torbo. Zdaj pa tole: to je ključ. Ključ. Daj, ti."
+    },
+    {
+      "level": 6,
+      "nodeId": "n8",
+      "field": "sl",
+      "oldExact": "Ne? Ni knjiga?",
+      "newExact": "Hm. Je to res knjiga? Povej mi."
+    },
+    {
+      "level": 6,
+      "nodeId": "n8",
+      "field": "en",
+      "oldExact": "No? Not a book?",
+      "newExact": "Hmm. Is this really a book? Tell me."
+    },
+    {
+      "level": 6,
+      "nodeId": "n8",
+      "field": "deliverySL",
+      "oldExact": "[innocently, still deadpan] Ne? Ni knjiga?",
+      "newExact": "[innocently, still deadpan] Hm. Je to res knjiga? [inviting] Povej mi."
+    },
+    {
+      "level": 7,
+      "nodeId": "c6",
+      "field": "en",
+      "oldExact": "He used a word you didn't know. Ask for it: 'Kako se reče' and then the English word — grandma.",
+      "newExact": "Ask him a word of your own: 'Kako se reče' and then the English word — grandma."
     }
   ],
   "a1Candidates": [
@@ -2003,6 +2872,11 @@
       "learnableId": "nisem_iz",
       "competencyId": "personal_identity",
       "note": "The negated origin frame, beside its affirmative 'Sem iz ___.'; the first place a learner meets the fused negative 'nisem'."
+    },
+    {
+      "learnableId": "deznik",
+      "competencyId": "housing_environment",
+      "note": "Weather small talk — the competency descriptor names it explicitly and 'lepo_vreme' already sits there; an umbrella is what you carry because of Ljubljana weather. (Corrected from everyday_free_time, which is routines and timetables.) The first noun the learner extracted for themselves (L5) and the first they produce (L6). a1:true at mint, NOT a core promotion — ordinary A1 vocabulary."
     }
   ]
 }

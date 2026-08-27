@@ -1,0 +1,45 @@
+{
+  "key": "5667842762a7184a583e8185c00efb35c56b7a3c90d9c900fb15a4c1957efe42",
+  "text": "Kar poglej! To je potica. Potica!",
+  "words": [
+    {
+      "text": "Kar",
+      "start": 0.159,
+      "end": 0.299,
+      "loss": 0.07859293619791667
+    },
+    {
+      "text": "poglej!",
+      "start": 0.419,
+      "end": 0.899,
+      "loss": 0.32521370479038786
+    },
+    {
+      "text": "To",
+      "start": 1.719,
+      "end": 1.879,
+      "loss": 0.3245391845703125
+    },
+    {
+      "text": "je",
+      "start": 1.959,
+      "end": 2.039,
+      "loss": 0.000469207763671875
+    },
+    {
+      "text": "potica.",
+      "start": 2.279,
+      "end": 3.139,
+      "loss": 0.16269329616001674
+    },
+    {
+      "text": "Potica!",
+      "start": 4.159,
+      "end": 5.079,
+      "loss": 0.4054074968610491
+    }
+  ],
+  "loss": 0.217318903316151,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T15:42:44.072Z"
+}

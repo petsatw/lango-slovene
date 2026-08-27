@@ -3251,5 +3251,13 @@
     "predictableError": "English speakers put it first, on the model of 'but' ('Pa ti dobro angleško'), or reach for 'ampak'. 'pa' is a SECOND-POSITION particle that attaches to the thing being contrasted — 'Ti pa dobro angleško', 'Jaz pa ne'. 'ampak' opens a whole contrasting clause; 'pa' contrasts one element inside one.",
     "core": false,
     "a1": false
+  },
+  "deznik": {
+    "kind": "vocabulary",
+    "sl": "dežnik",
+    "gloss": "umbrella",
+    "predictableError": "learners who met 'dež' (rain) last lesson say 'dež' for the object; the umbrella is 'dežnik' — 'dež' is the weather, 'dežnik' is the thing you hold.",
+    "core": false,
+    "a1": true
   }
 }

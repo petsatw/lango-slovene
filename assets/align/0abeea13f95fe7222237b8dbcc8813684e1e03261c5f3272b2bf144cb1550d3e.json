@@ -1,0 +1,57 @@
+{
+  "key": "0abeea13f95fe7222237b8dbcc8813684e1e03261c5f3272b2bf144cb1550d3e",
+  "text": "Če me hočeš kaj vprašati, reci: Lahko vprašam?",
+  "words": [
+    {
+      "text": "Če",
+      "start": 0.159,
+      "end": 0.239,
+      "loss": 0.010877609252929688
+    },
+    {
+      "text": "me",
+      "start": 0.28,
+      "end": 0.419,
+      "loss": 0.001239776611328125
+    },
+    {
+      "text": "hočeš",
+      "start": 0.459,
+      "end": 0.799,
+      "loss": 0.00035877227783203124
+    },
+    {
+      "text": "kaj",
+      "start": 0.839,
+      "end": 0.919,
+      "loss": 0.0002355178197224935
+    },
+    {
+      "text": "vprašati,",
+      "start": 0.959,
+      "end": 1.539,
+      "loss": 0.0034759706921047634
+    },
+    {
+      "text": "reci:",
+      "start": 1.779,
+      "end": 2.119,
+      "loss": 0.6585646152496338
+    },
+    {
+      "text": "Lahko",
+      "start": 3.139,
+      "end": 3.399,
+      "loss": 0.15087127685546875
+    },
+    {
+      "text": "vprašam?",
+      "start": 3.439,
+      "end": 3.939,
+      "loss": 0.07256373763084412
+    }
+  ],
+  "loss": 0.10229538316312044,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T15:42:46.120Z"
+}

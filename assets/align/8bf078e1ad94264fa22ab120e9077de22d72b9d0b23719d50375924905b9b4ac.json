@@ -1,0 +1,21 @@
+{
+  "key": "8bf078e1ad94264fa22ab120e9077de22d72b9d0b23719d50375924905b9b4ac",
+  "text": "Seveda! Izvoli.",
+  "words": [
+    {
+      "text": "Seveda!",
+      "start": 0.14,
+      "end": 0.899,
+      "loss": 0.6473824637276786
+    },
+    {
+      "text": "Izvoli.",
+      "start": 0.979,
+      "end": 1.419,
+      "loss": 0.33758013589041574
+    }
+  ],
+  "loss": 0.46066239674886067,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T15:42:45.355Z"
+}

@@ -1,0 +1,57 @@
+{
+  "key": "f42717d16260b77ec1d08c39b0ce392c1b226f8c943b5b98ee37f23b4d0e0911",
+  "text": "Nekaj sem ti prinesel! Tukaj, v tej škatli.",
+  "words": [
+    {
+      "text": "Nekaj",
+      "start": 0.14,
+      "end": 0.419,
+      "loss": 0.37783203125
+    },
+    {
+      "text": "sem",
+      "start": 0.439,
+      "end": 0.579,
+      "loss": 0.218017578125
+    },
+    {
+      "text": "ti",
+      "start": 0.599,
+      "end": 0.699,
+      "loss": 0.013763427734375
+    },
+    {
+      "text": "prinesel!",
+      "start": 0.74,
+      "end": 1.24,
+      "loss": 0.47159364488389754
+    },
+    {
+      "text": "Tukaj,",
+      "start": 2,
+      "end": 2.299,
+      "loss": 0.3391825358072917
+    },
+    {
+      "text": "v",
+      "start": 2.339,
+      "end": 2.46,
+      "loss": 0.70703125
+    },
+    {
+      "text": "tej",
+      "start": 2.48,
+      "end": 2.639,
+      "loss": 0.008860270182291666
+    },
+    {
+      "text": "škatli.",
+      "start": 2.679,
+      "end": 3.099,
+      "loss": 0.146331787109375
+    }
+  ],
+  "loss": 0.24840647675270258,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T15:42:43.230Z"
+}

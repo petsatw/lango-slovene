@@ -1,0 +1,39 @@
+{
+  "key": "f8e482ca155c962b9f7652d4bc53a0f22ec78e1e5ba87dc49c43e43006b919b1",
+  "text": "Babica jo peče. Vsako nedeljo!",
+  "words": [
+    {
+      "text": "Babica",
+      "start": 0.099,
+      "end": 0.539,
+      "loss": 0.028371810913085938
+    },
+    {
+      "text": "jo",
+      "start": 0.599,
+      "end": 0.819,
+      "loss": 0.01758575439453125
+    },
+    {
+      "text": "peče.",
+      "start": 0.839,
+      "end": 1.299,
+      "loss": 0.24006195068359376
+    },
+    {
+      "text": "Vsako",
+      "start": 2,
+      "end": 2.419,
+      "loss": 0.032238006591796875
+    },
+    {
+      "text": "nedeljo!",
+      "start": 2.48,
+      "end": 2.899,
+      "loss": 0.21446627378463745
+    }
+  ],
+  "loss": 0.11021377245585123,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T15:42:45.709Z"
+}
