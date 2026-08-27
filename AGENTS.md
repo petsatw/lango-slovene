@@ -178,10 +178,9 @@ for several turns while the other just keeps them going.
 offers, never from a length target. By advanced the learner is producing most of the lesson while the
 character mostly confirms and hands back.
 
-**Get the repeats by giving a reason to say it again that isn't "say it again."** The character guesses
-wrong about them, doesn't believe them, quotes them back wrong, asks about a second thing, or is
-self-deprecating and invites the mirror. "Repeat after me" is what you fall back on when you haven't built
-a reason.
+**Get the repeats by giving a reason to say it again that isn't "say it again."** "Repeat after me" is what
+you fall back on when you haven't built a reason. The reasons, and the tests a new one must pass, are in
+create-dialogue stage 0.
 
 ## Run & verify
 
