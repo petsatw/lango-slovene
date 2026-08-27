@@ -49,7 +49,7 @@ Answers to **AGENTS.md › How the lessons teach**. Read it first; it is the law
 
 **Answered by each designer (stage 2a) — spec these in the brief, don't answer them:**
 - **The variation plan** — how the shape gets worked, and how many turns that yields. Moves: answer it · negate it · swap the filler · add a qualifier · hear it said back.
-- **Natural reasons to repeat and improvise** — the in-fiction *reasons* those variations happen. Never "say it again": a lesson that instructs a repeat has failed to earn one. Play is always lighthearted and never at the learner's expense.
+- **Natural reasons to repeat and improvise** — the in-fiction *reasons* those variations happen. Play is always lighthearted and never at the learner's expense.
 
   **Hand this to the author in a RANDOM order.** The sequence below is not a ranking and carries no preference — it is written in a fixed order so a person can read it. Shuffle it when you compose the brief; an author reading a stable list pulls every lesson toward its first few entries. The three tests follow the list, in the order given, unshuffled.
 
@@ -59,7 +59,6 @@ Answers to **AGENTS.md › How the lessons teach**. Read it first; it is the law
   - **He writes it down.** A form, an order pad, a phone contact. Reading back is what people actually do — *Ana? Z enim n?* Confirmation without putting an error in the ear.
   - **Affirming echo.** He's pleased and says the learner's own line back, correctly. A native voicing what the learner just produced is the highest-value input moment in the lesson, and it costs nothing.
   - **Task arity.** The job itself has three items — three fields, three people to introduce. The reps come from the task, not from his curiosity.
-  - **Third-party contrast.** He tells you about his sister, which invites the learner's own version by parallel — a mirror without the self-deprecation to manage.
   - **He's self-deprecating and invites the mirror.**
   - **He is unsure he heard correctly.**
 
@@ -67,7 +66,6 @@ Answers to **AGENTS.md › How the lessons teach**. Read it first; it is the law
   1. **It works purely as sound.** Nothing to see, nothing to picture — *Writing for the ear* (stage 2c) applied to the reason itself. Stagecraft that has to be watched (an interruption, a passing bus, someone walking up) buys a repeat without teaching anything.
   2. **It exists outside the lesson.** A person would do this with a fluent speaker.
   3. **Constructive variation over rote.** If the shape can be varied for a rep, a constructive variant is used instead of rote repetition.
-- **What he remembers** — two or three sentences in the character's voice about this learner, based only on what they told him in earlier lessons. Build the scene from this. The character brings up what he remembers, which is what makes a returning phrase sound like someone talking to you rather than a phrase coming round again.
 - **Not yet reused** — from **Said before**, every id the learner has produced **only in the lesson that introduced it** and in no lesson since. Each is a candidate for this lesson: include it if there is a good, natural way to, doing something different from last time rather than recited. Where several fit naturally, prefer the one that has gone longest without being reused. Where one does not fit, leave it out and give a one-line reason — "no room" is not a reason, so name what took the room.
 - **The closing line** — what the character says as this conversation ends. It belongs to this lesson: it uses this lesson's material, and it reads as a person finishing a conversation.
 
@@ -138,7 +136,7 @@ Build the node graph from the design chosen at 2b. The sketch fixes the premise,
 
 From the **template + sizing** in docs/rehearsal-dialogues.md (L1 Survival ≈16 nodes, L2 Basic-A1 ≈26, L3 Full-A1 ≈52; spine = npc node → **2 client choices** → each client's single `next` = the npc response → branches **re-converge** onto shared later nodes; `root` is an `npc` node; every path ends at `next: []`). For each level author the node graph as `{ <id>: { speaker, intentEN, next } }` — ids + who speaks + the English intent + the branching. Ensure each level's objectives are each demonstrated on a reachable path, and are distinct across the scenario's levels.
 
-**Count turns and npc nodes before you dispatch.** This is the last point where the shape is free to change: once LS has written the level, changing it costs a re-dispatch, and once the audio is built it costs clips. If you are sitting on the floor, walk the npc nodes and ask which is doing work a turn could do — a line the learner could say instead of hear, a confirmation they could give, an answer they could supply. Two npc beats in a row are worth a second look; four in a row are a stretch the learner spends standing still.
+**Count turns and npc nodes before you dispatch.** This is the last point where the shape is free to change: once LS has written the level, changing it costs a re-dispatch, and once the audio is built it costs clips. If you are sitting on the floor, walk the npc nodes and ask which is doing work a turn could do — a line the learner could say instead of hear, a confirmation they could give, an answer they could supply.
 
 **For an `advance: "audio"` scene, timing is a PROFILE, not per-node numbers.** Every engineered silence
 in a spoken lesson lives in `server/catalog/pacing.json` — the on-ramp dwell, the caption lead, the read

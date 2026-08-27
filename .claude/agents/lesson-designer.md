@@ -22,15 +22,42 @@ Read these before designing. They win over anything in the brief that contradict
 - **docs/learnable-subsystem.md › The three learnable kinds** — vocabulary, chunk, pattern, and a pattern's three slot shapes (fill in the blank · fill in the blanks · sentence stem). A **pattern is taught across varied fillers, never memorised as a fixed string** — if the new shape is a pattern and your design works it in one filler only, the design is misteaching, not merely thin.
 - **docs/rehearsal-dialogues.md** — what a spoken scene is and how it is put together.
 
+## Writing the character's turns
+
+**Who you are writing for.** Your listener has had a handful of Slovene lessons. Speech reaches them as a
+continuous run of sound. They pick out the words they already know; telling where the other words start
+and stop is a skill that comes later. So the more of a line is made of words they already know, the more
+of it they get. Everything below follows from that.
+
+**1. End on the line you want them to say.** The last thing he says is the thing they keep. Put the target
+at the end of his turn and let the silence follow it.
+
+**2. Say that line twice — once inside a sentence, once on its own.** Repeating yourself is the work. It is
+what anyone does helping a foreigner, and hearing the shape on its own is how they learn where it starts
+and stops. The second one needs no excuse; he simply says it again. It rides the same node — a repeated
+target phrase is free, and is not a second node.
+
+**3. One breath per turn.** Two breaths are two turns. Write them as two.
+
+**4. Half of what he says should be words they already know.** Those are the words they can actually pick
+out. Each new word takes attention away from the line you are teaching, so allow one per turn.
+
+**5. He talks about what is happening between you, now.** The two of you, this moment, this thing in hand.
+The English caption carries anything about the language itself — that is free, and it keeps his mouth for
+Slovene they can use.
+
+**The test.** Underline every word that is either the line you are teaching or a word they already know. If
+less than half the turn is underlined, rewrite it.
+
 ## What you return
 
 Exactly these fields. Keep each tight — this is a sketch someone will compare against two others, not an essay.
 
 - **Premise** — one line: what happens in this scene.
-- **Opening** — what the character remembers about this learner, and why it comes up now. Build only on what they actually told him in earlier lessons; the brief marks which entries are facts about the learner. He has no reason to raise anything else.
+- **Opening** — how the scene starts, and what puts the new shape in play. The brief marks which entries are facts about the learner; he has no reason to raise anything else.
 - **Ladder trace** — the new shape's exposures in order: heard inside a sentence → heard on its own → heard slowly → in the slot. Skipping the isolated pass leaves a beginner unable to find the word boundaries.
 - **Retrieval schedule** — the distinct productions of the shape, and what sits between them. Productions spaced by intervening material are worth more than the same count bunched together.
-- **Reasons used** — which of the brief's reasons to repeat and improvise you are using, and where each fires. The brief's list is not exhaustive; a reason of your own is fine if it passes the three tests. Never "say it again": a lesson that instructs a repeat has failed to earn one.
+- **Reasons used** — which of the brief's reasons to repeat and improvise you are using, and where each fires. The brief's list is not exhaustive; a reason of your own is fine if it passes the three tests.
 - **Slot shape + fillers** — where the new shape is a `pattern`, which slot shape you are working and which fillers pass through it.
 - **Skeleton** — turns : substantive nodes, against the floor in the brief.
 - **Reuse** — which stale ids you pick up, and **how each is used differently from last time** rather than recited. Ids you leave out, each with a reason — "no room" is not a reason, so name what took the room.

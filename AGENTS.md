@@ -158,7 +158,9 @@ and it should be checked.
 ### Lesson shape — guidelines, not budgets
 
 A **node** is one NPC interaction with the learner; a **turn** is a learner response. One node is one
-caption — one thing on screen. A slow re-speak (`slowSL`) is not a second node.
+caption — one thing on screen. A slow re-speak (`slowSL`) is not a second node, and neither is the target
+phrase said a second time on the same node — once inside a sentence, then again on its own. Both ride the
+node they belong to, and neither counts toward length or the split.
 
 **Length** is the total count of both — turns plus nodes. **The split** between them shifts with level, so
 the node count *falls* as a lesson advances: the character says less and hands over more often.
@@ -178,9 +180,7 @@ for several turns while the other just keeps them going.
 offers, never from a length target. By advanced the learner is producing most of the lesson while the
 character mostly confirms and hands back.
 
-**Get the repeats by giving a reason to say it again that isn't "say it again."** "Repeat after me" is what
-you fall back on when you haven't built a reason. The reasons, and the tests a new one must pass, are in
-create-dialogue stage 0.
+The reasons to repeat and improvise, and the tests a new one must pass, are in create-dialogue stage 0.
 
 ## Run & verify
 
