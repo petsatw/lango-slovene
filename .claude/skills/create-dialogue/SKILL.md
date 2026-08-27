@@ -121,6 +121,27 @@ instruction, not a translation.
 
 **Vary openers + closers across levels.** Give each level its own `n1` opener and its own terminal closers — do NOT reuse one greeting or one closing as every level's. Identical lines read monotonously *and* collapse to one audio clip (the audio key excludes the delivery tag, so same `sl` + same voice = one clip, first-built wins — a character's `deliverySL` only lands on lines whose `sl` is unique to that voice). Spec distinct intents; LS writes distinct lines. `lint:dialogue` warns on any delivery collision that slips through.
 
+**Writing for the ear.** For an `advance: "audio"` scene, assume the learner is listening, not watching.
+Write so that:
+
+- **The situation is one that talk carries by itself.** Meeting someone, asking for something, sorting out
+  a misunderstanding, making a plan. Situations that turn on handling objects, moving around, or noticing
+  things are hard to hear.
+- **People say what they are doing,** the way they actually do in life — "I've left my keys inside", "hang
+  on, I'm getting my coat" — so the learner never has to picture anything to keep up.
+- **There are few enough voices and threads to hold in your head.** Two speakers, one place, one thing
+  going on.
+- **Every line hands over clearly.** After each one, the learner knows what just happened and whether it is
+  their turn.
+
+**The test:** read the lesson through with your eyes shut. If it only makes sense once you add a subtitle,
+a picture, or a sentence explaining what something looks like, the lesson is not right for this format.
+Change the lesson, not the packaging — find a situation that stands up in speech.
+
+**The exception:** lessons whose subject genuinely is visual — appearance, colour, describing a person or a
+place, the language of looking and pointing. There the description *is* the material, so it belongs.
+Anywhere else, reaching for a visual description is a sign the situation was chosen badly.
+
 **Beginner scaffolding — the ladder, and what the slot may contain.** For an `advance: "audio"` beginner
 level these are construction rules, not polish:
 
@@ -156,7 +177,7 @@ level these are construction rules, not polish:
 ### 3 — Language authoring (J → LS), one subagent PER LEVEL, in parallel
 Dispatch **`slovenian-author`** (dialogue mode) once per level, concurrently — each gets the situation, register, voices, and that level's node map (speaker + `intentEN` + `next`). Each returns `{ level, nodes:{id:{sl,en,deliverySL?,slowSL?,deliverySlowSL?}}, catalogDelta:{reuse,new}, concerns }`. Start on the default model. **LS never returns stall handlers** — those carry no Slovene.
 
-For an **`"audio"` scene**, the dispatch also names which nodes you marked for `slowSL` — LS writes the chunking (where a native would actually break the phrase, a language judgment) **and a `deliverySlowSL`**, because a ` … ` separator alone does not slow the voice down. Tell LS the register, that the client nodes are what the **learner** will say aloud, and that a client node's `en` is shown to the learner as their prompt.
+For an **`"audio"` scene**, the dispatch also names which nodes you marked for `slowSL` — LS writes the chunking (where a native would actually break the phrase, a language judgment) **and a `deliverySlowSL`**, because a ` … ` separator alone does not slow the voice down. Tell LS the register, that the client nodes are what the **learner** will say aloud, that a client node's `en` is shown to the learner as their prompt, and — quoted in full — **Writing for the ear** from stage 2.
 
 ### 4 — Sanity pass (J, C)
 Quick read against the rubric: native-not-textbook? register consistent? client lines carry the learner's gender? no npc-only line minted in a delta? branches re-converge coherently? If something's off, **re-dispatch that level's LS with the specific note** — never fix the Slovene yourself.
@@ -164,13 +185,17 @@ Quick read against the rubric: native-not-textbook? register consistent? client 
 ### 5 — Independent critique (J → critic)
 Dispatch **`scenario-critic`** (dialogue mode) over ALL levels' trees + deltas at once. It returns `{ verdict, fixes:[{level,nodeId,field,oldExact,newExact,reason}], deltaFindings, convergenceReviewed, notes }`. Its `fixes` are the **structured, addressed** edits the reconcile applies; its `deltaFindings` flag mint/reuse problems. If a `deltaFinding` is `block`, route it back to LS (stage 3) and re-critique.
 
-**For a beginner `advance: "audio"` level, the critic must also rule on two things a linter cannot.**
+**For a beginner `advance: "audio"` level, the critic must also rule on three things a linter cannot.**
 **Heard-first:** walk the level in order and confirm every client `sl` was voiced verbatim by an earlier npc
 node, or is a known word swapped into a shape voiced seconds earlier — and that no elicited form differs
 from its model by person, case, number or tense. **Character truth:** does the character only say things
 true for him and natural for a person in this situation? That single question catches the failures a
 structural gate never will — greeting a stranger he has already met, announcing a language he obviously
 speaks, or a learner re-introducing themselves unprompted to someone who knows them.
+**Written for the ear:** read the level as if you could only hear it. Does every beat make sense from the
+words alone, and at each hand-over is it clear that the turn is the learner's and what they should say? A
+beat that needs a subtitle, a picture, or a description of what something looks like does not fit the
+format — say so.
 
 ### 6 — Assemble the reconcile input (L, C)
 Write the reconcile input (draft path while unapproved; shape in docs/authoring-pipeline.md): the `scenario` header, `dialogueVoices`, `dialogueAdvance` (omit for `"tap"`), `dialoguePacing` (spoken scenes; omit to keep whatever the file already carries), the `levels` (each with `levelLabel`, `title`, an optional `background` filename and `frameEN`, `objectives:[{label,descriptorEN}]`, `root`, `nodes` merged from LS's `sl/en/deliverySL/slowSL/deliverySlowSL` plus the J-owned `glossPolicy/stallHandlers/learnables`, and `catalog:{reuse,new}`), the critic's `criticFixes`, and — folding A1 in (D5i) — `a1Candidates:[{learnableId,competencyId,note}]` proposing where each NEW learnable sits in the A1 map (competency ids from server/catalog/a1-map.json). You assemble English/structure only; every `sl` came from LS.
