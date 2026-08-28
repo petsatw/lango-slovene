@@ -664,6 +664,7 @@
       "frameEN": [
         "Slavko again — your third time.",
         "Today he wants to know where you're from.",
+        "Say your country's name however you can — English is fine. Only 'Sem iz' is Slovene.",
         "If a word slips away, that's normal. He'll say it again."
       ],
       "objectives": [
@@ -777,7 +778,7 @@
             },
             {
               "kind": "soften",
-              "label": "Answer him — one word"
+              "label": "Say no — that's the line here"
             }
           ],
           "next": [
@@ -787,7 +788,7 @@
         "c1b": {
           "speaker": "client",
           "sl": "Ne",
-          "en": "No — one word is the whole answer. Say it even if you're Slovenian; that's the line here.",
+          "en": "No.",
           "glossPolicy": "after",
           "learnables": [
             "ne"
@@ -910,7 +911,7 @@
         "c3": {
           "speaker": "client",
           "sl": "Sem iz ___.",
-          "en": "I'm from ___ — say your country however you can. He's just curious.",
+          "en": "I'm from ___.",
           "glossPolicy": "after",
           "focusSpan": "Sem iz",
           "learnables": [
@@ -1198,7 +1199,7 @@
             },
             {
               "kind": "soften",
-              "label": "Tell him your country"
+              "label": "Tell him your country — the English name is fine"
             }
           ],
           "next": [
@@ -1208,7 +1209,7 @@
         "c2": {
           "speaker": "client",
           "sl": "Sem iz ___.",
-          "en": "I'm from ___ — say your own country however you can. Only the two words 'Sem iz' have to be Slovene.",
+          "en": "I'm from ___.",
           "glossPolicy": "after",
           "focusSpan": "Sem iz",
           "learnables": [
@@ -1605,7 +1606,7 @@
         "c1": {
           "speaker": "client",
           "sl": "Ne razumem.",
-          "en": "I don't understand. — say it out loud; it's your line from last time.",
+          "en": "I don't understand.",
           "glossPolicy": "after",
           "focusSpan": "Ne razumem",
           "learnables": [
@@ -1719,7 +1720,7 @@
         "c3": {
           "speaker": "client",
           "sl": "Kako se reče umbrella?",
-          "en": "Ask him for the word: say 'Kako se reče' and then the English word — umbrella.",
+          "en": "How do you say “umbrella”?",
           "glossPolicy": "after",
           "focusSpan": "Kako se reče",
           "learnables": [
@@ -1776,7 +1777,7 @@
         "c4": {
           "speaker": "client",
           "sl": "Kako se reče rain?",
-          "en": "Ask him again, this time for a different word: 'Kako se reče' plus the English word — rain.",
+          "en": "How do you say “rain”?",
           "glossPolicy": "tap",
           "focusSpan": "Kako se reče",
           "learnables": [
@@ -1866,7 +1867,7 @@
             },
             {
               "kind": "soften",
-              "label": "Ask how to say goodbye"
+              "label": "Ask him how to say thank you"
             }
           ],
           "next": [
@@ -1876,7 +1877,7 @@
         "c6": {
           "speaker": "client",
           "sl": "Kako se reče thank you?",
-          "en": "One more — your own question this time: say 'Kako se reče' and then the English words in the slot — thank you.",
+          "en": "How do you say “thank you”?",
           "glossPolicy": "tap",
           "focusSpan": "Kako se reče",
           "learnables": [
@@ -1903,7 +1904,7 @@
             },
             {
               "kind": "soften",
-              "label": "Say bye"
+              "label": "Say thank you back"
             }
           ],
           "next": [
@@ -1913,7 +1914,7 @@
         "c7": {
           "speaker": "client",
           "sl": "Hvala.",
-          "en": "Use the word he just gave you — just the one word.",
+          "en": "Thank you.",
           "glossPolicy": "after",
           "learnables": [
             "hvala"
@@ -2011,7 +2012,7 @@
         "c1": {
           "speaker": "client",
           "sl": "To je dežnik.",
-          "en": "Say it back to him: 'To je' plus the word you got out of him last time — dežnik.",
+          "en": "This is an umbrella.",
           "glossPolicy": "after",
           "focusSpan": "To je",
           "learnables": [
@@ -2053,7 +2054,7 @@
         "c2": {
           "speaker": "client",
           "sl": "To je ključ.",
-          "en": "Name it: 'To je' plus the new word he just gave you — ključ.",
+          "en": "This is a key.",
           "glossPolicy": "tap",
           "focusSpan": "To je",
           "learnables": [
@@ -2094,7 +2095,7 @@
         "c3": {
           "speaker": "client",
           "sl": "Kaj je to?",
-          "en": "Ask him what it is — the question he just gave you.",
+          "en": "What is this?",
           "glossPolicy": "after",
           "focusSpan": "Kaj je to",
           "learnables": [
@@ -2147,7 +2148,7 @@
         "c4": {
           "speaker": "client",
           "sl": "To je knjiga.",
-          "en": "Say what it is: 'To je' plus his new word — knjiga.",
+          "en": "This is a book.",
           "glossPolicy": "tap",
           "focusSpan": "To je",
           "learnables": [
@@ -2191,7 +2192,7 @@
         "c5": {
           "speaker": "client",
           "sl": "Kaj je to?",
-          "en": "Ask him yourself this time — he is not going to prompt you.",
+          "en": "What is this?",
           "glossPolicy": "tap",
           "focusSpan": "Kaj je to",
           "learnables": [
@@ -2243,7 +2244,7 @@
             },
             {
               "kind": "soften",
-              "label": "Tell him what it really is"
+              "label": "Say no — then tell him what it really is"
             }
           ],
           "next": [
@@ -2253,7 +2254,7 @@
         "c6": {
           "speaker": "client",
           "sl": "Ne. To je dežnik.",
-          "en": "Put him right: say 'ne', then name it properly.",
+          "en": "No. This is an umbrella.",
           "glossPolicy": "tap",
           "focusSpan": "To je",
           "learnables": [
@@ -2308,7 +2309,7 @@
         "c7": {
           "speaker": "client",
           "sl": "Hvala. Adijo.",
-          "en": "Thank him and say bye — two words you already own.",
+          "en": "Thank you. Bye.",
           "glossPolicy": "tap",
           "learnables": [
             "hvala",
@@ -2388,7 +2389,7 @@
         "c1": {
           "speaker": "client",
           "sl": "Kaj je to?",
-          "en": "Ask him what it is — your question from last time. Say it first, before he tells you.",
+          "en": "What is this?",
           "glossPolicy": "tap",
           "focusSpan": "Kaj je to",
           "learnables": [
@@ -2441,7 +2442,7 @@
         "c2": {
           "speaker": "client",
           "sl": "Lahko pogledam?",
-          "en": "Ask his permission to look — the line he just gave you: 'Lahko' plus 'pogledam'.",
+          "en": "May I look?",
           "glossPolicy": "after",
           "focusSpan": "Lahko",
           "learnables": [
@@ -2484,9 +2485,7 @@
           "en": "Mmm! It's good. Mmm!",
           "deliverySL": "[mouth full, blissful] Mmm! [savouring, oblivious] Dobra je. [chewing happily] Mmm!",
           "glossPolicy": "after",
-          "learnables": [
-            "pa"
-          ],
+          "learnables": [],
           "next": [
             "n5"
           ]
@@ -2524,7 +2523,7 @@
         "c3": {
           "speaker": "client",
           "sl": "Lahko poskusim?",
-          "en": "Ask if you may try some — same shape as before: 'Lahko' plus 'poskusim'.",
+          "en": "May I try some?",
           "glossPolicy": "after",
           "focusSpan": "Lahko",
           "learnables": [
@@ -2570,7 +2569,7 @@
         "c4": {
           "speaker": "client",
           "sl": "Hvala.",
-          "en": "Thank him — just the one word.",
+          "en": "Thank you.",
           "glossPolicy": "tap",
           "learnables": [
             "hvala"
@@ -2632,7 +2631,7 @@
         "c5": {
           "speaker": "client",
           "sl": "Lahko vprašam?",
-          "en": "Ask his permission to ask a question — 'Lahko' plus 'vprašam'.",
+          "en": "May I ask?",
           "glossPolicy": "after",
           "focusSpan": "Lahko",
           "learnables": [
@@ -2676,7 +2675,7 @@
         "c6": {
           "speaker": "client",
           "sl": "Kako se reče grandma?",
-          "en": "Ask him a word of your own: 'Kako se reče' and then the English word — grandma.",
+          "en": "How do you say “grandma”?",
           "glossPolicy": "tap",
           "focusSpan": "Kako se reče",
           "learnables": [
@@ -2723,7 +2722,7 @@
         "c7": {
           "speaker": "client",
           "sl": "Adijo, Slavko.",
-          "en": "Say bye to him by name.",
+          "en": "Bye, Slavko.",
           "glossPolicy": "tap",
           "learnables": [
             "adijo"
@@ -3765,13 +3764,6 @@
       "field": "deliverySL",
       "oldExact": "[innocently, still deadpan] Ne? Ni knjiga?",
       "newExact": "[innocently, still deadpan] Hm. Je to res knjiga? [inviting] Povej mi."
-    },
-    {
-      "level": 7,
-      "nodeId": "c6",
-      "field": "en",
-      "oldExact": "He used a word you didn't know. Ask for it: 'Kako se reče' and then the English word — grandma.",
-      "newExact": "Ask him a word of your own: 'Kako se reče' and then the English word — grandma."
     },
     {
       "level": 8,
