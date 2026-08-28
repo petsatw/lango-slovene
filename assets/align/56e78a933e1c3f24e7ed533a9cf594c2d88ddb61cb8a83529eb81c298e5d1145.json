@@ -1,0 +1,75 @@
+{
+  "key": "56e78a933e1c3f24e7ed533a9cf594c2d88ddb61cb8a83529eb81c298e5d1145",
+  "text": "No, prav! Babica je slišala tvoj glas in te hoče spoznati.",
+  "words": [
+    {
+      "text": "No,",
+      "start": 0.28,
+      "end": 0.479,
+      "loss": 0.0555419921875
+    },
+    {
+      "text": "prav!",
+      "start": 0.779,
+      "end": 1.319,
+      "loss": 0.01228160858154297
+    },
+    {
+      "text": "Babica",
+      "start": 2.299,
+      "end": 2.74,
+      "loss": 0.2713460922241211
+    },
+    {
+      "text": "je",
+      "start": 2.779,
+      "end": 2.879,
+      "loss": 0.0023193359375
+    },
+    {
+      "text": "slišala",
+      "start": 2.919,
+      "end": 3.259,
+      "loss": 0.0012811933244977678
+    },
+    {
+      "text": "tvoj",
+      "start": 3.339,
+      "end": 3.5,
+      "loss": 0.0019876956939697266
+    },
+    {
+      "text": "glas",
+      "start": 3.579,
+      "end": 3.98,
+      "loss": 0.008403778076171875
+    },
+    {
+      "text": "in",
+      "start": 4.019,
+      "end": 4.119,
+      "loss": 0.00718158483505249
+    },
+    {
+      "text": "te",
+      "start": 4.139,
+      "end": 4.239,
+      "loss": 0.007091522216796875
+    },
+    {
+      "text": "hoče",
+      "start": 4.279,
+      "end": 4.519,
+      "loss": 0.001234292984008789
+    },
+    {
+      "text": "spoznati.",
+      "start": 4.539,
+      "end": 5.079,
+      "loss": 0.027116775512695312
+    }
+  ],
+  "loss": 0.042810980615944697,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:55.692Z"
+}

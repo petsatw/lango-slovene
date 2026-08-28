@@ -1,0 +1,81 @@
+{
+  "key": "ee86af064e3cf94018a2fe15dba4c5c7f2c36ca7694b52083078674d22604552",
+  "text": "V Ljubljani, pri babici. Zakaj greva? Ha, skrivnost! Ampak kar poskusi: Zakaj?",
+  "words": [
+    {
+      "text": "V",
+      "start": 0.199,
+      "end": 0.299,
+      "loss": 0.31640625
+    },
+    {
+      "text": "Ljubljani,",
+      "start": 0.399,
+      "end": 0.959,
+      "loss": 0.16683731079101563
+    },
+    {
+      "text": "pri",
+      "start": 1.139,
+      "end": 1.299,
+      "loss": 0.008794784545898438
+    },
+    {
+      "text": "babici.",
+      "start": 1.319,
+      "end": 1.819,
+      "loss": 0.04671546391078404
+    },
+    {
+      "text": "Zakaj",
+      "start": 2.559,
+      "end": 2.839,
+      "loss": 0.2786411285400391
+    },
+    {
+      "text": "greva?",
+      "start": 2.879,
+      "end": 3.24,
+      "loss": 0.0052700042724609375
+    },
+    {
+      "text": "Ha,",
+      "start": 3.699,
+      "end": 3.859,
+      "loss": 0.37831370035807294
+    },
+    {
+      "text": "skrivnost!",
+      "start": 4.199,
+      "end": 4.9,
+      "loss": 0.15053923130035402
+    },
+    {
+      "text": "Ampak",
+      "start": 5.679,
+      "end": 5.98,
+      "loss": 0.288043212890625
+    },
+    {
+      "text": "kar",
+      "start": 6.039,
+      "end": 6.199,
+      "loss": 0.007477283477783203
+    },
+    {
+      "text": "poskusi:",
+      "start": 6.219,
+      "end": 6.719,
+      "loss": 1.1209567785263062
+    },
+    {
+      "text": "Zakaj?",
+      "start": 7.539,
+      "end": 7.94,
+      "loss": 0.11631075541178386
+    }
+  ],
+  "loss": 0.2305765641041291,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:55.311Z"
+}

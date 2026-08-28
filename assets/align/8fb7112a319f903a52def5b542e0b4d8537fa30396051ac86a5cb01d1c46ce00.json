@@ -1,0 +1,57 @@
+{
+  "key": "8fb7112a319f903a52def5b542e0b4d8537fa30396051ac86a5cb01d1c46ce00",
+  "text": "Uf … živjo. Danes sem prehodil pol Ljubljane.",
+  "words": [
+    {
+      "text": "Uf",
+      "start": 0.099,
+      "end": 0.459,
+      "loss": 4.9296875
+    },
+    {
+      "text": "…",
+      "start": 0.919,
+      "end": 0.92,
+      "loss": 8.6875
+    },
+    {
+      "text": "živjo.",
+      "start": 0.959,
+      "end": 1.339,
+      "loss": 0.35493914286295575
+    },
+    {
+      "text": "Danes",
+      "start": 2.5,
+      "end": 2.799,
+      "loss": 0.10126533508300781
+    },
+    {
+      "text": "sem",
+      "start": 2.839,
+      "end": 2.98,
+      "loss": 0.0013135274251302083
+    },
+    {
+      "text": "prehodil",
+      "start": 3,
+      "end": 3.539,
+      "loss": 0.0013641119003295898
+    },
+    {
+      "text": "pol",
+      "start": 3.559,
+      "end": 3.779,
+      "loss": 0.035334269205729164
+    },
+    {
+      "text": "Ljubljane.",
+      "start": 3.839,
+      "end": 4.319,
+      "loss": 0.028848016262054445
+    }
+  ],
+  "loss": 0.5605121374130249,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:32.709Z"
+}

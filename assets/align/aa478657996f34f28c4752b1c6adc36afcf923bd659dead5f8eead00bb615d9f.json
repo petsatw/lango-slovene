@@ -1,0 +1,99 @@
+{
+  "key": "aa478657996f34f28c4752b1c6adc36afcf923bd659dead5f8eead00bb615d9f",
+  "text": "Govorim slovensko — tako ji povem! Babica peče potico. Vedno šteje, koliko nas bo. Koliko?",
+  "words": [
+    {
+      "text": "Govorim",
+      "start": 0.219,
+      "end": 0.659,
+      "loss": 0.045825685773577006
+    },
+    {
+      "text": "slovensko",
+      "start": 0.74,
+      "end": 1.299,
+      "loss": 0.010385725233289931
+    },
+    {
+      "text": "—",
+      "start": 1.319,
+      "end": 1.3199999999999998,
+      "loss": 4.5625
+    },
+    {
+      "text": "tako",
+      "start": 1.679,
+      "end": 2.019,
+      "loss": 0.019962310791015625
+    },
+    {
+      "text": "ji",
+      "start": 2.059,
+      "end": 2.159,
+      "loss": 0.011566162109375
+    },
+    {
+      "text": "povem!",
+      "start": 2.2,
+      "end": 2.559,
+      "loss": 0.49210866292317706
+    },
+    {
+      "text": "Babica",
+      "start": 3.559,
+      "end": 4.039,
+      "loss": 0.22639958063761392
+    },
+    {
+      "text": "peče",
+      "start": 4.079,
+      "end": 4.36,
+      "loss": 0.009326934814453125
+    },
+    {
+      "text": "potico.",
+      "start": 4.42,
+      "end": 4.839,
+      "loss": 0.033985682896205356
+    },
+    {
+      "text": "Vedno",
+      "start": 6.199,
+      "end": 6.48,
+      "loss": 0.403806209564209
+    },
+    {
+      "text": "šteje,",
+      "start": 6.559,
+      "end": 6.879,
+      "loss": 0.009386698404947916
+    },
+    {
+      "text": "koliko",
+      "start": 7.019,
+      "end": 7.299,
+      "loss": 0.0020405451456705728
+    },
+    {
+      "text": "nas",
+      "start": 7.359,
+      "end": 7.539,
+      "loss": 0.0013915697733561199
+    },
+    {
+      "text": "bo.",
+      "start": 7.559,
+      "end": 7.719,
+      "loss": 0.038533528645833336
+    },
+    {
+      "text": "Koliko?",
+      "start": 8.679,
+      "end": 9.099,
+      "loss": 0.3204585484095982
+    }
+  ],
+  "loss": 0.22875039842393663,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:56.442Z"
+}
