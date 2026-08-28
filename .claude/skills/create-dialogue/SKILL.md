@@ -41,6 +41,20 @@ Answers to **AGENTS.md › How the lessons teach**. Read it first; it is the law
 - **Heard-only set** — what appears on `npc` nodes but has never been in a slot.
 - **Held lines** — what earlier levels left unglossed (`glossPolicy: "held"`). This level's material may make one of them land.
 
+**Cloud (L) — comprehensive, from the same five levels.** The computed ledger above is narrow and precise:
+what this learner has produced. The cloud is comprehensive: everything that has been in front of them,
+which is what lets a designer build turns out of sound they can already pick out.
+
+- **Every vocabulary item and phrase from those five levels** — every `sl` on every node, npc and client
+  alike, with the catalog ids behind them.
+- **A one-line synopsis of each level's objectives** — what it set out to teach.
+- **A one-sentence narrative summary of each level** — what happened in it, so a designer can see which
+  devices have already been used.
+- **The freedom block** (stage 2a), verbatim.
+
+Hand the cloud over as a collection of ingredients for the designers and authors use as needed to best
+perform their task.
+
 **Judged (J) — two halves.** You (C) fix the first two, and they are identical in all three designs. Everything after them is what the three `lesson-designer`s each answer differently at stage 2a — **decide none of it here.**
 
 **Fixed by you (C):**
@@ -98,6 +112,24 @@ Dispatch **`lesson-designer`** three times, concurrently and **blind to each oth
 
 Every brief carries, identically:
 - **The invariant** — the act and the one new shape (stage 0); the register, voices, role and advance mode (stage 1); and the whole **computed ledger** (said before · heard-only · held lines · not-yet-reused · which entries are facts about the learner). The ledger is the learner's history, not a design choice.
+- **The cloud** (stage 0) — every vocabulary item and phrase from the previous five levels, the one-line
+  objective synopses, and the one-sentence narrative summaries.
+- **The freedom block**, quoted verbatim into every brief:
+
+  > ## You are free of previous narrative lines
+  >
+  > **The learning objective comes first.** You are not continuing a story, and no earlier scene has any
+  > claim on this one. Take the narrative wherever it needs to go to teach this objective best — if it
+  > continues a previous narrative, great. If it introduces a new situation, a new place, a new reason
+  > for the two of them to be talking, equally great!
+  >
+  > The learner's history above exists to tell you **which words are already in their ear**, so you can
+  > build turns out of sound they can pick out. That is all it is for. If the new lesson happens to sit
+  > well alongside what came before, good — but synergy is a bonus, never a requirement, and it must
+  > never cost the lesson anything.
+  >
+  > **Storytelling exists to enhance the learning. If it distracts from it, it is the wrong path.**
+
 - **The reasons to repeat and improvise** (stage 0), **shuffled independently for each brief**, with the three tests in the order given.
 - **Writing for the ear** and, for a beginner spoken level, the **scaffolding ladder** — both quoted in full from stage 2c.
 - The two **sizing** paragraphs from stage 0.
@@ -105,7 +137,7 @@ Every brief carries, identically:
 Each returns a **design sketch**: English intent only, no Slovene, no per-node fields.
 
 - **Premise** — one line: what happens.
-- **Opening** — what he remembers about this learner, and why it comes up now.
+- **Opening** — how the scene starts and what puts the new shape in play. If it draws on what he remembers about this learner, say what and why it comes up now; if the situation is new, say what makes it the right one for this objective. Either is a complete answer.
 - **Ladder trace** — the new shape's exposures in order: heard in a sentence → heard alone → heard slowly → in the slot.
 - **Retrieval schedule** — the distinct productions of the shape, and what sits between them.
 - **Reasons used** — which, and where each fires.
@@ -276,8 +308,25 @@ Write the reconcile input (draft path while unapproved; shape in docs/authoring-
 
 **`lint:a1` + the bands:** `lint:a1` gates on `a1-map` ref-integrity and otherwise **reports** — the per-dialogue band, and which minted items sit in the tagged superset vs the curated core. New A1 material is already tagged `a1: true` at mint (stages 3/5/7), which is all the classifier needs, so nothing is folded to green the gate. Read the band report: **the computed band is what each level ships.** Where a level was *aimed* at Basic but computes Intermediate, evaluate per [dialogue-difficulty-model.md §7](../../../docs/dialogue-difficulty-model.md) — either revise it toward already-core survival language (route to LS/2–3) so it legitimately reaches Basic, or, if it genuinely rests on a few very-high-leverage items the core lacks, **keep the computed band and carry a core-promotion recommendation** into stage 9.
 
+### 8b — Wrap-up: catalog proposals (L + J)
+
+Two questions, answered every run. The operator owns both calls; this stage produces proposals.
+
+**(a) What did these levels put in the learner's ear that the catalog lacks?** Walk every `sl` on every
+**npc** node just authored. Fold inflections to citation form (`babici` → `babica`) and drop what an
+existing id already covers. For each survivor give the citation form, an **English gloss**, its `kind`
+(vocabulary · chunk · pattern), where it appeared, and one line on why it earns an id — its own frequency,
+or a coming lesson that will ask the learner to produce it. Mark throwaway interjections as such.
+
+**(b) Does anything here belong in the core?** Consider the items minted this run and the `a1: true` items
+these levels lean on. Recommend one only where it clears the bar the core exists to protect — **very high
+frequency AND broad unlock leverage, essential survival language.** Give the `learnableId`, its gloss, the
+case for it, and the bands promotion would recalibrate. An empty list is a common and correct answer.
+
+Both lists go to stage 9. Gloss everything in English — the operator decides without reading Slovene.
+
 ### 9 — Submit the ReviewPackage (L, C) — PR semantics
-Present R: the per-level objectives, **the design this lesson was built on** (the `learning-designer`'s `built_on` + `why_it_teaches_best`, what it took from the other two and what it left behind, plus one line on each design not built on — a headless run never hides that there was a fork), the trees (with English intent + LS's Slovene + delivery tags), the catalog delta (reused vs newly minted, with each new item's gloss + predictable error), the computed `introduces`, the **computed band per level** (and, for any level whose band differs from its aim, the §7 evaluation), any **core-promotion recommendations** (name each `learnableId`, why it clears the core's very-high-frequency + broad-leverage bar, and the band it would recalibrate), any `lint:dialogue` delivery-collision warnings and how you resolved them, the convergence nodes the critic reviewed, and the green lint/test output. State the register + voices explicitly and invite R to confirm or override.
+Present R: the per-level objectives, **the design this lesson was built on** (the `learning-designer`'s `built_on` + `why_it_teaches_best`, what it took from the other two and what it left behind, plus one line on each design not built on — a headless run never hides that there was a fork), the trees (with English intent + LS's Slovene + delivery tags), the catalog delta (reused vs newly minted, with each new item's gloss + predictable error), the computed `introduces`, the **computed band per level** (and, for any level whose band differs from its aim, the §7 evaluation), the **stage-8b wrap-up in full** — the catalog candidates (citation form + English gloss + kind + why) and the core-promotion recommendations (each `learnableId`, its gloss, the case, and the bands promotion would recalibrate); present both every run, and where a list is empty state "none", any `lint:dialogue` delivery-collision warnings and how you resolved them, the convergence nodes the critic reviewed, and the green lint/test output. State the register + voices explicitly and invite R to confirm or override.
 
 ### 10 — Review gate (J, R)
 R replies **approve** or **reject(notes)**. Do not generate audio before approve. On reject, route each note to its stage (language → LS/3; a branch → 2; a mint → LS/3 + reconcile), re-run 6–8, re-submit.
