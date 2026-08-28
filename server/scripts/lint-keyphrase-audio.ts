@@ -167,17 +167,24 @@ for (const [scenarioId, levels] of byScenario) {
           continue;
         }
         const differing = phraseWords.map((w, k) => (w !== heardWords[k] ? k : -1)).filter((k) => k >= 0);
-        if (differing.length !== 1) {
-          problems.push(`${at}: the delivery "${heard}" differs from the phrase in ${differing.length} places `
-            + `— fixed words are fixed; exactly one slot may vary`);
+        // Two kinds of difference, and only one of them is bounded. A position the phrase authored as
+        // `___` is a BLANK on screen: the character's filler is exactly what the ear is meant to supply
+        // there, nothing on screen contradicts it, and the panel has nothing to reduce — so a phrase may
+        // carry as many of those as it likes ("Sem ___ in sem iz ___." voiced by "Sem Slavko in sem iz
+        // Ljubljane."). A position where the phrase shows a real WORD is the bounded one: the panel has to
+        // render the row as its shape (frameFor), and that reduction only exists for a single substitution.
+        const substituted = differing.filter((k) => phraseWords[k] !== "___");
+        if (substituted.length > 1) {
+          problems.push(`${at}: the delivery "${heard}" replaces ${substituted.length} of the phrase's own `
+            + `words — fixed words are fixed, and the panel can only reduce a single substitution to a frame`);
           continue;
         }
-        // The one word that differs must not be one the frame names as fixed.
-        const slotWord = phraseWords[differing[0]!]!;
-        const anyFrameFixesIt = slotted.some((f) => frameParts(f.sl).fixed.has(slotWord));
-        if (anyFrameFixesIt) {
+        // A word the phrase shows and the delivery replaces must not be one the frame names as fixed.
+        const slotWord = substituted.length ? phraseWords[substituted[0]!]! : null;
+        const fixing = slotWord ? slotted.find((f) => frameParts(f.sl).fixed.has(slotWord)) : undefined;
+        if (fixing) {
           problems.push(`${at}: the substituted word "${slotWord}" is a FIXED word of frame `
-            + `"${slotted.find((f) => frameParts(f.sl).fixed.has(slotWord))!.sl}" — that is not its slot`);
+            + `"${fixing.sl}" — that is not its slot`);
           continue;
         }
         // And the panel must be able to render the shape, or the learner reads a word they will not hear.
