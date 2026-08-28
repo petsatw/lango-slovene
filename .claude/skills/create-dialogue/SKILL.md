@@ -41,12 +41,19 @@ Answers to **AGENTS.md › How the lessons teach**. Read it first; it is the law
 - **Heard-only set** — what appears on `npc` nodes but has never been in a slot.
 - **Held lines** — what earlier levels left unglossed (`glossPolicy: "held"`). This level's material may make one of them land.
 
-**Cloud (L) — comprehensive, from the same five levels.** The computed ledger above is narrow and precise:
-what this learner has produced. The cloud is comprehensive: everything that has been in front of them,
-which is what lets a designer build turns out of sound they can already pick out.
+**Cloud (L) — the ingredients, from the same five levels.** The computed ledger above is narrow and
+precise: what this learner has produced. The cloud is wide: the material that has been in their ear,
+handed over loose so a designer can build turns out of sound they can already pick out.
 
-- **Every vocabulary item and phrase from those five levels** — every `sl` on every node, npc and client
-  alike, with the catalog ids behind them.
+- **The inventory** — the sound this learner can already pick out, as a **flat pool of units**:
+  - every **catalog item** the five levels used, npc and client nodes alike, as `id` + citation form +
+    gloss;
+  - every **word the catalog has no id for**, folded to citation form (`babici` → `babica`, `žepu` →
+    `žep`).
+
+  **Build it as one shuffled pool** — every unit from all five levels in a single list, in random order.
+  A unit is a word or a frame: the size of thing that goes in a slot. Pooled this way each item sits at
+  its true frequency in the data, and a designer reaches for what serves the objective.
 - **A one-line synopsis of each level's objectives** — what it set out to teach.
 - **A one-sentence narrative summary of each level** — what happened in it, so a designer can see which
   devices have already been used.
@@ -55,13 +62,15 @@ which is what lets a designer build turns out of sound they can already pick out
 Hand the cloud over as a collection of ingredients for the designers and authors use as needed to best
 perform their task.
 
-**Judged (J) — two halves.** You (C) fix the first two, and they are identical in all three designs. Everything after them is what the three `lesson-designer`s each answer differently at stage 2a — **decide none of it here.**
+**Judged (J) — two halves.** You (C) fix the shape, and it is identical in all three designs. Everything after it is what the three `lesson-designer`s each answer differently at stage 2a — **decide none of it here.**
 
 **Fixed by you (C):**
-- **The act**, one step on: **echo → answer → interrupt → ask**.
 - **The one new shape.** *Govorim slovensko / angleško / dobro angleško / ne dobro slovensko* is one item. Reject a candidate if producing it needs a **derivation** that has not already been learned (case, number, tense, person, etc).
 
 **Answered by each designer (stage 2a) — spec these in the brief, don't answer them:**
+- **The situation** — where they are, why the two of them are talking, what the character is doing, and
+  who and what is in the scene with them. Each design answers this fresh, and the three answers are the
+  main axis along which they differ.
 - **The variation plan** — how the shape gets worked, and how many turns that yields. Moves: answer it · negate it · swap the filler · add a qualifier · hear it said back.
 - **Natural reasons to repeat and improvise** — the in-fiction *reasons* those variations happen. Play is always lighthearted and never at the learner's expense.
 
@@ -111,10 +120,23 @@ Set `dialogueAdvance` in the reconcile input to match. Absent ⇒ `"tap"`.
 Dispatch **`lesson-designer`** three times, concurrently and **blind to each other**. Three passes from one context converge — independence is what makes the designs genuinely different, and it is the same reason the reasons list is shuffled.
 
 Every brief carries, identically:
-- **The invariant** — the act and the one new shape (stage 0); the register, voices, role and advance mode (stage 1); and the whole **computed ledger** (said before · heard-only · held lines · not-yet-reused · which entries are facts about the learner). The ledger is the learner's history, not a design choice.
-- **The cloud** (stage 0) — every vocabulary item and phrase from the previous five levels, the one-line
-  objective synopses, and the one-sentence narrative summaries.
-- **The freedom block**, quoted verbatim into every brief:
+- **The shape** (stage 0) — the one new sentence-shape this lesson teaches. It is the whole of what is
+  fixed for a designer, and three designs are three routes to it.
+- **The settings** (stage 1) — the advance mode, the register, the two voices and which of them is the
+  learner, and the learner's gender wherever it constrains the forms that can be elicited. Every entry
+  states what the format allows. `role` names the npc: a Slovene role noun (`natakarica`) or the
+  character's id (`slavko`).
+- **The computed ledger** — said before · heard-only · held lines · not-yet-reused. Extraction from the
+  levels already built; a script emits every line of it.
+- **The cloud** (stage 0) — the shuffled inventory, the one-line objective synopses, and the one-sentence
+  narrative summaries.
+- **The decision line**, quoted verbatim:
+
+  > For every decision, ask what the best expert in that field would do and why they would reject your
+  > current choice; if you can name that reason, don't make the choice. Optimize for what that expert
+  > would judge correct, never for what satisfies the stated constraints most cheaply.
+
+- **This block**, quoted verbatim into every brief:
 
   > ## You are free of previous narrative lines
   >
@@ -150,18 +172,21 @@ Each returns a **design sketch**: English intent only, no Slovene, no per-node f
 
 Nothing is written to disk; the sketches live in your context.
 
-**A thin ledger narrows the cloud, and that is honest.** Early in a scenario the learner has produced little, so "not yet reused" may hold one id and "what he remembers" may be nearly determined. Three designs converging there is a true signal about the lesson, not a failure of the designers — do not manufacture a distinction, and do not re-dispatch to get one.
-
 ### 2b — Choose the lesson (J → learning-designer)
-Dispatch **`learning-designer`** once, with all three sketches and the invariant block.
+Dispatch **`learning-designer`** once, with all three sketches, the shape and the settings. Give it this,
+verbatim:
 
-**It is not a gate.** The lints, `scenario-critic` and `lint:a1` already own correctness downstream; nothing needs a second enforcer. Its only question is which of these three teaches best, and whether anything in the other two makes it better without straining its premise.
+> Your role is that of an optimizer and decision maker to guide the most masterful design. For every
+> decision, ask what the best expert in that field would do and why they would reject your current
+> choice; if you can name that reason, don't make the choice. Optimize for what that expert would judge
+> correct, never for what satisfies the stated constraints most cheaply.
+>
+> Gating functions and auditing for quality will occur later and be performed by other roles, you have
+> the freedom to make sure this lesson is optimal.
 
 It returns `{ built_on, why_it_teaches_best, taken_from_others:[{from,what,why_it_fits}], left_behind:[{what,why}], what_to_watch }`.
 
 **Interactive:** show R the three sketches and the verdict; R picks. **Headless:** the verdict stands, and stage 9 reports the two designs not built on.
-
-If it reports that all three break a binding rule — heard-first, a derivation, more than one new shape — re-dispatch 2a with the specific note. Do not build the least-bad.
 
 ### 2c — Build the chosen design's tree skeletons (J)
 Build the node graph from the design chosen at 2b. The sketch fixes the premise, the reasons, the ladder and the reuse; this stage turns it into ids, speakers, English intents and the per-node J fields.
