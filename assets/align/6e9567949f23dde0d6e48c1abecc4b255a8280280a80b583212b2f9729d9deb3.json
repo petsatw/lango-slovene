@@ -1,0 +1,183 @@
+{
+  "key": "6e9567949f23dde0d6e48c1abecc4b255a8280280a80b583212b2f9729d9deb3",
+  "text": "Poglej: ko česa ne povem, me ustavi. Z eno besedo. Samo eno. Kdaj? Kje? Koliko? Zakaj? In če hočeš, najprej reci: Lahko vprašam? Torej. Babica ima rojstni dan. Pridi!",
+  "words": [
+    {
+      "text": "Poglej:",
+      "start": 0.159,
+      "end": 0.599,
+      "loss": 1.12637574332101
+    },
+    {
+      "text": "ko",
+      "start": 1.279,
+      "end": 1.379,
+      "loss": 0.6724662780761719
+    },
+    {
+      "text": "česa",
+      "start": 1.5,
+      "end": 1.819,
+      "loss": 0.06206512451171875
+    },
+    {
+      "text": "ne",
+      "start": 1.86,
+      "end": 1.979,
+      "loss": 0.00021958351135253906
+    },
+    {
+      "text": "povem,",
+      "start": 2.019,
+      "end": 2.359,
+      "loss": 0.004653215408325195
+    },
+    {
+      "text": "me",
+      "start": 2.779,
+      "end": 2.859,
+      "loss": 0.003131389617919922
+    },
+    {
+      "text": "ustavi.",
+      "start": 2.899,
+      "end": 3.46,
+      "loss": 0.11352852412632533
+    },
+    {
+      "text": "Z",
+      "start": 4.139,
+      "end": 4.219,
+      "loss": 0.39453125
+    },
+    {
+      "text": "eno",
+      "start": 4.319,
+      "end": 4.46,
+      "loss": 0.001309792200724284
+    },
+    {
+      "text": "besedo.",
+      "start": 4.519,
+      "end": 4.88,
+      "loss": 0.10058607373918806
+    },
+    {
+      "text": "Samo",
+      "start": 5.44,
+      "end": 5.699,
+      "loss": 0.09873044490814209
+    },
+    {
+      "text": "eno.",
+      "start": 5.879,
+      "end": 6.079,
+      "loss": 0.0056459903717041016
+    },
+    {
+      "text": "Kdaj?",
+      "start": 7.319,
+      "end": 7.659,
+      "loss": 0.33830108642578127
+    },
+    {
+      "text": "Kje?",
+      "start": 8.579,
+      "end": 8.819,
+      "loss": 0.06378889083862305
+    },
+    {
+      "text": "Koliko?",
+      "start": 9.679,
+      "end": 10.139,
+      "loss": 0.030615125383649553
+    },
+    {
+      "text": "Zakaj?",
+      "start": 10.8,
+      "end": 11.219,
+      "loss": 0.024702707926432293
+    },
+    {
+      "text": "In",
+      "start": 12.319,
+      "end": 12.399,
+      "loss": 0.4181375503540039
+    },
+    {
+      "text": "če",
+      "start": 12.439,
+      "end": 12.539,
+      "loss": 0.0005342960357666016
+    },
+    {
+      "text": "hočeš,",
+      "start": 12.599,
+      "end": 13.019,
+      "loss": 0.002738038698832194
+    },
+    {
+      "text": "najprej",
+      "start": 13.539,
+      "end": 13.899,
+      "loss": 0.0034440585545131137
+    },
+    {
+      "text": "reci:",
+      "start": 13.979,
+      "end": 14.419,
+      "loss": 0.5549369812011719
+    },
+    {
+      "text": "Lahko",
+      "start": 15.179,
+      "end": 15.399,
+      "loss": 0.1588531494140625
+    },
+    {
+      "text": "vprašam?",
+      "start": 15.439,
+      "end": 15.96,
+      "loss": 0.026079267263412476
+    },
+    {
+      "text": "Torej.",
+      "start": 17.379,
+      "end": 17.639,
+      "loss": 0.5838338534037272
+    },
+    {
+      "text": "Babica",
+      "start": 18.34,
+      "end": 18.719,
+      "loss": 0.06660223007202148
+    },
+    {
+      "text": "ima",
+      "start": 18.76,
+      "end": 18.92,
+      "loss": 0.023717244466145832
+    },
+    {
+      "text": "rojstni",
+      "start": 18.959,
+      "end": 19.319,
+      "loss": 0.020250456673758372
+    },
+    {
+      "text": "dan.",
+      "start": 19.359,
+      "end": 19.579,
+      "loss": 0.06456434726715088
+    },
+    {
+      "text": "Pridi!",
+      "start": 19.859,
+      "end": 20.1,
+      "loss": 0.2294445037841797
+    }
+  ],
+  "loss": 0.14895818535103855,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:38.244Z"
+}

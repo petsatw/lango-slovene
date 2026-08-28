@@ -1,0 +1,75 @@
+{
+  "key": "85cd12b8fc1d81ea994593642f29026dcd7c88d160339dc010dbe8f2f1807058",
+  "text": "Babica ne čaka. Zato takole: Sem Slavko in sem iz Ljubljane.",
+  "words": [
+    {
+      "text": "Babica",
+      "start": 0.14,
+      "end": 0.539,
+      "loss": 0.2587594985961914
+    },
+    {
+      "text": "ne",
+      "start": 0.62,
+      "end": 0.74,
+      "loss": 0.0020046234130859375
+    },
+    {
+      "text": "čaka.",
+      "start": 0.779,
+      "end": 1.1,
+      "loss": 0.06690239906311035
+    },
+    {
+      "text": "Zato",
+      "start": 2.259,
+      "end": 2.519,
+      "loss": 0.08060383796691895
+    },
+    {
+      "text": "takole:",
+      "start": 2.539,
+      "end": 2.899,
+      "loss": 1.089670249394008
+    },
+    {
+      "text": "Sem",
+      "start": 3.819,
+      "end": 3.939,
+      "loss": 0.20241435368855795
+    },
+    {
+      "text": "Slavko",
+      "start": 4.039,
+      "end": 4.48,
+      "loss": 0.004855155944824219
+    },
+    {
+      "text": "in",
+      "start": 4.699,
+      "end": 4.819,
+      "loss": 0.0036859512329101562
+    },
+    {
+      "text": "sem",
+      "start": 4.859,
+      "end": 4.98,
+      "loss": 0.004506429036458333
+    },
+    {
+      "text": "iz",
+      "start": 5.019,
+      "end": 5.119,
+      "loss": 0.0009765625
+    },
+    {
+      "text": "Ljubljane.",
+      "start": 5.159,
+      "end": 5.619,
+      "loss": 0.015141749382019043
+    }
+  ],
+  "loss": 0.17808539072672527,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:49.983Z"
+}

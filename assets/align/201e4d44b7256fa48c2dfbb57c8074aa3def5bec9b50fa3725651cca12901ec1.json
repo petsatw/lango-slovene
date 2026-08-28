@@ -1,0 +1,75 @@
+{
+  "key": "201e4d44b7256fa48c2dfbb57c8074aa3def5bec9b50fa3725651cca12901ec1",
+  "text": "Zdaj pa ti, vse skupaj: Sem iz Ljubljane in govorim slovensko.",
+  "words": [
+    {
+      "text": "Zdaj",
+      "start": 0.159,
+      "end": 0.439,
+      "loss": 0.025518745183944702
+    },
+    {
+      "text": "pa",
+      "start": 0.479,
+      "end": 0.599,
+      "loss": 0.0002636909484863281
+    },
+    {
+      "text": "ti,",
+      "start": 0.62,
+      "end": 0.74,
+      "loss": 0.35375531514485675
+    },
+    {
+      "text": "vse",
+      "start": 1.039,
+      "end": 1.22,
+      "loss": 0.001975377400716146
+    },
+    {
+      "text": "skupaj:",
+      "start": 1.279,
+      "end": 1.599,
+      "loss": 1.196559054510934
+    },
+    {
+      "text": "Sem",
+      "start": 3.099,
+      "end": 3.299,
+      "loss": 0.1090253194173177
+    },
+    {
+      "text": "iz",
+      "start": 3.339,
+      "end": 3.439,
+      "loss": 0.0007839202880859375
+    },
+    {
+      "text": "Ljubljane",
+      "start": 3.5,
+      "end": 3.98,
+      "loss": 0.0007709397210015191
+    },
+    {
+      "text": "in",
+      "start": 4.219,
+      "end": 4.339,
+      "loss": 0.0026974081993103027
+    },
+    {
+      "text": "govorim",
+      "start": 4.38,
+      "end": 4.739,
+      "loss": 0.0004911252430507115
+    },
+    {
+      "text": "slovensko.",
+      "start": 4.799,
+      "end": 5.319,
+      "loss": 0.03595273494720459
+    }
+  ],
+  "loss": 0.1657767391973926,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:51.164Z"
+}

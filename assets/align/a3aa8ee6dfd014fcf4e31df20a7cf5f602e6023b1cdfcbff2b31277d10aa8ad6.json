@@ -1,0 +1,63 @@
+{
+  "key": "a3aa8ee6dfd014fcf4e31df20a7cf5f602e6023b1cdfcbff2b31277d10aa8ad6",
+  "text": "Vmes je ena mala beseda. And. Daj, vprašaj me!",
+  "words": [
+    {
+      "text": "Vmes",
+      "start": 0.179,
+      "end": 0.639,
+      "loss": 0.3740234375
+    },
+    {
+      "text": "je",
+      "start": 0.699,
+      "end": 0.819,
+      "loss": 0.0103912353515625
+    },
+    {
+      "text": "ena",
+      "start": 0.939,
+      "end": 1.159,
+      "loss": 0.035135904947916664
+    },
+    {
+      "text": "mala",
+      "start": 1.299,
+      "end": 1.62,
+      "loss": 0.0054779052734375
+    },
+    {
+      "text": "beseda.",
+      "start": 1.719,
+      "end": 2.299,
+      "loss": 0.075347900390625
+    },
+    {
+      "text": "And.",
+      "start": 3.839,
+      "end": 4.299,
+      "loss": 1.0276451110839844
+    },
+    {
+      "text": "Daj,",
+      "start": 4.88,
+      "end": 5.139,
+      "loss": 0.079803466796875
+    },
+    {
+      "text": "vprašaj",
+      "start": 5.299,
+      "end": 5.739,
+      "loss": 0.38428170340401785
+    },
+    {
+      "text": "me!",
+      "start": 5.799,
+      "end": 5.959,
+      "loss": 0.2805989583333333
+    }
+  ],
+  "loss": 0.2839800793191661,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:50.341Z"
+}

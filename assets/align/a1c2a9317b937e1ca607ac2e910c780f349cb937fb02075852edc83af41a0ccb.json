@@ -1,0 +1,51 @@
+{
+  "key": "a1c2a9317b937e1ca607ac2e910c780f349cb937fb02075852edc83af41a0ccb",
+  "text": "Aja, in pridi zgodaj! Res zgodaj, prosim.",
+  "words": [
+    {
+      "text": "Aja,",
+      "start": 0.259,
+      "end": 0.419,
+      "loss": 2.08087158203125
+    },
+    {
+      "text": "in",
+      "start": 0.68,
+      "end": 0.959,
+      "loss": 0.101318359375
+    },
+    {
+      "text": "pridi",
+      "start": 1,
+      "end": 1.199,
+      "loss": 0.046240234375
+    },
+    {
+      "text": "zgodaj!",
+      "start": 1.319,
+      "end": 1.599,
+      "loss": 0.5745675223214286
+    },
+    {
+      "text": "Res",
+      "start": 2.22,
+      "end": 2.5,
+      "loss": 0.16617838541666666
+    },
+    {
+      "text": "zgodaj,",
+      "start": 2.501,
+      "end": 2.859,
+      "loss": 0.030009678431919644
+    },
+    {
+      "text": "prosim.",
+      "start": 2.96,
+      "end": 3.319,
+      "loss": 0.07955823625837054
+    }
+  ],
+  "loss": 0.3656002632001551,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:40.254Z"
+}

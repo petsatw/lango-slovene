@@ -1,0 +1,63 @@
+{
+  "key": "7fd09906a0705988b9f37d7bc4720b91b27ee4f3d9c7f9950137c0fdf3a883c6",
+  "text": "Moram kupiti torto. Moram iti k babici. Moram delati.",
+  "words": [
+    {
+      "text": "Moram",
+      "start": 0.14,
+      "end": 0.419,
+      "loss": 0.1211395263671875
+    },
+    {
+      "text": "kupiti",
+      "start": 0.539,
+      "end": 0.879,
+      "loss": 0.022005716959635418
+    },
+    {
+      "text": "torto.",
+      "start": 1.039,
+      "end": 1.439,
+      "loss": 0.13476053873697916
+    },
+    {
+      "text": "Moram",
+      "start": 2.18,
+      "end": 2.579,
+      "loss": 0.04713287353515625
+    },
+    {
+      "text": "iti",
+      "start": 2.619,
+      "end": 2.96,
+      "loss": 0.09944661458333333
+    },
+    {
+      "text": "k",
+      "start": 2.98,
+      "end": 3,
+      "loss": 0.0634765625
+    },
+    {
+      "text": "babici.",
+      "start": 3.159,
+      "end": 3.619,
+      "loss": 0.052479335239955356
+    },
+    {
+      "text": "Moram",
+      "start": 4.699,
+      "end": 5.319,
+      "loss": 0.0328582763671875
+    },
+    {
+      "text": "delati.",
+      "start": 5.359,
+      "end": 6,
+      "loss": 0.03321184430803571
+    }
+  ],
+  "loss": 0.06083520853294516,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:42.519Z"
+}

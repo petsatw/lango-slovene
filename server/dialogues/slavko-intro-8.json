@@ -1,0 +1,443 @@
+{
+  "id": "slavko-intro-l8",
+  "scenarioId": "slavko-intro",
+  "level": 8,
+  "levelLabel": "Basic",
+  "title": "All in one go",
+  "objectives": [
+    {
+      "label": "Join two things you can say",
+      "descriptorEN": "Weld where you're from onto what you speak with 'in', and say it as one sentence."
+    },
+    {
+      "label": "Say who you are in one go",
+      "descriptorEN": "Join your name to where you're from — 'Sem ___ in sem iz ___.' — with no gap between them."
+    },
+    {
+      "label": "Head off a misunderstanding",
+      "descriptorEN": "Warn her before she starts: 'Nisem iz Slovenije in ne govorim dobro slovensko.'"
+    }
+  ],
+  "introduces": [
+    "in"
+  ],
+  "audio": "ready",
+  "voices": {
+    "npc": "slavko",
+    "client": "slavko"
+  },
+  "advance": "audio",
+  "pacing": "onboarding",
+  "frameEN": [
+    "Slavko is already recording when you get there.",
+    "He's sending a voice message to his grandma, and she wants to hear you.",
+    "Today you learn to join two things you can already say into one sentence."
+  ],
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Čakaj, snemam za babico! Vedno vpraša: Od kod si? Jaz ji rečem: Sem iz Ljubljane. Daj, povej ji še ti!",
+      "en": "Hang on, I'm recording for my grandma! She always asks: Where are you from? I tell her: I'm from Ljubljana. Go on, you tell her too!",
+      "deliverySL": "[hushed, mid-recording] Čakaj, snemam za babico! [imitating her] Vedno vpraša: Od kod si? [plainly, into the phone] Jaz ji rečem: Sem iz Ljubljane. [inviting] Daj, povej ji še ti!",
+      "glossPolicy": "after",
+      "learnables": [
+        "od_kod_si",
+        "sem_iz"
+      ],
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "soften",
+          "label": "Tell her where you're from — your country's name in English is fine"
+        }
+      ],
+      "next": [
+        "c1"
+      ]
+    },
+    "c1": {
+      "speaker": "client",
+      "sl": "Sem iz ___.",
+      "en": "I'm from ___.",
+      "glossPolicy": "tap",
+      "learnables": [
+        "sem_iz"
+      ],
+      "next": [
+        "n2"
+      ],
+      "audio": {
+        "from": "n9",
+        "level": 3,
+        "kind": "span",
+        "words": [
+          1,
+          3
+        ],
+        "startMs": 1139,
+        "endMs": 1919,
+        "heard": "Sem iz Ljubljane."
+      }
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Potem vpraša: A govoriš slovensko? Reci ji: Govorim slovensko.",
+      "en": "Then she asks: Do you speak Slovene? Tell her: I speak Slovene.",
+      "deliverySL": "[still recording] Potem vpraša: A govoriš slovensko? [encouraging] Reci ji: Govorim slovensko.",
+      "glossPolicy": "after",
+      "learnables": [
+        "govorim_lang"
+      ],
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "soften",
+          "label": "Tell her you speak Slovene"
+        }
+      ],
+      "next": [
+        "c2"
+      ]
+    },
+    "c2": {
+      "speaker": "client",
+      "sl": "Govorim slovensko.",
+      "en": "I speak Slovene.",
+      "glossPolicy": "tap",
+      "learnables": [
+        "govorim_lang"
+      ],
+      "next": [
+        "n3"
+      ],
+      "audio": {
+        "from": "n5",
+        "level": 2,
+        "kind": "whole"
+      }
+    },
+    "n3": {
+      "speaker": "npc",
+      "sl": "Babica ne čaka. Zato takole: Sem Slavko in sem iz Ljubljane.",
+      "en": "Grandma doesn't wait. So, like this: I'm Slavko and I'm from Ljubljana.",
+      "deliverySL": "[quick, imitating her pace] Babica ne čaka. [clearly, into the phone] Zato takole: Sem Slavko in sem iz Ljubljane.",
+      "slowSL": "Babica ne čaka … Zato takole … Sem Slavko … in sem iz Ljubljane.",
+      "deliverySlowSL": "[quick, imitating her pace] Babica ne čaka … [slower, clearly] Zato takole … [very slowly, enunciating every syllable] Sem Slavko … [very slowly, enunciating every syllable] in sem iz Ljubljane.",
+      "glossPolicy": "after",
+      "focusSpan": "in",
+      "learnables": [
+        "sem_ime",
+        "in",
+        "sem_iz"
+      ],
+      "next": [
+        "n4"
+      ]
+    },
+    "n4": {
+      "speaker": "npc",
+      "sl": "Vmes je ena mala beseda. And. Daj, vprašaj me!",
+      "en": "There's one little word in the middle there. 'And'. Go on, ask me!",
+      "deliverySL": "[conspiratorial] Vmes je ena mala beseda. [in English, plainly] And. [inviting] Daj, vprašaj me!",
+      "glossPolicy": "after",
+      "learnables": [],
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "soften",
+          "label": "Ask him how to say 'and'"
+        }
+      ],
+      "next": [
+        "c3"
+      ]
+    },
+    "c3": {
+      "speaker": "client",
+      "sl": "Kako se reče and?",
+      "en": "How do you say “and”?",
+      "glossPolicy": "tap",
+      "focusSpan": "Kako se reče",
+      "learnables": [
+        "kako_se_rece"
+      ],
+      "next": [
+        "n5"
+      ],
+      "audio": {
+        "from": "n5",
+        "level": 5,
+        "kind": "span",
+        "words": [
+          14,
+          17
+        ],
+        "startMs": 6699,
+        "endMs": 8420,
+        "heard": "Kako se reče umbrella?"
+      }
+    },
+    "n5": {
+      "speaker": "npc",
+      "sl": "And? To je in. In.",
+      "en": "And? That's 'in'. In.",
+      "deliverySL": "[delighted] And? To je in. [savouring, clearly] In.",
+      "slowSL": "And? … To je … in … In.",
+      "deliverySlowSL": "[delighted] And? … [slower, deliberately] To je … [very slowly, drawn out] in … [very slowly, drawn out] In.",
+      "glossPolicy": "after",
+      "focusSpan": "in",
+      "learnables": [
+        "to_je",
+        "in"
+      ],
+      "next": [
+        "n6"
+      ]
+    },
+    "n6": {
+      "speaker": "npc",
+      "sl": "Zdaj pa ti, vse skupaj: Sem iz Ljubljane in govorim slovensko.",
+      "en": "Now you, all in one go: I'm from Ljubljana and I speak Slovene.",
+      "deliverySL": "[warmly, handing it over] Zdaj pa ti, vse skupaj: [clearly] Sem iz Ljubljane in govorim slovensko.",
+      "glossPolicy": "after",
+      "focusSpan": "in",
+      "learnables": [
+        "sem_iz",
+        "in",
+        "govorim_lang"
+      ],
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "respeak"
+        },
+        {
+          "kind": "soften",
+          "label": "Where you're from and what you speak — one sentence"
+        }
+      ],
+      "next": [
+        "c4"
+      ],
+      "slowSL": "Zdaj pa ti, vse skupaj … Sem iz Ljubljane … in govorim slovensko.",
+      "deliverySlowSL": "[warmly, handing it over] Zdaj pa ti, vse skupaj … [very slowly, enunciating every syllable] Sem iz Ljubljane … [very slowly, enunciating every syllable] in govorim slovensko."
+    },
+    "c4": {
+      "speaker": "client",
+      "sl": "Sem iz ___ in govorim slovensko.",
+      "en": "I'm from ___ and I speak Slovene.",
+      "glossPolicy": "after",
+      "focusSpan": "in",
+      "learnables": [
+        "sem_iz",
+        "in",
+        "govorim_lang"
+      ],
+      "next": [
+        "n7"
+      ],
+      "audio": {
+        "from": "n6",
+        "level": 8,
+        "kind": "span",
+        "words": [
+          5,
+          10
+        ],
+        "startMs": 3099,
+        "endMs": 5319,
+        "heard": "Sem iz Ljubljane in govorim slovensko."
+      }
+    },
+    "n7": {
+      "speaker": "npc",
+      "sl": "Ha, super! Babica bo vesela.",
+      "en": "Ha, great! Grandma will be pleased.",
+      "deliverySL": "[delighted] Ha, super! [fondly] Babica bo vesela.",
+      "glossPolicy": "after",
+      "learnables": [],
+      "next": [
+        "n8"
+      ]
+    },
+    "n8": {
+      "speaker": "npc",
+      "sl": "Še ime! Poslušaj: Sem Slavko in sem iz Ljubljane.",
+      "en": "Your name, too! Listen: I'm Slavko and I'm from Ljubljana.",
+      "deliverySL": "[remembering] Še ime! [clearly] Poslušaj: Sem Slavko in sem iz Ljubljane.",
+      "glossPolicy": "after",
+      "focusSpan": "in",
+      "learnables": [
+        "sem_ime",
+        "in",
+        "sem_iz"
+      ],
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "soften",
+          "label": "Your name, then 'in', then where you're from"
+        }
+      ],
+      "next": [
+        "c5"
+      ]
+    },
+    "c5": {
+      "speaker": "client",
+      "sl": "Sem ___ in sem iz ___.",
+      "en": "My name is ___ and I'm from ___.",
+      "glossPolicy": "after",
+      "focusSpan": "in",
+      "learnables": [
+        "sem_ime",
+        "in",
+        "sem_iz"
+      ],
+      "next": [
+        "n9"
+      ],
+      "audio": {
+        "from": "n8",
+        "level": 8,
+        "kind": "span",
+        "words": [
+          3,
+          8
+        ],
+        "startMs": 2619,
+        "endMs": 4420,
+        "heard": "Sem Slavko in sem iz Ljubljane."
+      }
+    },
+    "n9": {
+      "speaker": "npc",
+      "sl": "Pazi! Babica bo mislila, da vse razumeš. In potem bo govorila hitro!",
+      "en": "Careful! Grandma will think you understand everything. And then she'll talk fast!",
+      "deliverySL": "[mock alarm] Pazi! Babica bo mislila, da vse razumeš. [speeding up, breathless] In potem bo govorila hitro!",
+      "glossPolicy": "after",
+      "learnables": [],
+      "next": [
+        "n9b"
+      ]
+    },
+    "n9b": {
+      "speaker": "npc",
+      "sl": "Zato ji reci takole: Nisem iz Slovenije in ne govorim dobro slovensko.",
+      "en": "So tell her this: I'm not from Slovenia and I don't speak Slovene well.",
+      "deliverySL": "[helpfully, leaning in] Zato ji reci takole: [clearly] Nisem iz Slovenije in ne govorim dobro slovensko.",
+      "slowSL": "Zato ji reci takole … Nisem iz Slovenije … in ne govorim dobro slovensko.",
+      "deliverySlowSL": "[helpfully, slowly] Zato ji reci takole … [very slowly, enunciating every syllable] Nisem iz Slovenije … [very slowly, enunciating every syllable] in ne govorim dobro slovensko.",
+      "glossPolicy": "after",
+      "focusSpan": "in",
+      "learnables": [
+        "nisem_iz",
+        "drzava_slovenija",
+        "in",
+        "govorim_lang"
+      ],
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "respeak"
+        },
+        {
+          "kind": "soften",
+          "label": "Warn her: not from Slovenia, and you don't speak it well"
+        }
+      ],
+      "next": [
+        "c6"
+      ]
+    },
+    "c6": {
+      "speaker": "client",
+      "sl": "Nisem iz Slovenije in ne govorim dobro slovensko.",
+      "en": "I'm not from Slovenia and I don't speak Slovene well.",
+      "glossPolicy": "after",
+      "focusSpan": "in",
+      "learnables": [
+        "nisem_iz",
+        "drzava_slovenija",
+        "in",
+        "govorim_lang"
+      ],
+      "next": [
+        "n10"
+      ],
+      "audio": {
+        "from": "n9b",
+        "level": 8,
+        "kind": "span",
+        "words": [
+          4,
+          11
+        ],
+        "startMs": 2259,
+        "endMs": 5079
+      }
+    },
+    "n10": {
+      "speaker": "npc",
+      "sl": "Ha, potem bo počasi! Babica vedno reče: Hvala in adijo.",
+      "en": "Ha, then she'll go slowly! Grandma always says: Thanks and bye.",
+      "deliverySL": "[laughing] Ha, potem bo počasi! [warmly] Babica vedno reče: Hvala in adijo.",
+      "glossPolicy": "after",
+      "focusSpan": "in",
+      "learnables": [
+        "hvala",
+        "in",
+        "adijo"
+      ],
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "soften",
+          "label": "Close the message: thanks and bye"
+        }
+      ],
+      "next": [
+        "c7"
+      ]
+    },
+    "c7": {
+      "speaker": "client",
+      "sl": "Hvala in adijo.",
+      "en": "Thanks and bye.",
+      "glossPolicy": "tap",
+      "focusSpan": "in",
+      "learnables": [
+        "hvala",
+        "in",
+        "adijo"
+      ],
+      "next": [],
+      "audio": {
+        "from": "n10",
+        "level": 8,
+        "kind": "span",
+        "words": [
+          7,
+          9
+        ],
+        "startMs": 4400,
+        "endMs": 5679
+      }
+    }
+  }
+}

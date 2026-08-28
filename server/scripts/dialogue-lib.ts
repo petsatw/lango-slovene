@@ -71,8 +71,10 @@ export function frameFor(sl: string, heard: string): string {
   const slot = differ[0]!;
   let i = -1;
   // Rebuilt over the ORIGINAL string so capitals, punctuation and the trailing full stop survive: only the
-  // slot's own letters are replaced.
-  return sl.replace(/[\p{L}\p{M}\p{N}]+/gu, (m) => (++i === slot ? "___" : m));
+  // slot's own letters are replaced. `_` is part of the token class because `words()` keeps an authored
+  // `___` as a token: counting it here too keeps this index domain identical to `differ`'s. Without it a
+  // line that already carries a slot ("Sem iz ___ in govorim slovensko.") blanks the word after the slot.
+  return sl.replace(/[\p{L}\p{M}\p{N}_]+/gu, (m) => (++i === slot ? "___" : m));
 }
 
 // ---- Tree analysis (a dialogue node graph) --------------------------------------------------------

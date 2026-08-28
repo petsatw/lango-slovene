@@ -10,10 +10,10 @@ You are **C, the Creator/Orchestrator** for the rehearsal-dialogue surface. This
 Read **docs/authoring-pipeline.md** (the engine model + the J/L/G lanes) and **docs/rehearsal-dialogues.md** (the data model, the **tree template + sizing**, the **minting rubric**, the voice/env matrix) before you start — they are authoritative and win over anything here.
 
 ## The three lanes (never blur them)
-- **J — Judgment**: the situation, the per-level objectives, the **branching graph** (ids + who speaks + the English intent per node + where branches re-converge). Done by you (C) or the `slovenian-author` subagent (LS, who writes the Slovene).
+- **J — Judgment**: the situation, the per-level objectives, the **branching graph** (ids + who speaks + the English intent per node + where branches re-converge). Done by you (C), the three `lesson-designer` subagents (who propose how the lesson teaches), the `learning-designer` subagent (who picks which of their designs to build), and the `slovenian-author` subagent (LS, who writes the Slovene).
 - **L — Logic**: id assignment, catalog merge, `introduces` computation, file writes, the structural + catalog + a1 lints. Done by **scripts** (`reconcile-dialogue`, `lint:*`), never by hand.
 - **G — Generation**: per-speaker audio bytes. Done by `build:dialogue-assets` — **operator-run, on approval only**. Trees ship `audio: "pending"`.
-- **Golden rule:** C decides the graph + specs each node's English intent; LS writes the language; the reconcile assembles/mints/writes; the operator runs generation. You emit English intent, never Slovene.
+- **Golden rule:** the designers propose how the lesson teaches; the learning-designer picks which design gets built; C turns it into the graph + specs each node's English intent; LS writes the language; the reconcile assembles/mints/writes; the operator runs generation. You emit English intent, never Slovene.
 
 ## Umbrella-ready (D1) — why the input is a manifest
 This skill is built as the **`dialogue` surface generator** of a future umbrella (`author-scenario --surface dialogue|handoff|guided-live|visual|a1`). Its input is therefore **manifest-shaped** (D2): a scenario package (situation/register/role/voices + the levels to author). The tree is the canonical **scene-script** (D3) — the same nodes a future guided-live mode will consume — so keep npc lines as clean scene beats and client choices as clean expected productions.
@@ -41,16 +41,60 @@ Answers to **AGENTS.md › How the lessons teach**. Read it first; it is the law
 - **Heard-only set** — what appears on `npc` nodes but has never been in a slot.
 - **Held lines** — what earlier levels left unglossed (`glossPolicy: "held"`). This level's material may make one of them land.
 
-**Judged (J — the orchestrator):**
-- **The act**, one step on: **echo → answer → interrupt → ask**.
+**Cloud (L) — the ingredients, from the same five levels.** The computed ledger above is narrow and
+precise: what this learner has produced. The cloud is wide: the material that has been in their ear,
+handed over loose so a designer can build turns out of sound they can already pick out.
+
+- **The inventory** — the sound this learner can already pick out, as a **flat pool of units**:
+  - every **catalog item** the five levels used, npc and client nodes alike, as `id` + citation form +
+    gloss;
+  - every **word the catalog has no id for**, folded to citation form (`babici` → `babica`, `žepu` →
+    `žep`).
+
+  **Build it as one shuffled pool** — every unit from all five levels in a single list, in random order.
+  A unit is a word or a frame: the size of thing that goes in a slot. Pooled this way each item sits at
+  its true frequency in the data, and a designer reaches for what serves the objective.
+- **A one-line synopsis of each level's objectives** — what it set out to teach.
+- **A one-sentence narrative summary of each level** — what happened in it, so a designer can see which
+  devices have already been used.
+- **The freedom block** (stage 2a), verbatim.
+
+Hand the cloud over as a collection of ingredients for the designers and authors use as needed to best
+perform their task.
+
+**Judged (J) — two halves.** You (C) fix the shape, and it is identical in all three designs. Everything after it is what the three `lesson-designer`s each answer differently at stage 2a — **decide none of it here.**
+
+**Fixed by you (C):**
 - **The one new shape.** *Govorim slovensko / angleško / dobro angleško / ne dobro slovensko* is one item. Reject a candidate if producing it needs a **derivation** that has not already been learned (case, number, tense, person, etc).
+
+**Answered by each designer (stage 2a) — spec these in the brief, don't answer them:**
+- **The situation** — where they are, why the two of them are talking, what the character is doing, and
+  who and what is in the scene with them. Each design answers this fresh, and the three answers are the
+  main axis along which they differ.
 - **The variation plan** — how the shape gets worked, and how many turns that yields. Moves: answer it · negate it · swap the filler · add a qualifier · hear it said back.
-- **Natural reasons to repeat** — the in-fiction *reasons* those variations happen. The character guesses wrong about them · doesn't believe them · quotes them back wrong · asks about a second thing · is self-deprecating and invites the mirror. Never "say it again": a lesson that instructs a repeat has failed to earn one. Playful contradictions and confusions require very clear intent, especially in situations such as "guessing wrong", "doesn't believe" and misquoting make sure the context is VERY clear what is happening for the character and never that the user themselves is at fault (unless that is the very specific focus of the lesson shape itself). Play is always lighthearted and never at the expense of the user. If it would not be obvious to a very novice speaker, don't use it.
-- **What he remembers** — two or three sentences in the character's voice about this learner, based only on what they told him in earlier lessons. Build the scene from this. The character brings up what he remembers, which is what makes a returning phrase sound like someone talking to you rather than a phrase coming round again.
+- **Natural reasons to repeat and improvise** — the in-fiction *reasons* those variations happen. Play is always lighthearted and never at the learner's expense.
+
+  **Hand this to the author in a RANDOM order.** The sequence below is not a ranking and carries no preference — it is written in a fixed order so a person can read it. Shuffle it when you compose the brief; an author reading a stable list pulls every lesson toward its first few entries. The three tests follow the list, in the order given, unshuffled.
+
+  - **He asks about a second thing.**
+  - **Reciprocity — "In ti?"** The most common turn in conversation. It makes the learner's line an answer to a question rather than a recitation, and it's free: he already said the shape about himself to model it.
+  - **Consequence.** The scene forks on what the learner said — which coffee arrives, which door, whether he keeps speaking Slovene. The line gets confirmed because it mattered. The anti-exercise reason.
+  - **He writes it down.** A form, an order pad, a phone contact. Reading back is what people actually do — *Ana? Z enim n?* Confirmation without putting an error in the ear.
+  - **Affirming echo.** He's pleased and says the learner's own line back, correctly. A native voicing what the learner just produced is the highest-value input moment in the lesson, and it costs nothing.
+  - **Task arity.** The job itself has three items — three fields, three people to introduce. The reps come from the task, not from his curiosity.
+  - **He's self-deprecating and invites the mirror.**
+  - **He is unsure he heard correctly.**
+
+  **Not a strict list** — say so in the brief. A reason that is not here is fine if it passes all three tests:
+  1. **It works purely as sound.** Nothing to see, nothing to picture — *Writing for the ear* (stage 2c) applied to the reason itself. Stagecraft that has to be watched (an interruption, a passing bus, someone walking up) buys a repeat without teaching anything.
+  2. **It exists outside the lesson.** A person would do this with a fluent speaker.
+  3. **Constructive variation over rote.** If the shape can be varied for a rep, a constructive variant is used instead of rote repetition.
 - **Not yet reused** — from **Said before**, every id the learner has produced **only in the lesson that introduced it** and in no lesson since. Each is a candidate for this lesson: include it if there is a good, natural way to, doing something different from last time rather than recited. Where several fit naturally, prefer the one that has gone longest without being reused. Where one does not fit, leave it out and give a one-line reason — "no room" is not a reason, so name what took the room.
 - **The closing line** — what the character says as this conversation ends. It belongs to this lesson: it uses this lesson's material, and it reads as a person finishing a conversation.
 
-Size against the level's band (AGENTS.md › Lesson shape). Beginner: 9–18 nodes, one new shape. Where in the band it lands follows from how much play the shape offers, never from a length target.
+**Sizing — quote both of these into every designer brief.**
+
+Size against the level's band (AGENTS.md › Lesson shape). Beginner: 9–18 nodes, one new shape. Where in the band it lands follows from how much play the shape offers, never from a length target. **Length is not difficulty** (docs/dialogue-difficulty-model.md › Decided specifics) — a longer design is not a better one.
 
 **The split is a floor, not a target.** Beginner: at least two learner turns for every three npc nodes. Clear it, then improve on it wherever the rest of the lesson allows. The floor exists because a beginner needs the situation set and the language modelled before they can say anything — it is what that scaffolding costs, not what to aim for. The learner's own voice is the main event; every node above the floor is a node that has to earn its place against a turn.
 
@@ -65,15 +109,91 @@ Fix: the **situation**, a **register** (ti/vi + pogovorni/knjižni), the tutor *
 | Client nodes | canned lines the learner **picks** | what the learner is expected to **say**; each carries `learnables` (the attempt allowlist, possibly `[]`) |
 | Band denominator | **every** node — a worked example is read end to end | **client nodes only** — the band is what the learner must produce |
 | Arc | a real transaction: greeting → core exchange → closing | whatever the situation genuinely is — a **relationship opener** (curiosity → names exchanged → an invitation back) is as valid as an errand. Let the situation name its own arc. |
-| Extra node fields | — | `slowSL` + `deliverySlowSL`, `glossPolicy`, `stallHandlers` (see stage 2) |
-| Timing | the learner's own finger | a **pacing profile** (`server/catalog/pacing.json`) — see stage 2 |
+| Extra node fields | — | `slowSL` + `deliverySlowSL`, `glossPolicy`, `stallHandlers` (see stage 2c) |
+| Timing | the learner's own finger | a **pacing profile** (`server/catalog/pacing.json`) — see stage 2c |
 
 Set `dialogueAdvance` in the reconcile input to match. Absent ⇒ `"tap"`.
 
-### 2 — Design the per-level tree skeletons (J)
+### 2a — Three designs (J), three authors, in parallel
+**The objective is always given** — by R directly, or by the roadmap/syllabus the brief carries. The three designs are three ways to teach *one* objective; they never propose different lessons.
+
+Dispatch **`lesson-designer`** three times, concurrently and **blind to each other**. Three passes from one context converge — independence is what makes the designs genuinely different, and it is the same reason the reasons list is shuffled.
+
+Every brief carries, identically:
+- **The shape** (stage 0) — the one new sentence-shape this lesson teaches. It is the whole of what is
+  fixed for a designer, and three designs are three routes to it.
+- **The settings** (stage 1) — the advance mode, the register, the two voices and which of them is the
+  learner, and the learner's gender wherever it constrains the forms that can be elicited. Every entry
+  states what the format allows. `role` names the npc: a Slovene role noun (`natakarica`) or the
+  character's id (`slavko`).
+- **The computed ledger** — said before · heard-only · held lines · not-yet-reused. Extraction from the
+  levels already built; a script emits every line of it.
+- **The cloud** (stage 0) — the shuffled inventory, the one-line objective synopses, and the one-sentence
+  narrative summaries.
+- **The decision line**, quoted verbatim:
+
+  > For every decision, ask what the best expert in that field would do and why they would reject your
+  > current choice; if you can name that reason, don't make the choice. Optimize for what that expert
+  > would judge correct, never for what satisfies the stated constraints most cheaply.
+
+- **This block**, quoted verbatim into every brief:
+
+  > ## You are free of previous narrative lines
+  >
+  > **The learning objective comes first.** You are not continuing a story, and no earlier scene has any
+  > claim on this one. Take the narrative wherever it needs to go to teach this objective best — if it
+  > continues a previous narrative, great. If it introduces a new situation, a new place, a new reason
+  > for the two of them to be talking, equally great!
+  >
+  > The learner's history above exists to tell you **which words are already in their ear**, so you can
+  > build turns out of sound they can pick out. That is all it is for. If the new lesson happens to sit
+  > well alongside what came before, good — but synergy is a bonus, never a requirement, and it must
+  > never cost the lesson anything.
+  >
+  > **Storytelling exists to enhance the learning. If it distracts from it, it is the wrong path.**
+
+- **The reasons to repeat and improvise** (stage 0), **shuffled independently for each brief**, with the three tests in the order given.
+- **Writing for the ear** and, for a beginner spoken level, the **scaffolding ladder** — both quoted in full from stage 2c.
+- The two **sizing** paragraphs from stage 0.
+
+Each returns a **design sketch**: English intent only, no Slovene, no per-node fields.
+
+- **Premise** — one line: what happens.
+- **Opening** — how the scene starts and what puts the new shape in play. If it draws on what he remembers about this learner, say what and why it comes up now; if the situation is new, say what makes it the right one for this objective. Either is a complete answer.
+- **Ladder trace** — the new shape's exposures in order: heard in a sentence → heard alone → heard slowly → in the slot.
+- **Retrieval schedule** — the distinct productions of the shape, and what sits between them.
+- **Reasons used** — which, and where each fires.
+- **Slot shape + fillers** — where the new shape is a `pattern`, which of its three slot shapes is being worked (fill in the blank · fill in the blanks · sentence stem — docs/learnable-subsystem.md) and which fillers pass through it. Same shape, materially different lesson.
+- **Skeleton** — turns : substantive nodes, against the floor.
+- **Reuse** — stale ids picked up, and how each is used differently from last time; ids left out, each with a reason that isn't "no room".
+- **Branch** — if any, and what each arm earns.
+- **Closing line** — its job in this lesson.
+- **Thinnest point** — where it is most likely to fail character truth or the ear.
+
+Nothing is written to disk; the sketches live in your context.
+
+### 2b — Choose the lesson (J → learning-designer)
+Dispatch **`learning-designer`** once, with all three sketches, the shape and the settings. Give it this,
+verbatim:
+
+> Your role is that of an optimizer and decision maker to guide the most masterful design. For every
+> decision, ask what the best expert in that field would do and why they would reject your current
+> choice; if you can name that reason, don't make the choice. Optimize for what that expert would judge
+> correct, never for what satisfies the stated constraints most cheaply.
+>
+> Gating functions and auditing for quality will occur later and be performed by other roles, you have
+> the freedom to make sure this lesson is optimal.
+
+It returns `{ built_on, why_it_teaches_best, taken_from_others:[{from,what,why_it_fits}], left_behind:[{what,why}], what_to_watch }`.
+
+**Interactive:** show R the three sketches and the verdict; R picks. **Headless:** the verdict stands, and stage 9 reports the two designs not built on.
+
+### 2c — Build the chosen design's tree skeletons (J)
+Build the node graph from the design chosen at 2b. The sketch fixes the premise, the reasons, the ladder and the reuse; this stage turns it into ids, speakers, English intents and the per-node J fields.
+
 From the **template + sizing** in docs/rehearsal-dialogues.md (L1 Survival ≈16 nodes, L2 Basic-A1 ≈26, L3 Full-A1 ≈52; spine = npc node → **2 client choices** → each client's single `next` = the npc response → branches **re-converge** onto shared later nodes; `root` is an `npc` node; every path ends at `next: []`). For each level author the node graph as `{ <id>: { speaker, intentEN, next } }` — ids + who speaks + the English intent + the branching. Ensure each level's objectives are each demonstrated on a reachable path, and are distinct across the scenario's levels.
 
-**Count turns and npc nodes before you dispatch.** This is the last point where the shape is free to change: once LS has written the level, changing it costs a re-dispatch, and once the audio is built it costs clips. If you are sitting on the floor, walk the npc nodes and ask which is doing work a turn could do — a line the learner could say instead of hear, a confirmation they could give, an answer they could supply. Two npc beats in a row are worth a second look; four in a row are a stretch the learner spends standing still.
+**Count turns and npc nodes before you dispatch.** This is the last point where the shape is free to change: once LS has written the level, changing it costs a re-dispatch, and once the audio is built it costs clips. If you are sitting on the floor, walk the npc nodes and ask which is doing work a turn could do — a line the learner could say instead of hear, a confirmation they could give, an answer they could supply.
 
 **For an `advance: "audio"` scene, timing is a PROFILE, not per-node numbers.** Every engineered silence
 in a spoken lesson lives in `server/catalog/pacing.json` — the on-ramp dwell, the caption lead, the read
@@ -114,12 +234,40 @@ Per-node, J still owns:
 
 **The learner's prompt is DERIVED, never authored.** At the moment a turn opens, the server surfaces the
 upcoming **client** node's own line as the prompt (`server.ts`, `/api/scene`). Two consequences for
-authoring: a client node's `sl` is what the learner sees as their target, and a client node's **`en` is
-learner-facing UI copy**, not just a gloss — for a turn with no Slovene stem (a bare `"___"`, the learner
-saying their own name) the English *is* the whole prompt and carries the beat alone. Write it as an
-instruction, not a translation.
+authoring: a client node's `sl` is what the learner sees as their target, and its **`en` is that line's
+translation** — the meaning, and nothing else. `en` is the field that withdraws (`"after"` → `"tap"`), and
+withdrawal only works on a meaning: a learner graduates off knowing what a line means, never off being told
+how to assemble it. **The one exception is a turn with no Slovene stem** (a bare `"___"`, the learner saying
+their own name) — there the English is all there is, so it carries the beat alone and is written as an
+instruction.
+
+Where a beat needs the learner *told what to do*, that instruction belongs in the node's `stallHandlers`
+soften label: English, an instruction, shown to a learner who has gone quiet. An instruction that has
+migrated into `en` is a signal to look at the beat itself — if the turn is not obvious from the character's
+Slovene and the ladder behind it, the npc node before it is what needs fixing.
 
 **Vary openers + closers across levels.** Give each level its own `n1` opener and its own terminal closers — do NOT reuse one greeting or one closing as every level's. Identical lines read monotonously *and* collapse to one audio clip (the audio key excludes the delivery tag, so same `sl` + same voice = one clip, first-built wins — a character's `deliverySL` only lands on lines whose `sl` is unique to that voice). Spec distinct intents; LS writes distinct lines. `lint:dialogue` warns on any delivery collision that slips through.
+
+**Writing for the ear.** For an `advance: "audio"` scene, assume the learner is listening, not watching.
+Write so that:
+
+- **The situation is one that talk carries by itself.** Meeting someone, asking for something, sorting out
+  a misunderstanding, making a plan. Situations that turn on handling objects, moving around, or noticing
+  things are hard to hear.
+- **People say what they are doing,** the way they actually do in life — "I've left my keys inside", "hang
+  on, I'm getting my coat" — so the learner never has to picture anything to keep up.
+- **There are few enough voices and threads to hold in your head.** Two speakers, one place, one thing
+  going on.
+- **Every line hands over clearly.** After each one, the learner knows what just happened and whether it is
+  their turn.
+
+**The test:** read the lesson through with your eyes shut. If it only makes sense once you add a subtitle,
+a picture, or a sentence explaining what something looks like, the lesson is not right for this format.
+Change the lesson, not the packaging — find a situation that stands up in speech.
+
+**The exception:** lessons whose subject genuinely is visual — appearance, colour, describing a person or a
+place, the language of looking and pointing. There the description *is* the material, so it belongs.
+Anywhere else, reaching for a visual description is a sign the situation was chosen badly.
 
 **Beginner scaffolding — the ladder, and what the slot may contain.** For an `advance: "audio"` beginner
 level these are construction rules, not polish:
@@ -156,7 +304,7 @@ level these are construction rules, not polish:
 ### 3 — Language authoring (J → LS), one subagent PER LEVEL, in parallel
 Dispatch **`slovenian-author`** (dialogue mode) once per level, concurrently — each gets the situation, register, voices, and that level's node map (speaker + `intentEN` + `next`). Each returns `{ level, nodes:{id:{sl,en,deliverySL?,slowSL?,deliverySlowSL?}}, catalogDelta:{reuse,new}, concerns }`. Start on the default model. **LS never returns stall handlers** — those carry no Slovene.
 
-For an **`"audio"` scene**, the dispatch also names which nodes you marked for `slowSL` — LS writes the chunking (where a native would actually break the phrase, a language judgment) **and a `deliverySlowSL`**, because a ` … ` separator alone does not slow the voice down. Tell LS the register, that the client nodes are what the **learner** will say aloud, and that a client node's `en` is shown to the learner as their prompt.
+For an **`"audio"` scene**, the dispatch also names which nodes you marked for `slowSL` — LS writes the chunking (where a native would actually break the phrase, a language judgment) **and a `deliverySlowSL`**, because a ` … ` separator alone does not slow the voice down. Tell LS the register, that the client nodes are what the **learner** will say aloud, that a client node's `en` is shown to the learner as their prompt, and — quoted in full — **Writing for the ear** from stage 2c.
 
 ### 4 — Sanity pass (J, C)
 Quick read against the rubric: native-not-textbook? register consistent? client lines carry the learner's gender? no npc-only line minted in a delta? branches re-converge coherently? If something's off, **re-dispatch that level's LS with the specific note** — never fix the Slovene yourself.
@@ -164,13 +312,25 @@ Quick read against the rubric: native-not-textbook? register consistent? client 
 ### 5 — Independent critique (J → critic)
 Dispatch **`scenario-critic`** (dialogue mode) over ALL levels' trees + deltas at once. It returns `{ verdict, fixes:[{level,nodeId,field,oldExact,newExact,reason}], deltaFindings, convergenceReviewed, notes }`. Its `fixes` are the **structured, addressed** edits the reconcile applies; its `deltaFindings` flag mint/reuse problems. If a `deltaFinding` is `block`, route it back to LS (stage 3) and re-critique.
 
-**For a beginner `advance: "audio"` level, the critic must also rule on two things a linter cannot.**
+**For a beginner `advance: "audio"` level, the critic must also rule on four things a linter cannot.**
 **Heard-first:** walk the level in order and confirm every client `sl` was voiced verbatim by an earlier npc
 node, or is a known word swapped into a shape voiced seconds earlier — and that no elicited form differs
 from its model by person, case, number or tense. **Character truth:** does the character only say things
 true for him and natural for a person in this situation? That single question catches the failures a
 structural gate never will — greeting a stranger he has already met, announcing a language he obviously
 speaks, or a learner re-introducing themselves unprompted to someone who knows them.
+**Written for the ear:** read the level as if you could only hear it. Does every beat make sense from the
+words alone, and at each hand-over is it clear that the turn is the learner's and what they should say? A
+beat that needs a subtitle, a picture, or a description of what something looks like does not fit the
+format — say so.
+**The gloss is the meaning:** every client `en` is that line's translation and nothing else — the sole
+exception is a turn with no Slovene stem, where the English carries the beat alone. Where an `en`
+*instructs* — quotes a Slovene fragment back, says "plus", or tells the learner how to assemble the line —
+return a fix rewriting it as the plain translation. **Then look at the beat it came from.** An instruction
+in the gloss is a symptom: it is there because the turn was not obvious without it, and it lets a thin
+heard-first rung pass by telling the learner in English what they should have been able to retrieve from
+sound. For each one, say whether the beat still hands over clearly with the instruction gone — and where it
+does not, name the npc node that should have made it obvious and what it is missing.
 
 ### 6 — Assemble the reconcile input (L, C)
 Write the reconcile input (draft path while unapproved; shape in docs/authoring-pipeline.md): the `scenario` header, `dialogueVoices`, `dialogueAdvance` (omit for `"tap"`), `dialoguePacing` (spoken scenes; omit to keep whatever the file already carries), the `levels` (each with `levelLabel`, `title`, an optional `background` filename and `frameEN`, `objectives:[{label,descriptorEN}]`, `root`, `nodes` merged from LS's `sl/en/deliverySL/slowSL/deliverySlowSL` plus the J-owned `glossPolicy/stallHandlers/learnables`, and `catalog:{reuse,new}`), the critic's `criticFixes`, and — folding A1 in (D5i) — `a1Candidates:[{learnableId,competencyId,note}]` proposing where each NEW learnable sits in the A1 map (competency ids from server/catalog/a1-map.json). You assemble English/structure only; every `sl` came from LS.
@@ -182,14 +342,48 @@ Write the reconcile input (draft path while unapproved; shape in docs/authoring-
 `npm run reconcile:dialogue -- authoring/dialogues/<scenarioId>/reconcile-input.json` (the approved input, moved into place). It normalizes kinds, dedups (fail-loud on a duplicate surface — if it fails, the semantic dedup slipped; fix the delta upstream and re-run), assigns ids + `introduces`, applies the critic's exact fixes, writes the dialogue files + the manifest, merges the catalog, and emits `a1-candidates.json`. Idempotent — safe to re-run.
 
 ### 8 — Gates (L) — all must be green, no generation
-`npm run lint:dialogue && npm run lint:tree && npm run lint:a1 && npm run test:dialogue`, then `npm run lint:audio -- <scenarioId>` **for information only at this stage** (see below). Fix any failure by routing it to its stage (a duplicate surface → LS reuse; a convergence node → re-check with the critic) and re-run. `lint:tree` will LIST the convergence nodes to eyeball — confirm each reads on all paths; `lint:dialogue` may WARN on a delivery collision (a shared `sl`+voice with differing delivery) — resolve by making the line textually distinct (stage 2/3) if the delivery matters.
+`npm run lint:dialogue && npm run lint:tree && npm run lint:a1 && npm run test:dialogue`, then `npm run lint:audio -- <scenarioId>` **for information only at this stage** (see below). Fix any failure by routing it to its stage (a duplicate surface → LS reuse; a convergence node → re-check with the critic) and re-run. `lint:tree` will LIST the convergence nodes to eyeball — confirm each reads on all paths; `lint:dialogue` may WARN on a delivery collision (a shared `sl`+voice with differing delivery) — resolve by making the line textually distinct (stage 2c/3) if the delivery matters.
 
 **`lint:audio` — read it here, enforce it at stage 11.** A level still carrying `audio: "ready"` from a previous build while this run re-authored one of its lines is the dangerous state: a missing clip does not error at runtime, it makes the scene play **silent and too fast** (`/api/speak` 502s, the `<audio>` fires `onerror`, and the renderer's `await sceneSay(...)` resolves instantly, collapsing every pause whose length came from the clip). At this stage the run has not generated anything yet, so treat the output as the **clip budget**: it names exactly which clips are missing, and — crucially — which are **re-keys** (bytes already paid for under an old provider/voice/model tag; copy them, never re-synthesize) versus genuinely new synthesis that will bill. Carry those two counts into the stage-9 ReviewPackage so R approves a known cost. A level that is honestly `"pending"` is never a failure.
 
 **`lint:a1` + the bands:** `lint:a1` gates on `a1-map` ref-integrity and otherwise **reports** — the per-dialogue band, and which minted items sit in the tagged superset vs the curated core. New A1 material is already tagged `a1: true` at mint (stages 3/5/7), which is all the classifier needs, so nothing is folded to green the gate. Read the band report: **the computed band is what each level ships.** Where a level was *aimed* at Basic but computes Intermediate, evaluate per [dialogue-difficulty-model.md §7](../../../docs/dialogue-difficulty-model.md) — either revise it toward already-core survival language (route to LS/2–3) so it legitimately reaches Basic, or, if it genuinely rests on a few very-high-leverage items the core lacks, **keep the computed band and carry a core-promotion recommendation** into stage 9.
 
+### 8b — Wrap-up: catalog proposals (L + J)
+
+Two questions, answered every run. The operator owns both calls; this stage produces proposals.
+
+**(a) What did these levels put in the learner's ear that the catalog lacks?** Walk every `sl` on every
+**npc** node just authored. Fold inflections to citation form (`babici` → `babica`) and drop what an
+existing id already covers.
+
+**(b) Does anything here belong in the core?** Consider the items minted this run and the `a1: true` items
+these levels lean on. Recommend one only where it clears the bar the core exists to protect — **very high
+frequency AND broad unlock leverage, essential survival language.** Name the bands promotion would
+recalibrate; "none" is the usual answer and worth saying. An empty list is a common and correct answer.
+
+**Both go to stage 9 as a short list in the terminal.** The operator reads this where they are standing and
+answers in one line. One item per line: the citation form, its **English gloss** (the operator decides
+without reading Slovene), where it came from, the shortest true reason, and a verdict word. Sort by verdict
+and collapse the weak tail onto one line. Where a list is empty, say "none". The shape:
+
+```
+Catalog candidates — npc words with no existing id:
+- `babica` grandma — L7–L10, 13 lines. Learner asked for this word themselves in L7. Catalog has no
+  grandparents. worth it
+- `pecica` oven — L10, the deliberately-unknown word. maybe
+- `potica`, `dedek` — weak
+- `teta`, `spet` — throwaway
+
+Core promotions — both from this run's mints, currently `a1:true core:false`:
+- `iti` — suppletive (`grem` vs `iti`), every modal takes it, `grem_v` already core.
+- `se_vidiva` — one of the commonest spoken farewells.
+Neither changes a band today.
+```
+
+These are two lists the operator says yes or no to.
+
 ### 9 — Submit the ReviewPackage (L, C) — PR semantics
-Present R: the per-level objectives, the trees (with English intent + LS's Slovene + delivery tags), the catalog delta (reused vs newly minted, with each new item's gloss + predictable error), the computed `introduces`, the **computed band per level** (and, for any level whose band differs from its aim, the §7 evaluation), any **core-promotion recommendations** (name each `learnableId`, why it clears the core's very-high-frequency + broad-leverage bar, and the band it would recalibrate), any `lint:dialogue` delivery-collision warnings and how you resolved them, the convergence nodes the critic reviewed, and the green lint/test output. State the register + voices explicitly and invite R to confirm or override.
+Present R: the per-level objectives, **the design this lesson was built on** (the `learning-designer`'s `built_on` + `why_it_teaches_best`, what it took from the other two and what it left behind, plus one line on each design not built on — a headless run never hides that there was a fork), the trees (with English intent + LS's Slovene + delivery tags), the catalog delta (reused vs newly minted, with each new item's gloss + predictable error), the computed `introduces`, the **computed band per level** (and, for any level whose band differs from its aim, the §7 evaluation), the **stage-8b wrap-up**, in the terminal shape that stage gives it — both lists, every run, any `lint:dialogue` delivery-collision warnings and how you resolved them, the convergence nodes the critic reviewed, and the green lint/test output. State the register + voices explicitly and invite R to confirm or override.
 
 ### 10 — Review gate (J, R)
 R replies **approve** or **reject(notes)**. Do not generate audio before approve. On reject, route each note to its stage (language → LS/3; a branch → 2; a mint → LS/3 + reconcile), re-run 6–8, re-submit.

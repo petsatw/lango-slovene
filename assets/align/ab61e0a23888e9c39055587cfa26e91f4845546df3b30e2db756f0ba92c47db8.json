@@ -1,0 +1,93 @@
+{
+  "key": "ab61e0a23888e9c39055587cfa26e91f4845546df3b30e2db756f0ba92c47db8",
+  "text": "Babica, dedek, jaz in ti … štirje! No, pridem pote. Spet sem nekaj pozabil.",
+  "words": [
+    {
+      "text": "Babica,",
+      "start": 0.159,
+      "end": 0.719,
+      "loss": 0.05928802490234375
+    },
+    {
+      "text": "dedek,",
+      "start": 1.039,
+      "end": 1.48,
+      "loss": 0.07213846842447917
+    },
+    {
+      "text": "jaz",
+      "start": 1.899,
+      "end": 2.079,
+      "loss": 2.31658935546875
+    },
+    {
+      "text": "in",
+      "start": 2.139,
+      "end": 2.259,
+      "loss": 0.04532623291015625
+    },
+    {
+      "text": "ti",
+      "start": 2.359,
+      "end": 2.7,
+      "loss": 0.0059051513671875
+    },
+    {
+      "text": "…",
+      "start": 3.519,
+      "end": 3.52,
+      "loss": 6.0625
+    },
+    {
+      "text": "štirje!",
+      "start": 3.619,
+      "end": 4.239,
+      "loss": 0.196103640965053
+    },
+    {
+      "text": "No,",
+      "start": 5.679,
+      "end": 5.839,
+      "loss": 0.8830006917317709
+    },
+    {
+      "text": "pridem",
+      "start": 6,
+      "end": 6.259,
+      "loss": 0.0012634595235188801
+    },
+    {
+      "text": "pote.",
+      "start": 6.339,
+      "end": 6.639,
+      "loss": 0.16962890625
+    },
+    {
+      "text": "Spet",
+      "start": 7.839,
+      "end": 8.199,
+      "loss": 0.22662818431854248
+    },
+    {
+      "text": "sem",
+      "start": 8.239,
+      "end": 8.38,
+      "loss": 0.002524693806966146
+    },
+    {
+      "text": "nekaj",
+      "start": 8.42,
+      "end": 8.679,
+      "loss": 0.00020761489868164061
+    },
+    {
+      "text": "pozabil.",
+      "start": 8.72,
+      "end": 9.159,
+      "loss": 0.01975269615650177
+    }
+  ],
+  "loss": 0.2824594974517822,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:56.841Z"
+}

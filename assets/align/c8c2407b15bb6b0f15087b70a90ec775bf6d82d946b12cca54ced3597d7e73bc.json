@@ -1,0 +1,129 @@
+{
+  "key": "c8c2407b15bb6b0f15087b70a90ec775bf6d82d946b12cca54ced3597d7e73bc",
+  "text": "Čakaj, snemam za babico! Vedno vpraša: Od kod si? Jaz ji rečem: Sem iz Ljubljane. Daj, povej ji še ti!",
+  "words": [
+    {
+      "text": "Čakaj,",
+      "start": 0.159,
+      "end": 0.599,
+      "loss": 0.015138467152913412
+    },
+    {
+      "text": "snemam",
+      "start": 0.799,
+      "end": 1.12,
+      "loss": 0.022157033284505207
+    },
+    {
+      "text": "za",
+      "start": 1.179,
+      "end": 1.259,
+      "loss": 0.0009813308715820312
+    },
+    {
+      "text": "babico!",
+      "start": 1.299,
+      "end": 1.759,
+      "loss": 0.3238895961216518
+    },
+    {
+      "text": "Vedno",
+      "start": 3.199,
+      "end": 3.46,
+      "loss": 0.4287693023681641
+    },
+    {
+      "text": "vpraša:",
+      "start": 3.5,
+      "end": 4.019,
+      "loss": 0.7646851880209786
+    },
+    {
+      "text": "Od",
+      "start": 4.279,
+      "end": 4.4,
+      "loss": 0.416259765625
+    },
+    {
+      "text": "kod",
+      "start": 4.44,
+      "end": 4.619,
+      "loss": 0.7897440592447916
+    },
+    {
+      "text": "si?",
+      "start": 4.699,
+      "end": 4.839,
+      "loss": 0.025403976440429688
+    },
+    {
+      "text": "Jaz",
+      "start": 5.9,
+      "end": 6.039,
+      "loss": 0.2835286458333333
+    },
+    {
+      "text": "ji",
+      "start": 6.099,
+      "end": 6.159,
+      "loss": 1.3123779296875
+    },
+    {
+      "text": "rečem:",
+      "start": 6.199,
+      "end": 6.579,
+      "loss": 0.7190833886464437
+    },
+    {
+      "text": "Sem",
+      "start": 6.859,
+      "end": 7,
+      "loss": 0.3543802897135417
+    },
+    {
+      "text": "iz",
+      "start": 7.019,
+      "end": 7.119,
+      "loss": 0.00146484375
+    },
+    {
+      "text": "Ljubljane.",
+      "start": 7.159,
+      "end": 7.659,
+      "loss": 0.011267280578613282
+    },
+    {
+      "text": "Daj,",
+      "start": 8.659,
+      "end": 8.84,
+      "loss": 0.5746078491210938
+    },
+    {
+      "text": "povej",
+      "start": 9.059,
+      "end": 9.279,
+      "loss": 0.0011166095733642577
+    },
+    {
+      "text": "ji",
+      "start": 9.3,
+      "end": 9.38,
+      "loss": 0.428192138671875
+    },
+    {
+      "text": "še",
+      "start": 9.42,
+      "end": 9.539,
+      "loss": 0.003116607666015625
+    },
+    {
+      "text": "ti!",
+      "start": 9.559,
+      "end": 9.639,
+      "loss": 1.0158904393513997
+    }
+  ],
+  "loss": 0.32630082322101966,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:49.141Z"
+}

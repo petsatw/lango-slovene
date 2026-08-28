@@ -1,0 +1,75 @@
+{
+  "key": "5145452541b58e8deaec41ab7dab40dff87b61015fffc7d3a47de07ed40d92b1",
+  "text": "Ne povem! Presenečenje je. Če hočeš videti, me vprašaj: Lahko pogledam?",
+  "words": [
+    {
+      "text": "Ne",
+      "start": 0.179,
+      "end": 0.299,
+      "loss": 0.0334930419921875
+    },
+    {
+      "text": "povem!",
+      "start": 0.419,
+      "end": 1.159,
+      "loss": 0.3319304784138997
+    },
+    {
+      "text": "Presenečenje",
+      "start": 1.719,
+      "end": 2.639,
+      "loss": 0.015583276748657227
+    },
+    {
+      "text": "je.",
+      "start": 2.72,
+      "end": 3,
+      "loss": 0.2632304827372233
+    },
+    {
+      "text": "Če",
+      "start": 4.159,
+      "end": 4.239,
+      "loss": 0.4199657440185547
+    },
+    {
+      "text": "hočeš",
+      "start": 4.299,
+      "end": 4.599,
+      "loss": 0.0002388477325439453
+    },
+    {
+      "text": "videti,",
+      "start": 4.659,
+      "end": 4.94,
+      "loss": 0.055459754807608466
+    },
+    {
+      "text": "me",
+      "start": 5.059,
+      "end": 5.119,
+      "loss": 0.011049270629882812
+    },
+    {
+      "text": "vprašaj:",
+      "start": 5.199,
+      "end": 5.659,
+      "loss": 1.057407021522522
+    },
+    {
+      "text": "Lahko",
+      "start": 6.779,
+      "end": 7,
+      "loss": 0.16806974411010742
+    },
+    {
+      "text": "pogledam?",
+      "start": 7.079,
+      "end": 7.44,
+      "loss": 0.10351675086551243
+    }
+  ],
+  "loss": 0.20518361682623204,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T15:42:43.651Z"
+}

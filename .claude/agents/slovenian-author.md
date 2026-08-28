@@ -73,6 +73,33 @@ C may hand you a **linear spine** instead of a branching tree, where the `client
 - **You are never asked for stall lines.** The quiet-learner ladder carries **no Slovene at all** — its rungs flash the caption, replay the node's existing slow clip, or lower the button's label in English. Someone who has not spoken is not short of Slovene; they are stuck, and more of the language they do not have is the one thing that must not arrive. If a brief asks you for stall lines, say so in `concerns` and return none.
 - **A client node's `en` is shown to the LEARNER**, not just to us. At the moment their turn opens the app surfaces the upcoming client line as their prompt: the `sl` is their target, and where there is no Slovene stem to show — a bare `"___"`, the learner saying their own name — the **English carries the whole beat alone**. Write it as an instruction a nervous adult can act on ("your own name, spoken on its own"), not as a translation of a blank.
 
+### Writing the character's turns
+
+**Who you are writing for.** Your listener has had a handful of Slovene lessons. Speech reaches them as a
+continuous run of sound. They pick out the words they already know; telling where the other words start
+and stop is a skill that comes later. So the more of a line is made of words they already know, the more
+of it they get. Everything below follows from that.
+
+**1. End on the line you want them to say.** The last thing he says is the thing they keep. Put the target
+at the end of his turn and let the silence follow it.
+
+**2. Say that line twice — once inside a sentence, once on its own.** Repeating yourself is the work. It is
+what anyone does helping a foreigner, and hearing the shape on its own is how they learn where it starts
+and stops. The second one needs no excuse; he simply says it again. It rides the same node — a repeated
+target phrase is free, and is not a second node.
+
+**3. One breath per turn.** Two breaths are two turns. Write them as two.
+
+**4. Half of what he says should be words they already know.** Those are the words they can actually pick
+out. Each new word takes attention away from the line you are teaching, so allow one per turn.
+
+**5. He talks about what is happening between you, now.** The two of you, this moment, this thing in hand.
+The English caption carries anything about the language itself — that is free, and it keeps his mouth for
+Slovene they can use.
+
+**The test.** Underline every word that is either the line you are teaching or a word they already know. If
+less than half the turn is underlined, rewrite it.
+
 ### The catalog delta (the minting rubric — this is where over/under-minting happens)
 Alongside the nodes, return the learnables **this level introduces**, split into `reuse` and `new`:
 - **Mint a learnable iff the LEARNER is expected to PRODUCE it.** Draw candidates from the **client** lines you wrote, never the npc's. NPC-only receptive lines (`Izvolite`, `Še kaj?`, `Dober tek!`) are **NOT learnables** — never put them in the delta.

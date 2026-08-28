@@ -1,0 +1,57 @@
+{
+  "key": "3207008774da9e1907486518b0ba5a641184561e8a801fb0cf8a9a43b66ccdce",
+  "text": "Seveda! Vedno pozabim povedati, kdaj. Vprašaj me: Kdaj?",
+  "words": [
+    {
+      "text": "Seveda!",
+      "start": 0.14,
+      "end": 0.68,
+      "loss": 0.45108250209263395
+    },
+    {
+      "text": "Vedno",
+      "start": 1.399,
+      "end": 1.74,
+      "loss": 0.02852783203125
+    },
+    {
+      "text": "pozabim",
+      "start": 2.079,
+      "end": 2.559,
+      "loss": 0.01799774169921875
+    },
+    {
+      "text": "povedati,",
+      "start": 2.639,
+      "end": 3.119,
+      "loss": 0.2386906941731771
+    },
+    {
+      "text": "kdaj.",
+      "start": 3.259,
+      "end": 3.579,
+      "loss": 0.295068359375
+    },
+    {
+      "text": "Vprašaj",
+      "start": 4.699,
+      "end": 5.059,
+      "loss": 0.28865269252232145
+    },
+    {
+      "text": "me:",
+      "start": 5.139,
+      "end": 5.279,
+      "loss": 1.0467122395833333
+    },
+    {
+      "text": "Kdaj?",
+      "start": 5.599,
+      "end": 5.839,
+      "loss": 0.646923828125
+    }
+  ],
+  "loss": 0.3046750502152876,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:54.326Z"
+}

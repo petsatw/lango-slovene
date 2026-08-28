@@ -37,6 +37,22 @@
         {
           "level": 5,
           "levelLabel": "Basic"
+        },
+        {
+          "level": 6,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 7,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 8,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 9,
+          "levelLabel": "Basic"
         }
       ]
     },

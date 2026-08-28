@@ -1,0 +1,45 @@
+{
+  "key": "045dac86be2414e9e431dd0d7645a6b4b0e28929d80a11fd0379782a81760042",
+  "text": "Pet! Se vidiva v nedeljo. Adijo!",
+  "words": [
+    {
+      "text": "Pet!",
+      "start": 0.239,
+      "end": 0.539,
+      "loss": 1.4249114990234375
+    },
+    {
+      "text": "Se",
+      "start": 1.899,
+      "end": 2.119,
+      "loss": 0.27044677734375
+    },
+    {
+      "text": "vidiva",
+      "start": 2.139,
+      "end": 2.579,
+      "loss": 0.034647623697916664
+    },
+    {
+      "text": "v",
+      "start": 2.679,
+      "end": 2.74,
+      "loss": 0.07861328125
+    },
+    {
+      "text": "nedeljo.",
+      "start": 2.759,
+      "end": 3.22,
+      "loss": 0.40067291259765625
+    },
+    {
+      "text": "Adijo!",
+      "start": 3.759,
+      "end": 4.139,
+      "loss": 1.7138264973958333
+    }
+  ],
+  "loss": 0.6405601501464844,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:57.664Z"
+}

@@ -25,8 +25,8 @@ skill. Both run the same shape; they differ only in what they render.
 
 ## The J / L / G lanes (never blur them)
 
-- **J — Judgment:** authoring + structural decisions. The orchestrator (the skill) + the `slovenian-author`
-  and `scenario-critic` subagents. Fuzzy, in-language, LLM-native.
+- **J — Judgment:** authoring + structural decisions. The orchestrator (the skill) + the `lesson-designer`,
+  `learning-designer`, `slovenian-author` and `scenario-critic` subagents. Fuzzy, in-language, LLM-native.
 - **L — Logic:** id assignment, catalog merge, key computation, file writes, deterministic lints. **Scripts**
   (`reconcile-dialogue`, `lint:dialogue`, `lint:tree`, `lint:a1`), never by hand.
 - **G — Generation:** TTS/image bytes from finished content. `build:dialogue-assets` / `build:assets` —
@@ -67,7 +67,9 @@ must interpret), and **the reconcile owns id assignment** (authors propose provi
 ## The dialogue surface, end to end
 
 Skill: **`.claude/skills/create-dialogue/SKILL.md`** (the J-lane orchestrator). Agents:
-**`slovenian-author`** (dialogue mode — writes the Slovene per node + the catalog delta) and
+**`lesson-designer`** (×3, blind to each other — each proposes a different way to teach the given
+objective), **`learning-designer`** (picks which of the three gets built, and what to take from the
+others), **`slovenian-author`** (dialogue mode — writes the Slovene per node + the catalog delta) and
 **`scenario-critic`** (dialogue mode — judges naturalness/register/branch coherence, emits structured fixes).
 Script: **`server/scripts/reconcile-dialogue.ts`**. Gates: `lint:dialogue`, `lint:tree`, `lint:a1`,
 `test:dialogue`. Generation: `build:dialogue-assets` (operator).

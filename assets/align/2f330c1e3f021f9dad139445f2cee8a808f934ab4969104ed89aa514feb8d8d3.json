@@ -1,0 +1,51 @@
+{
+  "key": "2f330c1e3f021f9dad139445f2cee8a808f934ab4969104ed89aa514feb8d8d3",
+  "text": "Hm. Je to res knjiga? Povej mi.",
+  "words": [
+    {
+      "text": "Hm.",
+      "start": 0.239,
+      "end": 0.439,
+      "loss": 2.5759480794270835
+    },
+    {
+      "text": "Je",
+      "start": 0.659,
+      "end": 0.819,
+      "loss": 0.236968994140625
+    },
+    {
+      "text": "to",
+      "start": 0.839,
+      "end": 0.939,
+      "loss": 0.00061798095703125
+    },
+    {
+      "text": "res",
+      "start": 0.979,
+      "end": 1.319,
+      "loss": 0.0036722819010416665
+    },
+    {
+      "text": "knjiga?",
+      "start": 1.36,
+      "end": 1.779,
+      "loss": 0.016576170921325684
+    },
+    {
+      "text": "Povej",
+      "start": 2.319,
+      "end": 2.559,
+      "loss": 0.058563232421875
+    },
+    {
+      "text": "mi.",
+      "start": 2.619,
+      "end": 2.739,
+      "loss": 0.07630284627278645
+    }
+  ],
+  "loss": 0.31902835061473234,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T15:42:42.024Z"
+}

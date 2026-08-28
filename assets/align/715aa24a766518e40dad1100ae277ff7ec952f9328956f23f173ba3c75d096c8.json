@@ -1,0 +1,39 @@
+{
+  "key": "715aa24a766518e40dad1100ae277ff7ec952f9328956f23f173ba3c75d096c8",
+  "text": "V torbi imam še nekaj.",
+  "words": [
+    {
+      "text": "V",
+      "start": 0.299,
+      "end": 0.459,
+      "loss": 0.06494140625
+    },
+    {
+      "text": "torbi",
+      "start": 0.479,
+      "end": 1.019,
+      "loss": 0.08818359375
+    },
+    {
+      "text": "imam",
+      "start": 1.039,
+      "end": 1.399,
+      "loss": 0.026706695556640625
+    },
+    {
+      "text": "še",
+      "start": 1.419,
+      "end": 1.579,
+      "loss": 0.001800537109375
+    },
+    {
+      "text": "nekaj.",
+      "start": 1.62,
+      "end": 1.879,
+      "loss": 0.11385154724121094
+    }
+  ],
+  "loss": 0.06126057017933239,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T15:42:41.178Z"
+}
