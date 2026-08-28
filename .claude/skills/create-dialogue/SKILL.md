@@ -234,10 +234,17 @@ Per-node, J still owns:
 
 **The learner's prompt is DERIVED, never authored.** At the moment a turn opens, the server surfaces the
 upcoming **client** node's own line as the prompt (`server.ts`, `/api/scene`). Two consequences for
-authoring: a client node's `sl` is what the learner sees as their target, and a client node's **`en` is
-learner-facing UI copy**, not just a gloss — for a turn with no Slovene stem (a bare `"___"`, the learner
-saying their own name) the English *is* the whole prompt and carries the beat alone. Write it as an
-instruction, not a translation.
+authoring: a client node's `sl` is what the learner sees as their target, and its **`en` is that line's
+translation** — the meaning, and nothing else. `en` is the field that withdraws (`"after"` → `"tap"`), and
+withdrawal only works on a meaning: a learner graduates off knowing what a line means, never off being told
+how to assemble it. **The one exception is a turn with no Slovene stem** (a bare `"___"`, the learner saying
+their own name) — there the English is all there is, so it carries the beat alone and is written as an
+instruction.
+
+Where a beat needs the learner *told what to do*, that instruction belongs in the node's `stallHandlers`
+soften label: English, an instruction, shown to a learner who has gone quiet. An instruction that has
+migrated into `en` is a signal to look at the beat itself — if the turn is not obvious from the character's
+Slovene and the ladder behind it, the npc node before it is what needs fixing.
 
 **Vary openers + closers across levels.** Give each level its own `n1` opener and its own terminal closers — do NOT reuse one greeting or one closing as every level's. Identical lines read monotonously *and* collapse to one audio clip (the audio key excludes the delivery tag, so same `sl` + same voice = one clip, first-built wins — a character's `deliverySL` only lands on lines whose `sl` is unique to that voice). Spec distinct intents; LS writes distinct lines. `lint:dialogue` warns on any delivery collision that slips through.
 
@@ -305,7 +312,7 @@ Quick read against the rubric: native-not-textbook? register consistent? client 
 ### 5 — Independent critique (J → critic)
 Dispatch **`scenario-critic`** (dialogue mode) over ALL levels' trees + deltas at once. It returns `{ verdict, fixes:[{level,nodeId,field,oldExact,newExact,reason}], deltaFindings, convergenceReviewed, notes }`. Its `fixes` are the **structured, addressed** edits the reconcile applies; its `deltaFindings` flag mint/reuse problems. If a `deltaFinding` is `block`, route it back to LS (stage 3) and re-critique.
 
-**For a beginner `advance: "audio"` level, the critic must also rule on three things a linter cannot.**
+**For a beginner `advance: "audio"` level, the critic must also rule on four things a linter cannot.**
 **Heard-first:** walk the level in order and confirm every client `sl` was voiced verbatim by an earlier npc
 node, or is a known word swapped into a shape voiced seconds earlier — and that no elicited form differs
 from its model by person, case, number or tense. **Character truth:** does the character only say things
@@ -316,6 +323,14 @@ speaks, or a learner re-introducing themselves unprompted to someone who knows t
 words alone, and at each hand-over is it clear that the turn is the learner's and what they should say? A
 beat that needs a subtitle, a picture, or a description of what something looks like does not fit the
 format — say so.
+**The gloss is the meaning:** every client `en` is that line's translation and nothing else — the sole
+exception is a turn with no Slovene stem, where the English carries the beat alone. Where an `en`
+*instructs* — quotes a Slovene fragment back, says "plus", or tells the learner how to assemble the line —
+return a fix rewriting it as the plain translation. **Then look at the beat it came from.** An instruction
+in the gloss is a symptom: it is there because the turn was not obvious without it, and it lets a thin
+heard-first rung pass by telling the learner in English what they should have been able to retrieve from
+sound. For each one, say whether the beat still hands over clearly with the instruction gone — and where it
+does not, name the npc node that should have made it obvious and what it is missing.
 
 ### 6 — Assemble the reconcile input (L, C)
 Write the reconcile input (draft path while unapproved; shape in docs/authoring-pipeline.md): the `scenario` header, `dialogueVoices`, `dialogueAdvance` (omit for `"tap"`), `dialoguePacing` (spoken scenes; omit to keep whatever the file already carries), the `levels` (each with `levelLabel`, `title`, an optional `background` filename and `frameEN`, `objectives:[{label,descriptorEN}]`, `root`, `nodes` merged from LS's `sl/en/deliverySL/slowSL/deliverySlowSL` plus the J-owned `glossPolicy/stallHandlers/learnables`, and `catalog:{reuse,new}`), the critic's `criticFixes`, and — folding A1 in (D5i) — `a1Candidates:[{learnableId,competencyId,note}]` proposing where each NEW learnable sits in the A1 map (competency ids from server/catalog/a1-map.json). You assemble English/structure only; every `sl` came from LS.
@@ -339,19 +354,36 @@ Two questions, answered every run. The operator owns both calls; this stage prod
 
 **(a) What did these levels put in the learner's ear that the catalog lacks?** Walk every `sl` on every
 **npc** node just authored. Fold inflections to citation form (`babici` → `babica`) and drop what an
-existing id already covers. For each survivor give the citation form, an **English gloss**, its `kind`
-(vocabulary · chunk · pattern), where it appeared, and one line on why it earns an id — its own frequency,
-or a coming lesson that will ask the learner to produce it. Mark throwaway interjections as such.
+existing id already covers.
 
 **(b) Does anything here belong in the core?** Consider the items minted this run and the `a1: true` items
 these levels lean on. Recommend one only where it clears the bar the core exists to protect — **very high
-frequency AND broad unlock leverage, essential survival language.** Give the `learnableId`, its gloss, the
-case for it, and the bands promotion would recalibrate. An empty list is a common and correct answer.
+frequency AND broad unlock leverage, essential survival language.** Name the bands promotion would
+recalibrate; "none" is the usual answer and worth saying. An empty list is a common and correct answer.
 
-Both lists go to stage 9. Gloss everything in English — the operator decides without reading Slovene.
+**Both go to stage 9 as a short list in the terminal.** The operator reads this where they are standing and
+answers in one line. One item per line: the citation form, its **English gloss** (the operator decides
+without reading Slovene), where it came from, the shortest true reason, and a verdict word. Sort by verdict
+and collapse the weak tail onto one line. Where a list is empty, say "none". The shape:
+
+```
+Catalog candidates — npc words with no existing id:
+- `babica` grandma — L7–L10, 13 lines. Learner asked for this word themselves in L7. Catalog has no
+  grandparents. worth it
+- `pecica` oven — L10, the deliberately-unknown word. maybe
+- `potica`, `dedek` — weak
+- `teta`, `spet` — throwaway
+
+Core promotions — both from this run's mints, currently `a1:true core:false`:
+- `iti` — suppletive (`grem` vs `iti`), every modal takes it, `grem_v` already core.
+- `se_vidiva` — one of the commonest spoken farewells.
+Neither changes a band today.
+```
+
+These are two lists the operator says yes or no to.
 
 ### 9 — Submit the ReviewPackage (L, C) — PR semantics
-Present R: the per-level objectives, **the design this lesson was built on** (the `learning-designer`'s `built_on` + `why_it_teaches_best`, what it took from the other two and what it left behind, plus one line on each design not built on — a headless run never hides that there was a fork), the trees (with English intent + LS's Slovene + delivery tags), the catalog delta (reused vs newly minted, with each new item's gloss + predictable error), the computed `introduces`, the **computed band per level** (and, for any level whose band differs from its aim, the §7 evaluation), the **stage-8b wrap-up in full** — the catalog candidates (citation form + English gloss + kind + why) and the core-promotion recommendations (each `learnableId`, its gloss, the case, and the bands promotion would recalibrate); present both every run, and where a list is empty state "none", any `lint:dialogue` delivery-collision warnings and how you resolved them, the convergence nodes the critic reviewed, and the green lint/test output. State the register + voices explicitly and invite R to confirm or override.
+Present R: the per-level objectives, **the design this lesson was built on** (the `learning-designer`'s `built_on` + `why_it_teaches_best`, what it took from the other two and what it left behind, plus one line on each design not built on — a headless run never hides that there was a fork), the trees (with English intent + LS's Slovene + delivery tags), the catalog delta (reused vs newly minted, with each new item's gloss + predictable error), the computed `introduces`, the **computed band per level** (and, for any level whose band differs from its aim, the §7 evaluation), the **stage-8b wrap-up**, in the terminal shape that stage gives it — both lists, every run, any `lint:dialogue` delivery-collision warnings and how you resolved them, the convergence nodes the critic reviewed, and the green lint/test output. State the register + voices explicitly and invite R to confirm or override.
 
 ### 10 — Review gate (J, R)
 R replies **approve** or **reject(notes)**. Do not generate audio before approve. On reject, route each note to its stage (language → LS/3; a branch → 2; a mint → LS/3 + reconcile), re-run 6–8, re-submit.
