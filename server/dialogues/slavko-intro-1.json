@@ -44,7 +44,7 @@
       "deliverySL": "[warmly] Živjo! Kako ti je ime?",
       "slowSL": "Živjo … Kako ti je ime?",
       "deliverySlowSL": "[slower] Živjo … [slower] Kako ti je ime?",
-      "glossPolicy": "held",
+      "glossPolicy": "after",
       "stallHandlers": [
         {
           "kind": "pulse"
@@ -65,11 +65,12 @@
     "c1": {
       "speaker": "client",
       "sl": "___",
-      "en": "(your own name, spoken on its own)",
+      "en": "Say your name and press continue",
       "learnables": [],
       "next": [
         "n2"
-      ]
+      ],
+      "glossPolicy": "after"
     },
     "n2": {
       "speaker": "npc",
