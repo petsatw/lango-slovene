@@ -58,7 +58,7 @@
     "c1": {
       "speaker": "client",
       "sl": "Kaj je to?",
-      "en": "Ask him what it is — your question from last time. Say it first, before he tells you.",
+      "en": "What is this?",
       "glossPolicy": "tap",
       "focusSpan": "Kaj je to",
       "learnables": [
@@ -111,7 +111,7 @@
     "c2": {
       "speaker": "client",
       "sl": "Lahko pogledam?",
-      "en": "Ask his permission to look — the line he just gave you: 'Lahko' plus 'pogledam'.",
+      "en": "May I look?",
       "glossPolicy": "after",
       "focusSpan": "Lahko",
       "learnables": [
@@ -154,9 +154,7 @@
       "en": "Mmm! It's good. Mmm!",
       "deliverySL": "[mouth full, blissful] Mmm! [savouring, oblivious] Dobra je. [chewing happily] Mmm!",
       "glossPolicy": "after",
-      "learnables": [
-        "pa"
-      ],
+      "learnables": [],
       "next": [
         "n5"
       ]
@@ -194,7 +192,7 @@
     "c3": {
       "speaker": "client",
       "sl": "Lahko poskusim?",
-      "en": "Ask if you may try some — same shape as before: 'Lahko' plus 'poskusim'.",
+      "en": "May I try some?",
       "glossPolicy": "after",
       "focusSpan": "Lahko",
       "learnables": [
@@ -240,7 +238,7 @@
     "c4": {
       "speaker": "client",
       "sl": "Hvala.",
-      "en": "Thank him — just the one word.",
+      "en": "Thank you.",
       "glossPolicy": "tap",
       "learnables": [
         "hvala"
@@ -302,7 +300,7 @@
     "c5": {
       "speaker": "client",
       "sl": "Lahko vprašam?",
-      "en": "Ask his permission to ask a question — 'Lahko' plus 'vprašam'.",
+      "en": "May I ask?",
       "glossPolicy": "after",
       "focusSpan": "Lahko",
       "learnables": [
@@ -346,7 +344,7 @@
     "c6": {
       "speaker": "client",
       "sl": "Kako se reče grandma?",
-      "en": "Ask him a word of your own: 'Kako se reče' and then the English word — grandma.",
+      "en": "How do you say “grandma”?",
       "glossPolicy": "tap",
       "focusSpan": "Kako se reče",
       "learnables": [
@@ -393,7 +391,7 @@
     "c7": {
       "speaker": "client",
       "sl": "Adijo, Slavko.",
-      "en": "Say bye to him by name.",
+      "en": "Bye, Slavko.",
       "glossPolicy": "tap",
       "learnables": [
         "adijo"

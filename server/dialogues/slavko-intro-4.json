@@ -100,7 +100,7 @@
         },
         {
           "kind": "soften",
-          "label": "Tell him your country"
+          "label": "Tell him your country — the English name is fine"
         }
       ],
       "next": [
@@ -110,7 +110,7 @@
     "c2": {
       "speaker": "client",
       "sl": "Sem iz ___.",
-      "en": "I'm from ___ — say your own country however you can. Only the two words 'Sem iz' have to be Slovene.",
+      "en": "I'm from ___.",
       "glossPolicy": "after",
       "focusSpan": "Sem iz",
       "learnables": [

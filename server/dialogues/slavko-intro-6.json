@@ -82,7 +82,7 @@
     "c1": {
       "speaker": "client",
       "sl": "To je dežnik.",
-      "en": "Say it back to him: 'To je' plus the word you got out of him last time — dežnik.",
+      "en": "This is an umbrella.",
       "glossPolicy": "after",
       "focusSpan": "To je",
       "learnables": [
@@ -124,7 +124,7 @@
     "c2": {
       "speaker": "client",
       "sl": "To je ključ.",
-      "en": "Name it: 'To je' plus the new word he just gave you — ključ.",
+      "en": "This is a key.",
       "glossPolicy": "tap",
       "focusSpan": "To je",
       "learnables": [
@@ -165,7 +165,7 @@
     "c3": {
       "speaker": "client",
       "sl": "Kaj je to?",
-      "en": "Ask him what it is — the question he just gave you.",
+      "en": "What is this?",
       "glossPolicy": "after",
       "focusSpan": "Kaj je to",
       "learnables": [
@@ -218,7 +218,7 @@
     "c4": {
       "speaker": "client",
       "sl": "To je knjiga.",
-      "en": "Say what it is: 'To je' plus his new word — knjiga.",
+      "en": "This is a book.",
       "glossPolicy": "tap",
       "focusSpan": "To je",
       "learnables": [
@@ -262,7 +262,7 @@
     "c5": {
       "speaker": "client",
       "sl": "Kaj je to?",
-      "en": "Ask him yourself this time — he is not going to prompt you.",
+      "en": "What is this?",
       "glossPolicy": "tap",
       "focusSpan": "Kaj je to",
       "learnables": [
@@ -314,7 +314,7 @@
         },
         {
           "kind": "soften",
-          "label": "Tell him what it really is"
+          "label": "Say no — then tell him what it really is"
         }
       ],
       "next": [
@@ -324,7 +324,7 @@
     "c6": {
       "speaker": "client",
       "sl": "Ne. To je dežnik.",
-      "en": "Put him right: say 'ne', then name it properly.",
+      "en": "No. This is an umbrella.",
       "glossPolicy": "tap",
       "focusSpan": "To je",
       "learnables": [
@@ -379,7 +379,7 @@
     "c7": {
       "speaker": "client",
       "sl": "Hvala. Adijo.",
-      "en": "Thank him and say bye — two words you already own.",
+      "en": "Thank you. Bye.",
       "glossPolicy": "tap",
       "learnables": [
         "hvala",

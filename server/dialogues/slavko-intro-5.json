@@ -72,7 +72,7 @@
     "c1": {
       "speaker": "client",
       "sl": "Ne razumem.",
-      "en": "I don't understand. — say it out loud; it's your line from last time.",
+      "en": "I don't understand.",
       "glossPolicy": "after",
       "focusSpan": "Ne razumem",
       "learnables": [
@@ -186,7 +186,7 @@
     "c3": {
       "speaker": "client",
       "sl": "Kako se reče umbrella?",
-      "en": "Ask him for the word: say 'Kako se reče' and then the English word — umbrella.",
+      "en": "How do you say “umbrella”?",
       "glossPolicy": "after",
       "focusSpan": "Kako se reče",
       "learnables": [
@@ -243,7 +243,7 @@
     "c4": {
       "speaker": "client",
       "sl": "Kako se reče rain?",
-      "en": "Ask him again, this time for a different word: 'Kako se reče' plus the English word — rain.",
+      "en": "How do you say “rain”?",
       "glossPolicy": "tap",
       "focusSpan": "Kako se reče",
       "learnables": [
@@ -333,7 +333,7 @@
         },
         {
           "kind": "soften",
-          "label": "Ask how to say goodbye"
+          "label": "Ask him how to say thank you"
         }
       ],
       "next": [
@@ -343,7 +343,7 @@
     "c6": {
       "speaker": "client",
       "sl": "Kako se reče thank you?",
-      "en": "One more — your own question this time: say 'Kako se reče' and then the English words in the slot — thank you.",
+      "en": "How do you say “thank you”?",
       "glossPolicy": "tap",
       "focusSpan": "Kako se reče",
       "learnables": [
@@ -370,7 +370,7 @@
         },
         {
           "kind": "soften",
-          "label": "Say bye"
+          "label": "Say thank you back"
         }
       ],
       "next": [
@@ -380,7 +380,7 @@
     "c7": {
       "speaker": "client",
       "sl": "Hvala.",
-      "en": "Use the word he just gave you — just the one word.",
+      "en": "Thank you.",
       "glossPolicy": "after",
       "learnables": [
         "hvala"
