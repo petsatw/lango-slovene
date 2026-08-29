@@ -764,19 +764,27 @@ body.in-scene header { display: none; }
    like the buttons above it, and the button is sized to what its label needs instead of the 190px
    the stack uses. Centred and full-width, its right edge left 76px on a 390px phone — not enough for
    a label, which is what put the menu off-screen twice. */
-.scene-deeper-wrap { justify-self: start; }
-.scene-deeper-wrap > .scene-close-btn { min-width: 0; padding: 0 20px; }
-/* Tops aligned, not centres: the pair is taller than the button, so centring it pushed the first item
-   up into Key Phrases. Growing downward is free — this is the last row on the screen. */
+/* Its button stays in the stack — same width, same centre line as the ones above it. The menu is what
+   yields: it lives in the margin beside the button, so its items are narrow pills whose labels wrap
+   rather than nowrap pills that need width the screen has not got. Absolute, so it overlays nothing,
+   displaces nothing, and the column does not move when it opens. Tops aligned rather than centres,
+   because the pair is taller than the button and centring pushes the first item into Key Phrases. */
+/* The menu is sized against the SCREEN, not against its button: the space to the right of a centred
+   190px button is (100vw - 190px)/2, and the pills take that minus the gap either side. Sizing it
+   against the button instead gave a 6px-wide box that squeezed the labels into a vertical stripe.
+   That space is narrow by construction, so the labels WRAP — two short lines fit where one long line
+   never could, and the button keeps the stack's width and centre line. */
 .scene-deeper {
-  position: absolute; top: 0; left: calc(100% + 8px); z-index: 3;
-  display: grid; gap: 6px; justify-items: start;
+  position: absolute; top: 0; left: calc(100% + 6px); z-index: 3;
+  width: calc((100vw - 190px) / 2 - 14px);
+  display: grid; gap: 5px; justify-items: stretch;
 }
 .scene-deeper .scene-close-btn {
-  min-width: 0; width: max-content; white-space: nowrap;
-  height: 40px; padding: 0 14px; font-size: 14px;
-  border-radius: 20px; background: rgba(10, 12, 16, 0.82);
-  border-color: rgba(255, 255, 255, 0.3);
+  min-width: 0; width: 100%;
+  white-space: normal; text-align: center; line-height: 1.15;
+  height: auto; min-height: 36px; padding: 6px 5px; font-size: 12px;
+  border-radius: 14px; background: rgba(10, 12, 16, 0.82);
+  border-width: 2px; border-color: rgba(255, 255, 255, 0.3);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
 
