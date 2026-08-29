@@ -755,10 +755,20 @@ body.in-scene header { display: none; }
 }
 .scene-close-btn.ghost { border-color: rgba(255, 255, 255, 0.22); background: transparent; font-weight: 500; }
 
-/* The two ways onward, indented under the button that opens them so they read as its contents rather
-   than as two more choices competing with "Next lesson". */
-.scene-deeper { display: grid; justify-items: center; gap: 8px; width: 100%; padding-bottom: 2px; }
-.scene-deeper .scene-close-btn { height: 48px; font-size: 16px; }
+/* The two ways onward, hanging off the right of the button that opens them. Absolute, so the column
+   below does not move when the menu appears — "Next lesson" stays exactly where the learner last saw it. */
+.scene-deeper-wrap { position: relative; display: inline-grid; justify-items: center; }
+.scene-deeper {
+  position: absolute; top: 0; left: calc(100% + 8px); z-index: 3;
+  display: grid; gap: 6px;
+}
+.scene-deeper .scene-close-btn {
+  min-width: 0; width: max-content; white-space: nowrap;
+  height: 44px; padding: 0 16px; font-size: 15px;
+  border-radius: 22px; background: rgba(10, 12, 16, 0.82);
+  border-color: rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
 
 /* Key Phrases: a list of what you have MET. No ordering or marking that implies mastery — the moment
    it ranks, it is a measure. */
