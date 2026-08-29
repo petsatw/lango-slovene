@@ -5,12 +5,12 @@ description: Author a complete, gated, internally-verified REHEARSAL-DIALOGUE pa
 
 # create-dialogue — the rehearsal-dialogue orchestrator (the `dialogue` surface)
 
-You are **C, the Creator/Orchestrator** for the rehearsal-dialogue surface. This skill IS the operating procedure. You own the pipeline and all **structural** judgment (the branching graphs); you dispatch two subagents for the parts that must be independent + in-language; you drive the deterministic **reconcile** script for all file writes; and you NEVER hand-write a final Slovene line or generate audio yourself.
+You are **C, the Creator/Orchestrator** for the rehearsal-dialogue surface. This skill IS the operating procedure. You own the pipeline: you assemble each stage's brief from what the stage before it returned, dispatch the subagents that do the judging and the authoring, drive the deterministic **reconcile** script for every file write, run the gates, and put the result in front of R. What each lane may and may not do is below, and it is stated there only.
 
 Read **docs/authoring-pipeline.md** (the engine model + the J/L/G lanes) and **docs/rehearsal-dialogues.md** (the data model, the **tree template + sizing**, the **minting rubric**, the voice/env matrix) before you start — they are authoritative and win over anything here.
 
 ## The three lanes (never blur them)
-- **J — Judgment**: the situation, the per-level objectives, the **branching graph** (ids + who speaks + the English intent per node + where branches re-converge). Done by you (C), the three `lesson-designer` subagents (who propose how the lesson teaches), the `learning-designer` subagent (who picks which of their designs to build), and the `slovenian-author` subagent (LS, who writes the Slovene).
+- **J — Judgment**: the situation, the per-level objectives, the **branching graph** (ids + who speaks + the English intent per node + where branches re-converge), and every word the learner reads or hears. Done by the three `lesson-designer` subagents (who propose how the lesson teaches), the `learning-designer` subagent (who returns the design that gets built), the `slovenian-author` subagent (LS, who writes the Slovene), and the `scenario-critic` (who rules on it). **Not by C** — see the two rules below.
 - **L — Logic**: id assignment, catalog merge, `introduces` computation, file writes, the structural + catalog + a1 lints. Done by **scripts** (`reconcile-dialogue`, `lint:*`), never by hand.
 - **G — Generation**: per-speaker audio bytes. Done by `build:dialogue-assets` — **operator-run, on approval only**. Trees ship `audio: "pending"`.
 - **Golden rule:** the designers propose how the lesson teaches; the learning-designer returns the design that gets built, complete; C transcribes it and moves it through the pipeline; LS writes the language; the reconcile assembles/mints/writes; the operator runs generation.
@@ -20,16 +20,20 @@ Read **docs/authoring-pipeline.md** (the engine model + the J/L/G lanes) and **d
 This skill is built as the **`dialogue` surface generator** of a future umbrella (`author-scenario --surface dialogue|handoff|guided-live|visual|a1`). Its input is therefore **manifest-shaped** (D2): a scenario package (situation/register/role/voices + the levels to author). The tree is the canonical **scene-script** (D3) — the same nodes a future guided-live mode will consume — so keep npc lines as clean scene beats and client choices as clean expected productions.
 
 ## Guardrails (every stage — from the handoff)
-- **Never freehand Slovene.** All language goes LS → critic → lint. You author English intent only.
 - **Audio is a distinct generation step.** Interactive runs leave it to the operator (trees ship `audio: "pending"`); a **headless run generates it as part of the flow** — lines via `build:dialogue-assets`, intros via `build:dialogue-intros` — with operator intent assumed.
 - **Catalog: mint once by id, dedup by canonical `sl`.** Reuse existing ids; the reconcile enforces it and FAILS on a duplicate surface — resolve upstream, never by weakening the guard.
-- **Keep J/L/G separate.** You spec; agents judge language and never write files; the reconcile writes; the lints gate; the operator generates.
 - **Conventions hold; deviations become recommendations.** The deterministic gates are the only hard stops. Where a run's aim meets a convention (growing the A1 core, a lesson that lands a band above its aim), ship convention-honoring output and surface a **firm, specific recommendation** in the ReviewPackage for the operator to ratify — see [dialogue-difficulty-model.md §7](../../../docs/dialogue-difficulty-model.md). No silent overrides, no mid-run blocks on a judgment call.
 - **Legacy stays; scope discipline.** No guided-live runtime, no A1 engine, no auto-competency assignment. Don't touch create-scenario.
 
 ---
 
 ## Procedure
+
+**The decision line** — referred to by name from the stages that quote it into a brief (2a, 2b):
+
+> For every decision, ask what the best expert in that field would do and why they would reject your
+> current choice; if you can name that reason, don't make the choice. Optimize for what that expert
+> would judge correct, never for what satisfies the stated constraints most cheaply.
 
 Work on a DRAFT under `.scratch/dialogue-drafts/<scenarioId>/` — **nothing is written into `authoring/` or `server/` and no audio is generated until R approves** (PR semantics). On approval the reconcile input moves to `authoring/dialogues/<scenarioId>/reconcile-input.json`, where it is committed source; everything else in the draft dir is working material and stays behind.
 
@@ -120,7 +124,7 @@ Fix: the **situation**, a **register** (ti/vi + pogovorni/knjižni), the tutor *
 | Client nodes | canned lines the learner **picks** | what the learner is expected to **say**; each carries `learnables` (the attempt allowlist, possibly `[]`) |
 | Band denominator | **every** node — a worked example is read end to end | **client nodes only** — the band is what the learner must produce |
 | Arc | a real transaction: greeting → core exchange → closing | whatever the situation genuinely is — a **relationship opener** (curiosity → names exchanged → an invitation back) is as valid as an errand. Let the situation name its own arc. |
-| Extra node fields | — | `slowSL` + `deliverySlowSL`, `glossPolicy`, `stallHandlers` (see stage 2c) |
+| Extra node fields | — | `slowSL` + `deliverySlowSL`, `glossPolicy`, `stallHandlers` (2a › What the format can do) |
 | Timing | the learner's own finger | a **pacing profile** (`server/catalog/pacing.json`) — see stage 2c |
 
 Set `dialogueAdvance` in the reconcile input to match. Absent ⇒ `"tap"`.
@@ -141,12 +145,7 @@ Every brief carries, identically:
   levels already built; a script emits every line of it.
 - **The cloud** (stage 0) — the shuffled inventory, the one-line objective synopses, and the one-sentence
   narrative summaries.
-- **The decision line**, quoted verbatim:
-
-  > For every decision, ask what the best expert in that field would do and why they would reject your
-  > current choice; if you can name that reason, don't make the choice. Optimize for what that expert
-  > would judge correct, never for what satisfies the stated constraints most cheaply.
-
+- **The decision line** (Procedure), quoted verbatim.
 - **This block**, quoted verbatim into every brief:
 
   > ## You are free of previous narrative lines
@@ -171,11 +170,15 @@ Every brief carries, identically:
   >   re-modelled slowly must carry the target in its own line.
   > - It fires two ways: the learner taps the tortoise, or a hand-over beat's `respeak` stall rung fires
   >   after silence. It is never automatic.
-  > - The stall rungs are `pulse` (flash the caption), `respeak` (needs a `slowSL` on that node), and
-  >   `soften` (lower the button's label to an English instruction). They carry no Slovene.
+  > - `stallHandlers` is the quiet-learner ladder, npc nodes only, taking its timing from the pacing
+  >   profile's `stallMs` **by position**. Each rung is `{ kind, label? }`: `pulse` flashes the caption (no
+  >   copy), `respeak` replays that node's slow clip (so the node needs a `slowSL`), `soften` lowers the
+  >   button's label to an English instruction. **They carry no Slovene** — someone who has not spoken is
+  >   not short of Slovene, they are stuck, and answering that with more of the language they do not have
+  >   is the one thing a lesson must never do.
+  > - `glossPolicy` says when the learner sees a node's English: `"tap"` (click to reveal), `"after"` (it
+  >   follows the Slovene on its own), or `"held"` (the situation carries the meaning here).
   > - There is no microphone. The turn cannot be failed and nothing inspects what the learner says.
-  > - The learner's prompt is **derived** from the next client node — its `sl` is their target and its `en`
-  >   is that line's translation.
   > - A spoken level is a linear spine; `next[0]` is the path. A "branch" lives in the slot, not the tree.
   > - The four run controls (🐢 « » ✕) are on screen throughout, and a level may teach them with `tutorial`.
 
@@ -212,13 +215,10 @@ Each returns a **design sketch**: English intent only, no Slovene, no per-node f
 Nothing is written to disk; the sketches live in your context.
 
 ### 2b — Choose the lesson (J → learning-designer)
-Dispatch **`learning-designer`** once, with all three sketches, the shape and the settings. Give it this,
-verbatim:
+Dispatch **`learning-designer`** once, with all three sketches, the shape and the settings. Give it **the
+decision line** (Procedure) and this, verbatim:
 
-> Your role is that of an optimizer and decision maker to guide the most masterful design. For every
-> decision, ask what the best expert in that field would do and why they would reject your current
-> choice; if you can name that reason, don't make the choice. Optimize for what that expert would judge
-> correct, never for what satisfies the stated constraints most cheaply.
+> Your role is that of an optimizer and decision maker to guide the most masterful design.
 >
 > Gating functions and auditing for quality will occur later and be performed by other roles, you have
 > the freedom to make sure this lesson is optimal.
@@ -242,12 +242,21 @@ The design chosen at 2b arrives complete — nodes, objectives, on-ramp, closing
 it** into the per-level shape the reconcile input takes, and checks it against the format. It does not
 construct it.
 
-**If you are about to write something that did not come from a designer, the author or the critic, stop.**
-That is a gap in the stage that owns it — re-dispatch that stage. It is not work for you.
+**If you are about to write something that did not come from a designer, the author or the critic, stop**
+(the lane rule at the top of this file). That is a gap in the stage that owns it — re-dispatch that stage.
 
-From the **template + sizing** in docs/rehearsal-dialogues.md (L1 Survival ≈16 nodes, L2 Basic-A1 ≈26, L3 Full-A1 ≈52; spine = npc node → **2 client choices** → each client's single `next` = the npc response → branches **re-converge** onto shared later nodes; `root` is an `npc` node; every path ends at `next: []`). For each level author the node graph as `{ <id>: { speaker, intentEN, next } }` — ids + who speaks + the English intent + the branching. Ensure each level's objectives are each demonstrated on a reachable path, and are distinct across the scenario's levels.
+**Check the design against the format, and fix nothing yourself** — a failure here goes back to 2b. This is
+the last point where the shape is free to change: once LS has written the level, changing it costs a
+re-dispatch, and once the audio is built it costs clips.
 
-**Count turns and npc nodes before you dispatch.** This is the last point where the shape is free to change: once LS has written the level, changing it costs a re-dispatch, and once the audio is built it costs clips. If you are sitting on the floor, walk the npc nodes and ask which is doing work a turn could do — a line the learner could say instead of hear, a confirmation they could give, an answer they could supply.
+- **The graph is well-formed for its advance mode** (stage 1's table), against the template in
+  docs/rehearsal-dialogues.md: `root` is an `npc` node, every path ends at `next: []`, and a tapped tree's
+  branches re-converge onto shared later nodes.
+- **Every objective is demonstrated on a reachable path**, and the objectives are distinct across the
+  scenario's levels.
+- **The count clears the floor** (stage 0 › Sizing). If it sits exactly on the floor, name the npc node
+  doing work a turn could do — a line the learner could say instead of hear, a confirmation they could
+  give, an answer they could supply — and send it back.
 
 **For an `advance: "audio"` scene, timing is a PROFILE, not per-node numbers.** Every engineered silence
 in a spoken lesson lives in `server/catalog/pacing.json` — the on-ramp dwell, the caption lead, the read
@@ -264,19 +273,10 @@ protection, and the stall ladder. Pick a profile with `dialogueAdvance`'s siblin
 re-authoring pass. Do not restate profile numbers on nodes. A node may override exactly one value,
 `captionDelayMs`, and only where that single beat genuinely needs a different caption lead; say why.
 
-Per-node, J still owns:
+**Per-node fields.** `glossPolicy`, `slowSL` and `stallHandlers` arrive from the design (2a › Skeleton);
+what each one *is* is defined once, in **What the format can do** (2a). One field is yours, because it is
+catalog bookkeeping rather than content:
 
-- `glossPolicy` — `"tap"` (click-to-reveal), `"after"` (the English follows the Slovene on its own), or
-  `"held"` (the situation carries the meaning here).
-- `slowSL` — mark which npc beats re-speak their line chunked-and-slower; **LS writes the chunking**, and
-  should return a `deliverySlowSL` with it (stage 3).
-- `stallHandlers` — the quiet-learner ladder, npc nodes only. **These carry NO Slovene.** Each rung is
-  `{ kind: "pulse" | "respeak" | "soften", label? }` and takes its timing from the profile's `stallMs`
-  **by position**. `pulse` flashes the caption (no copy); `respeak` replays the node's existing slow clip
-  (so that node needs a `slowSL`); `soften` lowers the button's label to `label`, in **English**, on the
-  control. Someone who has not spoken is not short of Slovene — they are stuck, and answering that with
-  more of the language they do not have is the one thing a lesson must never do. Never ask LS for stall
-  lines.
 - `learnables` on **every** node, npc included — the catalog ids that line is made of, which is what the
   per-line difficulty band counts (docs/dialogue-difficulty-model.md §3). On a client node the same field
   is the attempt allowlist; on an npc node it is description only and credits nothing. A beat whose
@@ -290,12 +290,11 @@ how to assemble it. **The one exception is a turn with no Slovene stem** (a bare
 their own name) — there the English is all there is, so it carries the beat alone and is written as an
 instruction.
 
-Where a beat needs the learner *told what to do*, that instruction belongs in the node's `stallHandlers`
-soften label: English, an instruction, shown to a learner who has gone quiet. An instruction that has
-migrated into `en` is a signal to look at the beat itself — if the turn is not obvious from the character's
+Where a beat needs the learner *told what to do*, that instruction belongs in the node's `soften` rung. An
+instruction that has migrated into `en` is a signal to look at the beat itself — if the turn is not obvious from the character's
 Slovene and the ladder behind it, the npc node before it is what needs fixing.
 
-**Vary openers + closers across levels.** Give each level its own `n1` opener and its own terminal closers — do NOT reuse one greeting or one closing as every level's. Identical lines read monotonously *and* collapse to one audio clip (the audio key excludes the delivery tag, so same `sl` + same voice = one clip, first-built wins — a character's `deliverySL` only lands on lines whose `sl` is unique to that voice). Spec distinct intents; LS writes distinct lines. `lint:dialogue` warns on any delivery collision that slips through.
+**Check that openers and closers are distinct across levels.** Each level needs its own `n1` opener and its own terminal closers — one greeting or one closing reused as every level's reads monotonously *and* collapses to one audio clip (the audio key excludes the delivery tag, so same `sl` + same voice = one clip, first-built wins — a character's `deliverySL` only lands on lines whose `sl` is unique to that voice). A repeat goes back to 2b. `lint:dialogue` warns on any delivery collision that slips through.
 
 **Writing for the ear.** For an `advance: "audio"` scene, assume the learner is listening, not watching.
 Write so that:
@@ -335,9 +334,8 @@ level these are construction rules, not polish:
   word, so a client line whose filler is two words (`Kako se reče thank you?`) can never be voiced from a
   delivery whose filler is one — the phrase silently loses its play button, and nothing fails to tell you.
   Same trap if the character only ever utters the frame unfilled. Decide it here, where it is free.
-- **Gloss withdrawal is a `glossPolicy`.** Every node carries a non-empty `en`, and the policy says when
-  the learner sees it. A client line the learner produces for the first time carries `"after"` — the
-  English follows the Slovene on its own. The same line later carries `"tap"`, held until they ask for it.
+- **Gloss withdrawal is a `glossPolicy`.** A client line the learner produces for the first time carries
+  `"after"`. The same line later carries `"tap"`, held until they ask for it.
   The Slovene stands in the slot every time. Where a line has a Slovene stem, its `en` is that line's
   translation.
 - **A slot may offer a choice, and the choice branches.** With no microphone this is the only way a spoken
@@ -357,7 +355,7 @@ Dispatch **`slovenian-author`** (dialogue mode) once per level, concurrently —
 For an **`"audio"` scene**, the dispatch also names which nodes you marked for `slowSL` — LS writes the chunking (where a native would actually break the phrase, a language judgment) **and a `deliverySlowSL`**, because a ` … ` separator alone does not slow the voice down. Tell LS the register, that the client nodes are what the **learner** will say aloud, that a client node's `en` is shown to the learner as their prompt, and — quoted in full — **Writing for the ear** from stage 2c.
 
 ### 4 — Sanity pass (J, C)
-Quick read against the rubric: native-not-textbook? register consistent? client lines carry the learner's gender? no npc-only line minted in a delta? branches re-converge coherently? If something's off, **re-dispatch that level's LS with the specific note** — never fix the Slovene yourself.
+Quick read against the rubric: native-not-textbook? register consistent? client lines carry the learner's gender? no npc-only line minted in a delta? branches re-converge coherently? If something's off, **re-dispatch that level's LS with the specific note.**
 
 ### 5 — Independent critique (J → critic)
 Dispatch **`scenario-critic`** (dialogue mode) over ALL levels' trees + deltas at once. It returns `{ verdict, fixes:[{level,nodeId,field,oldExact,newExact,reason}], deltaFindings, convergenceReviewed, notes }`. Its `fixes` are the **structured, addressed** edits the reconcile applies; its `deltaFindings` flag mint/reuse problems. If a `deltaFinding` is `block`, route it back to LS (stage 3) and re-critique.
