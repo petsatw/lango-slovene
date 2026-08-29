@@ -13,7 +13,8 @@ Read **docs/authoring-pipeline.md** (the engine model + the J/L/G lanes) and **d
 - **J — Judgment**: the situation, the per-level objectives, the **branching graph** (ids + who speaks + the English intent per node + where branches re-converge). Done by you (C), the three `lesson-designer` subagents (who propose how the lesson teaches), the `learning-designer` subagent (who picks which of their designs to build), and the `slovenian-author` subagent (LS, who writes the Slovene).
 - **L — Logic**: id assignment, catalog merge, `introduces` computation, file writes, the structural + catalog + a1 lints. Done by **scripts** (`reconcile-dialogue`, `lint:*`), never by hand.
 - **G — Generation**: per-speaker audio bytes. Done by `build:dialogue-assets` — **operator-run, on approval only**. Trees ship `audio: "pending"`.
-- **Golden rule:** the designers propose how the lesson teaches; the learning-designer picks which design gets built; C turns it into the graph + specs each node's English intent; LS writes the language; the reconcile assembles/mints/writes; the operator runs generation. You emit English intent, never Slovene.
+- **Golden rule:** the designers propose how the lesson teaches; the learning-designer returns the design that gets built, complete; C transcribes it and moves it through the pipeline; LS writes the language; the reconcile assembles/mints/writes; the operator runs generation.
+- **C never writes a string the learner reads or hears.** Not the on-ramp, not a stall's soften label, not a tutorial line, not an objective descriptor. Those are learner-facing content and belong to the designers (2a/2b) and LS (3). If a learner-facing string has no author, that is a gap in the brief — go and get it authored. It is not a job for the orchestrator.
 
 ## Umbrella-ready (D1) — why the input is a manifest
 This skill is built as the **`dialogue` surface generator** of a future umbrella (`author-scenario --surface dialogue|handoff|guided-live|visual|a1`). Its input is therefore **manifest-shaped** (D2): a scenario package (situation/register/role/voices + the levels to author). The tree is the canonical **scene-script** (D3) — the same nodes a future guided-live mode will consume — so keep npc lines as clean scene beats and client choices as clean expected productions.
@@ -65,7 +66,17 @@ perform their task.
 **Judged (J) — two halves.** You (C) fix the shape, and it is identical in all three designs. Everything after it is what the three `lesson-designer`s each answer differently at stage 2a — **decide none of it here.**
 
 **Fixed by you (C):**
-- **The one new shape.** *Govorim slovensko / angleško / dobro angleško / ne dobro slovensko* is one item. Reject a candidate if producing it needs a **derivation** that has not already been learned (case, number, tense, person, etc).
+- **The one new shape.**
+
+  **A shape is a sentence frame with a slot.** `___ sem ___`, `Imam ___`, `Ali si ___?`, `Rad bi ___`. Two
+  utterances are the SAME shape when one is the other with a different filler in the slot, **or the same
+  frame carried by a different person, number, case or tense of the same verb**. *Sem Slavko / Sem zmaj /
+  Ti si človek / Ti si zmaj* is one shape. *Govorim slovensko / ne govorim dobro angleško* is one shape.
+  `Imam ___` is a different shape from `Sem ___` — different verb, different frame.
+
+  A shape is NOT a string, and it is not a paradigm cell. Working one shape across two persons inside a
+  lesson is the shape being *learned*, not two shapes being taught — a learner who can only say the 1sg has
+  memorised a phrase, not acquired a frame.
 
 **Answered by each designer (stage 2a) — spec these in the brief, don't answer them:**
 - **The situation** — where they are, why the two of them are talking, what the character is doing, and
@@ -152,6 +163,22 @@ Every brief carries, identically:
   >
   > **Storytelling exists to enhance the learning. If it distracts from it, it is the wrong path.**
 
+- **What the format can do** — quoted verbatim into every brief. A designer who does not know these builds
+  a ladder that cannot be built, and the gap gets patched downstream by whoever notices, which is exactly
+  where the orchestrator starts authoring.
+
+  > - `slowSL` belongs to a node and can only re-say **that node's own line**. A beat that wants the target
+  >   re-modelled slowly must carry the target in its own line.
+  > - It fires two ways: the learner taps the tortoise, or a hand-over beat's `respeak` stall rung fires
+  >   after silence. It is never automatic.
+  > - The stall rungs are `pulse` (flash the caption), `respeak` (needs a `slowSL` on that node), and
+  >   `soften` (lower the button's label to an English instruction). They carry no Slovene.
+  > - There is no microphone. The turn cannot be failed and nothing inspects what the learner says.
+  > - The learner's prompt is **derived** from the next client node — its `sl` is their target and its `en`
+  >   is that line's translation.
+  > - A spoken level is a linear spine; `next[0]` is the path. A "branch" lives in the slot, not the tree.
+  > - The four run controls (🐢 « » ✕) are on screen throughout, and a level may teach them with `tutorial`.
+
 - **The reasons to repeat and improvise** (stage 0), **shuffled independently for each brief**, with the three tests in the order given.
 - **Writing for the ear** and, for a beginner spoken level, the **scaffolding ladder** — both quoted in full from stage 2c.
 - The two **sizing** paragraphs from stage 0.
@@ -164,11 +191,23 @@ Each returns a **design sketch**: English intent only, no Slovene, no per-node f
 - **Retrieval schedule** — the distinct productions of the shape, and what sits between them.
 - **Reasons used** — which, and where each fires.
 - **Slot shape + fillers** — where the new shape is a `pattern`, which of its three slot shapes is being worked (fill in the blank · fill in the blanks · sentence stem — docs/learnable-subsystem.md) and which fillers pass through it. Same shape, materially different lesson.
-- **Skeleton** — turns : substantive nodes, against the floor.
+- **Skeleton** — the node graph itself, as `{ id, speaker, intentEN, next }`, plus per node its
+  `glossPolicy`, whether it carries a `slowSL`, and its `stallHandlers` **with their English soften
+  labels**. Then the count: turns : substantive nodes, against the floor. Prose alone ("4 turns : 6 nodes")
+  leaves the graph to be invented downstream, which is where a design stops being the design that was
+  chosen.
+- **Objectives** — `[{label, descriptorEN}]` for this level, in the learner's language.
 - **Reuse** — stale ids picked up, and how each is used differently from last time; ids left out, each with a reason that isn't "no room".
 - **Branch** — if any, and what each arm earns.
 - **Closing line** — its job in this lesson.
 - **Thinnest point** — where it is most likely to fail character truth or the ear.
+- **The on-ramp** (`frameEN`) — the English lines shown before any Slovene, **written LAST**, after
+  everything above is settled. It frames *this* lesson: where the learner is, what is about to happen, what
+  they will be asked for, and that nothing is at stake yet. It is the only place the lesson may speak
+  English freely, and it is what earns the right to withhold English once the character starts speaking —
+  **a lesson may only withhold English on its first beat if it has first framed the situation.** Write it
+  from the design you have just finished: an on-ramp written first frames a lesson that does not exist yet,
+  and the lesson then bends to fit it.
 
 Nothing is written to disk; the sketches live in your context.
 
@@ -184,12 +223,27 @@ verbatim:
 > Gating functions and auditing for quality will occur later and be performed by other roles, you have
 > the freedom to make sure this lesson is optimal.
 
-It returns `{ built_on, why_it_teaches_best, taken_from_others:[{from,what,why_it_fits}], left_behind:[{what,why}], what_to_watch }`.
+It returns a **complete, buildable design** — not a verdict naming a winner:
+`{ built_on, why_it_teaches_best, taken_from_others:[{from,what,why_it_fits}], left_behind:[{what,why}],
+what_to_watch, nodes:[{id,speaker,intentEN,next,glossPolicy,slowSL,stallHandlers}], objectives, frame_en,
+closing_line }`.
+
+`frame_en` is the on-ramp being built — taken whole from one design, or assembled from named lines with a
+reason per line. Naming a winning *design* and leaving its frame unstated is the gap the orchestrator ends
+up filling.
+
+Everything it returns is what stage 2c transcribes. **If it comes back incomplete, send it back** — a
+missing piece is a gap in this stage, not work for C.
 
 **Interactive:** show R the three sketches and the verdict; R picks. **Headless:** the verdict stands, and stage 9 reports the two designs not built on.
 
-### 2c — Build the chosen design's tree skeletons (J)
-Build the node graph from the design chosen at 2b. The sketch fixes the premise, the reasons, the ladder and the reuse; this stage turns it into ids, speakers, English intents and the per-node J fields.
+### 2c — Transcribe the chosen design (J)
+The design chosen at 2b arrives complete — nodes, objectives, on-ramp, closing line. This stage **transcribes
+it** into the per-level shape the reconcile input takes, and checks it against the format. It does not
+construct it.
+
+**If you are about to write something that did not come from a designer, the author or the critic, stop.**
+That is a gap in the stage that owns it — re-dispatch that stage. It is not work for you.
 
 From the **template + sizing** in docs/rehearsal-dialogues.md (L1 Survival ≈16 nodes, L2 Basic-A1 ≈26, L3 Full-A1 ≈52; spine = npc node → **2 client choices** → each client's single `next` = the npc response → branches **re-converge** onto shared later nodes; `root` is an `npc` node; every path ends at `next: []`). For each level author the node graph as `{ <id>: { speaker, intentEN, next } }` — ids + who speaks + the English intent + the branching. Ensure each level's objectives are each demonstrated on a reachable path, and are distinct across the scenario's levels.
 
@@ -227,11 +281,6 @@ Per-node, J still owns:
   per-line difficulty band counts (docs/dialogue-difficulty-model.md §3). On a client node the same field
   is the attempt allowlist; on an npc node it is description only and credits nothing. A beat whose
   expected utterance is the learner's own name carries `[]`.
-- `frameEN` (per level) — the English on-ramp shown before the scene opens, then faded: where the learner
-  is, that nothing is being asked of them yet, and that forgetting is not their fault. **A lesson may only
-  withhold English on its first beat if it has first framed the situation** — this is the rule whose
-  absence produced an unusable first build.
-
 **The learner's prompt is DERIVED, never authored.** At the moment a turn opens, the server surfaces the
 upcoming **client** node's own line as the prompt (`server.ts`, `/api/scene`). Two consequences for
 authoring: a client node's `sl` is what the learner sees as their target, and its **`en` is that line's
@@ -276,8 +325,9 @@ level these are construction rules, not polish:
   npc node earlier in the same level, or is a **known word swapped into a shape** voiced seconds earlier.
   Introduce anything new on the full ladder — heard inside a sentence → heard on its own → heard slowly
   (`slowSL`) → in the slot. Skipping the isolated pass leaves a beginner unable to find the word boundaries.
-- **No derivation, ever.** Never elicit a form differing from the modelled one by person, case, number or
-  tense. Hearing *govoriš* licenses saying *govoriš* and nothing else.
+- **Never elicit a form that has not been modelled.** Hearing *govoriš* licenses saying *govoriš*. If the
+  lesson wants a second-person form, the character says it first, with a filler in it, on the full ladder —
+  that is a rung to build, not a reason to avoid the form (stage 0 › the one new shape).
 - **The slot always carries Slovene; it is never empty.** An empty slot risks the learner producing nothing,
   which is the failure state — not the advanced one.
 - **Keep a slot filler to ONE word, and voice the frame with a filler in it.** This looks like a detail and
@@ -314,8 +364,11 @@ Dispatch **`scenario-critic`** (dialogue mode) over ALL levels' trees + deltas a
 
 **For a beginner `advance: "audio"` level, the critic must also rule on four things a linter cannot.**
 **Heard-first:** walk the level in order and confirm every client `sl` was voiced verbatim by an earlier npc
-node, or is a known word swapped into a shape voiced seconds earlier — and that no elicited form differs
-from its model by person, case, number or tense. **Character truth:** does the character only say things
+node, or is a known word swapped into a shape voiced seconds earlier — and that **every elicited form was
+modelled**, with a filler in it, on the ladder. Flag a level that elicits a form it only implied. A form in
+a person the learner has not produced before is fine where the character voiced it first: that is the same
+shape on a new rung, not a second shape (stage 0 › the one new shape). **Character truth:** does the
+character only say things
 true for him and natural for a person in this situation? That single question catches the failures a
 structural gate never will — greeting a stranger he has already met, announcing a language he obviously
 speaks, or a learner re-introducing themselves unprompted to someone who knows them.
@@ -323,6 +376,8 @@ speaks, or a learner re-introducing themselves unprompted to someone who knows t
 words alone, and at each hand-over is it clear that the turn is the learner's and what they should say? A
 beat that needs a subtitle, a picture, or a description of what something looks like does not fit the
 format — say so.
+**The on-ramp:** does `frameEN` frame *this* lesson — not lessons in general? Does it promise anything the
+level does not deliver? Is every line legible to someone who has never seen the app before?
 **The gloss is the meaning:** every client `en` is that line's translation and nothing else — the sole
 exception is a turn with no Slovene stem, where the English carries the beat alone. Where an `en`
 *instructs* — quotes a Slovene fragment back, says "plus", or tells the learner how to assemble the line —
@@ -333,7 +388,7 @@ sound. For each one, say whether the beat still hands over clearly with the inst
 does not, name the npc node that should have made it obvious and what it is missing.
 
 ### 6 — Assemble the reconcile input (L, C)
-Write the reconcile input (draft path while unapproved; shape in docs/authoring-pipeline.md): the `scenario` header, `dialogueVoices`, `dialogueAdvance` (omit for `"tap"`), `dialoguePacing` (spoken scenes; omit to keep whatever the file already carries), the `levels` (each with `levelLabel`, `title`, an optional `background` filename and `frameEN`, `objectives:[{label,descriptorEN}]`, `root`, `nodes` merged from LS's `sl/en/deliverySL/slowSL/deliverySlowSL` plus the J-owned `glossPolicy/stallHandlers/learnables`, and `catalog:{reuse,new}`), the critic's `criticFixes`, and — folding A1 in (D5i) — `a1Candidates:[{learnableId,competencyId,note}]` proposing where each NEW learnable sits in the A1 map (competency ids from server/catalog/a1-map.json). You assemble English/structure only; every `sl` came from LS.
+Write the reconcile input (draft path while unapproved; shape in docs/authoring-pipeline.md): the `scenario` header, `dialogueVoices`, `dialogueAdvance` (omit for `"tap"`), `dialoguePacing` (spoken scenes; omit to keep whatever the file already carries), the `levels` (each with `levelLabel`, `title`, an optional `background` filename and `frameEN`, `objectives:[{label,descriptorEN}]`, `root`, `nodes` merged from LS's `sl/en/deliverySL/slowSL/deliverySlowSL` plus the J-owned `glossPolicy/stallHandlers/learnables`, and `catalog:{reuse,new}`), the critic's `criticFixes`, and — folding A1 in (D5i) — `a1Candidates:[{learnableId,competencyId,note}]` proposing where each NEW learnable sits in the A1 map (competency ids from server/catalog/a1-map.json). You assemble only: every `sl` came from LS, and every English string the learner reads — the on-ramp, the soften labels, the objective descriptors — came from 2a/2b.
 
 - **Mint-once across levels:** a learnable shared by several levels goes in `new` on **exactly one** level (its first use) and `reuse` on the rest. The same id under `new` twice makes the reconcile fail on a duplicate surface — split it here.
 - **`background`** (optional): a per-level portrait image filename under `public/backgrounds/` (operator-supplied art, `<scenario>-<level>.jpg` or descriptive). The reconcile writes it onto the level and **preserves it on re-run**. The reconcile input is the source of truth for a level's nodes — a re-run rewrites the file from it, so make later node changes here and re-run, not by hand-editing `server/dialogues/*.json`.
@@ -384,6 +439,11 @@ These are two lists the operator says yes or no to.
 
 ### 9 — Submit the ReviewPackage (L, C) — PR semantics
 Present R: the per-level objectives, **the design this lesson was built on** (the `learning-designer`'s `built_on` + `why_it_teaches_best`, what it took from the other two and what it left behind, plus one line on each design not built on — a headless run never hides that there was a fork), the trees (with English intent + LS's Slovene + delivery tags), the catalog delta (reused vs newly minted, with each new item's gloss + predictable error), the computed `introduces`, the **computed band per level** (and, for any level whose band differs from its aim, the §7 evaluation), the **stage-8b wrap-up**, in the terminal shape that stage gives it — both lists, every run, any `lint:dialogue` delivery-collision warnings and how you resolved them, the convergence nodes the critic reviewed, and the green lint/test output. State the register + voices explicitly and invite R to confirm or override.
+
+**Attribute every learner-facing string.** The on-ramp, each stall's soften label, each tutorial line, each
+objective descriptor: name the stage that wrote it (2a/2b for design copy, 3 for Slovene). **A string
+attributed to C is a defect** — report it as one and say which stage should have authored it, rather than
+shipping it quietly.
 
 ### 10 — Review gate (J, R)
 R replies **approve** or **reject(notes)**. Do not generate audio before approve. On reject, route each note to its stage (language → LS/3; a branch → 2; a mint → LS/3 + reconcile), re-run 6–8, re-submit.
