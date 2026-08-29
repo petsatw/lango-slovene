@@ -758,11 +758,12 @@ body.in-scene header { display: none; }
 /* The two ways onward, hanging off the right of the button that opens them. Absolute, so the column
    below does not move when the menu appears — "Next lesson" stays exactly where the learner last saw it. */
 .scene-deeper-wrap { position: relative; display: inline-grid; justify-items: center; }
-/* Right-aligned and dropped below. Opening rightward from the button put the items 74px past the right
-   edge of a 390px screen, where `.scene` clips them — the control was there and unreachable. */
+/* It opens UPWARD, centred on the button. Go Deeper is the last thing in the close screen, so there is
+   nothing below it but the edge of the phone; and opening sideways runs past the right edge. Up and
+   centred is the only direction with room on every screen, and it never moves the column. */
 .scene-deeper {
-  position: absolute; top: calc(100% + 6px); right: 0; z-index: 3;
-  display: grid; gap: 6px; justify-items: end;
+  position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); z-index: 3;
+  display: grid; gap: 6px; justify-items: center;
 }
 .scene-deeper .scene-close-btn {
   min-width: 0; width: max-content; white-space: nowrap;
