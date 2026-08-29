@@ -758,17 +758,24 @@ body.in-scene header { display: none; }
 /* The two ways onward, hanging off the right of the button that opens them. Absolute, so the column
    below does not move when the menu appears — "Next lesson" stays exactly where the learner last saw it. */
 .scene-deeper-wrap { position: relative; display: inline-grid; justify-items: center; }
-/* It opens UPWARD, centred on the button. Go Deeper is the last thing in the close screen, so there is
-   nothing below it but the edge of the phone; and opening sideways runs past the right edge. Up and
-   centred is the only direction with room on every screen, and it never moves the column. */
+/* The menu sits directly to the RIGHT of its button and is absolutely positioned, so it overlays
+   nothing, displaces nothing, and the column does not move when it opens or closes.
+   Room to the right is what makes that possible: this row alone is left-aligned rather than centred
+   like the buttons above it, and the button is sized to what its label needs instead of the 190px
+   the stack uses. Centred and full-width, its right edge left 76px on a 390px phone — not enough for
+   a label, which is what put the menu off-screen twice. */
+.scene-deeper-wrap { justify-self: start; }
+.scene-deeper-wrap > .scene-close-btn { min-width: 0; padding: 0 20px; }
+/* Tops aligned, not centres: the pair is taller than the button, so centring it pushed the first item
+   up into Key Phrases. Growing downward is free — this is the last row on the screen. */
 .scene-deeper {
-  position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); z-index: 3;
-  display: grid; gap: 6px; justify-items: center;
+  position: absolute; top: 0; left: calc(100% + 8px); z-index: 3;
+  display: grid; gap: 6px; justify-items: start;
 }
 .scene-deeper .scene-close-btn {
   min-width: 0; width: max-content; white-space: nowrap;
-  height: 44px; padding: 0 16px; font-size: 15px;
-  border-radius: 22px; background: rgba(10, 12, 16, 0.82);
+  height: 40px; padding: 0 14px; font-size: 14px;
+  border-radius: 20px; background: rgba(10, 12, 16, 0.82);
   border-color: rgba(255, 255, 255, 0.3);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
