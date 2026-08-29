@@ -240,6 +240,11 @@ export interface Dialogue {
    *  they can follow and one they can't. Authored per level, so a lesson teaches a control at the point
    *  the learner has a reason to want it. Absent → straight into the scene. */
   tutorial?: TutorialStep[];
+  /** The rehearsal dialogue this lesson sends the learner to read and listen through — the same material
+   *  worked in a real transaction, at their own pace, with the English one tap away. Authored per level,
+   *  because which dialogue pays off a lesson is a teaching decision and belongs beside the lesson.
+   *  Absent → the close screen offers the live tutor alone. */
+  practice?: { scenarioId: string; level: number };
   /** How the learner advances this level — tapped choices (default) or spoken turns. Absent → "tap", so
    *  every dialogue authored before this field keeps its behaviour. See DialogueAdvance. */
   advance?: DialogueAdvance;
@@ -321,6 +326,13 @@ export function validateDialogue(file: string, raw: any): Dialogue {
         fail(file, `"tutorial": target "${s.target}" is not one of ${TUTORIAL_TARGETS.join(", ")}`);
       asString(file, s, "text", "tutorial step");
     }
+  }
+  if (raw.practice !== undefined) {
+    if (!raw.practice || typeof raw.practice !== "object")
+      fail(file, `"practice" must be an object { scenarioId, level }`);
+    asString(file, raw.practice, "scenarioId", "practice");
+    if (typeof raw.practice.level !== "number" || !Number.isInteger(raw.practice.level) || raw.practice.level < 1)
+      fail(file, `"practice.level" must be a positive integer`);
   }
   if (raw.background !== undefined) asString(file, raw, "background", "dialogue");
   if (raw.intro !== undefined) {

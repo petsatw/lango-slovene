@@ -1239,7 +1239,37 @@ function sceneFinish() {
     if (panel.hidden) renderKeyPhrases(phrases);
     panel.hidden = !panel.hidden;
   };
+  // Two ways onward, folded away until asked for. Reading/Listening only appears where the lesson named
+  // a dialogue — a button that leads nowhere is worse than one that isn't there.
+  const menu = $("scene-deeper");
+  menu.hidden = true;
+  $("scene-deeper-read").hidden = !scene.practice;
+  $("scene-deeper-read").onclick = () => openPracticeDialogue(scene.practice);
+  $("scene-deeper-speak").onclick = () => {
+    const h = scene.handoff;
+    sceneCancel();
+    openTutor(h ? { focus: h.focus, role: h.role, context: h.context } : {});
+  };
+  $("scene-deeper-btn").onclick = () => { menu.hidden = !menu.hidden; };
   $("scene-close").hidden = false;
+}
+
+// The lesson's rehearsal dialogue: the same material worked in a real transaction, at the learner's own
+// pace. It lands on the level itself, by the same path a learner would take by hand — the scenario list
+// is fetched rather than held, because the scene is the one surface that can be opened without it.
+async function openPracticeDialogue(target) {
+  sceneCancel();
+  try {
+    const { scenarios } = await (await fetch("/api/practice")).json();
+    const s = scenarios.find((x) => x.id === target.scenarioId);
+    const i = s ? s.dialogues.findIndex((d) => d.level === target.level) : -1;
+    if (i < 0) throw new Error(`no dialogue ${target.scenarioId} level ${target.level}`);
+    openScenario(s);
+    openLevel(i);
+  } catch (err) {
+    obs.error(`go deeper: ${err.message}`);
+    openHome();
+  }
 }
 
 // One row per phrase they met: the Slovene, and a play button where the clip is already on disk. Tap the

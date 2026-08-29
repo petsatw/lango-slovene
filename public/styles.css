@@ -765,6 +765,11 @@ body.in-scene header { display: none; }
 }
 .scene-close-btn.ghost { border-color: rgba(255, 255, 255, 0.22); background: transparent; font-weight: 500; }
 
+/* The two ways onward, indented under the button that opens them so they read as its contents rather
+   than as two more choices competing with "Next lesson". */
+.scene-deeper { display: grid; justify-items: center; gap: 8px; width: 100%; padding-bottom: 2px; }
+.scene-deeper .scene-close-btn { height: 48px; font-size: 16px; }
+
 /* Key Phrases: a list of what you have MET. No ordering or marking that implies mastery — the moment
    it ranks, it is a measure. */
 .scene-phrases {

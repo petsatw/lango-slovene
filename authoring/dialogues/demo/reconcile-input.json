@@ -296,6 +296,10 @@
             "predictableError": "Adding an article — 'Ti si en zmaj' — because English needs 'a'; Slovene takes the bare nominative."
           }
         ]
+      },
+      "practice": {
+        "scenarioId": "library",
+        "level": 1
       }
     }
   ],

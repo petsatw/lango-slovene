@@ -43,6 +43,10 @@
     "Say the phrase, then press <b>continue</b> to move on.",
     "Let's go!"
   ],
+  "practice": {
+    "scenarioId": "library",
+    "level": 1
+  },
   "root": "n1",
   "nodes": {
     "n1": {

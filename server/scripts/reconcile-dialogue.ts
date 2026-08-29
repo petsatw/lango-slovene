@@ -62,6 +62,7 @@ function die(msg: string): never {
 //              context? /* parenthetical on a client choice */, next } }, background?, intro?:{audio,text?,en?},
 //              frameEN? /* the English on-ramp shown before the scene opens */,
 //              tutorial? /* [{target,text}] — the run controls this level teaches, before its first line */,
+//              practice? /* {scenarioId,level} — the rehearsal dialogue "Go Deeper › Reading/Listening" opens */,
 //              catalog: { reuse:[id…], new:[{id,kind,sl,gloss,predictableError?,core?,a1?,rank?}…] } } ],
 //   criticFixes?: [ { level, nodeId, field:"sl"|"en"|"deliverySL", oldExact, newExact } ],
 //   a1Candidates?: [ { learnableId, competencyId, note? } ]
@@ -353,6 +354,7 @@ for (const lvl of input.levels) {
     ...(pacing ? { pacing } : {}),
     ...(Array.isArray(lvl.frameEN) && lvl.frameEN.length ? { frameEN: lvl.frameEN } : {}),
     ...(Array.isArray(lvl.tutorial) && lvl.tutorial.length ? { tutorial: lvl.tutorial } : {}),
+    ...(lvl.practice ? { practice: lvl.practice } : {}),
     ...(background ? { background } : {}),
     ...(intro ? { intro } : {}),
     root: lvl.root,
