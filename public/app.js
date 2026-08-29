@@ -989,11 +989,12 @@ async function scenePlayFrame(lines) {
   // Reading speed is the learner's, not the profile's. The on-ramp is pure English scaffolding — a
   // returning learner has read it, and a fast reader is left waiting on a hold sized for a first one.
   // Skipping a lesson's LINES would cost the learner the language; skipping its preamble costs nothing.
-  const skip = $("scene-frame-skip");
-  const take = () => frameAdvance?.();
-  skip.hidden = false;
-  skip.onclick = take;
-  el.onclick = take;
+  //
+  // It is the run's own `»` that does it, not a second control: the chips are the one place in the scene
+  // where "move on" lives, and the on-ramp is the learner's first chance to find them. A skip button of
+  // its own would teach the wrong reach on the first screen of the app.
+  sceneChips({ skip: true });
+  el.onclick = () => frameAdvance?.();
   el.innerHTML = "";
   el.appendChild(document.createElement("p"));
   // Staggered in, held, then gone — long enough to read, short enough that it reads as a title card
@@ -1022,8 +1023,7 @@ async function scenePlayFrame(lines) {
     await sleep(FRAME_CROSSFADE_MS);
   }
   await sceneFrameWait(pace.frameHoldMs);
-  skip.hidden = true;
-  skip.onclick = null;
+  sceneChips({});          // the beat that follows lights them again for what it actually offers
   el.onclick = null;
   el.classList.remove("shown");
   await sceneFrameWait(pace.frameFadeMs);
@@ -1417,6 +1417,9 @@ function wireSceneChips() {
   // Skip: cut the voice, take the same step the talk button takes. `sceneCancel` first, because the
   // beat being abandoned is awaiting a clip that `pause()` will never end.
   $("scene-skip").addEventListener("click", async () => {
+    // During the on-ramp `»` is what it says it is — skip ahead — and what lies ahead is the next
+    // English line, not the next beat. The frame owns the chip while it is up.
+    if (frameAdvance) { frameAdvance(); return; }
     const from = scene.node?.id;
     if (!from || scene.node.terminal) return;
     sceneCancel();

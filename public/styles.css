@@ -569,7 +569,7 @@ body.in-scene header { display: none; }
   overflow: hidden;
 }
 .scene-stage {
-  position: relative; flex: 1; min-height: 0; width: 100%;
+  flex: 1; min-height: 0; width: 100%;
   display: flex; flex-direction: column; justify-content: center; align-items: center;
   padding-bottom: 8px;
 }
@@ -654,16 +654,6 @@ body.in-scene header { display: none; }
 /* One line at a time, swapped in place — so there is no size hierarchy to encode. Every line is the
    only thing on screen while it is up, and gets the same weight. */
 .scene-frame p { margin: 0; font-size: 24px; line-height: 1.45; }
-
-/* Present only while the on-ramp is up. Quiet — it is the way past the preamble, never the thing being
-   asked for — but a real, labelled control, because a first-time learner will not discover a bare tap. */
-.scene-frame-skip {
-  position: absolute; bottom: 0; right: 0;
-  appearance: none; border: 0; background: transparent; cursor: pointer;
-  padding: 10px 4px; font: inherit; font-size: 15px; letter-spacing: 0.02em;
-  color: rgba(255, 255, 255, 0.55);
-}
-.scene-frame-skip:active { color: rgba(255, 255, 255, 0.9); }
 
 /* The controls tutorial. The scrim covers the whole scene and sits UNDER the chip layer, so the chip
    being explained is the real button in its real place — the learner practises the reach, not a picture
