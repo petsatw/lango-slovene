@@ -1,0 +1,33 @@
+{
+  "key": "44994ccda43f32a08df02d18160336e3ffdaee079bf68f27cdcc9d7450a2be98",
+  "text": "Sem zmaj! Pa ti?",
+  "words": [
+    {
+      "text": "Sem",
+      "start": 0.179,
+      "end": 0.359,
+      "loss": 0.4236653645833333
+    },
+    {
+      "text": "zmaj!",
+      "start": 0.419,
+      "end": 0.879,
+      "loss": 0.9520751953125
+    },
+    {
+      "text": "Pa",
+      "start": 1.019,
+      "end": 1.159,
+      "loss": 0.092529296875
+    },
+    {
+      "text": "ti?",
+      "start": 1.179,
+      "end": 1.279,
+      "loss": 0.3453776041666667
+    }
+  ],
+  "loss": 0.7320938110351562,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-29T07:53:56.651Z"
+}

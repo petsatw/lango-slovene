@@ -1,0 +1,57 @@
+{
+  "key": "0dc3ee2506a507e430190fb112088fd1a48dce02cac5acc15242e217f1abd9fb",
+  "text": "Tako je! Jaz sem Slavko. Pa kaj sem?",
+  "words": [
+    {
+      "text": "Tako",
+      "start": 0.14,
+      "end": 0.419,
+      "loss": 0.07065582275390625
+    },
+    {
+      "text": "je!",
+      "start": 0.439,
+      "end": 0.659,
+      "loss": 0.2819671630859375
+    },
+    {
+      "text": "Jaz",
+      "start": 1.179,
+      "end": 1.399,
+      "loss": 0.1385498046875
+    },
+    {
+      "text": "sem",
+      "start": 1.439,
+      "end": 1.559,
+      "loss": 0.13853963216145834
+    },
+    {
+      "text": "Slavko.",
+      "start": 1.639,
+      "end": 2.119,
+      "loss": 0.07810102190290179
+    },
+    {
+      "text": "Pa",
+      "start": 2.74,
+      "end": 2.879,
+      "loss": 0.05224609375
+    },
+    {
+      "text": "kaj",
+      "start": 2.899,
+      "end": 3.039,
+      "loss": 0.00424957275390625
+    },
+    {
+      "text": "sem?",
+      "start": 3.139,
+      "end": 3.319,
+      "loss": 0.06956100463867188
+    }
+  ],
+  "loss": 0.08424260881212023,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-29T08:12:42.488Z"
+}

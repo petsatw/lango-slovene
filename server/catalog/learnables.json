@@ -3259,5 +3259,17 @@
     "predictableError": "learners who met 'dež' (rain) last lesson say 'dež' for the object; the umbrella is 'dežnik' — 'dež' is the weather, 'dežnik' is the thing you hold.",
     "core": false,
     "a1": true
+  },
+  "ti_si_x": {
+    "kind": "pattern",
+    "sl": "Ti si ___.",
+    "gloss": "You are ___.",
+    "predictableError": "Carrying over the 1sg and saying 'Ti sem ___' — the 2sg copula is 'si'."
+  },
+  "zmaj": {
+    "kind": "vocabulary",
+    "sl": "zmaj",
+    "gloss": "dragon",
+    "predictableError": "Adding an article — 'Ti si en zmaj' — because English needs 'a'; Slovene takes the bare nominative."
   }
 }

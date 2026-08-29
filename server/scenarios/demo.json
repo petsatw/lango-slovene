@@ -1,0 +1,31 @@
+{
+  "id": "demo",
+  "name": "Demo",
+  "title": "Demo",
+  "status": "active",
+  "character": "Slavko, a warm, curious dragon who is the learner's companion through the course — he speaks Slovene to them from the first second and is unmistakably on their side",
+  "setup": "A brand-new learner's first contact with the language. Slavko meets them, tells them who he is, and wants to know who they are — the name exchange is the one thing he can genuinely want from someone who owns no words at all.",
+  "opening": "Oj, živjo! Sem Slavko.",
+  "register": {
+    "form": "ti",
+    "variety": "pogovorni"
+  },
+  "surfaces": {
+    "dialogue": {
+      "voices": {
+        "npc": "slavko",
+        "client": "slavko"
+      },
+      "advance": "audio",
+      "levels": [
+        {
+          "level": 1,
+          "levelLabel": "Above A1"
+        }
+      ]
+    },
+    "a1": true
+  },
+  "objectives": [],
+  "onboarding": true
+}

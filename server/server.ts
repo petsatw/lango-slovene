@@ -18,7 +18,7 @@ import { A1_MAP } from "./a1";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
 import { CATALOG } from "./catalog";
-import { getDialoguesForScenario } from "./dialogues";
+import { getDialoguesForScenario, type Dialogue } from "./dialogues";
 import { pacingFor } from "./pacing";
 import { advanceDialogue } from "./adapters/dialogue-scripted";
 import { getLearnable, LEARNABLES } from "./learnables";
@@ -116,8 +116,12 @@ app.get("/api/practice", (_req, res) => {
     }));
   // The scenario that owns the first-run spoken scene, if one is authored — the boot route needs it in
   // the same call as `started`, so a zero-state learner reaches the scene without a second round trip.
-  const sceneScenario = SCENARIOS.find((s) =>
-    getDialoguesForScenario(s.id).some((d) => (d.advance ?? "tap") === "audio"));
+  // The front door is DECLARED, by the `onboarding` flag on exactly one manifest. Falling back to the
+  // first spoken package is a courtesy for a repo that has not declared one; it is not the contract,
+  // because that would make the app's first screen a function of filename order.
+  const spoken = (s: (typeof SCENARIOS)[number]) =>
+    getDialoguesForScenario(s.id).some((d) => (d.advance ?? "tap") === "audio");
+  const sceneScenario = SCENARIOS.find((s) => s.onboarding && spoken(s)) ?? SCENARIOS.find(spoken);
   res.json({
     scenarios,
     providers: { e2: getE2().name, e3: getE3().name },
@@ -136,6 +140,23 @@ app.get("/api/practice", (_req, res) => {
 //
 // `level` picks which spoken level of the scenario to play; absent → the lowest. Without it only the
 // first spoken level of a scenario is reachable, and every level after it ships unplayable.
+// What the live tutor needs to carry this lesson into free chat: the learnables the learner actually
+// PRODUCED here (client nodes — the same rule the runtime credits by, and a superset of `introduces`,
+// which is empty on a level that mostly re-works earlier phrases), plus the scene and the objectives so
+// the tutor keeps the situation alive while still tutoring.
+function sceneHandoff(scene: Dialogue) {
+  const s = SCENARIOS.find((x) => x.id === scene.scenarioId);
+  const focus = [...new Set(Object.values(scene.nodes)
+    .filter((n) => n.speaker === "client")
+    .flatMap((n) => n.learnables ?? []))];
+  return {
+    focus: focus.length ? focus : scene.introduces,
+    role: s?.role ?? null,
+    context: { scene: `${s?.name ?? s?.title ?? scene.scenarioId} — ${scene.title}`,
+               practiced: scene.objectives.map((o) => o.descriptorEN) },
+  };
+}
+
 app.post("/api/scene", (req, res) => {
   const { scenarioId, level, from } = req.body ?? {};
   if (typeof scenarioId !== "string") return res.status(400).json({ error: "scenarioId is required" });
@@ -267,13 +288,20 @@ app.post("/api/scene", (req, res) => {
   try {
     if (typeof from !== "string") {
       return res.json({ voice: scene.voices.npc, background: scene.background ?? null, backchannel,
-                        pacing, frameEN: scene.frameEN ?? [], npc: shape(scene.root), done: false,
+                        pacing, frameEN: scene.frameEN ?? [], tutorial: scene.tutorial ?? [],
+                        npc: shape(scene.root), done: false,
                         audio: scene.audio,
                         level: scene.level, title: scene.title,
                         // What the close screen offers next — the scenario's next spoken level, if one
                         // is authored. Null ends the run at the close screen.
                         nextLevel: spoken.find((d) => d.level > scene.level)?.level ?? null,
-                        keyPhrases: keyPhrases() });
+                        keyPhrases: keyPhrases(),
+                        // Where the lesson goes next, both ways. `practice` names a rehearsal dialogue to
+                        // read and listen through; `handoff` is what the live tutor needs to keep this
+                        // scene alive while still tutoring. Both are derived HERE, where the authored
+                        // dialogue lives — the scene renderer holds only the beats it has played.
+                        practice: scene.practice ?? null,
+                        handoff: sceneHandoff(scene) });
     }
     const step = advanceDialogue(scene, from, { kind: "audio" });
     if (step.learnableProgress.length) learner.save(applyCredit(learner.load(), step.learnableProgress));

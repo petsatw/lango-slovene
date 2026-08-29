@@ -47,6 +47,15 @@ export interface PacingProfile {
   /** After the gloss, before the turn is handed over (the button and the prompt appear). The pause that
    *  makes the hand-over read as an offer rather than a cue. */
   handoverMs: number;
+  /** Base reading window the character's line keeps at FULL brightness after the turn has been handed
+   *  over, before it dims to sit behind the learner's prompt. The hand-over and the dim are separate
+   *  events: the button and the prompt arrive on `handoverMs` so the offer is prompt, while the line
+   *  the learner is answering stays legible for as long as there is something to read. */
+  recedeHoldMs: number;
+  /** Added to `recedeHoldMs` per CHARACTER of the line on screen — the same scaling as every other
+   *  reading hold, for the same reason: a four-word greeting and a two-clause question are not the
+   *  same amount to read, and one window either rushes the long line or strands the short one. */
+  recedeCharMs: number;
   /** Base dwell for a beat that hands over to NOBODY — the character carrying himself forward — before
    *  its caption is replaced by the next line. This is the only caption the learner cannot keep reading:
    *  on a hand-over beat the line recedes but stays up beside their prompt, while here it is gone.
@@ -78,7 +87,8 @@ const PACING_FILE = path.join(__dirname, "catalog", "pacing.json");
 
 const MS_FIELDS = [
   "frameLineMs", "frameCharMs", "frameHoldMs", "frameFadeMs",
-  "captionLeadMs", "captionReadMs", "glossDelayMs", "handoverMs", "beatHoldMs", "beatCharMs",
+  "captionLeadMs", "captionReadMs", "glossDelayMs", "handoverMs", "recedeHoldMs", "recedeCharMs",
+  "beatHoldMs", "beatCharMs",
   "closeHoldMs", "backchannelMs",
 ] as const;
 

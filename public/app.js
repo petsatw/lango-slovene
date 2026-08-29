@@ -766,7 +766,8 @@ async function seedTurn(audioBase64) {
 // screen. It exists so `«` can put a line back WITHOUT asking the server: /api/scene only ever walks
 // forward, and there is no beat to re-fetch — the client already holds the shaped node it played.
 let scene = { scenarioId: null, level: null, voice: null, audio: null, node: null, stalls: [], armed: false,
-              backchannel: null, pacing: null, nextLevel: null, keyPhrases: null, trail: [], trailAt: -1 };
+              backchannel: null, pacing: null, nextLevel: null, keyPhrases: null, practice: null,
+              handoff: null, trail: [], trailAt: -1 };
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -837,6 +838,9 @@ function sceneCancel() {
   sceneClearStalls();
   scene.armed = false;
   sceneSlowPass = null;
+  // An on-ramp dwell and a tutorial step are waits like any other — leaving either pending hangs the run.
+  frameAdvance?.();
+  tutorialAdvance?.();
   $("scene-slower").classList.remove("blinking");
   const pending = scenePendingSay;
   scenePendingSay = null;
@@ -939,20 +943,59 @@ function sceneSetPhase(phase, label) {
   btn.classList.toggle("waiting", phase === "ready");
   btn.setAttribute("aria-disabled", phase === "speaking" ? "true" : "false");
   if (label !== undefined) $("scene-talk-label").textContent = label;
-  // The character's line recedes the moment the turn stops being his, so the only thing at full
-  // brightness is the line the learner is being asked for.
-  const handed = phase === "ready";
-  $("scene-caption").classList.toggle("receded", handed);
-  $("scene-gloss").classList.toggle("receded", handed);
+  sceneRecede(phase === "ready");
+}
+
+// The character's line recedes once the turn stops being his, so the only thing at full brightness is
+// the line the learner is being asked for — but not at the instant of the hand-over. The learner heard
+// that line seconds ago and is looking at it to work out what they were just asked; dimming it while it
+// is still being read takes the question away to make room for the answer. So the dim waits out a
+// reading window scaled to the length of the line, the same way every other reading hold in the profile
+// scales. Handing the turn BACK brightens immediately — there is nothing to wait for once the character
+// is speaking again.
+let sceneRecedeTimer = null;
+function sceneRecede(on) {
+  clearTimeout(sceneRecedeTimer);
+  const set = (v) => {
+    $("scene-caption").classList.toggle("receded", v);
+    $("scene-gloss").classList.toggle("receded", v);
+  };
+  if (!on) { set(false); return; }
+  const pace = scene.pacing;
+  const text = scene.node?.sl ?? "";
+  const wait = pace ? pace.recedeHoldMs + pace.recedeCharMs * text.length : 0;
+  if (!wait) { set(true); return; }
+  sceneRecedeTimer = setTimeout(() => set(true), wait);
 }
 
 // How long one on-ramp line takes to swap for the next. Not a pacing knob — it is the transition itself,
 // the same in every profile; the dwell either side of it is what gets dialed.
 const FRAME_CROSSFADE_MS = 300;
 
+// The on-ramp's dwell, cut short on request. Every wait in the frame goes through here so that ONE tap
+// resolves whichever one is running — the line's own dwell, the hold after the last line, or the fade —
+// and the learner never taps into a wait that ignores them.
+let frameAdvance = null;
+function sceneFrameWait(ms) {
+  return new Promise((resolve) => {
+    const done = () => { clearTimeout(timer); if (frameAdvance === done) frameAdvance = null; resolve(); };
+    const timer = setTimeout(done, ms);
+    frameAdvance = done;
+  });
+}
+
 async function scenePlayFrame(lines) {
   const pace = scene.pacing;
   const el = $("scene-frame");
+  // Reading speed is the learner's, not the profile's. The on-ramp is pure English scaffolding — a
+  // returning learner has read it, and a fast reader is left waiting on a hold sized for a first one.
+  // Skipping a lesson's LINES would cost the learner the language; skipping its preamble costs nothing.
+  //
+  // It is the run's own `»` that does it, not a second control: the chips are the one place in the scene
+  // where "move on" lives, and the on-ramp is the learner's first chance to find them. A skip button of
+  // its own would teach the wrong reach on the first screen of the app.
+  sceneChips({ skip: true });
+  el.onclick = () => frameAdvance?.();
   el.innerHTML = "";
   el.appendChild(document.createElement("p"));
   // Staggered in, held, then gone — long enough to read, short enough that it reads as a title card
@@ -966,20 +1009,61 @@ async function scenePlayFrame(lines) {
   p.style.transition = `opacity ${FRAME_CROSSFADE_MS}ms ease`;
   p.style.opacity = "0";
   for (const [i, line] of lines.entries()) {
-    p.textContent = line;
+    // The on-ramp names controls the learner is about to use ("press <b>continue</b>"), and a control
+    // named in running prose has to look like the control. `frameEN` is committed repo source, authored
+    // through the pipeline and never learner input, so markup in it is trusted — this is the line to
+    // revisit if that ever stops being true.
+    p.innerHTML = line;
     p.style.opacity = "1";
     // Dwell scales with the length of the line — these are the first sentences the learner ever reads,
     // and a fixed interval either rushes the long one or strands the short one. Nothing can be re-read
     // once it is replaced, so each line has to be legible the first time.
-    await sleep(pace.frameLineMs + pace.frameCharMs * line.length);
+    await sceneFrameWait(pace.frameLineMs + pace.frameCharMs * line.length);
     if (i === lines.length - 1) break;          // the last line stays up for the frame's own hold
     p.style.opacity = "0";
     await sleep(FRAME_CROSSFADE_MS);
   }
-  await sleep(pace.frameHoldMs);
+  await sceneFrameWait(pace.frameHoldMs);
+  sceneChips({});          // the beat that follows lights them again for what it actually offers
+  el.onclick = null;
   el.classList.remove("shown");
-  await sleep(pace.frameFadeMs);
+  await sceneFrameWait(pace.frameFadeMs);
   el.hidden = true;
+}
+
+// The four run controls are on screen from the first frame of every lesson and are never explained. A
+// learner who has not been shown them has been handed help they cannot find — and the tortoise in
+// particular is the difference between a line they can follow and one they can't.
+//
+// The chip is not copied or moved for this: the scrim goes UNDER the chip layer, so the thing being
+// pointed at is the actual button, in its actual place, and the learner has already practised the reach
+// by the time the scrim lifts. Tapping the lit chip itself does nothing yet — a control demonstrated
+// mid-explanation would fire against a scene that has not started.
+const TUTORIAL_CHIPS = { slower: "scene-slower", back: "scene-back", skip: "scene-skip", quit: "scene-quit" };
+
+let tutorialAdvance = null;   // resolves the step the learner is looking at — also how ✕ gets out
+
+async function scenePlayTutorial(steps) {
+  const gen = sceneGen;
+  const panel = $("scene-tutorial");
+  const chips = $("scene-chips");
+  const text = $("scene-tutorial-text");
+  panel.hidden = false;
+  chips.classList.add("tutorial");
+  for (const step of steps) {
+    if (gen !== sceneGen) break;
+    const chip = $(TUTORIAL_CHIPS[step.target]);
+    // A disabled chip is drawn at 25% and cannot be lit convincingly, and every chip is disabled before
+    // the first beat. `lit` overrides the dim for exactly as long as it is the one being explained.
+    chip.classList.add("lit");
+    text.textContent = step.text;
+    await new Promise((resolve) => { tutorialAdvance = resolve; panel.onclick = resolve; });
+    tutorialAdvance = null;
+    chip.classList.remove("lit");
+  }
+  panel.onclick = null;
+  panel.hidden = true;
+  chips.classList.remove("tutorial");
 }
 
 // Help is one tap away and arrives like a friend handing it over. Tapping the learner's own slot brings
@@ -1117,12 +1201,24 @@ async function sceneStep(from, ack) {
   scene.voice = data.voice;
   if (data.audio) scene.audio = data.audio;
   if (data.level) scene.level = data.level;
-  if (data.keyPhrases) { scene.keyPhrases = data.keyPhrases; scene.nextLevel = data.nextLevel ?? null; }
+  // The close screen's material, all of it sent once with the opening line — the close is reached by a
+  // beat that has no payload of its own.
+  if (data.keyPhrases) {
+    scene.keyPhrases = data.keyPhrases;
+    scene.nextLevel = data.nextLevel ?? null;
+    scene.practice = data.practice ?? null;
+    scene.handoff = data.handoff ?? null;
+  }
   if (data.pacing) scene.pacing = data.pacing;
   if (data.backchannel) scene.backchannel = data.backchannel;
   if (data.background) $("scene-bg").style.backgroundImage = `url(/backgrounds/${data.background})`;
   if (ack) await ack;
   if (data.frameEN?.length) await scenePlayFrame(data.frameEN);
+  if (gen !== sceneGen) return;   // the on-ramp is skippable, so a ✕ during it must not land on a beat
+  // After the on-ramp and before the first line: the learner knows what this is, and has not yet been
+  // given anything to miss.
+  if (data.tutorial?.length) await scenePlayTutorial(data.tutorial);
+  if (gen !== sceneGen) return;
   if (data.npc) await scenePlayBeat(data.npc);
   else sceneFinish();
 }
@@ -1151,7 +1247,37 @@ function sceneFinish() {
     if (panel.hidden) renderKeyPhrases(phrases);
     panel.hidden = !panel.hidden;
   };
+  // Two ways onward, folded away until asked for. Reading/Listening only appears where the lesson named
+  // a dialogue — a button that leads nowhere is worse than one that isn't there.
+  const menu = $("scene-deeper");
+  menu.hidden = true;
+  $("scene-deeper-read").hidden = !scene.practice;
+  $("scene-deeper-read").onclick = () => openPracticeDialogue(scene.practice);
+  $("scene-deeper-speak").onclick = () => {
+    const h = scene.handoff;
+    sceneCancel();
+    openTutor(h ? { focus: h.focus, role: h.role, context: h.context } : {});
+  };
+  $("scene-deeper-btn").onclick = () => { menu.hidden = !menu.hidden; };
   $("scene-close").hidden = false;
+}
+
+// The lesson's rehearsal dialogue: the same material worked in a real transaction, at the learner's own
+// pace. It lands on the level itself, by the same path a learner would take by hand — the scenario list
+// is fetched rather than held, because the scene is the one surface that can be opened without it.
+async function openPracticeDialogue(target) {
+  sceneCancel();
+  try {
+    const { scenarios } = await (await fetch("/api/practice")).json();
+    const s = scenarios.find((x) => x.id === target.scenarioId);
+    const i = s ? s.dialogues.findIndex((d) => d.level === target.level) : -1;
+    if (i < 0) throw new Error(`no dialogue ${target.scenarioId} level ${target.level}`);
+    openScenario(s);
+    openLevel(i);
+  } catch (err) {
+    obs.error(`go deeper: ${err.message}`);
+    openHome();
+  }
 }
 
 // One row per phrase they met: the Slovene, and a play button where the clip is already on disk. Tap the
@@ -1238,6 +1364,8 @@ async function openScene(scenarioId, level = null) {
   scene = { scenarioId, level, voice: null, audio: null, node: null, stalls: [], armed: false,
             backchannel: null, pacing: null, nextLevel: null, keyPhrases: null, trail: [], trailAt: -1 };
   showScreen("scene");
+  $("scene-tutorial").hidden = true;
+  $("scene-chips").classList.remove("tutorial");
   $("scene-close").hidden = true;
   $("scene-phrases").hidden = true;
   $("scene-controls").hidden = false;
@@ -1297,6 +1425,9 @@ function wireSceneChips() {
   // Skip: cut the voice, take the same step the talk button takes. `sceneCancel` first, because the
   // beat being abandoned is awaiting a clip that `pause()` will never end.
   $("scene-skip").addEventListener("click", async () => {
+    // During the on-ramp `»` is what it says it is — skip ahead — and what lies ahead is the next
+    // English line, not the next beat. The frame owns the chip while it is up.
+    if (frameAdvance) { frameAdvance(); return; }
     const from = scene.node?.id;
     if (!from || scene.node.terminal) return;
     sceneCancel();

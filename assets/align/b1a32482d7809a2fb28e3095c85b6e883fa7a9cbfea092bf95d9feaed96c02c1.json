@@ -1,0 +1,33 @@
+{
+  "key": "b1a32482d7809a2fb28e3095c85b6e883fa7a9cbfea092bf95d9feaed96c02c1",
+  "text": "Sem Slavko. Pa ti?",
+  "words": [
+    {
+      "text": "Sem",
+      "start": 0.239,
+      "end": 0.5,
+      "loss": 0.7024739583333334
+    },
+    {
+      "text": "Slavko.",
+      "start": 0.62,
+      "end": 1.159,
+      "loss": 0.5918317522321429
+    },
+    {
+      "text": "Pa",
+      "start": 1.48,
+      "end": 1.579,
+      "loss": 0.1082763671875
+    },
+    {
+      "text": "ti?",
+      "start": 1.659,
+      "end": 1.799,
+      "loss": 0.1011962890625
+    }
+  ],
+  "loss": 0.5717705620659722,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-29T07:53:56.281Z"
+}

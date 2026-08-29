@@ -1,0 +1,45 @@
+{
+  "key": "ab7f6061c2f42c29633c970ca693bbbc42dfb32b561b172c71addf5bf842f1bb",
+  "text": "Jaz grem. Sem Slavko. Pa ti?",
+  "words": [
+    {
+      "text": "Jaz",
+      "start": 0.079,
+      "end": 0.219,
+      "loss": 0.54296875
+    },
+    {
+      "text": "grem.",
+      "start": 0.259,
+      "end": 0.5,
+      "loss": 0.2615234375
+    },
+    {
+      "text": "Sem",
+      "start": 0.899,
+      "end": 1.059,
+      "loss": 0.3042093912760417
+    },
+    {
+      "text": "Slavko.",
+      "start": 1.1,
+      "end": 1.48,
+      "loss": 0.03719438825334821
+    },
+    {
+      "text": "Pa",
+      "start": 1.899,
+      "end": 1.939,
+      "loss": 0.2060546875
+    },
+    {
+      "text": "ti?",
+      "start": 2.019,
+      "end": 2.139,
+      "loss": 0.042561848958333336
+    }
+  ],
+  "loss": 0.19001388549804688,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-29T07:53:57.395Z"
+}

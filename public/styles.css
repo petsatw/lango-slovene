@@ -655,6 +655,32 @@ body.in-scene header { display: none; }
    only thing on screen while it is up, and gets the same weight. */
 .scene-frame p { margin: 0; font-size: 24px; line-height: 1.45; }
 
+/* The controls tutorial. The scrim covers the whole scene and sits UNDER the chip layer, so the chip
+   being explained is the real button in its real place — the learner practises the reach, not a picture
+   of it. Every other chip is pushed down to near-invisible so there is exactly one thing to look at. */
+.scene-tutorial {
+  position: absolute; inset: 0; z-index: 5;
+  background: rgba(4, 8, 14, 0.86);
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  gap: 14px; padding: 0 28px; text-align: center; cursor: pointer;
+}
+.scene-tutorial-text { margin: 0; font-size: 22px; line-height: 1.45; max-width: 26ch; }
+.scene-tutorial-next { margin: 0; font-size: 14px; color: rgba(255, 255, 255, 0.45); }
+/* The chips outrank the scrim while it is up, and the lit one outranks its own disabled dimming —
+   a control is explained before the run has started, which is exactly when all four are disabled. */
+.scene-chips.tutorial { z-index: 6; }
+.scene-chips.tutorial .scene-chip { opacity: 0.12; }
+.scene-chips.tutorial .scene-chip.lit {
+  opacity: 1; background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5), 0 0 26px 8px rgba(255, 255, 255, 0.28);
+  animation: scene-spotlight 1.6s ease-in-out infinite;
+}
+@keyframes scene-spotlight {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5), 0 0 26px 8px rgba(255, 255, 255, 0.28); }
+  50%      { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.7), 0 0 34px 12px rgba(255, 255, 255, 0.4); }
+}
+@media (prefers-reduced-motion: reduce) { .scene-chips.tutorial .scene-chip.lit { animation: none; } }
+
 .scene-controls { position: relative; margin-top: 30px; display: grid; justify-items: center; gap: 12px; }
 
 /* The learner's own line, at the moment their turn opens. Deliberately quieter than the character's
@@ -728,6 +754,24 @@ body.in-scene header { display: none; }
   color: #fff; font-size: 17px; font-weight: 600; cursor: pointer;
 }
 .scene-close-btn.ghost { border-color: rgba(255, 255, 255, 0.22); background: transparent; font-weight: 500; }
+
+/* The two ways onward, hanging off the right of the button that opens them. Absolute, so the column
+   below does not move when the menu appears — "Next lesson" stays exactly where the learner last saw it. */
+.scene-deeper-wrap { position: relative; display: inline-grid; justify-items: center; }
+/* It opens UPWARD, centred on the button. Go Deeper is the last thing in the close screen, so there is
+   nothing below it but the edge of the phone; and opening sideways runs past the right edge. Up and
+   centred is the only direction with room on every screen, and it never moves the column. */
+.scene-deeper {
+  position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); z-index: 3;
+  display: grid; gap: 6px; justify-items: center;
+}
+.scene-deeper .scene-close-btn {
+  min-width: 0; width: max-content; white-space: nowrap;
+  height: 44px; padding: 0 16px; font-size: 15px;
+  border-radius: 22px; background: rgba(10, 12, 16, 0.82);
+  border-color: rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
 
 /* Key Phrases: a list of what you have MET. No ordering or marking that implies mastery — the moment
    it ranks, it is a measure. */

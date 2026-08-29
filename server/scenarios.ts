@@ -96,6 +96,10 @@ export interface Scenario {
    *  additive; legacy scenarios omit it. `lint:tree` checks the `dialogue` surface agrees with the
    *  per-level dialogue files. */
   surfaces?: ScenarioSurfaces;
+  /** This package owns the app's FRONT DOOR — a learner who has produced nothing opens straight into its
+   *  first spoken level. Exactly one scenario carries it; without the flag the front door would be
+   *  whichever spoken package happened to sort first, and adding a scenario would silently move it. */
+  onboarding?: boolean;
   objectives: Objective[];
   /** Visual story layer (M3/M4) — narrated opener, one frame per objective, one final all-in scene. */
   scene?: {
@@ -224,6 +228,8 @@ export function validateScenario(file: string, raw: any): Scenario {
     if (raw.surfaces.a1 !== undefined && typeof raw.surfaces.a1 !== "boolean")
       fail(file, `surfaces.a1 must be a boolean`);
   }
+  if (raw.onboarding !== undefined && typeof raw.onboarding !== "boolean")
+    fail(file, `"onboarding" must be a boolean`);
   if (raw.scene) {
     // Resolve every scene asset (inline or shared `{ ref }`) to a concrete AssetDef in place, so all
     // downstream (build-assets, images, lint) sees one uniform resolved bible.
