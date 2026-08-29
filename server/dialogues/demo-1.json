@@ -1,0 +1,236 @@
+{
+  "id": "demo-l1",
+  "scenarioId": "demo",
+  "level": 1,
+  "levelLabel": "Basic",
+  "title": "Meeting Slavko",
+  "objectives": [
+    {
+      "label": "Introduce yourself",
+      "descriptorEN": "Say 'Sem ___.' out loud with your own name in the slot."
+    },
+    {
+      "label": "Say it again when asked",
+      "descriptorEN": "Give the same line back when Slavko asks to hear it once more."
+    },
+    {
+      "label": "Name yourself on the way out",
+      "descriptorEN": "Mirror Slavko's sign-off with 'Sem ___.'"
+    }
+  ],
+  "introduces": [
+    "adijo",
+    "sem_ime",
+    "zivjo"
+  ],
+  "audio": "ready",
+  "voices": {
+    "npc": "slavko",
+    "client": "slavko"
+  },
+  "advance": "audio",
+  "pacing": "onboarding",
+  "frameEN": [
+    "This is Slavko. He's a dragon, and he's going to teach you Slovene.",
+    "He speaks only Slovene — you'll follow more than you expect, because he repeats everything: in a sentence, then on its own, then slowly.",
+    "He talks, then it's your turn. Say it out loud — you can't get it wrong here.",
+    "He's going to want your name."
+  ],
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Oj, živjo! Sem Slavko. Sem Slavko.",
+      "en": "Oh, hi! I'm Slavko. I'm Slavko.",
+      "deliverySL": "[warmly] Oj, živjo! Sem Slavko. [slower, warmly] Sem Slavko.",
+      "glossPolicy": "after",
+      "slowSL": "Oj, živjo … Sem … Slavko.",
+      "deliverySlowSL": "[warmly] Oj, živjo … [slowly and clearly] Sem … [slowly] Slavko.",
+      "focusSpan": "Sem Slavko. Sem Slavko.",
+      "next": [
+        "n2"
+      ],
+      "learnables": [
+        "zivjo",
+        "sem_ime"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Sem Slavko. Pa ti?",
+      "en": "I'm Slavko. And you?",
+      "deliverySL": "[curious] Sem Slavko. Pa ti?",
+      "glossPolicy": "after",
+      "slowSL": "Sem … Slavko … Pa ti?",
+      "deliverySlowSL": "[slowly and clearly] Sem … [slowly] Slavko … [gently] Pa ti?",
+      "focusSpan": "Sem Slavko",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "respeak"
+        },
+        {
+          "kind": "soften",
+          "label": "Say: Sem — then your name"
+        }
+      ],
+      "next": [
+        "c1"
+      ],
+      "learnables": [
+        "sem_ime"
+      ]
+    },
+    "c1": {
+      "speaker": "client",
+      "sl": "Sem ___.",
+      "en": "I'm [your name].",
+      "focusSpan": "Sem",
+      "glossPolicy": "after",
+      "next": [
+        "n3"
+      ],
+      "learnables": [
+        "sem_ime"
+      ]
+    },
+    "n3": {
+      "speaker": "npc",
+      "sl": "Sem zmaj! Pa ti?",
+      "en": "I'm a dragon! And you?",
+      "deliverySL": "[cheerfully] Sem zmaj! Pa ti?",
+      "glossPolicy": "after",
+      "slowSL": "Sem … zmaj … Pa ti?",
+      "deliverySlowSL": "[slowly and clearly] Sem … [slowly] zmaj … [gently] Pa ti?",
+      "focusSpan": "Sem zmaj",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "respeak"
+        },
+        {
+          "kind": "soften",
+          "label": "Your turn — Sem, then your name"
+        }
+      ],
+      "next": [
+        "c2"
+      ],
+      "learnables": [
+        "sem_ime"
+      ]
+    },
+    "c2": {
+      "speaker": "client",
+      "sl": "Sem ___.",
+      "en": "I'm [your name].",
+      "focusSpan": "Sem",
+      "glossPolicy": "tap",
+      "next": [
+        "n4"
+      ],
+      "learnables": [
+        "sem_ime"
+      ]
+    },
+    "n4": {
+      "speaker": "npc",
+      "sl": "Še enkrat! Sem Slavko. Pa ti?",
+      "en": "Once more! I'm Slavko. And you?",
+      "deliverySL": "[delighted] Še enkrat! Sem Slavko. Pa ti?",
+      "glossPolicy": "after",
+      "slowSL": "Še enkrat … Sem … Slavko … Pa ti?",
+      "deliverySlowSL": "[delighted] Še enkrat … [slowly and clearly] Sem … [slowly] Slavko … [gently] Pa ti?",
+      "focusSpan": "Sem Slavko",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "respeak"
+        },
+        {
+          "kind": "soften",
+          "label": "Once more — Sem, then your name"
+        }
+      ],
+      "next": [
+        "c3"
+      ],
+      "learnables": [
+        "sem_ime"
+      ]
+    },
+    "c3": {
+      "speaker": "client",
+      "sl": "Sem ___.",
+      "en": "I'm [your name].",
+      "focusSpan": "Sem",
+      "glossPolicy": "tap",
+      "next": [
+        "n5"
+      ],
+      "learnables": [
+        "sem_ime"
+      ]
+    },
+    "n5": {
+      "speaker": "npc",
+      "sl": "Jaz grem. Sem Slavko. Pa ti?",
+      "en": "I'm off. I'm Slavko. And you?",
+      "deliverySL": "[warmly] Jaz grem. Sem Slavko. Pa ti?",
+      "glossPolicy": "after",
+      "focusSpan": "Sem Slavko",
+      "stallHandlers": [
+        {
+          "kind": "pulse"
+        },
+        {
+          "kind": "respeak"
+        },
+        {
+          "kind": "soften",
+          "label": "Say your name back"
+        }
+      ],
+      "next": [
+        "c4"
+      ],
+      "learnables": [
+        "sem_ime"
+      ],
+      "slowSL": "Jaz grem … Sem … Slavko … Pa ti?",
+      "deliverySlowSL": "[warmly] Jaz grem … [slowly and clearly] Sem … [slowly] Slavko … [gently] Pa ti?"
+    },
+    "c4": {
+      "speaker": "client",
+      "sl": "Sem ___.",
+      "en": "I'm [your name].",
+      "focusSpan": "Sem",
+      "glossPolicy": "tap",
+      "next": [
+        "n6"
+      ],
+      "learnables": [
+        "sem_ime"
+      ]
+    },
+    "n6": {
+      "speaker": "npc",
+      "sl": "Adijo! Se vidiva.",
+      "en": "Bye! See you.",
+      "deliverySL": "[warmly] Adijo! Se vidiva.",
+      "glossPolicy": "after",
+      "slowSL": "Adijo … Se vidiva.",
+      "deliverySlowSL": "[warmly] Adijo … [slowly] Se vidiva.",
+      "next": [],
+      "learnables": [
+        "adijo"
+      ]
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "key": "4c097aee2da53614deb2597f9ab76ced923886f4d0d754631560f74595d176d9",
+  "text": "Še enkrat! Sem Slavko. Pa ti?",
+  "words": [
+    {
+      "text": "Še",
+      "start": 0.179,
+      "end": 0.359,
+      "loss": 0.130615234375
+    },
+    {
+      "text": "enkrat!",
+      "start": 0.379,
+      "end": 0.899,
+      "loss": 0.24745396205357142
+    },
+    {
+      "text": "Sem",
+      "start": 1.279,
+      "end": 1.439,
+      "loss": 0.13881429036458334
+    },
+    {
+      "text": "Slavko.",
+      "start": 1.539,
+      "end": 1.979,
+      "loss": 0.3414219447544643
+    },
+    {
+      "text": "Pa",
+      "start": 2.319,
+      "end": 2.399,
+      "loss": 0.0738525390625
+    },
+    {
+      "text": "ti?",
+      "start": 2.5,
+      "end": 2.679,
+      "loss": 0.070953369140625
+    }
+  ],
+  "loss": 0.2084697854929957,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-29T07:53:57.057Z"
+}

@@ -1,0 +1,329 @@
+{
+  "scenario": {
+    "id": "demo",
+    "name": "Slovene with Slavko",
+    "title": "Slovene with Slavko",
+    "status": "active",
+    "character": "Slavko, a warm, curious dragon who is the learner's companion through the course — he speaks Slovene to them from the first second and is unmistakably on their side",
+    "setup": "A brand-new learner's first contact with the language. Slavko meets them, tells them who he is, and wants to know who they are — the name exchange is the one thing he can genuinely want from someone who owns no words at all.",
+    "opening": "Oj, živjo! Sem Slavko.",
+    "register": {
+      "form": "ti",
+      "variety": "pogovorni"
+    },
+    "onboarding": true
+  },
+  "dialogueVoices": {
+    "npc": "slavko",
+    "client": "slavko"
+  },
+  "dialogueAdvance": "audio",
+  "dialoguePacing": "onboarding",
+  "levels": [
+    {
+      "level": 1,
+      "levelLabel": "Basic",
+      "title": "Meeting Slavko",
+      "frameEN": [
+        "This is Slavko. He's a dragon, and he's going to teach you Slovene.",
+        "He speaks only Slovene — you'll follow more than you expect, because he repeats everything: in a sentence, then on its own, then slowly.",
+        "He talks, then it's your turn. Say it out loud — you can't get it wrong here.",
+        "He's going to want your name."
+      ],
+      "objectives": [
+        {
+          "label": "Introduce yourself",
+          "descriptorEN": "Say 'Sem ___.' out loud with your own name in the slot."
+        },
+        {
+          "label": "Say it again when asked",
+          "descriptorEN": "Give the same line back when Slavko asks to hear it once more."
+        },
+        {
+          "label": "Name yourself on the way out",
+          "descriptorEN": "Mirror Slavko's sign-off with 'Sem ___.'"
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Oj, živjo! Sem Slavko. Sem Slavko.",
+          "en": "Oh, hi! I'm Slavko. I'm Slavko.",
+          "deliverySL": "[warmly] Oj, živjo! Sem Slavko. Sem Slavko.",
+          "glossPolicy": "after",
+          "slowSL": "Oj, živjo … Sem … Slavko.",
+          "deliverySlowSL": "[warmly] Oj, živjo … [slowly and clearly] Sem … [slowly] Slavko.",
+          "focusSpan": "Sem Slavko. Sem Slavko.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "zivjo",
+            "sem_ime"
+          ]
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Sem Slavko. Pa ti?",
+          "en": "I'm Slavko. And you?",
+          "deliverySL": "[curious] Sem Slavko. Pa ti?",
+          "glossPolicy": "after",
+          "slowSL": "Sem … Slavko … Pa ti?",
+          "deliverySlowSL": "[slowly and clearly] Sem … [slowly] Slavko … [gently] Pa ti?",
+          "focusSpan": "Sem Slavko",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Say: Sem — then your name"
+            }
+          ],
+          "next": [
+            "c1"
+          ],
+          "learnables": [
+            "sem_ime"
+          ]
+        },
+        "c1": {
+          "speaker": "client",
+          "sl": "Sem ___.",
+          "en": "I'm [your name].",
+          "focusSpan": "Sem",
+          "glossPolicy": "after",
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "sem_ime"
+          ]
+        },
+        "n3": {
+          "speaker": "npc",
+          "sl": "Sem zmaj! Pa ti?",
+          "en": "I'm a dragon! And you?",
+          "deliverySL": "[cheerfully] Sem zmaj! Pa ti?",
+          "glossPolicy": "after",
+          "slowSL": "Sem … zmaj … Pa ti?",
+          "deliverySlowSL": "[slowly and clearly] Sem … [slowly] zmaj … [gently] Pa ti?",
+          "focusSpan": "Sem zmaj",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Your turn — Sem, then your name"
+            }
+          ],
+          "next": [
+            "c2"
+          ],
+          "learnables": [
+            "sem_ime"
+          ]
+        },
+        "c2": {
+          "speaker": "client",
+          "sl": "Sem ___.",
+          "en": "I'm [your name].",
+          "focusSpan": "Sem",
+          "glossPolicy": "tap",
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "sem_ime"
+          ]
+        },
+        "n4": {
+          "speaker": "npc",
+          "sl": "Aha, še enkrat! Sem Slavko. Pa ti?",
+          "en": "Aha, once more! I'm Slavko. And you?",
+          "deliverySL": "[delighted] Aha, še enkrat! Sem Slavko. Pa ti?",
+          "glossPolicy": "after",
+          "slowSL": "Aha, še enkrat … Sem … Slavko … Pa ti?",
+          "deliverySlowSL": "[delighted] Aha, še enkrat … [slowly and clearly] Sem … [slowly] Slavko … [gently] Pa ti?",
+          "focusSpan": "Sem Slavko",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Once more — Sem, then your name"
+            }
+          ],
+          "next": [
+            "c3"
+          ],
+          "learnables": [
+            "sem_ime"
+          ]
+        },
+        "c3": {
+          "speaker": "client",
+          "sl": "Sem ___.",
+          "en": "I'm [your name].",
+          "focusSpan": "Sem",
+          "glossPolicy": "tap",
+          "next": [
+            "n5"
+          ],
+          "learnables": [
+            "sem_ime"
+          ]
+        },
+        "n5": {
+          "speaker": "npc",
+          "sl": "Jaz grem. Sem Slavko!",
+          "en": "I'm off. I'm Slavko!",
+          "deliverySL": "[warmly] Jaz grem. Sem Slavko!",
+          "glossPolicy": "after",
+          "focusSpan": "Sem Slavko",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Say your name back"
+            }
+          ],
+          "next": [
+            "c4"
+          ],
+          "learnables": [
+            "sem_ime"
+          ],
+          "slowSL": "Jaz grem … Sem … Slavko … Pa ti?",
+          "deliverySlowSL": "[warmly] Jaz grem … [slowly and clearly] Sem … [slowly] Slavko … [gently] Pa ti?"
+        },
+        "c4": {
+          "speaker": "client",
+          "sl": "Sem ___.",
+          "en": "I'm [your name].",
+          "focusSpan": "Sem",
+          "glossPolicy": "tap",
+          "next": [
+            "n6"
+          ],
+          "learnables": [
+            "sem_ime"
+          ]
+        },
+        "n6": {
+          "speaker": "npc",
+          "sl": "Adijo! Se vidiva.",
+          "en": "Bye! See you.",
+          "deliverySL": "[warmly] Adijo! Se vidiva.",
+          "glossPolicy": "after",
+          "slowSL": "Adijo … Se vidiva.",
+          "deliverySlowSL": "[warmly] Adijo … [slowly] Se vidiva.",
+          "next": [],
+          "learnables": [
+            "adijo"
+          ]
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "zivjo",
+          "sem_ime",
+          "adijo"
+        ],
+        "new": []
+      }
+    }
+  ],
+  "criticFixes": [
+    {
+      "level": 1,
+      "nodeId": "n4",
+      "field": "sl",
+      "oldExact": "Aha, še enkrat! Sem Slavko. Pa ti?",
+      "newExact": "Še enkrat! Sem Slavko. Pa ti?",
+      "reason": "'Aha' presupposes he heard something — false on the silent path, and it tips 'še enkrat' toward a correction."
+    },
+    {
+      "level": 1,
+      "nodeId": "n4",
+      "field": "en",
+      "oldExact": "Aha, once more! I'm Slavko. And you?",
+      "newExact": "Once more! I'm Slavko. And you?",
+      "reason": "Paired gloss."
+    },
+    {
+      "level": 1,
+      "nodeId": "n4",
+      "field": "deliverySL",
+      "oldExact": "[delighted] Aha, še enkrat! Sem Slavko. Pa ti?",
+      "newExact": "[delighted] Še enkrat! Sem Slavko. Pa ti?",
+      "reason": "Paired delivery — the audio would otherwise say a word the caption and cache key do not."
+    },
+    {
+      "level": 1,
+      "nodeId": "n4",
+      "field": "slowSL",
+      "oldExact": "Aha, še enkrat … Sem … Slavko … Pa ti?",
+      "newExact": "Še enkrat … Sem … Slavko … Pa ti?",
+      "reason": "Paired slow line."
+    },
+    {
+      "level": 1,
+      "nodeId": "n4",
+      "field": "deliverySlowSL",
+      "oldExact": "[delighted] Aha, še enkrat … [slowly and clearly] Sem … [slowly] Slavko … [gently] Pa ti?",
+      "newExact": "[delighted] Še enkrat … [slowly and clearly] Sem … [slowly] Slavko … [gently] Pa ti?",
+      "reason": "Paired slow delivery."
+    },
+    {
+      "level": 1,
+      "nodeId": "n5",
+      "field": "sl",
+      "oldExact": "Jaz grem. Sem Slavko!",
+      "newExact": "Jaz grem. Sem Slavko. Pa ti?",
+      "reason": "The hand-over into c4 was unmarked — the fourth production was elicited by nothing."
+    },
+    {
+      "level": 1,
+      "nodeId": "n5",
+      "field": "en",
+      "oldExact": "I'm off. I'm Slavko!",
+      "newExact": "I'm off. I'm Slavko. And you?",
+      "reason": "Paired gloss."
+    },
+    {
+      "level": 1,
+      "nodeId": "n5",
+      "field": "deliverySL",
+      "oldExact": "[warmly] Jaz grem. Sem Slavko!",
+      "newExact": "[warmly] Jaz grem. Sem Slavko. Pa ti?",
+      "reason": "Paired delivery."
+    },
+    {
+      "level": 1,
+      "nodeId": "n1",
+      "field": "deliverySL",
+      "oldExact": "[warmly] Oj, živjo! Sem Slavko. Sem Slavko.",
+      "newExact": "[warmly] Oj, živjo! Sem Slavko. [slower, warmly] Sem Slavko.",
+      "reason": "Directing the second pass slower makes the repetition an act rather than a looping clip. Caption unchanged."
+    }
+  ],
+  "a1Candidates": []
+}

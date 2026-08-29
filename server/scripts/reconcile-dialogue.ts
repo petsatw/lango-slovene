@@ -383,6 +383,9 @@ const manifest: any = {
   setup: S.setup,
   opening: S.opening,
   ...(S.register ? { register: S.register } : prevManifest.register ? { register: prevManifest.register } : {}),
+  // The app's front door, declared. One scenario carries it; the server prefers the flagged package
+  // over whichever spoken one happens to sort first.
+  ...(S.onboarding ? { onboarding: true } : prevManifest.onboarding ? { onboarding: true } : {}),
 };
 manifest.surfaces = {
   ...(prevManifest.surfaces ?? {}),

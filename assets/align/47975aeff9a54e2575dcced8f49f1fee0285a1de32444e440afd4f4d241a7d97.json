@@ -1,0 +1,45 @@
+{
+  "key": "47975aeff9a54e2575dcced8f49f1fee0285a1de32444e440afd4f4d241a7d97",
+  "text": "Oj, živjo! Sem Slavko. Sem Slavko.",
+  "words": [
+    {
+      "text": "Oj,",
+      "start": 0.14,
+      "end": 0.439,
+      "loss": 0.16829427083333334
+    },
+    {
+      "text": "živjo!",
+      "start": 0.479,
+      "end": 1.019,
+      "loss": 0.8372395833333334
+    },
+    {
+      "text": "Sem",
+      "start": 1.439,
+      "end": 1.579,
+      "loss": 0.4527180989583333
+    },
+    {
+      "text": "Slavko.",
+      "start": 1.62,
+      "end": 2.059,
+      "loss": 0.21915544782366073
+    },
+    {
+      "text": "Sem",
+      "start": 3.519,
+      "end": 3.879,
+      "loss": 0.4883626302083333
+    },
+    {
+      "text": "Slavko.",
+      "start": 4.179,
+      "end": 4.619,
+      "loss": 0.10287039620535714
+    }
+  ],
+  "loss": 0.313726032481474,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-29T07:53:55.937Z"
+}
