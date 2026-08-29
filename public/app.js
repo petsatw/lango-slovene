@@ -766,7 +766,8 @@ async function seedTurn(audioBase64) {
 // screen. It exists so `«` can put a line back WITHOUT asking the server: /api/scene only ever walks
 // forward, and there is no beat to re-fetch — the client already holds the shaped node it played.
 let scene = { scenarioId: null, level: null, voice: null, audio: null, node: null, stalls: [], armed: false,
-              backchannel: null, pacing: null, nextLevel: null, keyPhrases: null, trail: [], trailAt: -1 };
+              backchannel: null, pacing: null, nextLevel: null, keyPhrases: null, practice: null,
+              handoff: null, trail: [], trailAt: -1 };
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -1200,7 +1201,14 @@ async function sceneStep(from, ack) {
   scene.voice = data.voice;
   if (data.audio) scene.audio = data.audio;
   if (data.level) scene.level = data.level;
-  if (data.keyPhrases) { scene.keyPhrases = data.keyPhrases; scene.nextLevel = data.nextLevel ?? null; }
+  // The close screen's material, all of it sent once with the opening line — the close is reached by a
+  // beat that has no payload of its own.
+  if (data.keyPhrases) {
+    scene.keyPhrases = data.keyPhrases;
+    scene.nextLevel = data.nextLevel ?? null;
+    scene.practice = data.practice ?? null;
+    scene.handoff = data.handoff ?? null;
+  }
   if (data.pacing) scene.pacing = data.pacing;
   if (data.backchannel) scene.backchannel = data.backchannel;
   if (data.background) $("scene-bg").style.backgroundImage = `url(/backgrounds/${data.background})`;
