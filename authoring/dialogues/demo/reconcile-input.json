@@ -37,12 +37,16 @@
           "descriptorEN": "Say 'Sem ___.' out loud with your own name in the slot."
         },
         {
-          "label": "Say it again when asked",
-          "descriptorEN": "Give the same line back when Slavko asks to hear it once more."
+          "label": "Say who he is",
+          "descriptorEN": "Use the same frame in the second person: 'Ti si Slavko.'"
         },
         {
-          "label": "Name yourself on the way out",
-          "descriptorEN": "Mirror Slavko's sign-off with 'Sem ___.'"
+          "label": "Say what he is",
+          "descriptorEN": "Swap the filler: 'Ti si zmaj.'"
+        },
+        {
+          "label": "Say goodbye",
+          "descriptorEN": "Return Slavko's farewell with 'Adijo!'"
         }
       ],
       "root": "n1",
@@ -148,13 +152,13 @@
         },
         "n4": {
           "speaker": "npc",
-          "sl": "Aha, še enkrat! Sem Slavko. Pa ti?",
-          "en": "Aha, once more! I'm Slavko. And you?",
-          "deliverySL": "[delighted] Aha, še enkrat! Sem Slavko. Pa ti?",
+          "sl": "Ti si človek, jaz sem zmaj. Ti si človek. Pa jaz?",
+          "en": "You're a human, I'm a dragon. You're a human. And me?",
+          "deliverySL": "[warmly] Ti si človek, jaz sem zmaj. Ti si človek. [curious] Pa jaz?",
+          "slowSL": "Ti si … človek. … Jaz sem … zmaj. … Ti si … človek. … Pa jaz?",
+          "deliverySlowSL": "[slowly and clearly] Ti si … človek. … [slowly] Jaz sem … zmaj. … [slowly, emphasising each word] Ti si … človek. … [gently] Pa jaz?",
           "glossPolicy": "after",
-          "slowSL": "Aha, še enkrat … Sem … Slavko … Pa ti?",
-          "deliverySlowSL": "[delighted] Aha, še enkrat … [slowly and clearly] Sem … [slowly] Slavko … [gently] Pa ti?",
-          "focusSpan": "Sem Slavko",
+          "focusSpan": "Ti si človek.",
           "stallHandlers": [
             {
               "kind": "pulse"
@@ -164,36 +168,39 @@
             },
             {
               "kind": "soften",
-              "label": "Once more — Sem, then your name"
+              "label": "Say: Ti si — then his name"
             }
           ],
           "next": [
             "c3"
           ],
           "learnables": [
-            "sem_ime"
+            "sem_ime",
+            "ti_si_x"
           ]
         },
         "c3": {
           "speaker": "client",
-          "sl": "Sem ___.",
-          "en": "I'm [your name].",
-          "focusSpan": "Sem",
-          "glossPolicy": "tap",
+          "sl": "Ti si Slavko.",
+          "en": "You are Slavko.",
+          "focusSpan": "Ti si",
+          "glossPolicy": "after",
           "next": [
             "n5"
           ],
           "learnables": [
-            "sem_ime"
+            "ti_si_x"
           ]
         },
         "n5": {
           "speaker": "npc",
-          "sl": "Jaz grem. Sem Slavko!",
-          "en": "I'm off. I'm Slavko!",
-          "deliverySL": "[warmly] Jaz grem. Sem Slavko!",
+          "sl": "Tako je! Jaz sem Slavko. Pa kaj sem?",
+          "en": "That's right! I am Slavko. And what am I?",
+          "deliverySL": "[delighted] Tako je! Jaz sem Slavko. [playfully] Pa kaj sem?",
+          "slowSL": "Tako je! … Jaz sem … Slavko. … Pa kaj sem?",
+          "deliverySlowSL": "[delighted] Tako je! … [slowly] Jaz sem … Slavko. … [slowly and clearly] Pa kaj sem?",
           "glossPolicy": "after",
-          "focusSpan": "Sem Slavko",
+          "focusSpan": "Jaz sem Slavko",
           "stallHandlers": [
             {
               "kind": "pulse"
@@ -203,7 +210,7 @@
             },
             {
               "kind": "soften",
-              "label": "Say your name back"
+              "label": "Say: Ti si — then what he is"
             }
           ],
           "next": [
@@ -211,31 +218,56 @@
           ],
           "learnables": [
             "sem_ime"
-          ],
-          "slowSL": "Jaz grem … Sem … Slavko … Pa ti?",
-          "deliverySlowSL": "[warmly] Jaz grem … [slowly and clearly] Sem … [slowly] Slavko … [gently] Pa ti?"
+          ]
         },
         "c4": {
           "speaker": "client",
-          "sl": "Sem ___.",
-          "en": "I'm [your name].",
-          "focusSpan": "Sem",
+          "sl": "Ti si zmaj.",
+          "en": "You are a dragon.",
+          "focusSpan": "Ti si",
           "glossPolicy": "tap",
           "next": [
             "n6"
           ],
           "learnables": [
-            "sem_ime"
+            "ti_si_x",
+            "zmaj"
           ]
         },
         "n6": {
           "speaker": "npc",
-          "sl": "Adijo! Se vidiva.",
-          "en": "Bye! See you.",
-          "deliverySL": "[warmly] Adijo! Se vidiva.",
+          "sl": "Ja, tako je! Zdaj se pa poznava. Se vidiva! Adijo!",
+          "en": "Yes, that's right! Now we know each other. See you! Bye!",
+          "deliverySL": "[happy and warm] Ja, tako je! Zdaj se pa poznava. Se vidiva! Adijo!",
+          "slowSL": "Ja, tako je! … Zdaj se pa … poznava. … Se vidiva! … Adijo!",
+          "deliverySlowSL": "[happy] Ja, tako je! … [slowly] Zdaj se pa … poznava. … [slowly] Se vidiva! … [warmly, slowly] Adijo!",
           "glossPolicy": "after",
-          "slowSL": "Adijo … Se vidiva.",
-          "deliverySlowSL": "[warmly] Adijo … [slowly] Se vidiva.",
+          "focusSpan": "Adijo",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Say goodbye back"
+            }
+          ],
+          "next": [
+            "c5"
+          ],
+          "learnables": [
+            "adijo"
+          ]
+        },
+        "c5": {
+          "speaker": "client",
+          "sl": "Adijo!",
+          "en": "Bye!",
+          "focusSpan": "Adijo",
+          "glossPolicy": "after",
           "next": [],
           "learnables": [
             "adijo"
@@ -248,75 +280,26 @@
           "sem_ime",
           "adijo"
         ],
-        "new": []
+        "new": [
+          {
+            "id": "ti_si_x",
+            "kind": "pattern",
+            "sl": "Ti si ___.",
+            "gloss": "You are ___.",
+            "predictableError": "Carrying over the 1sg and saying 'Ti sem ___' — the 2sg copula is 'si'."
+          },
+          {
+            "id": "zmaj",
+            "kind": "vocabulary",
+            "sl": "zmaj",
+            "gloss": "dragon",
+            "predictableError": "Adding an article — 'Ti si en zmaj' — because English needs 'a'; Slovene takes the bare nominative."
+          }
+        ]
       }
     }
   ],
   "criticFixes": [
-    {
-      "level": 1,
-      "nodeId": "n4",
-      "field": "sl",
-      "oldExact": "Aha, še enkrat! Sem Slavko. Pa ti?",
-      "newExact": "Še enkrat! Sem Slavko. Pa ti?",
-      "reason": "'Aha' presupposes he heard something — false on the silent path, and it tips 'še enkrat' toward a correction."
-    },
-    {
-      "level": 1,
-      "nodeId": "n4",
-      "field": "en",
-      "oldExact": "Aha, once more! I'm Slavko. And you?",
-      "newExact": "Once more! I'm Slavko. And you?",
-      "reason": "Paired gloss."
-    },
-    {
-      "level": 1,
-      "nodeId": "n4",
-      "field": "deliverySL",
-      "oldExact": "[delighted] Aha, še enkrat! Sem Slavko. Pa ti?",
-      "newExact": "[delighted] Še enkrat! Sem Slavko. Pa ti?",
-      "reason": "Paired delivery — the audio would otherwise say a word the caption and cache key do not."
-    },
-    {
-      "level": 1,
-      "nodeId": "n4",
-      "field": "slowSL",
-      "oldExact": "Aha, še enkrat … Sem … Slavko … Pa ti?",
-      "newExact": "Še enkrat … Sem … Slavko … Pa ti?",
-      "reason": "Paired slow line."
-    },
-    {
-      "level": 1,
-      "nodeId": "n4",
-      "field": "deliverySlowSL",
-      "oldExact": "[delighted] Aha, še enkrat … [slowly and clearly] Sem … [slowly] Slavko … [gently] Pa ti?",
-      "newExact": "[delighted] Še enkrat … [slowly and clearly] Sem … [slowly] Slavko … [gently] Pa ti?",
-      "reason": "Paired slow delivery."
-    },
-    {
-      "level": 1,
-      "nodeId": "n5",
-      "field": "sl",
-      "oldExact": "Jaz grem. Sem Slavko!",
-      "newExact": "Jaz grem. Sem Slavko. Pa ti?",
-      "reason": "The hand-over into c4 was unmarked — the fourth production was elicited by nothing."
-    },
-    {
-      "level": 1,
-      "nodeId": "n5",
-      "field": "en",
-      "oldExact": "I'm off. I'm Slavko!",
-      "newExact": "I'm off. I'm Slavko. And you?",
-      "reason": "Paired gloss."
-    },
-    {
-      "level": 1,
-      "nodeId": "n5",
-      "field": "deliverySL",
-      "oldExact": "[warmly] Jaz grem. Sem Slavko!",
-      "newExact": "[warmly] Jaz grem. Sem Slavko. Pa ti?",
-      "reason": "Paired delivery."
-    },
     {
       "level": 1,
       "nodeId": "n1",
@@ -326,5 +309,16 @@
       "reason": "Directing the second pass slower makes the repetition an act rather than a looping clip. Caption unchanged."
     }
   ],
-  "a1Candidates": []
+  "a1Candidates": [
+    {
+      "learnableId": "ti_si_x",
+      "competencyId": "self_intro",
+      "note": "The copula in the 2nd person — naming who or what the person in front of you is."
+    },
+    {
+      "learnableId": "zmaj",
+      "competencyId": "self_intro",
+      "note": "Carries the non-name filler that shows the copula frame is a slot."
+    }
+  ]
 }

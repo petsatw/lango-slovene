@@ -1,0 +1,75 @@
+{
+  "key": "8774c15e2c83c4dfa35631966c64d47156b2f0c4187209a6296428dd916b0e3b",
+  "text": "Ti si človek, jaz sem zmaj. Ti si človek. Pa jaz?",
+  "words": [
+    {
+      "text": "Ti",
+      "start": 0.099,
+      "end": 0.239,
+      "loss": 0.2744140625
+    },
+    {
+      "text": "si",
+      "start": 0.28,
+      "end": 0.439,
+      "loss": 0.0487060546875
+    },
+    {
+      "text": "človek,",
+      "start": 0.5,
+      "end": 1.039,
+      "loss": 0.1336620875767299
+    },
+    {
+      "text": "jaz",
+      "start": 1.539,
+      "end": 1.719,
+      "loss": 0.8020833333333334
+    },
+    {
+      "text": "sem",
+      "start": 1.739,
+      "end": 1.899,
+      "loss": 0.4866536458333333
+    },
+    {
+      "text": "zmaj.",
+      "start": 1.919,
+      "end": 2.339,
+      "loss": 0.4473388671875
+    },
+    {
+      "text": "Ti",
+      "start": 3.399,
+      "end": 3.679,
+      "loss": 0.4931640625
+    },
+    {
+      "text": "si",
+      "start": 3.74,
+      "end": 3.819,
+      "loss": 0.0517578125
+    },
+    {
+      "text": "človek.",
+      "start": 4,
+      "end": 4.579,
+      "loss": 0.15213884626116073
+    },
+    {
+      "text": "Pa",
+      "start": 5.819,
+      "end": 5.92,
+      "loss": 1.048095703125
+    },
+    {
+      "text": "jaz?",
+      "start": 6,
+      "end": 6.359,
+      "loss": 0.344818115234375
+    }
+  ],
+  "loss": 0.3359782160544882,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-29T08:12:42.157Z"
+}

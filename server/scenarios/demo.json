@@ -20,11 +20,11 @@
       "levels": [
         {
           "level": 1,
-          "levelLabel": "Basic"
+          "levelLabel": "Above A1"
         }
       ]
     },
-    "a1": false
+    "a1": true
   },
   "objectives": [],
   "onboarding": true
