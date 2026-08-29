@@ -31,10 +31,11 @@
   "advance": "audio",
   "pacing": "onboarding",
   "frameEN": [
-    "This is Slavko. He's a dragon, and he's going to teach you Slovene.",
-    "He speaks only Slovene — you'll follow more than you expect, because he repeats everything: in a sentence, then on its own, then slowly.",
-    "He talks, then it's your turn. Say it out loud — you can't get it wrong here.",
-    "He's going to want your name."
+    "Hi.",
+    "Ready to learn Slovene?",
+    "You will meet and practice with Slavko.",
+    "Say the phrase, then press <b>continue</b> to move on.",
+    "Let's go!"
   ],
   "root": "n1",
   "nodes": {

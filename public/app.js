@@ -1007,7 +1007,11 @@ async function scenePlayFrame(lines) {
   p.style.transition = `opacity ${FRAME_CROSSFADE_MS}ms ease`;
   p.style.opacity = "0";
   for (const [i, line] of lines.entries()) {
-    p.textContent = line;
+    // The on-ramp names controls the learner is about to use ("press <b>continue</b>"), and a control
+    // named in running prose has to look like the control. `frameEN` is committed repo source, authored
+    // through the pipeline and never learner input, so markup in it is trusted — this is the line to
+    // revisit if that ever stops being true.
+    p.innerHTML = line;
     p.style.opacity = "1";
     // Dwell scales with the length of the line — these are the first sentences the learner ever reads,
     // and a fixed interval either rushes the long one or strands the short one. Nothing can be re-read
