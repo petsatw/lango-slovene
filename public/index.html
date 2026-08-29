@@ -88,6 +88,10 @@
       <div id="scene-frame" class="scene-frame" hidden></div>
       <p id="scene-caption" class="scene-caption" aria-live="polite"></p>
       <p id="scene-gloss" class="scene-gloss"></p>
+      <!-- The on-ramp reads at whatever speed the learner reads. A tap anywhere on the frame takes the
+           next line; the chip says out loud that it can be done, because someone meeting the app for the
+           first time has no reason to try tapping. -->
+      <button id="scene-frame-skip" class="scene-frame-skip" type="button" hidden>Skip ›</button>
     </div>
     <!-- The controls are ALWAYS on screen and never move. The button is the one fixed object in the run:
          it changes state (the character is speaking / your turn / recording) rather than appearing and
@@ -106,6 +110,13 @@
         <span id="scene-talk-bars" class="scene-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <span id="scene-talk-label" class="scene-talk-label"></span>
       </button>
+    </div>
+    <!-- The controls tutorial: the screen dims, one chip stays lit, and a line of English says what it
+         does. The chips themselves are never moved or copied — the scrim goes UNDER them, so the thing
+         the learner is being shown is the actual button they will press. -->
+    <div id="scene-tutorial" class="scene-tutorial" hidden>
+      <p id="scene-tutorial-text" class="scene-tutorial-text"></p>
+      <p class="scene-tutorial-next">Tap to continue</p>
     </div>
     <!-- The close: his last line stays up, unglossed. Key Phrases is a button, not a screen you must
          pass through — no counts, no badges, nothing that reads as a measure. -->

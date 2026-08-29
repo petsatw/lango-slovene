@@ -195,6 +195,18 @@ export interface DialogueIntro {
   en?: string;
 }
 
+/** The run controls a tutorial step can point at — the four things the learner can always do TO THE RUN.
+ *  A closed set, because each id names a real button on the scene and a typo would spotlight nothing. */
+export type TutorialTarget = "slower" | "back" | "skip" | "quit";
+const TUTORIAL_TARGETS: TutorialTarget[] = ["slower", "back", "skip", "quit"];
+
+/** One control, lifted out of a dimmed screen with a line of English beside it. */
+export interface TutorialStep {
+  target: TutorialTarget;
+  /** What this control does, in the learner's own language, as one short sentence. */
+  text: string;
+}
+
 export interface Dialogue {
   id: string;
   scenarioId: string;
@@ -221,6 +233,13 @@ export interface Dialogue {
    *  once the character starts speaking — a scene that opens straight onto un-glossed Slovene, with no
    *  frame and nothing to look at, is unusable by the beginner it exists for. Absent → straight in. */
   frameEN?: string[];
+  /** The run controls this level teaches, one at a time, after the on-ramp and before the first line.
+   *  Each step lifts ONE control out of a dimmed screen and says in English what it does. The controls
+   *  are on screen from the first frame of every lesson, so a learner who has not been shown them has
+   *  been given help they cannot find — and the tortoise in particular is the difference between a line
+   *  they can follow and one they can't. Authored per level, so a lesson teaches a control at the point
+   *  the learner has a reason to want it. Absent → straight into the scene. */
+  tutorial?: TutorialStep[];
   /** How the learner advances this level — tapped choices (default) or spoken turns. Absent → "tap", so
    *  every dialogue authored before this field keeps its behaviour. See DialogueAdvance. */
   advance?: DialogueAdvance;
@@ -292,6 +311,16 @@ export function validateDialogue(file: string, raw: any): Dialogue {
   if (raw.frameEN !== undefined) {
     if (!Array.isArray(raw.frameEN) || !raw.frameEN.length) fail(file, `"frameEN" must be a non-empty array of strings`);
     for (const l of raw.frameEN) if (typeof l !== "string" || !l) fail(file, `"frameEN": every line must be a non-empty string`);
+  }
+  if (raw.tutorial !== undefined) {
+    if (!Array.isArray(raw.tutorial) || !raw.tutorial.length)
+      fail(file, `"tutorial" must be a non-empty array of { target, text }`);
+    for (const s of raw.tutorial) {
+      if (!s || typeof s !== "object") fail(file, `"tutorial": every step must be an object { target, text }`);
+      if (!TUTORIAL_TARGETS.includes(s.target))
+        fail(file, `"tutorial": target "${s.target}" is not one of ${TUTORIAL_TARGETS.join(", ")}`);
+      asString(file, s, "text", "tutorial step");
+    }
   }
   if (raw.background !== undefined) asString(file, raw, "background", "dialogue");
   if (raw.intro !== undefined) {

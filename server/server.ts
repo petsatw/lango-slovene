@@ -116,8 +116,12 @@ app.get("/api/practice", (_req, res) => {
     }));
   // The scenario that owns the first-run spoken scene, if one is authored — the boot route needs it in
   // the same call as `started`, so a zero-state learner reaches the scene without a second round trip.
-  const sceneScenario = SCENARIOS.find((s) =>
-    getDialoguesForScenario(s.id).some((d) => (d.advance ?? "tap") === "audio"));
+  // The front door is DECLARED, by the `onboarding` flag on exactly one manifest. Falling back to the
+  // first spoken package is a courtesy for a repo that has not declared one; it is not the contract,
+  // because that would make the app's first screen a function of filename order.
+  const spoken = (s: (typeof SCENARIOS)[number]) =>
+    getDialoguesForScenario(s.id).some((d) => (d.advance ?? "tap") === "audio");
+  const sceneScenario = SCENARIOS.find((s) => s.onboarding && spoken(s)) ?? SCENARIOS.find(spoken);
   res.json({
     scenarios,
     providers: { e2: getE2().name, e3: getE3().name },
@@ -267,7 +271,8 @@ app.post("/api/scene", (req, res) => {
   try {
     if (typeof from !== "string") {
       return res.json({ voice: scene.voices.npc, background: scene.background ?? null, backchannel,
-                        pacing, frameEN: scene.frameEN ?? [], npc: shape(scene.root), done: false,
+                        pacing, frameEN: scene.frameEN ?? [], tutorial: scene.tutorial ?? [],
+                        npc: shape(scene.root), done: false,
                         audio: scene.audio,
                         level: scene.level, title: scene.title,
                         // What the close screen offers next — the scenario's next spoken level, if one

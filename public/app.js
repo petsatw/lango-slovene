@@ -837,6 +837,9 @@ function sceneCancel() {
   sceneClearStalls();
   scene.armed = false;
   sceneSlowPass = null;
+  // An on-ramp dwell and a tutorial step are waits like any other — leaving either pending hangs the run.
+  frameAdvance?.();
+  tutorialAdvance?.();
   $("scene-slower").classList.remove("blinking");
   const pending = scenePendingSay;
   scenePendingSay = null;
@@ -939,20 +942,58 @@ function sceneSetPhase(phase, label) {
   btn.classList.toggle("waiting", phase === "ready");
   btn.setAttribute("aria-disabled", phase === "speaking" ? "true" : "false");
   if (label !== undefined) $("scene-talk-label").textContent = label;
-  // The character's line recedes the moment the turn stops being his, so the only thing at full
-  // brightness is the line the learner is being asked for.
-  const handed = phase === "ready";
-  $("scene-caption").classList.toggle("receded", handed);
-  $("scene-gloss").classList.toggle("receded", handed);
+  sceneRecede(phase === "ready");
+}
+
+// The character's line recedes once the turn stops being his, so the only thing at full brightness is
+// the line the learner is being asked for — but not at the instant of the hand-over. The learner heard
+// that line seconds ago and is looking at it to work out what they were just asked; dimming it while it
+// is still being read takes the question away to make room for the answer. So the dim waits out a
+// reading window scaled to the length of the line, the same way every other reading hold in the profile
+// scales. Handing the turn BACK brightens immediately — there is nothing to wait for once the character
+// is speaking again.
+let sceneRecedeTimer = null;
+function sceneRecede(on) {
+  clearTimeout(sceneRecedeTimer);
+  const set = (v) => {
+    $("scene-caption").classList.toggle("receded", v);
+    $("scene-gloss").classList.toggle("receded", v);
+  };
+  if (!on) { set(false); return; }
+  const pace = scene.pacing;
+  const text = scene.node?.sl ?? "";
+  const wait = pace ? pace.recedeHoldMs + pace.recedeCharMs * text.length : 0;
+  if (!wait) { set(true); return; }
+  sceneRecedeTimer = setTimeout(() => set(true), wait);
 }
 
 // How long one on-ramp line takes to swap for the next. Not a pacing knob — it is the transition itself,
 // the same in every profile; the dwell either side of it is what gets dialed.
 const FRAME_CROSSFADE_MS = 300;
 
+// The on-ramp's dwell, cut short on request. Every wait in the frame goes through here so that ONE tap
+// resolves whichever one is running — the line's own dwell, the hold after the last line, or the fade —
+// and the learner never taps into a wait that ignores them.
+let frameAdvance = null;
+function sceneFrameWait(ms) {
+  return new Promise((resolve) => {
+    const done = () => { clearTimeout(timer); if (frameAdvance === done) frameAdvance = null; resolve(); };
+    const timer = setTimeout(done, ms);
+    frameAdvance = done;
+  });
+}
+
 async function scenePlayFrame(lines) {
   const pace = scene.pacing;
   const el = $("scene-frame");
+  // Reading speed is the learner's, not the profile's. The on-ramp is pure English scaffolding — a
+  // returning learner has read it, and a fast reader is left waiting on a hold sized for a first one.
+  // Skipping a lesson's LINES would cost the learner the language; skipping its preamble costs nothing.
+  const skip = $("scene-frame-skip");
+  const take = () => frameAdvance?.();
+  skip.hidden = false;
+  skip.onclick = take;
+  el.onclick = take;
   el.innerHTML = "";
   el.appendChild(document.createElement("p"));
   // Staggered in, held, then gone — long enough to read, short enough that it reads as a title card
@@ -971,15 +1012,53 @@ async function scenePlayFrame(lines) {
     // Dwell scales with the length of the line — these are the first sentences the learner ever reads,
     // and a fixed interval either rushes the long one or strands the short one. Nothing can be re-read
     // once it is replaced, so each line has to be legible the first time.
-    await sleep(pace.frameLineMs + pace.frameCharMs * line.length);
+    await sceneFrameWait(pace.frameLineMs + pace.frameCharMs * line.length);
     if (i === lines.length - 1) break;          // the last line stays up for the frame's own hold
     p.style.opacity = "0";
     await sleep(FRAME_CROSSFADE_MS);
   }
-  await sleep(pace.frameHoldMs);
+  await sceneFrameWait(pace.frameHoldMs);
+  skip.hidden = true;
+  skip.onclick = null;
+  el.onclick = null;
   el.classList.remove("shown");
-  await sleep(pace.frameFadeMs);
+  await sceneFrameWait(pace.frameFadeMs);
   el.hidden = true;
+}
+
+// The four run controls are on screen from the first frame of every lesson and are never explained. A
+// learner who has not been shown them has been handed help they cannot find — and the tortoise in
+// particular is the difference between a line they can follow and one they can't.
+//
+// The chip is not copied or moved for this: the scrim goes UNDER the chip layer, so the thing being
+// pointed at is the actual button, in its actual place, and the learner has already practised the reach
+// by the time the scrim lifts. Tapping the lit chip itself does nothing yet — a control demonstrated
+// mid-explanation would fire against a scene that has not started.
+const TUTORIAL_CHIPS = { slower: "scene-slower", back: "scene-back", skip: "scene-skip", quit: "scene-quit" };
+
+let tutorialAdvance = null;   // resolves the step the learner is looking at — also how ✕ gets out
+
+async function scenePlayTutorial(steps) {
+  const gen = sceneGen;
+  const panel = $("scene-tutorial");
+  const chips = $("scene-chips");
+  const text = $("scene-tutorial-text");
+  panel.hidden = false;
+  chips.classList.add("tutorial");
+  for (const step of steps) {
+    if (gen !== sceneGen) break;
+    const chip = $(TUTORIAL_CHIPS[step.target]);
+    // A disabled chip is drawn at 25% and cannot be lit convincingly, and every chip is disabled before
+    // the first beat. `lit` overrides the dim for exactly as long as it is the one being explained.
+    chip.classList.add("lit");
+    text.textContent = step.text;
+    await new Promise((resolve) => { tutorialAdvance = resolve; panel.onclick = resolve; });
+    tutorialAdvance = null;
+    chip.classList.remove("lit");
+  }
+  panel.onclick = null;
+  panel.hidden = true;
+  chips.classList.remove("tutorial");
 }
 
 // Help is one tap away and arrives like a friend handing it over. Tapping the learner's own slot brings
@@ -1123,6 +1202,11 @@ async function sceneStep(from, ack) {
   if (data.background) $("scene-bg").style.backgroundImage = `url(/backgrounds/${data.background})`;
   if (ack) await ack;
   if (data.frameEN?.length) await scenePlayFrame(data.frameEN);
+  if (gen !== sceneGen) return;   // the on-ramp is skippable, so a ✕ during it must not land on a beat
+  // After the on-ramp and before the first line: the learner knows what this is, and has not yet been
+  // given anything to miss.
+  if (data.tutorial?.length) await scenePlayTutorial(data.tutorial);
+  if (gen !== sceneGen) return;
   if (data.npc) await scenePlayBeat(data.npc);
   else sceneFinish();
 }
@@ -1238,6 +1322,8 @@ async function openScene(scenarioId, level = null) {
   scene = { scenarioId, level, voice: null, audio: null, node: null, stalls: [], armed: false,
             backchannel: null, pacing: null, nextLevel: null, keyPhrases: null, trail: [], trailAt: -1 };
   showScreen("scene");
+  $("scene-tutorial").hidden = true;
+  $("scene-chips").classList.remove("tutorial");
   $("scene-close").hidden = true;
   $("scene-phrases").hidden = true;
   $("scene-controls").hidden = false;
