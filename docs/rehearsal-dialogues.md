@@ -335,6 +335,13 @@ same `kruh` the learner has been building all along.
 - Mint in **citation form** — vocabulary = nom. sg. lemma; pattern = a frame with `___`; chunk = the fixed
   phrase — with a `gloss` and the **one predictable beginner error**. Propose a snake_case id; the reconcile
   owns final id assignment.
+- **A frame that inflects is cited with its alternants, never in one person's form.** `Sem / Si / Je ___.`,
+  not `Sem ___.` — the same slash convention `Rad / Rada bi ___.` and `Grem v / na ___.` already use for
+  gender and preposition. Every person, number, case and tense of the same verb **reuses the one entry**;
+  a paradigm is never split across ids. One conjugation cited alone reads to the next author as a
+  different item, and they mint a second entry for the second person. **The id carries the same weight as
+  the citation form** — an id naming one use (`sem_ime`, "sem + name") tells a later author the catalog has
+  nothing for the other uses, so name the frame, not the use it was first met in.
 - **A phrase addressed to "you" is cited ONCE, in the form the learner will actually say it.** The other
   register is not a second learnable, for the same reason every conjugation of a verb is not: politeness is
   one system, carried by `vikanje`, and a lesson teaches it directly.
