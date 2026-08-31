@@ -743,7 +743,12 @@ body.in-scene header { display: none; }
 .scene-prompt.shown { pointer-events: auto; cursor: pointer; }
 .scene-prompt-en.held { visibility: hidden; }
 
-/* The close screen. Two controls in the same place the button lived, so nothing jumps at the end. */
+/* The close screen. Two controls in the same place the button lived, so nothing jumps at the end.
+   THE CONSTRAINT THIS SCREEN LIVES UNDER: `.scene` has 24px of horizontal padding, so the content is
+   `100vw - 48px` — 312px at 360. Anything placed BESIDE a centred stack-width button gets only
+   `(100vw - 190px)/2`, which is 85px at 360, 100px at 390, 120px at 430. Three redesigns were spent
+   discovering that no label fits there. The layout below sidesteps it entirely: nothing sits beside
+   anything, so every control has the full 312px. Keep it that way. */
 .scene-close {
   position: relative; flex-shrink: 0; width: 100%; max-width: 420px;
   margin-top: 30px; display: grid; justify-items: center; gap: 10px;
@@ -755,45 +760,46 @@ body.in-scene header { display: none; }
 }
 .scene-close-btn.ghost { border-color: rgba(255, 255, 255, 0.22); background: transparent; font-weight: 500; }
 
-/* The two ways onward, hanging off the right of the button that opens them. Absolute, so the column
-   below does not move when the menu appears — "Next lesson" stays exactly where the learner last saw it. */
-.scene-deeper-wrap { position: relative; display: inline-grid; justify-items: center; }
-/* The menu sits directly to the RIGHT of its button and is absolutely positioned, so it overlays
-   nothing, displaces nothing, and the column does not move when it opens or closes.
-   Room to the right is what makes that possible: this row alone is left-aligned rather than centred
-   like the buttons above it, and the button is sized to what its label needs instead of the 190px
-   the stack uses. Centred and full-width, its right edge left 76px on a 390px phone — not enough for
-   a label, which is what put the menu off-screen twice. */
-/* Its button stays in the stack — same width, same centre line as the ones above it. The menu is what
-   yields: it lives in the margin beside the button, so its items are narrow pills whose labels wrap
-   rather than nowrap pills that need width the screen has not got. Absolute, so it overlays nothing,
-   displaces nothing, and the column does not move when it opens. Tops aligned rather than centres,
-   because the pair is taller than the button and centring pushes the first item into Key Phrases. */
-/* The menu is sized against the SCREEN, not against its button: the space to the right of a centred
-   190px button is (100vw - 190px)/2, and the pills take that minus the gap either side. Sizing it
-   against the button instead gave a 6px-wide box that squeezed the labels into a vertical stripe.
-   That space is narrow by construction, so the labels WRAP — two short lines fit where one long line
-   never could, and the button keeps the stack's width and centre line. */
-.scene-deeper {
-  position: absolute; top: 0; left: calc(100% + 6px); z-index: 3;
-  width: calc((100vw - 190px) / 2 - 14px);
-  display: grid; gap: 5px; justify-items: stretch;
-}
-.scene-deeper .scene-close-btn {
-  min-width: 0; width: 100%;
-  white-space: normal; text-align: center; line-height: 1.15;
-  height: auto; min-height: 36px; padding: 6px 5px; font-size: 12px;
-  border-radius: 14px; background: rgba(10, 12, 16, 0.82);
-  border-width: 2px; border-color: rgba(255, 255, 255, 0.3);
-  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+/* Carrying on is the only thing here that reads as an action, so it is BIGGER than Review rather than
+   merely brighter — 64px against 44, a 19px label against 13. Two buttons of the same size, differing
+   only in fill, make the learner read both before acting. */
+.scene-next-btn { width: 100%; height: 64px; border-radius: 32px; font-size: 19px; margin-top: 4px; }
+/* Review is sized to its own word, not to the column: a small pill under a wide one. That size gap is
+   most of what makes the primary obvious. */
+.scene-review-btn { min-width: 0; height: 44px; padding: 0 22px; font-size: 13px; border-radius: 22px; border-width: 2px; }
+
+/* The close column is taller than any beat's controls, so the stage above it is squeezed — and a
+   two-line last line, centred in what is left, rides up under the run controls. Reserve the chip strip
+   while the close screen is up. Scoped to the close, so no beat's caption moves. */
+.scene:has(#scene-close:not([hidden])) .scene-stage {
+  padding-top: calc(58px + env(safe-area-inset-top));
 }
 
-/* Key Phrases: a list of what you have MET. No ordering or marking that implies mastery — the moment
-   it ranks, it is a measure. */
-.scene-phrases {
-  width: 100%; max-height: 42vh; overflow-y: auto; text-align: left;
-  background: rgba(10, 12, 16, 0.72); border-radius: 16px; padding: 14px 16px; margin-bottom: 4px;
+/* Everything optional lives behind Review, in one panel: the phrases, then the two ways of taking them
+   further. One disclosure, not two — and full width, so no label has to fit in a margin. */
+.scene-review {
+  width: 100%; text-align: left;
+  background: rgba(10, 12, 16, 0.72); border-radius: 16px; padding: 14px 16px; margin-bottom: 6px;
 }
+/* Key Phrases: a list of what you have MET. No ordering or marking that implies mastery — the moment
+   it ranks, it is a measure. Only the LIST scrolls: cap the whole panel instead and a long lesson
+   pushes the two exits out of view, which is the discoverability this layout exists to protect. */
+.scene-phrases { max-height: 38vh; overflow-y: auto; }
+
+.phrase-exits { margin-top: 14px; display: grid; gap: 8px; }
+.phrase-exits-title { margin: 0 0 2px; font-size: 13px; color: var(--muted); }
+/* A FILL, not a chevron, is what says "tappable" — a bare row with a small › reads as a list item. The
+   faintest slab under it reads as a button without any of a button's loudness: flat, no shadow, no
+   border brightness, so it never competes with the 64px primary below. */
+.phrase-exit {
+  width: 100%; display: grid; grid-template-columns: 1fr auto; align-items: center;
+  padding: 13px 14px; cursor: pointer;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
+  color: #fff; font-size: 15px; text-align: left;
+}
+.phrase-exit:active { background: rgba(255, 255, 255, 0.12); }
+.phrase-exit-go { color: rgba(255, 255, 255, 0.5); font-size: 17px; }
 .phrases-title { margin: 0 0 10px; font-size: 17px; font-weight: 700; color: #fff; }
 .phrases-sub { margin: 12px 0 4px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .phrase-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; padding: 6px 0; }

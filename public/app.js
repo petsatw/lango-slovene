@@ -1203,6 +1203,8 @@ async function sceneStep(from, ack) {
   if (data.level) scene.level = data.level;
   // The close screen's material, all of it sent once with the opening line — the close is reached by a
   // beat that has no payload of its own.
+  // ANY new close-screen field must be captured HERE. `sceneFinish` reads only `scene`, so a field left
+  // uncaptured never reaches it: the control renders permanently hidden, or renders and does nothing.
   if (data.keyPhrases) {
     scene.keyPhrases = data.keyPhrases;
     scene.nextLevel = data.nextLevel ?? null;
@@ -1223,9 +1225,9 @@ async function sceneStep(from, ack) {
   else sceneFinish();
 }
 
-// The close: the character's last line, unglossed, still on screen — then a way to look back at the
-// phrases and a way onward. Key Phrases is a button, never a screen you have to pass through, and it
-// carries no counts, no badges, nothing that reads as a measure.
+// The close: the character's last line, unglossed, still on screen — then Review, and the way onward.
+// Review is a button, never a screen you have to pass through, and it carries no counts, no badges,
+// nothing that reads as a measure.
 function sceneFinish() {
   sceneClearStalls();
   scene.armed = false;
@@ -1235,22 +1237,22 @@ function sceneFinish() {
   sceneChips({ back: scene.trailAt > 0 });
   learnerStarted = true;
   $("scene-controls").hidden = true;
-  $("scene-phrases").hidden = true;
   const next = $("scene-next");
   next.textContent = scene.nextLevel ? "Next lesson" : "Done";
   next.onclick = () => (scene.nextLevel ? openScene(scene.scenarioId, scene.nextLevel) : openHome());
+  // One door. Review holds the phrases AND both ways onward, so the closed screen is two controls and
+  // opening it moves nothing beside anything.
   const phrases = scene.keyPhrases;
-  const toggle = $("scene-phrases-btn");
-  toggle.hidden = !(phrases && (phrases.new.length || phrases.review.length));
-  toggle.onclick = () => {
-    const panel = $("scene-phrases");
-    if (panel.hidden) renderKeyPhrases(phrases);
+  const hasPhrases = !!(phrases && (phrases.new.length || phrases.review.length));
+  const panel = $("scene-review");
+  panel.hidden = true;
+  $("scene-phrases").hidden = !hasPhrases;
+  $("scene-phrases-btn").onclick = () => {
+    if (panel.hidden && hasPhrases) renderKeyPhrases(phrases);
     panel.hidden = !panel.hidden;
   };
-  // Two ways onward, folded away until asked for. Reading/Listening only appears where the lesson named
-  // a dialogue — a button that leads nowhere is worse than one that isn't there.
-  const menu = $("scene-deeper");
-  menu.hidden = true;
+  // Listening only appears where the lesson named a dialogue — a row that leads nowhere is worse than one
+  // that isn't there. Speaking always has somewhere to go, so Review is never empty.
   $("scene-deeper-read").hidden = !scene.practice;
   $("scene-deeper-read").onclick = () => openPracticeDialogue(scene.practice);
   $("scene-deeper-speak").onclick = () => {
@@ -1258,7 +1260,6 @@ function sceneFinish() {
     sceneCancel();
     openTutor(h ? { focus: h.focus, role: h.role, context: h.context } : {});
   };
-  $("scene-deeper-btn").onclick = () => { menu.hidden = !menu.hidden; };
   $("scene-close").hidden = false;
 }
 
@@ -1367,7 +1368,7 @@ async function openScene(scenarioId, level = null) {
   $("scene-tutorial").hidden = true;
   $("scene-chips").classList.remove("tutorial");
   $("scene-close").hidden = true;
-  $("scene-phrases").hidden = true;
+  $("scene-review").hidden = true;
   $("scene-controls").hidden = false;
   $("scene-bg").style.backgroundImage = "";
   // Clear the stage before the next lesson's on-ramp plays over it — the previous run's last line and
@@ -1450,7 +1451,7 @@ function wireSceneChips() {
     sceneCancel();
     sceneChips({});
     $("scene-close").hidden = true;
-    $("scene-phrases").hidden = true;
+    $("scene-review").hidden = true;
     $("scene-controls").hidden = false;
     sceneSetPhase("speaking");
     $("scene-prompt").classList.remove("shown");
