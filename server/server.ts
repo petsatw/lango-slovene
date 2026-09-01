@@ -18,7 +18,8 @@ import { A1_MAP } from "./a1";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
 import { CATALOG } from "./catalog";
-import { getDialoguesForScenario, type Dialogue } from "./dialogues";
+import { getDialoguesForScenario, resolveNode, type Dialogue, type DialogueNode } from "./dialogues";
+import { getFact, factValues } from "./facts";
 import { pacingFor } from "./pacing";
 import { advanceDialogue } from "./adapters/dialogue-scripted";
 import { getLearnable, LEARNABLES } from "./learnables";
@@ -158,7 +159,7 @@ function sceneHandoff(scene: Dialogue) {
 }
 
 app.post("/api/scene", (req, res) => {
-  const { scenarioId, level, from } = req.body ?? {};
+  const { scenarioId, level, from, answer } = req.body ?? {};
   if (typeof scenarioId !== "string") return res.status(400).json({ error: "scenarioId is required" });
 
   const spoken = getDialoguesForScenario(scenarioId).filter((d) => (d.advance ?? "tap") === "audio");
@@ -167,18 +168,47 @@ app.post("/api/scene", (req, res) => {
 
   const pacing = pacingFor(scene.pacing);
 
+  // What the app knows about the person, read fresh per request. Every line below is resolved through it
+  // ONCE, here, so the caption the learner reads, the text /api/speak is asked for and the prompt they
+  // answer are the same words by construction — the renderer never sees a line in more than one form and
+  // has no variant logic of its own to keep in step.
+  // Reassigned the moment this request stores an answer, and read through by `say`, because the beat
+  // that ASKS is immediately followed by the beat that uses it: Slavko's "Ti si študentka." is the very
+  // next line after the learner presses. A snapshot taken at the top of the request would answer the
+  // learner in the form they just told him was wrong.
+  let facts = learner.load().facts;
+  const say = (n: DialogueNode) => resolveNode(n, facts);
+
   const shape = (id: string | null) => {
-    const n = id ? scene.nodes[id] : null;
-    if (!n) return null;
+    const raw = id ? scene.nodes[id] : null;
+    if (!raw) return null;
+    const n = say(raw);
     // What the learner is asked to say is the upcoming CLIENT node's own line — not a gloss of what the
     // character just said. A beginner who hears nine words and must produce two cannot tell which two,
     // and the character's caption can never tell them; their own line can.
-    const client = n.next.map((i) => scene.nodes[i]).find((x) => x?.speaker === "client");
+    const clientRaw = n.next.map((i) => scene.nodes[i]).find((x) => x?.speaker === "client");
+    const client = clientRaw ? say(clientRaw) : undefined;
     // A client line that is nothing but a blank ("___" — the learner saying their own name) has no
     // Slovene stem to show. Rendering the blank on its own is worse than showing nothing: it is a bold
     // placeholder that says only "something goes here". In that case the English instruction IS the
     // prompt, and it carries the beat alone.
     const stem = client && /\p{L}/u.test(client.sl) ? client.sl : null;
+    // A beat that asks the learner for a fact hands the turn over as one button PER ANSWER, each
+    // carrying the whole line that answer makes them say. The buttons are the prompt, so the prompt is
+    // not shown twice; the surface reads `choice` first and falls back to `prompt` for every other beat.
+    const fact = raw.choice ? getFact(raw.choice.fact) : undefined;
+    const choice = fact && clientRaw
+      ? {
+          fact: raw.choice!.fact,
+          // The one line that speaks for the whole beat, above the options. Read from the UNRESOLVED
+          // client node: it is shared by every form of the line and is on screen before any answer exists.
+          en: clientRaw.chooseEN ?? null,
+          options: fact.values.map((v) => {
+            const line = resolveNode(clientRaw, { [raw.choice!.fact]: v.value });
+            return { value: v.value, sl: line.sl, en: line.en, focusSpan: line.focusSpan ?? null };
+          }),
+        }
+      : null;
     return {
       id,
       sl: n.sl,
@@ -200,6 +230,7 @@ app.post("/api/scene", (req, res) => {
       prompt: client
         ? { sl: stem, en: client.en, glossPolicy: client.glossPolicy ?? "tap", focusSpan: client.focusSpan ?? null }
         : null,
+      choice,
       // Whether this beat ends in a turn at all. A node that hands to another npc node is the character
       // carrying himself forward — the renderer plays it and continues rather than arming the button.
       handsOver: !!client,
@@ -234,8 +265,11 @@ app.post("/api/scene", (req, res) => {
       const v = n.audio;
       if (!v) return null;
       const src = spoken.find((d) => d.level === v.level);
-      const node = src?.nodes[v.from];
-      if (!src || !node || node.speaker !== "npc") return null;
+      const raw = src?.nodes[v.from];
+      if (!src || !raw || raw.speaker !== "npc") return null;
+      // The delivery this learner was actually played, so the phrase they press replays the clip they
+      // heard rather than a form of the line the run never used.
+      const node = say(raw);
       const voice = src.voices.npc;
       if (!store.has(store.audioKey(e3.name, e3.voiceTagFor(voice), node.sl), "audio")) return null;
       return {
@@ -254,7 +288,10 @@ app.post("/api/scene", (req, res) => {
     // item underneath it, never its wording. (A line carrying no catalog item is its own row — there is
     // nothing to collapse it onto.)
     const groups = new Map<string, typeof scene.nodes[string][]>();
-    for (const n of Object.values(scene.nodes)) {
+    for (const raw of Object.values(scene.nodes)) {
+      // The form of the line THIS learner produced — the close screen is their takeaway list, so it says
+      // back the sentence they said rather than the one the file happens to lead with.
+      const n = say(raw);
       // A turn that expects no Slovene (the learner saying their own name) is not a phrase they met.
       if (n.speaker !== "client" || !/\p{L}/u.test(n.sl) || seen.has(n.sl)) continue;
       seen.add(n.sl);
@@ -285,6 +322,25 @@ app.post("/api/scene", (req, res) => {
     return { ...rows };
   };
 
+  // Everything the close screen shows, built in one place and sent twice: with the opening line, so the
+  // run always holds a complete close even if it is left early, and again on the beat that ends it.
+  //
+  // Sending it only once was wrong the moment a phrase could depend on the learner. The opening line is
+  // played BEFORE they have answered anything, so a panel built there says "Sem študent." back to a woman
+  // who spent the lesson saying "Sem študentka." The closing beat is the first moment every answer is in.
+  const closeScreen = () => ({
+    // What the close screen offers next — the scenario's next spoken level, if one is authored. Null ends
+    // the run at the close screen.
+    nextLevel: spoken.find((d) => d.level > scene.level)?.level ?? null,
+    keyPhrases: keyPhrases(),
+    // Where the lesson goes next, both ways. `practice` names a rehearsal dialogue to read and listen
+    // through; `handoff` is what the live tutor needs to keep this scene alive while still tutoring. Both
+    // are derived HERE, where the authored dialogue lives — the scene renderer holds only the beats it
+    // has played.
+    practice: scene.practice ?? null,
+    handoff: sceneHandoff(scene),
+  });
+
   try {
     if (typeof from !== "string") {
       return res.json({ voice: scene.voices.npc, background: scene.background ?? null, backchannel,
@@ -292,18 +348,18 @@ app.post("/api/scene", (req, res) => {
                         npc: shape(scene.root), done: false,
                         audio: scene.audio,
                         level: scene.level, title: scene.title,
-                        // What the close screen offers next — the scenario's next spoken level, if one
-                        // is authored. Null ends the run at the close screen.
-                        nextLevel: spoken.find((d) => d.level > scene.level)?.level ?? null,
-                        keyPhrases: keyPhrases(),
-                        // Where the lesson goes next, both ways. `practice` names a rehearsal dialogue to
-                        // read and listen through; `handoff` is what the live tutor needs to keep this
-                        // scene alive while still tutoring. Both are derived HERE, where the authored
-                        // dialogue lives — the scene renderer holds only the beats it has played.
-                        practice: scene.practice ?? null,
-                        handoff: sceneHandoff(scene) });
+                        ...closeScreen() });
     }
-    const step = advanceDialogue(scene, from, { kind: "audio" });
+    const step = advanceDialogue(scene, from, { kind: "audio", answer: typeof answer === "string" ? answer : undefined });
+    // The answer the learner pressed, checked against the fact's own closed set before it is stored. The
+    // adapter reports what was chosen; the domain is the catalog's to rule on, and this is the only
+    // write path a fact has — so an answer that is not one of the offered ones is refused rather than
+    // stored and then found later by whatever reads it back.
+    if (step.fact) {
+      if (!factValues(step.fact.id).has(step.fact.value))
+        return res.status(400).json({ error: `"${step.fact.value}" is not an answer to "${step.fact.id}"` });
+      facts = learner.setFact(step.fact.id, step.fact.value).facts;
+    }
     if (step.learnableProgress.length) learner.save(applyCredit(learner.load(), step.learnableProgress));
     res.json({
       voice: scene.voices.npc,
@@ -317,8 +373,12 @@ app.post("/api/scene", (req, res) => {
       // real key with undirected audio and the later build skips it.
       audio: scene.audio,
       npc: shape(step.npcNodeId),
-      spoke: step.clientNodeId ? { id: step.clientNodeId, sl: scene.nodes[step.clientNodeId]!.sl } : null,
+      spoke: step.clientNodeId ? { id: step.clientNodeId, sl: say(scene.nodes[step.clientNodeId]!).sl } : null,
       done: step.done,
+      // The last beat of the run: the character's closing line, or the end of the tree. Every answer the
+      // learner gave is in by now, so this is the panel that reflects the lesson they actually had — it
+      // supersedes the one sent with the opening line, which could only guess.
+      ...(step.done || !step.npcNodeId || !scene.nodes[step.npcNodeId]!.next.length ? closeScreen() : {}),
     });
   } catch (err: any) {
     res.status(400).json({ error: err?.message ?? String(err) });

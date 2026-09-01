@@ -501,8 +501,8 @@
   "sem_ime": {
     "kind": "pattern",
     "sl": "Sem ___.",
-    "gloss": "I am ___ (introducing yourself)",
-    "predictableError": "the 'Moje ime je ___' calque instead of the natural 'Sem ___'; jaz is usually dropped",
+    "gloss": "I am ___ / you are ___ — the copula frame, naming who or what someone is (Sem Slavko, Sem študent, Ti si učitelj)",
+    "predictableError": "the 'Moje ime je ___' calque instead of the natural 'Sem ___'; jaz is usually dropped; and in the 2nd person, carrying the 1sg over as 'Ti sem ___' — the 2sg copula is 'si'",
     "core": true,
     "a1": true
   },
@@ -3260,16 +3260,24 @@
     "core": false,
     "a1": true
   },
-  "ti_si_x": {
-    "kind": "pattern",
-    "sl": "Ti si ___.",
-    "gloss": "You are ___.",
-    "predictableError": "Carrying over the 1sg and saying 'Ti sem ___' — the 2sg copula is 'si'."
-  },
   "zmaj": {
     "kind": "vocabulary",
     "sl": "zmaj",
     "gloss": "dragon",
     "predictableError": "Adding an article — 'Ti si en zmaj' — because English needs 'a'; Slovene takes the bare nominative."
+  },
+  "ucitelj": {
+    "kind": "vocabulary",
+    "sl": "učitelj",
+    "gloss": "teacher, tutor (masc.; fem. 'učiteljica')",
+    "predictableError": "adding an article on the English model — 'Ti si en učitelj' — where Slovene takes the bare nominative 'Ti si učitelj.'",
+    "a1": true
+  },
+  "student": {
+    "kind": "vocabulary",
+    "sl": "študent / študentka",
+    "gloss": "student (man / woman)",
+    "predictableError": "choosing the form by who you are talking to instead of by your own gender — a woman says 'Sem študentka', a man 'Sem študent'.",
+    "a1": true
   }
 }

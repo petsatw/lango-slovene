@@ -644,6 +644,24 @@ body.in-scene header { display: none; }
 .scene-talk:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.16); animation: none; }
 .scene-talk:disabled { opacity: 0.35; cursor: default; }
 
+/* The beat that asks the learner about themselves. It borrows the talk button's shape exactly — same
+   pill, same border, same press — because it IS the talk button, offered as several sentences instead of
+   one "Continue". A learner meeting it has already pressed that button a dozen times, so there is nothing
+   here to explain and nothing new to reach for.
+   Each option carries its own Slovene at prompt weight with the English under it, and the English stays
+   visible: telling which line is yours is the whole question being asked, so this is the one place in the
+   run where the translation is not something to earn. */
+.scene-choice { display: grid; justify-items: stretch; gap: 10px; width: 100%; max-width: 340px; }
+.scene-choice-btn {
+  position: relative; width: 100%; min-height: 62px; padding: 10px 22px; border-radius: 31px;
+  border: 3px solid rgba(255, 255, 255, 0.55); background: rgba(255, 255, 255, 0.1);
+  display: grid; justify-items: center; gap: 2px; cursor: pointer; text-align: center;
+  transition: transform 140ms ease, background 140ms ease;
+}
+.scene-choice-btn:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.16); }
+.scene-choice-sl { font-size: 23px; font-weight: 700; letter-spacing: .01em; color: #fff; line-height: 1.2; }
+.scene-choice-en { font-size: 14px; color: var(--muted); }
+
 /* The English on-ramp, before the scene opens. */
 .scene-frame {
   position: relative; margin: auto 0; text-align: center; max-width: 30ch;
@@ -697,8 +715,11 @@ body.in-scene header { display: none; }
 /* Deliberately the largest, brightest type on screen while the turn is the learner's — it has to
    out-weigh the character's caption, which is longer and would otherwise dominate by sheer size. */
 .scene-prompt-sl { font-size: 27px; font-weight: 700; letter-spacing: .01em; color: #fff; line-height: 1.25; }
-.scene-prompt-en { font-size: 15px; color: var(--muted); }
-.scene-prompt.bare .scene-prompt-en { font-size: 18px; color: #e8ecf2; }
+/* `pre-line` so an authored line break survives to the screen. Almost every line here is a single
+   translation and never uses one; the beat that asks the learner about themselves does, because its
+   English is an instruction plus the promise that the grammar behind it comes later — two thoughts. */
+.scene-prompt-en { font-size: 15px; color: var(--muted); white-space: pre-line; }
+.scene-prompt.bare .scene-prompt-en { font-size: 18px; color: #e8ecf2; line-height: 1.35; }
 
 /* The level meter the button wears while the CHARACTER is speaking: sound is happening and it is not
    yours. Four bars, staggered, the universal "audio is playing" shape — not a mouth, not a face, and

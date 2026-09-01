@@ -9,6 +9,12 @@
 // A node may also carry `slowSL` — the same line chunked and re-spoken slowly. That is DIFFERENT text,
 // so it is naturally its own key and its own clip, and it gets built alongside the natural one.
 //
+// A node may also VARY on a learner fact (`variesBy` + `variants`) — the character saying "Ti si študent."
+// to one learner and "Ti si študentka." to another. Each form is different text, so it is its own key and
+// its own clip, and every form is built here: a level is ready only when every learner it can meet has a
+// voice. This is where a variant on a CHARACTER's line costs money, and the reason the authoring skill
+// asks for few of them (client lines are the learner's own speech and are never synthesized at all).
+//
 // After a level's nodes are all built (no failures), it flips that level's `audio` to "ready" so the
 // client starts showing play buttons for it. Idempotent + FREE on re-run (disk hits). Bills only on new
 // lines. Use --regen to force a re-roll (e.g. after changing a delivery note).
@@ -28,7 +34,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { getE3 } from "../adapters/index";
 import * as store from "../assets/store";
-import { validateDialogue, type Dialogue } from "../dialogues";
+import { validateDialogue, nodeForms } from "../dialogues";
 import { isSynthesized } from "./dialogue-lib";
 
 const args = process.argv.slice(2);
@@ -101,7 +107,14 @@ for (const { file, d } of files) {
   console.log(`\n▶ ${file}  L${d.level} ${d.levelLabel}  e3=${e3.name}  npc=${d.voices.npc} client=${d.voices.client}`);
   let levelFailures = 0;
 
-  for (const [id, node] of Object.entries(d.nodes) as [string, Dialogue["nodes"][string]][]) {
+  // Every FORM of every node: the line as authored, plus one per variant. A line whose wording depends on
+  // a learner fact is two recordings, and both have to exist before either learner can hear the lesson —
+  // building only the base would leave one of them a silent scene. Because the audio key is the text, a
+  // variant lands under its own key and cannot disturb a clip already paid for.
+  const forms = Object.entries(d.nodes).flatMap(([id, node]) =>
+    nodeForms(node).map(({ value, node: form }) => ({ id, value, node: form })));
+
+  for (const { id, value, node } of forms) {
     if (auditionNodes && !auditionNodes.has(id)) continue;
     // In a SPOKEN scene the client lines are what the LEARNER says aloud, so synthesizing them would bill
     // for the character's voice reading the learner's line. Only the character is voiced here. (A client
@@ -122,7 +135,7 @@ for (const { file, d } of files) {
       const { hit } = await store.getOrCreate(
         key,
         "audio",
-        { provider: e3.name, voiceOrModel: voiceTag, text: node.sl, scenarioId: d.scenarioId, objectiveId: `dialogue:${d.id}:${id}` },
+        { provider: e3.name, voiceOrModel: voiceTag, text: node.sl, scenarioId: d.scenarioId, objectiveId: `dialogue:${d.id}:${id}${value ? `:${value}` : ""}` },
         async () => {
           const r = await e3.synthesize({ text: genText, voiceProfile });
           return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };
@@ -130,10 +143,10 @@ for (const { file, d } of files) {
       );
       hit ? hits++ : made++;
       const tag = node.deliverySL ? " ✎" : "  ";
-      console.log(`   ${hit ? "hit " : "gen "}${tag} ${id} [${node.speaker}] ${key.slice(0, 10)}…  "${node.sl}"`);
+      console.log(`   ${hit ? "hit " : "gen "}${tag} ${id}${value ? `·${value}` : ""} [${node.speaker}] ${key.slice(0, 10)}…  "${node.sl}"`);
     } catch (err: any) {
       failures++; levelFailures++;
-      console.log(`   ❌  ${id} [${node.speaker}]: ${err?.message}`);
+      console.log(`   ❌  ${id}${value ? `·${value}` : ""} [${node.speaker}]: ${err?.message}`);
     }
 
     // Every OTHER spoken line this node owns, each keyed on its own clean text exactly as `sl` is:
@@ -155,17 +168,17 @@ for (const { file, d } of files) {
         const { hit } = await store.getOrCreate(
           xKey,
           "audio",
-          { provider: e3.name, voiceOrModel: voiceTag, text: x.text, scenarioId: d.scenarioId, objectiveId: `dialogue:${d.id}:${id}:${x.suffix}` },
+          { provider: e3.name, voiceOrModel: voiceTag, text: x.text, scenarioId: d.scenarioId, objectiveId: `dialogue:${d.id}:${id}${value ? `:${value}` : ""}:${x.suffix}` },
           async () => {
             const r = await e3.synthesize({ text: x.say, voiceProfile, ...(x.speed !== undefined ? { speed: x.speed } : {}) });
             return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };
           },
         );
         hit ? hits++ : made++;
-        console.log(`   ${hit ? "hit " : "gen "} ${x.label} ${id} [${node.speaker}] ${xKey.slice(0, 10)}…  "${x.text}"`);
+        console.log(`   ${hit ? "hit " : "gen "} ${x.label} ${id}${value ? `·${value}` : ""} [${node.speaker}] ${xKey.slice(0, 10)}…  "${x.text}"`);
       } catch (err: any) {
         failures++; levelFailures++;
-        console.log(`   ❌  ${id} [${node.speaker}] ${x.suffix}: ${err?.message}`);
+        console.log(`   ❌  ${id}${value ? `·${value}` : ""} [${node.speaker}] ${x.suffix}: ${err?.message}`);
       }
     }
   }

@@ -8,7 +8,8 @@
 //
 // ERRORS (exit 1): root not npc · unreachable nodes · a path that never ends (cycle/dead spur) · manifest
 //   disagreement (a declared level with no file, a dialogue file the manifest doesn't declare, a
-//   level-label or voices mismatch).
+//   level-label or voices mismatch) · in a SPOKEN lesson: a node off the `next[0]` spine, or a line whose
+//   wording varies on a learner fact nothing has answered yet.
 // REVIEW / WARN (exit 0): multi-parent convergence nodes (eyeball each for path coherence) · an npc node
 //   that offers a single client choice (degenerate — no real decision). Trees may offer MORE than two
 //   choices (docs/dialogue-difficulty-model.md §5 — a complication carried as an extra branch); that is a
@@ -51,6 +52,45 @@ for (const d of allDialogues) {
     for (const [nid, n] of Object.entries(nodes)) {
       if (n.speaker === "npc" && n.next.length === 1)
         warns.push(`${where}: npc node "${nid}" offers a single choice — a fork should present ≥2 (no real decision otherwise)`);
+    }
+  }
+
+  // ---- The spoken spine: reachability along the PATH, and facts known before they are spoken ----------
+  if ((d.advance ?? "tap") === "audio") {
+    // Reachability by graph edge is the wrong question for a spoken lesson. The learner is speaking, so
+    // the run follows `next[0]` and only `next[0]`; a node hanging off `next[1..]` is authored, validated,
+    // billed for a clip, and never played. That is how seven nodes of the demo lesson — a whole feminine
+    // arm — shipped as content the app could not reach, with every gate green.
+    const spine: string[] = [];
+    const walked = new Set<string>();
+    for (let id: string | undefined = d.root; id && !walked.has(id); id = nodes[id]?.next[0]) {
+      walked.add(id);
+      spine.push(id);
+    }
+    const offSpine = Object.keys(nodes).filter((id) => !walked.has(id));
+    if (offSpine.length)
+      errors.push(`${where}: node(s) ${offSpine.join(", ")} sit off the spine — a spoken lesson follows next[0], `
+        + `so these are never played, and each one still bills for a clip. Fold them into the spine or delete them.`);
+
+    // A voice must never say a gendered form about the learner before the learner has said which one they
+    // are. Walking the spine in order is what makes that checkable: a line may vary on a fact only once
+    // the fact has an answer — asked on this spine, or declared in the level's `needs` as answered by an
+    // earlier lesson.
+    const known = new Set<string>(d.needs ?? []);
+    for (const id of spine) {
+      const n = d.nodes[id]!;
+      if (n.variesBy && !known.has(n.variesBy))
+        errors.push(`${where}: node "${id}" varies on "${n.variesBy}", which nothing has answered by the time `
+          + `it plays. Ask for it earlier on this spine, or declare "needs": ["${n.variesBy}"] on the level `
+          + `if an earlier lesson asks.`);
+      if (n.choice) known.add(n.choice.fact);
+    }
+
+    // A fact this level says it inherits, and then asks for anyway, means two lessons both believe they
+    // own the question — worth seeing, and not on its own a reason to fail.
+    for (const id of d.needs ?? []) {
+      if (spine.some((nid) => d.nodes[nid]!.choice?.fact === id))
+        reviews.push(`${where}: "needs" declares "${id}" already answered, and the spine asks for it again`);
     }
   }
 }

@@ -59,7 +59,16 @@ function die(msg: string): never {
 //              captionDelayMs? /* overrides the profile's captionLeadMs for this one beat */, glossPolicy? /* tap|after|held */,
 //              stallHandlers? /* npc nodes; [{kind:"pulse"|"respeak"|"soften",label?}] — NO Slovene;
 //                                timing comes from the pacing profile by position, afterMs only to override */,
+//              choice? /* npc nodes; {fact} — this beat ASKS the learner for one fact about themselves
+//                          (server/catalog/facts.json) and hands the turn over as one button per answer */,
+//              variesBy? /* the fact this line's wording depends on */,
+//              variants? /* fact value → {sl?,en?,deliverySL?,slowSL?,deliverySlowSL?,focusSpan?}; a value
+//                           with no entry keeps the line as authored */,
+//              chooseEN? /* client nodes; the one line of English above a choice beat's options, shown
+//                           immediately — a "\n" in it is a line break */,
 //              context? /* parenthetical on a client choice */, next } }, background?, intro?:{audio,text?,en?},
+//              needs? /* fact ids an EARLIER lesson already asked for — what lets this level's lines vary
+//                        without stopping to ask again */,
 //              frameEN? /* the English on-ramp shown before the scene opens */,
 //              tutorial? /* [{target,text}] — the run controls this level teaches, before its first line */,
 //              practice? /* {scenarioId,level} — the rehearsal dialogue "Go Deeper › Reading/Listening" opens */,
@@ -234,6 +243,17 @@ for (const fix of input.criticFixes ?? []) {
 
 // ---- Step 5: build + structurally self-check each dialogue file --------------------------------------
 function selfCheckTree(level: number, root: string, nodes: Record<string, any>): void {
+  // A spoken lesson follows `next[0]` and only `next[0]`, so a node hanging off `next[1..]` is content the
+  // app cannot reach — authored, valid, billed for a clip, never played. Checked before the file is
+  // written, and again by lint:tree over the committed corpus.
+  if (advance === "audio" && nodes?.[root]) {
+    const walked = new Set<string>();
+    for (let id: string | undefined = root; id && !walked.has(id); id = nodes[id]?.next?.[0]) walked.add(id);
+    const off = Object.keys(nodes).filter((id) => !walked.has(id));
+    if (off.length) die(`level ${level}: node(s) ${off.join(", ")} sit off the spine — a spoken lesson follows `
+      + `next[0], so they are never played and each still bills for a clip. A learner's answer belongs in a `
+      + `line's "variants", not in a second branch.`);
+  }
   if (!nodes || !Object.keys(nodes).length) die(`level ${level}: "nodes" must be non-empty`);
   if (!nodes[root]) die(`level ${level}: root "${root}" is not a node`);
   if (nodes[root].speaker !== "npc") die(`level ${level}: root "${root}" must be spoken by the npc`);
@@ -351,6 +371,7 @@ for (const lvl of input.levels) {
     audio: existingAudioState(file),
     voices: { npc: voices.npc, client: voices.client },
     ...(advance === "tap" ? {} : { advance }), // omit the default so existing files stay byte-identical
+    ...(Array.isArray(lvl.needs) && lvl.needs.length ? { needs: lvl.needs } : {}),
     ...(pacing ? { pacing } : {}),
     ...(Array.isArray(lvl.frameEN) && lvl.frameEN.length ? { frameEN: lvl.frameEN } : {}),
     ...(Array.isArray(lvl.tutorial) && lvl.tutorial.length ? { tutorial: lvl.tutorial } : {}),

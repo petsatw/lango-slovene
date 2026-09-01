@@ -257,6 +257,45 @@ What each role does with it — say which, in that role's brief:
 `lesson-designer` already carries the eyes-shut test in its own definition. The quotation is still the
 brief's first block: it is the one standard all four roles are held to, and it is stated once, here.
 
+### Writing for two learners — quote into every spoken brief
+
+Slovene inflects a speaker's own words for their gender, so a spoken lesson is written for two learners at
+once. **Quote this block into the same briefs as the audio-only brief** — the three `lesson-designer`s, the
+`learning-designer`, `slovenian-author` and `scenario-critic`. It is stated as costs, so the same words
+serve the role that shapes the scene, the role that writes the lines, and the role that rules on them.
+
+> **The app knows the learner's gender**, because the onboarding lesson asks and it is stored. Lines may
+> therefore be written in two forms (`variesBy` + `variants`), and the learner only ever meets theirs.
+>
+> Two of the three cases are free. One costs a second recording:
+>
+> - **A speaker about themselves** — *Jaz sem učitelj*, *Rada bi šla*. Free: that speaker's gender is
+>   fixed by who they are. Write these without a second thought; they are how a learner hears the
+>   feminine forms at all when the character is a woman.
+> - **The learner's own lines.** Free: a spoken lesson never synthesizes them, so a variant is a second
+>   caption and no clip.
+> - **The character addressing the learner** — *Ti si študentka?*, *Koliko si stara?* **This is the one
+>   case that forks a clip**, and both forms have to be recorded before the level can ship.
+>
+> **Keep the third kind few.** Most beats do not need one: ask *Kaj si?* rather than *Ti si študentka?*,
+> answer *Tako je!* rather than echoing their noun back. Reach for a variant where the gendered line is
+> doing teaching that nothing else can do — above all the **affirming echo**, the character saying the
+> learner's own word back to them, which is one of the highest-value input moments a lesson has. Few is a
+> budget, not a ban: spend it on the moment that earns it.
+>
+> Where the lesson is **teaching the pair itself**, both forms are the material — the character models
+> each in turn and then asks. That is the shape the onboarding lesson uses, and those lines are his
+> question rather than an address in a gender he has not been told.
+
+What each role does with it — say which, in that role's brief:
+
+| role | what it decides here |
+|---|---|
+| `lesson-designer` (2a) | whether the design leans on a gendered line from the character, and whether that line earns the second recording |
+| `learning-designer` (2b) | keeps the merged design inside the same budget — a beat grafted from another design is where a fork appears unnoticed |
+| `slovenian-author` (3) | writes the neutral phrasing where one exists, and both forms where the lesson wants the echo |
+| `scenario-critic` (5) | names every character line that varies, and says for each whether it is worth a clip |
+
 ### 2a — Three designs (J), three authors, in parallel
 
 **The objective is always given** — by R directly, or by the syllabus the brief carries. The three designs
@@ -268,6 +307,8 @@ Every brief carries, identically:
 
 - **The audio-only brief** (above), quoted verbatim and **first**, for a spoken level. Name what this role
   decides with it: it picks a scene that passes the eyes-shut test, and it applies the visual exception.
+- **Writing for two learners** (above), quoted verbatim, for a spoken level — so a design that turns on a
+  gendered line is costed while it is still a design.
 - **The shape** (stage 1) — the whole of what is fixed for a designer.
 - **The settings** (stage 1) — advance mode, register, the two voices and which is the learner, the
   learner's gender, the role, and the standing situation.
@@ -316,9 +357,31 @@ Every brief carries, identically:
   >   is the one thing a lesson must never do.
   > - There is no microphone. The turn cannot be failed and nothing inspects what the learner says.
   > - A spoken level is a linear spine; `next[0]` is the path. A "branch" lives in the slot, not the tree.
+  >   `lint:tree` errors on any node off that spine — it would never be played and would still bill for a
+  >   clip.
   > - `focusSpan` marks the shape inside a caption. It must occur **exactly once** in that node's `sl`.
   > - The four run controls (🐢 « » ✕) are on screen throughout, and a level may teach them with
   >   `tutorial: [{ target: "slower"|"back"|"skip"|"quit", text }]` before its first line.
+  > - A beat may **ask the learner one thing about themselves** — `choice: { fact }`, on an npc node. It
+  >   hands the turn over as one button per answer instead of one Continue, each button carrying a whole
+  >   line the learner can say, and it stores the answer. The upcoming client line supplies the buttons
+  >   through its own `variants`. This is a lesson's only way to learn anything about the person, since
+  >   nothing listens. Skip is dimmed there; the beat cannot be stepped past.
+  > - **Write that beat as a conversational turn, not a question to the learner.** Model the forms first —
+  >   both in one line, so they are heard as a pair — then hand over by reciprocity (*Jaz sem učitelj. In
+  >   ti?*) or by any ordinary offer. The buttons already say what the answers are, so the line above them
+  >   is free to teach a shape rather than spend the turn asking *"which are you?"*.
+  > - What the learner is being asked to DO with the buttons is `chooseEN` on the **client** node — one
+  >   line above the options, on screen the moment the turn opens (a `\n` in it is a line break). It
+  >   replaces the `soften` stall rung, which the loader rejects on a beat that asks: the same English,
+  >   ten seconds later, in the same place. `pulse` and `respeak` still apply.
+  > - Any line may then be said differently for that answer: `variesBy: "<fact>"` plus
+  >   `variants: { "<value>": { sl?, en?, deliverySL?, slowSL?, deliverySlowSL?, focusSpan? } }`. A value
+  >   with no entry keeps the line as authored. Text only — the turn, the `next` and the `learnables`
+  >   belong to the beat. A variant that rewrites `sl` states its own `focusSpan` and its own `slowSL`.
+  > - Facts are declared in `server/catalog/facts.json`; `gender` is the one that exists. A level that
+  >   varies on a fact an earlier lesson already asked for declares `needs: ["gender"]` instead of asking
+  >   again.
 
 - **The reasons to repeat and improvise** (below), **shuffled independently for each brief**, with the
   three tests after the list, unshuffled, and the sentence that it is not a strict list.
@@ -539,7 +602,9 @@ For an `advance: "audio"` beginner level these are construction rules, not polis
 
 Dispatch **`slovenian-author`** (dialogue mode) once per level, concurrently. For a spoken level the brief
 opens with **the audio-only brief**, quoted verbatim, naming what this role decides with it: LS writes lines
-in which people say what they are doing, and every line hands over cleanly. Each brief then gets the
+in which people say what they are doing, and every line hands over cleanly. It then carries **writing for
+two learners**, quoted verbatim: LS reaches for the neutral phrasing where one exists, and writes both
+forms where the lesson wants the echo. Each brief then gets the
 situation, register, voices, and that level's node map (`speaker` + `intentEN` + `next`). Each returns
 `{ level, nodes:{id:{sl,en,deliverySL?,slowSL?,deliverySlowSL?}}, catalogDelta:{reuse,new}, concerns }`.
 **LS never returns stall handlers** — those carry no Slovene.
@@ -551,8 +616,9 @@ For an `"audio"` scene the dispatch also names which nodes are marked for `slowS
 
 ### 4 — Routing read (C)
 
-C reads the returned levels for: native-not-textbook; register held; client lines carrying the learner's
-gender; no npc-only line minted in a delta; branches re-converging coherently.
+C reads the returned levels for: native-not-textbook; register held; a client line that is gendered
+carrying its `variants` rather than one gender's form alone; no npc-only line minted in a delta; branches
+re-converging coherently.
 
 **This stage has no verdict.** It is routing, not judgment: C re-dispatches a level's LS **only** where it
 can state a specific, addressed note ("`c3`'s `sl` is `vi` in a `ti` register"). Anything C cannot name that
@@ -563,7 +629,9 @@ content.
 
 Dispatch **`scenario-critic`** (dialogue mode) over ALL levels' trees + deltas at once. For a spoken level
 the brief opens with **the audio-only brief**, quoted verbatim, naming what this role decides with it: the
-critic runs the eyes-shut test and returns what fails it. Its own definition carries the adjacent spoken
+critic runs the eyes-shut test and returns what fails it. It then carries **writing for two learners**,
+quoted verbatim: the critic names every character line that varies and says for each whether it earns its
+second recording. Its own definition carries the adjacent spoken
 axes (load asymmetry, the prompt-is-the-client-line rule, the stall ladder, the on-ramp, slow lines, chunk
 breaks) but not this test, so the quotation is the only place it gets it. It returns
 `{ verdict, fixes:[{level,nodeId,field,oldExact,newExact,reason}], deltaFindings, convergenceReviewed,
@@ -587,6 +655,10 @@ mint/reuse problems. If a `deltaFinding` is `block`, route it back to LS (stage 
   is a lesson to change, not a caption to add.
 - **The on-ramp:** does `frameEN` frame *this* lesson — not lessons in general? Does it promise anything
   the level does not deliver? Is every line legible to someone who has never seen the app?
+- **Both learners get the lesson:** read the level through twice, once as each answer to any fact it asks
+  or declares in `needs`. Does every beat still follow? Is every character line that varies worth the
+  recording it forks, and is every one that does **not** vary correct for both learners? A line that
+  addresses the learner in one gender without varying is the failure this check exists for.
 - **The gloss is the meaning:** every client `en` is that line's translation and nothing else — the sole
   exception is a turn with no Slovene stem. Where an `en` *instructs* — quotes a Slovene fragment back, says
   "plus", tells the learner how to assemble the line — return a fix rewriting it as the plain translation.

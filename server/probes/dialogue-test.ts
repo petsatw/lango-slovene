@@ -7,7 +7,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { validateDialogue } from "../dialogues";
+import { validateDialogue, resolveNode, nodeForms } from "../dialogues";
 import { advanceDialogue, advanceModeOf } from "../adapters/dialogue-scripted";
 import { LEARNABLES } from "../learnables";
 
@@ -157,6 +157,132 @@ console.log("\nscene fields — slowSL / per-node learnables / advance:");
   })());
   rejects("an empty frameEN is rejected", (t) => { t.frameEN = []; });
   check("advance defaults to tap when absent", advanceModeOf(validateDialogue("fixture.json", tree())) === "tap");
+}
+
+console.log("\nlearner facts — the choice beat and the varying line:");
+{
+  // A spoken lesson that asks the learner one thing about themselves and then says their word back to
+  // them. `n1` asks, `c1` is their answer said each way, `n2` is the character echoing it — the one line
+  // here that costs a second recording.
+  const asking = (): any => ({
+    ...tree(),
+    advance: "audio",
+    root: "n1",
+    nodes: {
+      n1: { speaker: "npc", sl: "Kaj si ti?", en: "Which are you?", choice: { fact: "gender" }, next: ["c1"] },
+      c1: {
+        speaker: "client", sl: "Sem študent.", en: "I'm a student.", learnables: ["dober_dan"],
+        variesBy: "gender", variants: { f: { sl: "Sem študentka.", en: "I'm a student." } },
+        next: ["n2"],
+      },
+      n2: {
+        speaker: "npc", sl: "Ti si študent.", en: "You are a student.",
+        variesBy: "gender", variants: { f: { sl: "Ti si študentka." } },
+        next: [],
+      },
+    },
+  });
+  const rejectsAsking = (label: string, mutate: (t: any) => void) => {
+    const t = asking();
+    mutate(t);
+    let threw = false;
+    try { validateDialogue("fixture.json", t); } catch { threw = true; }
+    check(label, threw);
+  };
+
+  check("a lesson that asks for a fact validates", (() => {
+    try { return !!validateDialogue("fixture.json", asking()); } catch (e: any) { return false; }
+  })());
+
+  // The fact is a catalog entry with a closed set of answers — both the question and the variants are
+  // checked against it, so a lesson can never offer or store something nothing declared.
+  rejectsAsking("a choice naming an unknown fact is rejected", (t) => { t.nodes.n1.choice = { fact: "favourite_colour" }; });
+  rejectsAsking("a variant answering outside the fact's values is rejected", (t) => { t.nodes.c1.variants.x = { sl: "Sem nekaj." }; });
+  rejectsAsking("variants without a variesBy are rejected", (t) => { delete t.nodes.c1.variesBy; });
+  rejectsAsking("a variesBy with no variants is rejected", (t) => { delete t.nodes.c1.variants; });
+  // A variant is the same beat said differently — its turn and its catalog tags belong to the beat.
+  rejectsAsking("a variant overriding the beat's structure is rejected", (t) => { t.nodes.c1.variants.f.next = ["n2"]; });
+  rejectsAsking("a variant overriding the beat's learnables is rejected", (t) => { t.nodes.c1.variants.f.learnables = ["zdravo"]; });
+
+  // The question and its answers are one authored thing: the buttons ARE the client line, said each way.
+  rejectsAsking("a choice on a client node is rejected", (t) => { t.nodes.c1.choice = { fact: "gender" }; });
+  rejectsAsking("a choice whose client line does not vary on that fact is rejected", (t) => {
+    delete t.nodes.c1.variesBy; delete t.nodes.c1.variants;
+  });
+  rejectsAsking("a choice whose answers put the same line on every button is rejected", (t) => {
+    t.nodes.c1.variants.f.sl = "Sem študent.";
+  });
+
+  // The text invariants are per FORM: a variant with a different surface needs its own focusSpan, and its
+  // own slow line, exactly as the base does.
+  // "Sem študent" sits inside "Sem študentka." and would pass the occurs-once test while marking two
+  // thirds of a word, so an inherited span is refused rather than measured.
+  rejectsAsking("a variant that rewrites the line and inherits the base's focusSpan is rejected", (t) => {
+    t.nodes.c1.focusSpan = "Sem študent";
+  });
+  check("a variant that rewrites the line and states its own focusSpan is accepted", (() => {
+    const t = asking();
+    t.nodes.c1.focusSpan = "Sem študent";
+    t.nodes.c1.variants.f.focusSpan = "Sem študentka";
+    try { return !!validateDialogue("fixture.json", t); } catch { return false; }
+  })());
+  rejectsAsking("a focusSpan absent from the variant's line is rejected", (t) => {
+    t.nodes.c1.focusSpan = "Sem študent";
+    t.nodes.c1.variants.f.focusSpan = "Sem učitelj";
+  });
+  rejectsAsking("a variant whose slow line equals its own line is rejected", (t) => {
+    t.nodes.n2.slowSL = "Ti si … študent.";
+    t.nodes.n2.variants.f.slowSL = "Ti si študentka.";
+  });
+
+  // The beat's own English: one line above the options, authored on the client node because it stands in
+  // for that line's gloss while the learner picks between its forms.
+  check("chooseEN on the client line is accepted", (() => {
+    const t = asking(); t.nodes.c1.chooseEN = "Choose which one best suits you.";
+    try { return !!validateDialogue("fixture.json", t); } catch { return false; }
+  })());
+  rejectsAsking("chooseEN on an npc node is rejected", (t) => { t.nodes.n1.chooseEN = "Choose one."; });
+  // `soften` relabels the single button, and a beat that asks has options instead — so a choice beat's
+  // English is authored in one place, and it is the one that shows immediately.
+  rejectsAsking("a soften rung on a beat that asks is rejected in favour of chooseEN", (t) => {
+    t.nodes.n1.slowSL = "Kaj si … ti?";
+    t.nodes.n1.stallHandlers = [{ kind: "soften", label: "Tap the one that is you." }];
+  });
+  check("pulse and respeak rungs are still accepted on a beat that asks", (() => {
+    const t = asking();
+    t.nodes.n1.slowSL = "Kaj si … ti?";
+    t.nodes.n1.stallHandlers = [{ kind: "pulse" }, { kind: "respeak" }];
+    try { return !!validateDialogue("fixture.json", t); } catch { return false; }
+  })());
+
+  rejectsAsking("a needs naming an unknown fact is rejected", (t) => { t.needs = ["favourite_colour"]; });
+  check("a needs naming a declared fact is accepted", (() => {
+    const t = asking(); t.needs = ["gender"];
+    try { return !!validateDialogue("fixture.json", t); } catch { return false; }
+  })());
+
+  // Resolution: one function, used by the renderer, the prompt, the asset builder and the lints alike.
+  const d = validateDialogue("fixture.json", asking());
+  check("a known fact resolves the line to that answer's form",
+    resolveNode(d.nodes.n2!, { gender: "f" }).sl === "Ti si študentka.");
+  check("an answer with no variant of its own keeps the line as authored",
+    resolveNode(d.nodes.n2!, { gender: "m" }).sl === "Ti si študent.");
+  check("an unanswered fact keeps the line as authored",
+    resolveNode(d.nodes.n2!, {}).sl === "Ti si študent.");
+  check("a variant carries over everything it does not override",
+    resolveNode(d.nodes.c1!, { gender: "f" }).learnables?.join() === "dober_dan");
+  check("every form of a line is offered to the asset builder",
+    nodeForms(d.nodes.n2!).map((f) => f.node.sl).join(" | ") === "Ti si študent. | Ti si študentka.");
+
+  // Advancing: the answer is the learner's, so the beat refuses to move without it, and the step reports
+  // it for the caller to store rather than storing anything itself.
+  const step = advanceDialogue(d, "n1", { kind: "audio", answer: "f" });
+  check("answering a choice beat advances the spine", step.clientNodeId === "c1" && step.npcNodeId === "n2");
+  check("the answer is reported for the caller to store", step.fact?.id === "gender" && step.fact?.value === "f");
+  check("a beat that asks nothing reports no fact", advanceDialogue(d, "n2", { kind: "audio" }).fact === null);
+  let threw = false;
+  try { advanceDialogue(d, "n1", { kind: "audio" }); } catch { threw = true; }
+  check("a choice beat refuses to advance without an answer", threw);
 }
 
 console.log("\ndialogue adapter — tap vs spoken advance:");

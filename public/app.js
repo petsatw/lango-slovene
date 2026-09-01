@@ -766,8 +766,8 @@ async function seedTurn(audioBase64) {
 // screen. It exists so `«` can put a line back WITHOUT asking the server: /api/scene only ever walks
 // forward, and there is no beat to re-fetch — the client already holds the shaped node it played.
 let scene = { scenarioId: null, level: null, voice: null, audio: null, node: null, stalls: [], armed: false,
-              backchannel: null, pacing: null, nextLevel: null, keyPhrases: null, practice: null,
-              handoff: null, trail: [], trailAt: -1 };
+              choosing: false, backchannel: null, pacing: null, nextLevel: null, keyPhrases: null,
+              practice: null, handoff: null, trail: [], trailAt: -1 };
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -837,6 +837,7 @@ function sceneCancel() {
   sceneGen++;
   sceneClearStalls();
   scene.armed = false;
+  scene.choosing = false;
   sceneSlowPass = null;
   // An on-ramp dwell and a tutorial step are waits like any other — leaving either pending hangs the run.
   frameAdvance?.();
@@ -904,8 +905,10 @@ function scenePlaySlow(npc) {
   const chip = $("scene-slower");
   if (chip.classList.contains("blinking")) return Promise.resolve();  // a second tap is not a queue
   const gen = sceneGen;
-  // The character takes the floor back for a moment: the button says so, then returns the turn.
+  // The character takes the floor back for a moment: the button says so, then returns the turn — as the
+  // turn was, so a beat offering the learner a choice gets its options back rather than a bare Continue.
   const handed = scene.armed;
+  const phase = scene.choosing ? "choice" : "ready";
   const label = $("scene-talk-label").textContent;
   if (handed) sceneSetPhase("speaking");
   chip.classList.add("blinking");
@@ -917,7 +920,7 @@ function scenePlaySlow(npc) {
     // caption over the next node's line would be worse than not restoring it at all.
     if (gen !== sceneGen || scene.node !== npc) return;
     sceneCaption(npc.sl, { focus: npc.focusSpan });
-    if (handed && scene.armed) sceneSetPhase("ready", label);
+    if (handed && scene.armed) sceneSetPhase(phase, label);
   })();
   const gate = run.then(() => { if (sceneSlowPass === gate) sceneSlowPass = null; });
   sceneSlowPass = gate;
@@ -937,13 +940,67 @@ async function sceneAwaitSlow() {
 // The button is the one object that is always on screen and never moves; it changes PHASE instead of
 // appearing and disappearing. "speaking" wears a level meter and no words (sound is happening, and it is
 // not yours); "ready" carries the single action the learner is meant to take.
+// "choice" is the same hand-over as "ready", offered as several lines instead of one: the single button
+// steps aside and the options take its place, in its position and its shape. Both are the learner's turn,
+// so both recede the character's caption; they differ only in how many sentences the turn is worth.
 function sceneSetPhase(phase, label) {
   const btn = $("scene-talk");
+  const choosing = phase === "choice";
+  btn.hidden = choosing;
+  $("scene-choice").hidden = !choosing;
   btn.classList.toggle("speaking", phase === "speaking");
   btn.classList.toggle("waiting", phase === "ready");
   btn.setAttribute("aria-disabled", phase === "speaking" ? "true" : "false");
   if (label !== undefined) $("scene-talk-label").textContent = label;
-  sceneRecede(phase === "ready");
+  sceneRecede(phase === "ready" || choosing);
+}
+
+// The options, in the order the fact declares them. Each is a whole line, so nothing repeats them: the
+// prompt slot above holds the one line that speaks for the whole beat — what the learner is being asked to
+// do with the buttons — and it is there from the moment the turn opens. A learner meeting a control for
+// the first time should not have to fall silent before the app tells them what it is for.
+function sceneRenderChoice(npc) {
+  const box = $("scene-choice");
+  const en = $("scene-prompt-en");
+  en.textContent = npc.choice.en ?? "";
+  en.classList.remove("held");
+  $("scene-prompt").classList.toggle("bare", !!npc.choice.en);
+  $("scene-prompt").classList.toggle("shown", !!npc.choice.en);
+  $("scene-prompt").onclick = null;   // nothing here replays a line; the options are the only action
+  box.innerHTML = "";
+  for (const opt of npc.choice.options) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "scene-choice-btn";
+    const sl = document.createElement("span");
+    sl.className = "scene-choice-sl";
+    writeFocused(sl, opt.sl, opt.focusSpan);
+    const en = document.createElement("span");
+    en.className = "scene-choice-en";
+    en.textContent = opt.en;
+    btn.append(sl, en);
+    btn.addEventListener("click", () => sceneAnswer(opt.value));
+    box.appendChild(btn);
+  }
+  scene.choosing = true;
+  sceneSetPhase("choice");
+}
+
+// Pressing an option is the same act as pressing Continue — the turn moves on — and it also tells the app
+// one thing about the person, which is the only way a spoken lesson can learn one. The answer goes with
+// the step; the server stores it and answers in that form from the very next line.
+async function sceneAnswer(value) {
+  if (!scene.armed || !scene.choosing) return;
+  sceneClearStalls();
+  try { navigator.vibrate?.(10); } catch {}
+  const from = scene.node?.id;
+  scene.armed = false;
+  scene.choosing = false;
+  sceneSetPhase("speaking");
+  const ack = scene.backchannel
+    ? Promise.all([sceneSay(scene.backchannel), sleep(scene.pacing?.backchannelMs ?? 0)])
+    : null;
+  try { await sceneStep(from, ack, value); } catch (err) { obs.error(`scene: ${err.message}`); }
 }
 
 // The character's line recedes once the turn stops being his, so the only thing at full brightness is
@@ -1096,6 +1153,7 @@ async function scenePlayBeat(npc, { replay = false } = {}) {
   const live = () => gen === sceneGen;
   scene.node = npc;
   scene.armed = false;
+  scene.choosing = false;
   const cap = $("scene-caption");
   const gloss = $("scene-gloss");
   cap.classList.remove("shown", "pulse");
@@ -1107,7 +1165,10 @@ async function scenePlayBeat(npc, { replay = false } = {}) {
   // two words, and making them sit through the rest of a sentence they are not following before they
   // may ask is the opposite of help. Tapping it INTERRUPTS: the natural pass stops mid-word and the
   // slow one starts.
-  sceneChips({ slower: !!npc.slowSL, back: scene.trailAt > 0, skip: !npc.terminal });
+  // A beat that asks the learner about themselves cannot be stepped past: skipping it would leave the app
+  // to decide the answer, which is the one thing this beat exists to stop it doing. The chip dims rather
+  // than disappears, the way it does on every other beat that has nothing to offer.
+  sceneChips({ slower: !!npc.slowSL, back: scene.trailAt > 0, skip: !npc.terminal && !npc.choice });
 
   // The line lands as SOUND, then the silence is held, and only then does it become text (beats 19-22).
   // These are three steps in sequence, not three timers racing: a hold that runs concurrently with the
@@ -1168,17 +1229,24 @@ async function scenePlayBeat(npc, { replay = false } = {}) {
   await sleep(pace.handoverMs);
   await sceneAwaitSlow();     // the turn is not offered over the top of the line being said again
   if (!live()) return;
-  // What they are being asked to say — their own line, beside the button that produces it. When the turn
-  // expects no Slovene (the learner says their own name) there is no stem, and the English instruction
-  // stands on its own rather than under a bold blank.
-  const sl = npc.prompt?.sl ?? "";
-  writeFocused($("scene-prompt-sl"), sl, npc.prompt?.focusSpan);
-  $("scene-prompt-sl").hidden = !sl;
-  scenePromptGloss(npc);
-  $("scene-prompt").classList.toggle("bare", !!npc.prompt && !sl);
-  if (npc.prompt) $("scene-prompt").classList.add("shown");
-  // Same button, same place — the meter gives way to the one action being asked for.
-  sceneSetPhase("ready", "Continue");
+  if (npc.choice) {
+    // The options say the whole line each, so the prompt slot never repeats one of them: it carries the
+    // beat's own instruction instead. Showing one option a second time above the buttons would make the
+    // learner read the same sentence twice and wonder how the two relate.
+    sceneRenderChoice(npc);
+  } else {
+    // What they are being asked to say — their own line, beside the button that produces it. When the turn
+    // expects no Slovene (the learner says their own name) there is no stem, and the English instruction
+    // stands on its own rather than under a bold blank.
+    const sl = npc.prompt?.sl ?? "";
+    writeFocused($("scene-prompt-sl"), sl, npc.prompt?.focusSpan);
+    $("scene-prompt-sl").hidden = !sl;
+    scenePromptGloss(npc);
+    $("scene-prompt").classList.toggle("bare", !!npc.prompt && !sl);
+    if (npc.prompt) $("scene-prompt").classList.add("shown");
+    // Same button, same place — the meter gives way to the one action being asked for.
+    sceneSetPhase("ready", "Continue");
+  }
   if (npc.stallHandlers?.length) sceneArmStalls(npc.stallHandlers, npc);
   scene.armed = true;
 }
@@ -1186,14 +1254,15 @@ async function scenePlayBeat(npc, { replay = false } = {}) {
 // `ack` is the character's backchannel, already playing. The fetch overlaps with it, but the next line
 // must not START until it has finished — `sceneSay` stops whatever is playing, so without this the
 // "Mhm." is cut off within ~50ms and the instant-acknowledgement beat never reaches the learner at all.
-async function sceneStep(from, ack) {
+async function sceneStep(from, ack, answer) {
   // The fetch outlives a skip that lands while it is in flight, and its reply would otherwise overwrite
   // the state of the beat that superseded it.
   const gen = sceneGen;
   const res = await fetch("/api/scene", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ scenarioId: scene.scenarioId, ...(scene.level ? { level: scene.level } : {}), ...(from ? { from } : {}) }),
+    body: JSON.stringify({ scenarioId: scene.scenarioId, ...(scene.level ? { level: scene.level } : {}),
+                           ...(from ? { from } : {}), ...(answer ? { answer } : {}) }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
@@ -1363,7 +1432,8 @@ async function openScene(scenarioId, level = null) {
   // on over the lesson that replaced it.
   sceneCancel();
   scene = { scenarioId, level, voice: null, audio: null, node: null, stalls: [], armed: false,
-            backchannel: null, pacing: null, nextLevel: null, keyPhrases: null, trail: [], trailAt: -1 };
+            choosing: false, backchannel: null, pacing: null, nextLevel: null, keyPhrases: null,
+            trail: [], trailAt: -1 };
   showScreen("scene");
   $("scene-tutorial").hidden = true;
   $("scene-chips").classList.remove("tutorial");
@@ -1397,7 +1467,9 @@ function wireSceneAdvance() {
 
   const advance = async (e) => {
     e.preventDefault();
-    if (!scene.armed) return;
+    // A beat offering a choice answers through its own options; this button is off screen there, and the
+    // guard keeps a keyboard activation from advancing it without an answer.
+    if (!scene.armed || scene.choosing) return;
     sceneClearStalls();
     buzz(10);
     const from = scene.node?.id;
@@ -1430,7 +1502,9 @@ function wireSceneChips() {
     // English line, not the next beat. The frame owns the chip while it is up.
     if (frameAdvance) { frameAdvance(); return; }
     const from = scene.node?.id;
-    if (!from || scene.node.terminal) return;
+    // A beat that asks the learner about themselves has no "next line" to skip to that would be honest —
+    // the line after it is said in the form of the answer they have not given.
+    if (!from || scene.node.terminal || scene.node.choice) return;
     sceneCancel();
     // Both chips go dark until the next beat lights them again. A second tap landing while the step is
     // still in flight would cancel the beat it just asked for — the line would be cut a few frames in

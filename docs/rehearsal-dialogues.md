@@ -106,11 +106,22 @@ the feature is optional per scenario.
   Backgrounds are **operator-supplied** art (there is no generator for them) named `<scenario>-<level>.jpg`
   or a descriptive name, committed under `public/backgrounds/` (a git-tracked path — they ship normally).
   It is a per-level field on the reconcile input and is **preserved across reconcile re-runs**.
+  - **A background shows the dialogue's own cast.** In a tapped tree the client is a **character** with a
+    gender chosen by the scenario and matched by its cast voice (see
+    [client-as-character](#learner-facts--what-the-course-knows-about-the-person) — a spoken lesson is the
+    other case, where the client is the learner). The picture has to agree with the voices, because it is
+    on screen for the whole exchange.
+    **Open:** `public/backgrounds/bakery.jpg`, used by all three bakery levels, has Slavko at the counter
+    as the customer, while the bakery client speaks feminine forms and is cast `female-speaker` — the
+    customer should be a woman. A re-render would also drop the gibberish lettering on the shirt.
+    Rendering it is **operator-gated** (AGENTS.md › Conventions).
 - **`introduces`** is the list of catalog **learnable** ids this level introduces — the concrete
   "what was just introduced" set. It is the seam that makes the click-through the *primary intro path*:
   the learner meets these items in the tree, then the [handoff](#the-handoff--introduce-then-reinforce)
   hands them into a free chat biased toward exactly this set. Validated at startup (every id must resolve
   in the catalog) and gated by `npm run lint:dialogue`. See [the catalog link](#the-catalog-link--deriving-learnables-from-a-dialogue).
+- **`choice`**, **`variesBy`/`variants`** (node) and **`needs`** (level) belong to
+  [learner facts](#learner-facts--what-the-course-knows-about-the-person), below.
 
 ## Tapped vs spoken — one tree, two input modes
 
@@ -152,6 +163,138 @@ button, and no chrome (the header is hidden while it is up). It is driven by
 file; `lint:tree` checks the two agree, exactly as it does for `voices`. Absent ⇒ `"tap"`, so every
 dialogue authored before the field keeps its behaviour. In `"audio"` mode `lint:tree` drops its
 "single choice" warning — a spoken spine is linear by design.
+
+**The spine is the whole tree, and `lint:tree` enforces that.** A spoken lesson follows `next[0]`, so a
+node hanging off `next[1..]` is content the app cannot reach: authored, schema-valid, **billed for a
+clip**, and never played. Reachability by graph edge says nothing about it, which is how a whole feminine
+arm of the demo lesson — seven nodes — once shipped with every gate green. `lint:tree` now walks `root`
+by `next[0]` alone and errors on anything it misses, and `reconcile-dialogue` runs the same walk before it
+writes a file. Where a spoken lesson genuinely needs two versions of a line, they belong in that line's
+[`variants`](#learner-facts--what-the-course-knows-about-the-person), which keep one spine and one clip
+per form the learner can actually reach.
+
+## Learner facts — what the course knows about the person
+
+`learnables` is what the learner can **say**. A **fact** is what the learner **is** — one answer the
+language needs before it can address them or put words in their mouth. Slovene asks for the first of these
+in the opening minute: it inflects person-nouns, predicate adjectives and the l-participle (which carries
+the past, the future and the conditional) for the speaker's own gender, so *Sem študent* and *Sem
+študentka* are the same sentence said by two people, and the course has to know which.
+
+Facts are declared in **`server/catalog/facts.json`** and loaded by
+[`server/facts.ts`](../server/facts.ts) — an id, an English label, why the course needs it, and a closed
+**ordered** set of answers. Declaring them centrally is what lets one lesson ask and a later lesson vary
+without either restating the option set. They are stored on the durable learner model
+(`LearnerModel.facts`, `assets/learner.json`): one learner, one device, no accounts, and the person who
+gave the answer is the only person it describes.
+
+### Asking — the `choice` beat
+
+A spoken lesson has one input channel: the button that says "I am ready to move on". Nothing listens to
+the learner, so a lesson can ask "which of these are you?" and hear nothing back. A **`choice`** on an npc
+node is the channel that answers it:
+
+```jsonc
+"n3": { "speaker": "npc", "sl": "Ti si študent ali študentka?",  // both forms heard together, first
+        "en": "Are you a student (male) or a student (female)?", "next": ["n4"] },
+"n4": { "speaker": "npc", "sl": "Jaz sem učitelj. In ti?", "en": "I'm the teacher. And you?",
+        "choice": { "fact": "gender" }, "next": ["c1"] },
+"c1": { "speaker": "client", "sl": "Sem študent.", "en": "I'm a student. (male)",
+        "chooseEN": "Choose which one best suits you.\n(We'll learn more about gender later.)",
+        "focusSpan": "Sem študent",
+        "variesBy": "gender",
+        "variants": { "f": { "sl": "Sem študentka.", "en": "I'm a student. (female)",
+                             "focusSpan": "Sem študentka" } },
+        "next": ["n6"] },
+```
+
+The beat hands the turn over as **one button per answer** instead of one Continue, in the same place and
+the same shape, and each button carries a whole line the learner can say — the Slovene at prompt weight
+with its English beneath. Pressing one is the same gesture as pressing Continue; it advances the spine and
+stores the answer. That is the entire affordance, and it is why the beat needs no instruction: a learner
+meeting it has already pressed that button a dozen times.
+
+**The beat that asks is an ordinary conversational turn.** The character says both forms once, so the pair
+is heard together and contrasted, and then hands over by **reciprocity** — *Jaz sem učitelj. In ti?*, the
+commonest handover there is — rather than by putting a question to the learner. The buttons already say
+what the two answers are, so the line above them does not have to; making it *"which are you?"* would spend
+the lesson's most useful turn on a quiz. `In ti?` is also the same handover the lesson reuses for the
+learner's name and again at its close, so asking here teaches a shape instead of consuming one.
+
+The options are **derived**, never authored twice: the fact supplies the answers and their order, and each
+button's words come from the upcoming client node rendered for that answer. The question and its answers
+are therefore one authored thing. The loader checks the whole join — the fact exists, the beat hands over
+to a client node, that node varies on the same fact, and the answers put a different sentence on each
+button.
+
+**`chooseEN` is the beat's own English**, one line above the options, on screen from the moment the turn
+opens. It sits on the **client** node because it stands in for that line's gloss: the line has several
+forms here, so the prompt slot cannot show one of them without contradicting the other. Each option keeps
+its own `en` on its own button; this is the single line that speaks for the whole beat, and a `\n` in it
+reaches the screen as a line break. It is shared by every form, so it is not something a variant overrides.
+
+It also **replaces the `soften` stall rung** on a beat that asks, and the loader rejects one there. That
+rung lowers the bar by relabelling the single button, and a beat that asks has options instead of a
+button — but more to the point, its English would say what `chooseEN` already says, ten seconds later. A
+choice beat's English is authored in one place, and it is the place that shows immediately: a learner
+meeting a new control should not have to fall silent to find out what it is for. `pulse` and `respeak`
+still apply.
+
+Two more things hold because the answer is the learner's alone. The `»` skip control is **dimmed**
+(`sceneChips` reads the beat's `choice`), and `advanceDialogue` **refuses** to step without an answer —
+the same rule stated on screen and behind the API, so the app never decides a fact about someone on their
+behalf.
+
+### Varying — `variesBy` and `variants`
+
+Any node may say its line differently depending on a fact. `variants` maps a fact **value** to text
+overrides; an answer with no entry keeps the line as authored, so the base is the unmarked form and only
+what differs is written out. A variant may override **text only** (`sl`, `en`, `deliverySL`, `slowSL`,
+`deliverySlowSL`, `focusSpan`) — the turn, the `next` and the `learnables` belong to the beat and are
+shared by every form of it. `resolveNode` (in [`server/dialogues.ts`](../server/dialogues.ts)) is the one
+place a form is chosen, and `/api/scene` resolves every line through it before sending, so the renderer
+holds no variant logic and the caption, the audio key and the prompt cannot drift apart.
+
+Two invariants that hold **per form**, not per node, because each form is its own caption and its own
+audio key:
+
+- `focusSpan` must occur exactly once in **that form's** `sl`. A variant that rewrites `sl` must state its
+  own span: the match is a substring, and two forms of a word usually share a stem, so an inherited
+  `"Sem študent"` sits inside `"Sem študentka."` and would mark two thirds of a word while passing.
+- `slowSL` must differ from **that form's** `sl`.
+
+### Where a variant costs a recording
+
+This is the whole economics of the feature, and the reason the authoring skill asks for **few** forked
+character lines:
+
+| line | second recording? |
+|---|---|
+| the character about **himself** — *Jaz sem učitelj* | **no.** His gender is fixed; nothing varies. |
+| the **learner's own lines** in a spoken lesson | **no.** A spoken scene voices only the character, so a client variant is a second caption and no clip at all. |
+| the character **addressing the learner** — *Ti si študentka.* | **yes.** The one case that forks a clip — natural and slow, so two. |
+
+Adding a variant never disturbs an existing clip: the audio key is `(provider, voiceTag, text)`, so
+different text is automatically a different key. `build:dialogue-assets` builds **every** form, and
+`lint:audio` checks every form — a level is `"ready"` only once every learner it can meet has a voice.
+The alternative to the third row is real: *Kaj si?* instead of *Ti si študentka?*, *Tako je!* instead of
+echoing their noun back. Those cost nothing and should carry most beats. But the affirming echo — the
+character saying the learner's own word back to them — is one of the highest-value input moments a lesson
+has, so "keep them few" is a budget, not a ban.
+
+### Knowing before speaking
+
+**A voice never says a gendered form about the learner before the learner has said which one they are.**
+`lint:tree` makes that checkable: it walks the spoken spine in order and a line may vary on a fact only
+once the fact has an answer — asked earlier on that spine, or declared in the level's **`needs`**:
+
+```jsonc
+"needs": ["gender"],   // an earlier lesson asked; this one may vary without stopping to ask again
+```
+
+`needs` is what lets the onboarding lesson own the question and every later lesson inherit the answer. It
+is also the record of which lesson has to come first: reaching a level whose needs are unanswered plays
+the base form of every line.
 
 ## Backchannels — a voice's listening noises
 
@@ -235,8 +378,19 @@ synthesizing **`deliverySL ?? sl`**. On a level with no failures it flips that l
 forces a re-roll after a delivery note changes. Same content-addressed store, keys, and dedup as the rest
 of the [asset pipeline](asset-pipeline.md) — a line identical in the same voice is one clip anywhere.
 
-> The live-synth fallback in `/api/speak` (a cache miss) uses the plain `sl`, not `deliverySL` — so
-> pregenerate before shipping if the delivery direction matters.
+Every **form** of every line is built: the line as authored, plus one per
+[variant](#learner-facts--what-the-course-knows-about-the-person). Each form is different text, so each is
+its own key and its own clip.
+
+> **Keep a level at `audio: "pending"` while you are developing against it.** This is not only about
+> billing. `/api/speak` live-synthesizes on a cache miss — it must, since the live tutor's text is
+> unpredictable — streams the result, and **persists it under the same key the pregenerated build uses**.
+> But it synthesizes the plain `sl`, with no `deliverySL` direction. The real build then finds a cache hit
+> and skips the line, so the delivery tags never land and the clip that is seated there permanently is the
+> undirected one. A `"pending"` level costs nothing and cannot do this: the renderer's gate is
+> `if (scene.audio !== "ready") return` ([`public/app.js`](../public/app.js), `sceneSay`), so the scene
+> plays silent, faster, and makes no network call at all. Flip to `"ready"` only after
+> `build:dialogue-assets`.
 
 The **intro** monologue clips are a separate build (the line builder above deliberately skips them):
 
@@ -353,6 +507,13 @@ same `kruh` the learner has been building all along.
   inflected. A line in the register the entry is not cited in is reuse, not unminted language.
   Plural that is genuinely **plural** is untouched by this: `Ali ste odprti?` addresses a business and its
   staff, so it stays plural — the rule is about vi-as-politeness, not about the plural.
+- **The slash in a citation form marks an alternation — read which one it marks.** It carries at least
+  three: **gender** (`študent / študentka`, `Rad / Rada bi ___.`, `Koliko sem dolžen / dolžna?` — 12
+  entries), **preposition** (`Grem v / na ___.`, `v_na_lok`, `z_s_instr`), and **number or agreement**
+  (`na_sliki` *je / so*, `trije_stirje`, `stevilo_enote_desetice`). A gendered pair is deliberately **one**
+  learnable: the two forms are one lexical item, and choosing between them is exactly the `predictableError`
+  the entry records. Deriving "this is gendered" from the presence of a slash gets six entries wrong — read
+  the gloss.
 
 ### Register a new scenario — the checklist
 

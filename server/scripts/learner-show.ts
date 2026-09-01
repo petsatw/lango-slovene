@@ -4,12 +4,29 @@
 import "dotenv/config";
 import * as learner from "../assets/learner";
 import { inspect } from "../mastery";
+import { FACTS } from "../facts";
 
-const view = inspect(learner.load());
+const model = learner.load();
+const view = inspect(model);
 const { owned, shaky, unseen } = view.counts;
 
 console.log(`Learner model — threshold ${view.threshold}`);
 console.log(`  owned ${owned} · shaky ${shaky} · unseen ${unseen}`);
+
+// What the course knows about the PERSON, beside what they can say. It decides which form of a line they
+// are shown and hear (server/facts.ts), so an operator reading a lesson back needs it in the same view.
+const answered = Object.entries(model.facts);
+console.log(`\nAbout the learner`);
+if (answered.length === 0) {
+  console.log(`  (nothing asked yet — every line plays in its base form)`);
+} else {
+  for (const [id, value] of answered) {
+    const fact = FACTS[id];
+    const label = fact?.values.find((v) => v.value === value)?.label ?? value;
+    console.log(`  ${id.padEnd(18)} ${label}  (stored as "${value}")`);
+  }
+}
+console.log("");
 if (view.learnables.length === 0) {
   console.log("  (no learnables practised yet)");
 } else {

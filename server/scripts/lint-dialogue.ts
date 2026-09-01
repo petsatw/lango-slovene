@@ -18,6 +18,7 @@
 // Exit code 0 = pass, 1 = at least one integrity error (so the authoring procedure can gate on it).
 
 import { normSurface, isSynthesized } from "./dialogue-lib";
+import { nodeForms } from "../dialogues";
 
 async function main() {
   const errors: string[] = [];
@@ -37,6 +38,13 @@ async function main() {
     console.error(`❌ failed to load catalog/dialogues: ${err?.message}`);
     process.exit(1);
   }
+
+  // Every line a dialogue actually puts on screen or into the synthesizer: one row per node, plus one per
+  // variant of a node whose wording depends on a learner fact. Both checks below reason about clips, and a
+  // variant is a clip like any other — checking the base alone would let a fork drift or collide unseen.
+  const nodeLines = (d: LintDialogue): Array<[string, LintNode, string]> =>
+    Object.entries(d.nodes ?? {}).flatMap(([nid, n]) =>
+      nodeForms(n as any).map(({ value, node }) => [nid, node as unknown as LintNode, value] as [string, LintNode, string]));
 
   // 1. Dup canonical sl across the whole learnable catalog.
   const bySurface = new Map<string, string[]>();
@@ -72,10 +80,11 @@ async function main() {
   //     happens is an edit that lands on `sl` and misses `deliverySL` beside it.
   const stripTags = (s: string) => s.replace(/\[[^\]]*\]/g, " ").replace(/\s+/g, " ").trim();
   for (const d of dialogues) {
-    for (const [nid, n] of Object.entries(d.nodes ?? {})) {
+    for (const [nid, n, value] of nodeLines(d)) {
+      const at = `${d.id}:${nid}${value ? `:${value}` : ""}`;
       const lines: { sl: string; delivery?: string; where: string }[] = [
-        { sl: n.sl, delivery: n.deliverySL, where: `${d.id}:${nid}` },
-        ...(n.slowSL ? [{ sl: n.slowSL, delivery: n.deliverySlowSL, where: `${d.id}:${nid}:slow` }] : []),
+        { sl: n.sl, delivery: n.deliverySL, where: at },
+        ...(n.slowSL ? [{ sl: n.slowSL, delivery: n.deliverySlowSL, where: `${at}:slow` }] : []),
       ];
       for (const l of lines) {
         if (!l.delivery) continue;
@@ -91,7 +100,7 @@ async function main() {
   //    the line textually distinct where a character needs its own delivery.
   const byClip = new Map<string, { where: string; say: string; voice: string; sl: string }[]>();
   for (const d of dialogues) {
-    for (const [nid, n] of Object.entries(d.nodes ?? {})) {
+    for (const [nid, n, value] of nodeLines(d)) {
       const voice = d.voices?.[n.speaker];
       if (!voice || !n.sl) continue;
       // A node that is never synthesized owns no clip, so it cannot collide with one. Without this a
@@ -100,9 +109,10 @@ async function main() {
       // Every clean line this node owns is its own clip: the line itself, its chunked-slow re-speak, and
       // each stall handler. They share one key space, so a stall line that matches a node line in the
       // same voice is the same collision the warning below exists for.
+      const at = `${d.id}:${nid}${value ? `:${value}` : ""}`;
       const lines: { sl: string; say: string; where: string }[] = [
-        { sl: n.sl, say: n.deliverySL ?? n.sl, where: `${d.id}:${nid}` },
-        ...(n.slowSL ? [{ sl: n.slowSL, say: n.deliverySlowSL ?? n.slowSL, where: `${d.id}:${nid}:slow` }] : []),
+        { sl: n.sl, say: n.deliverySL ?? n.sl, where: at },
+        ...(n.slowSL ? [{ sl: n.slowSL, say: n.deliverySlowSL ?? n.slowSL, where: `${at}:slow` }] : []),
       ];
       for (const l of lines) {
         const key = `${voice} :: ${l.sl}`; // clip identity: same (voice, clean sl) => same audio key

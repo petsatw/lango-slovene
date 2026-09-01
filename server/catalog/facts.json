@@ -1,0 +1,12 @@
+{
+  "facts": {
+    "gender": {
+      "label": "The learner's own grammatical gender",
+      "why": "Slovene inflects person-nouns, predicate adjectives and the l-participle (which carries the past, the future and the conditional) for the speaker's own gender. From the first lesson onward, every sentence a learner says about themselves takes one of two forms.",
+      "values": [
+        { "value": "m", "label": "masculine" },
+        { "value": "f", "label": "feminine" }
+      ]
+    }
+  }
+}

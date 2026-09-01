@@ -30,7 +30,7 @@ function check(name: string, cond: boolean, detail = ""): void {
 }
 
 function fresh(): LearnerModel {
-  return { learnables: {}, updatedAt: "t0" };
+  return { learnables: {}, facts: {}, updatedAt: "t0" };
 }
 function got(m: LearnerModel, id: string) {
   const e = m.learnables[id];

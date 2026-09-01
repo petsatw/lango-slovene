@@ -39,6 +39,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { getE3 } from "../adapters/index";
 import * as store from "../assets/store";
+import { nodeForms } from "../dialogues";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..", "..");
@@ -154,8 +155,14 @@ for (const f of files) {
 
   for (const [id, n] of Object.entries<any>(d.nodes ?? {})) {
     if (n.speaker !== "npc") continue; // client lines are the learner's own — never synthesized
-    checkClip(d, id, "sl", npcProfile, n.sl);
-    if (n.slowSL) checkClip(d, id, "slowSL", npcProfile, n.slowSL);
+    // Every FORM of the line: as authored, plus one per variant. A character line that varies on a learner
+    // fact is two recordings, and a level with only one of them plays silent for half its learners — the
+    // exact failure this lint exists for, hidden behind a form the operator's own run never took.
+    for (const { value, node } of nodeForms(n)) {
+      const suffix = value ? `:${value}` : "";
+      checkClip(d, id, `sl${suffix}`, npcProfile, node.sl);
+      if (node.slowSL) checkClip(d, id, `slowSL${suffix}`, npcProfile, node.slowSL);
+    }
   }
 
   // The spoken scene's backchannel ("Mhm.") is fired the instant the learner releases — it is the beat

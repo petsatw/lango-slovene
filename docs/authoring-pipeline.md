@@ -89,8 +89,12 @@ is gitignored, a worklist to be folded into the a1-map and spent.
   "levels": [
     { "level": 1, "levelLabel": "Survival", "title": "…", "background?": "cafe-1.jpg",
       "objectives": [ { "label", "descriptorEN" } ],
+      "needs?": ["gender"],          // learner facts an EARLIER lesson already asked for
       "root": "n1",
-      "nodes": { "n1": { "speaker": "npc", "sl": "…", "en": "…", "deliverySL?": "[warmly] …", "next": ["c1a","c1b"] } },
+      "nodes": { "n1": { "speaker": "npc", "sl": "…", "en": "…", "deliverySL?": "[warmly] …", "next": ["c1a","c1b"],
+                         "choice?": { "fact": "gender" },   // npc: this beat ASKS the learner for one fact
+                         "variesBy?": "gender",             // this line's wording depends on that fact
+                         "variants?": { "f": { "sl": "…", "en": "…", "focusSpan": "…" } } } },
       "catalog": { "reuse": ["rad_bi"], "new": [ { "id": "…", "kind": "vocabulary|chunk|pattern", "sl": "…",
                                                   "gloss": "…", "predictableError?": "…" } ] } }
   ],
@@ -177,7 +181,8 @@ kept dormant, not deleted; not invested in for the MVP). No big-bang refactor of
 |---|---|---|
 | `npm run reconcile:dialogue -- <input>` | L | merge delta + write dialogue files + manifest + emit A1 candidates (idempotent, fail-loud) |
 | `npm run lint:dialogue` | L | dialogue↔catalog seam: no duplicate canonical `sl`, `introduces` resolves, coverage |
-| `npm run lint:tree` | L | tree structure: root-npc, reachable, terminating, manifest-consistent; lists convergence nodes to review |
+| `npm run lint:tree` | L | tree structure: root-npc, reachable, terminating, manifest-consistent; for a spoken lesson also every node on the `next[0]` spine and every learner fact answered before a line varies on it; lists convergence nodes to review |
 | `npm run lint:a1` | L | A1-map ref-integrity (gate) + a band/coverage readout; the curated core is grown by promotion, never force-filled (see dialogue-difficulty-model.md) |
 | `npm run test:dialogue` | L | dialogue loader schema + `introduces` referential integrity |
-| `npm run build:dialogue-assets -- <id>` | G | **operator** — synth per-speaker audio; preflight; flips level `audio` → ready |
+| `npm run lint:audio` | L | every `"ready"` level has the bytes for every form of every character line (`--shipped` asks the branch) |
+| `npm run build:dialogue-assets -- <id>` | G | **operator** — synth per-speaker audio, every form of every line; preflight; flips level `audio` → ready |
