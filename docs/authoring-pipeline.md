@@ -56,6 +56,7 @@ The pipeline order makes the couplings safe by construction:
 
 ```
 author (provisional ids, rubric-clean delta)
+  → read as a conversation (spoken lessons: per-beat findings from a reader given only the script)
   → critic (structured addressed fixes: {level,nodeId,field,oldExact,newExact})
     → reconcile: dedup/collision guard → assign canonical ids → merge → normalize kind (fail-loud)
                  → apply fixes (exact, idempotent) → write dialogue files + manifest + catalog → emit A1 candidates
@@ -71,6 +72,9 @@ Skill: **`.claude/skills/create-dialogue/SKILL.md`** (the J-lane orchestrator). 
 objective), **`learning-designer`** (picks which of the three gets built, and what to take from the
 others), **`slovenian-author`** (dialogue mode — writes the Slovene per node + the catalog delta) and
 **`scenario-critic`** (dialogue mode — judges naturalness/register/branch coherence, emits structured fixes).
+Between those last two, a spoken lesson is read as a conversation by
+**`.claude/skills/review-lesson-script/SKILL.md`** — `npm run script:lesson` prints the draft as talk in a
+room, and a reader given only that page returns per-beat findings the critic then rules on.
 Script: **`server/scripts/reconcile-dialogue.ts`**. Gates: `lint:dialogue`, `lint:tree`, `lint:a1`,
 `test:dialogue`. Generation: `build:dialogue-assets` (operator).
 

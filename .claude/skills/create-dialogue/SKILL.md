@@ -22,7 +22,8 @@ voice/env matrix) before you start — they are authoritative and win over anyth
 
 - **J — Judgment (content):** the scene, the per-level objectives, the branching graph (ids + who speaks +
   the English intent per node + where branches re-converge), and **every word the learner reads or hears**.
-  Done by `lesson-designer` ×3, `learning-designer`, `slovenian-author` (LS) and `scenario-critic`.
+  Done by `lesson-designer` ×3, `learning-designer`, `slovenian-author` (LS), `review-lesson-script` and
+  `scenario-critic`.
 - **L — Logic:** id assignment, catalog merge, `introduces` computation, file writes, the structural +
   catalog + a1 lints. Done by **scripts** (`reconcile-dialogue`, `lint:*`), never by hand.
 - **G — Generation:** per-speaker audio bytes. `build:dialogue-assets` / `build:dialogue-intros` —
@@ -30,8 +31,9 @@ voice/env matrix) before you start — they are authoritative and win over anyth
   `audio: "pending"` out of this skill, every run.
 
 **Golden rule:** the designers propose how the lesson teaches; the learning-designer returns the design
-that gets built, complete; C transcribes it and moves it through the pipeline; LS writes the language; the
-reconcile assembles/mints/writes; R approves and generates.
+that gets built, complete; C transcribes it and moves it through the pipeline; LS writes the language; a
+reader hears it as a conversation; the critic rules; the reconcile assembles/mints/writes; R approves and
+generates.
 
 ### The two things C owns, and the line that separates them from J
 
@@ -252,7 +254,8 @@ What each role does with it — say which, in that role's brief:
 | `lesson-designer` (2a) | picks a scene that passes it, and applies the visual exception |
 | `learning-designer` (2b) | keeps the merged design passing it — a beat grafted from another design is where this breaks |
 | `slovenian-author` (3) | writes lines in which people say what they are doing, and hands over cleanly |
-| `scenario-critic` (5) | runs the eyes-shut test and returns what fails it |
+| `review-lesson-script` (4b) | runs the eyes-shut test — it is given the lesson with the eyes already shut |
+| `scenario-critic` (5) | weighs what that reading found against everything else it can see |
 
 `lesson-designer` already carries the eyes-shut test in its own definition. The quotation is still the
 brief's first block: it is the one standard all four roles are held to, and it is stated once, here.
@@ -625,11 +628,37 @@ can state a specific, addressed note ("`c3`'s `sl` is `vi` in a `ti` register").
 precisely goes forward untouched — stage 5's critic is the judge, and a vague note from C is C editorializing
 content.
 
+### 4b — Read it as a conversation (J → `review-lesson-script`) — spoken levels only
+
+The lesson now exists as lines. Before anyone judges it against a standard, someone reads it the way the
+student meets it: as talk in a room, with nothing else.
+
+Write the levels into the draft reconcile input now — the `scenario` header, `dialogueVoices`,
+`dialogueAdvance`, and each level's `level`, `title`, `root` and `nodes`. This is the same file stage 6
+completes; it is filled in two passes because the reading needs the nodes and the reading should happen
+before the critique. Then invoke **`review-lesson-script`** per level:
+
+```bash
+npm run script:lesson -- --from .scratch/dialogue-drafts/<scenarioId>/reconcile-input.json --level <n>
+```
+
+Run the reader once per answer to any fact the level asks or declares in `needs` (`--as gender=f`), because
+each answer is a different student hearing a different conversation. Keep each report whole — the per-beat
+lines and the findings — and carry it into stage 5.
+
+**C does not act on the report.** It is evidence for the critic, not a verdict, and C re-dispatching LS off
+the back of it would be C steering content. The one exception is the routing rule already in force at stage
+4: a specific, addressed note goes back to LS as itself.
+
+A **tapped** tree skips this stage. Its student reads as much as listens, and the tool prints one arm of a
+branching tree — a partial page the reader would judge as if it were the whole lesson.
+
 ### 5 — Independent critique (J → critic)
 
 Dispatch **`scenario-critic`** (dialogue mode) over ALL levels' trees + deltas at once. For a spoken level
 the brief opens with **the audio-only brief**, quoted verbatim, naming what this role decides with it: the
-critic runs the eyes-shut test and returns what fails it. It then carries **writing for two learners**,
+eyes-shut test has already been run for the critic by stage 4b, and the critic weighs what it found against
+everything else it can see. It then carries **writing for two learners**,
 quoted verbatim: the critic names every character line that varies and says for each whether it earns its
 second recording. Its own definition carries the adjacent spoken
 axes (load asymmetry, the prompt-is-the-client-line rule, the stall ladder, the on-ramp, slow lines, chunk
@@ -649,15 +678,23 @@ mint/reuse problems. If a `deltaFinding` is `block`, route it back to LS (stage 
   situation? That single question catches what a structural gate never will — greeting a stranger he has
   already met, announcing a language he obviously speaks, a learner re-introducing themselves to someone
   who knows them.
-- **Written for the ear:** run the eyes-shut test from the audio-only brief at the head of this dispatch.
-  Does every beat make sense from the words alone, and at each hand-over is it clear that the turn is the
-  learner's and what they should say? Return what fails it as a fix or a note; a beat that needs looking at
+- **Written for the ear — rule on stage 4b's reading.** Quote the whole report into the brief, each level's
+  under that level, and say what it is: someone who was given this lesson as talk in a room and nothing
+  else. That reading is the eyes-shut test, already run; the critic's job is to say what follows from it.
+  Rule on **every** beat the report marked `friction` or `broken` — return a fix where the lines can be
+  changed, a note where the finding is real and the fix is a design decision above this stage, and a
+  reasoned dissent where the reading is wrong. A finding left unmentioned reads as agreement and gets lost.
+  Where a fix lands, say what it does for the beat, not just for the sentence: a beat that needs looking at
   is a lesson to change, not a caption to add.
+  The report is **evidence, not a verdict** — it is one reader who saw only the words, so it cannot see the
+  heard-first ladder, the catalog, or the recording budget. Where it flags something the other checks
+  below explain, say so and let the finding go. Where it flags something they do not, it stands.
 - **The on-ramp:** does `frameEN` frame *this* lesson — not lessons in general? Does it promise anything
   the level does not deliver? Is every line legible to someone who has never seen the app?
-- **Both learners get the lesson:** read the level through twice, once as each answer to any fact it asks
-  or declares in `needs`. Does every beat still follow? Is every character line that varies worth the
-  recording it forks, and is every one that does **not** vary correct for both learners? A line that
+- **Both learners get the lesson:** stage 4b read the level through once as each answer, so whether both
+  conversations follow is already in the report. What is left here is cost and correctness: is every
+  character line that varies worth the recording it forks, and is every one that does **not** vary correct
+  for both learners? A line that
   addresses the learner in one gender without varying is the failure this check exists for.
 - **The gloss is the meaning:** every client `en` is that line's translation and nothing else — the sole
   exception is a turn with no Slovene stem. Where an `en` *instructs* — quotes a Slovene fragment back, says
@@ -669,8 +706,10 @@ mint/reuse problems. If a `deltaFinding` is `block`, route it back to LS (stage 
 
 ### 6 — Assemble the reconcile input (L, C)
 
-Write the reconcile input (draft path while unapproved; shape in docs/authoring-pipeline.md › The reconcile
-input contract, and the header comment of `server/scripts/reconcile-dialogue.ts`):
+Complete the reconcile input (draft path while unapproved; shape in docs/authoring-pipeline.md › The
+reconcile input contract, and the header comment of `server/scripts/reconcile-dialogue.ts`). For a spoken
+scenario its header and its nodes are already in place from 4b — this stage fills in the rest and folds the
+critic's fixes onto what is there:
 
 - the `scenario` header
 - `dialogueVoices`
@@ -794,6 +833,9 @@ Present R:
 - the **clip budget** from `lint:audio`: re-keys vs new synthesis
 - any `lint:dialogue` delivery-collision warnings and how they were resolved
 - the convergence nodes the critic reviewed
+- **how the lesson read as a conversation** (spoken levels): stage 4b's findings and what the critic did
+  with each — fixed, noted, or dissented from. R is being asked to approve a lesson someone will sit
+  through, so what a first reading of it caught belongs in front of them
 - any floor note from 2c
 - the green lint/test output
 - the register + voices, stated explicitly, with an invitation to confirm or override
