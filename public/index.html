@@ -62,6 +62,13 @@
     </button>
     <p class="hint">Hold the button, speak (English + Slovenian is fine), then release.</p>
     <button id="play-fallback" class="play-fallback" hidden>▶ Tap to hear the tutor</button>
+    <!-- Go live — the continuous-speech surface. The mic stays open, the tutor answers while you are
+         still listening, and you can talk over it. Internal testing only: it needs an access code and
+         it meters a vendor by the minute, unlike everything else on this screen. -->
+    <div class="live-bar">
+      <button id="go-live" class="live-btn" type="button">🎙 Go live</button>
+      <span id="live-state" class="live-state"></span>
+    </div>
   </main>
 
   <!-- SPOKEN SCENE — the first-meeting surface. Full-bleed image, the character, a caption low on

@@ -24,6 +24,7 @@
     "build:alignments": "tsx server/scripts/build-alignments.ts",
     "build:backchannels": "tsx server/scripts/build-backchannels.ts",
     "prompts": "tsx server/scripts/show-prompts.ts",
+    "prompt:live": "tsx server/scripts/live-prompt.ts",
     "script:lesson": "tsx server/scripts/lesson-script.ts",
     "playthrough:lesson": "tsx server/scripts/lesson-playthrough.ts",
     "lint:scenario": "tsx server/scripts/lint-scenario.ts",
@@ -43,11 +44,13 @@
   "dependencies": {
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "jimp": "^1.6.1"
+    "jimp": "^1.6.1",
+    "ws": "^8.21.3"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.9.3",
+    "@types/ws": "^8.18.1",
     "playwright": "^1.62.1",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"

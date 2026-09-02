@@ -3,6 +3,8 @@
 // The live tutor is the single production surface (push-to-talk → /api/converse). Rehearsal trees are
 // exposure only (no mic, no credit). The "engine" stays invisible everywhere except A1 Readiness.
 
+import { startLive, stopLive, liveActive, onLive } from "/live.js";
+
 const $ = (id) => document.getElementById(id);
 const obs = {
   state: (s) => ($("obs-state").textContent = s),
@@ -27,6 +29,7 @@ let seedActive = false;      // the zero-state tutorial is running through the s
 let chatRole = null;         // free chat: the role the tutor pinned this session (carried back each turn)
 let chatFocus = [];          // free chat: learnable ids to bias this session toward (set by a rehearsal handoff)
 let chatContext = null;      // free chat: the scene the learner arrived from (situation + practiced objectives)
+let chatLessonId = null;     // go-live: which lesson's plan the realtime tutor works (set by a rehearsal handoff)
 let runId = null;            // unique id for THIS free-chat session — groups its turns into one replayable record
 
 // ---- Screen router — one screen visible at a time; the tree + obs are overlays on top. ----
@@ -635,15 +638,84 @@ function reinforceFromDialogue() {
   const practiced = (dialogue && dialogue.objectives) ? dialogue.objectives.map((o) => o.descriptorEN) : [];
   const context = scene ? { scene: `${scene} — ${dialogue.title}`, practiced } : null;
   const role = currentScenario ? (currentScenario.role || null) : null;
+  const lessonId = dialogue ? dialogue.id : null;
   closeDialogue();
-  openTutor({ focus, role, context });
+  openTutor({ focus, role, context, lessonId });
 }
+
+// ---- Go live: continuous speech against a vendor's realtime model, on the SAME screen as push-to-talk
+// so the two can be compared with the same lesson in front of the same learner. The mic contention is
+// real — both want it — so the two never run at once, and the talk button is disabled while live. ----
+// The bake-off needs the SAME lesson run twice against two vendors, so a tester can name both in the
+// URL (?lesson=restaurant-l1&provider=grok) rather than rehearsing their way back to the same place.
+// The provider is honoured server-side for testers only; a learner arriving normally names neither and
+// gets the lesson they just rehearsed on whichever provider is configured.
+const liveParams = new URLSearchParams(location.search);
+
+async function toggleLive() {
+  const btn = $("go-live");
+  if (liveActive()) {
+    stopLive();
+    return;
+  }
+  const lessonId = liveParams.get("lesson") || chatLessonId;
+  if (!lessonId) {
+    $("live-state").textContent = "rehearse a lesson first, or add ?lesson=<id>";
+    return;
+  }
+  // One shared code for the internal group. Kept in localStorage so a tester types it once; it is a
+  // gate on metered vendor minutes, not a login, and it protects no learner data.
+  let code = localStorage.getItem("liveAccessCode");
+  if (!code) {
+    code = window.prompt("Access code for the live tutor:") || "";
+    if (!code) return;
+    localStorage.setItem("liveAccessCode", code);
+  }
+  btn.disabled = true;
+  $("talk").disabled = true;
+  $("live-state").textContent = "connecting…";
+  try {
+    await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined });
+    btn.textContent = "■ End live";
+  } catch (err) {
+    // A rejected code is the one failure worth un-remembering, or the tester is stuck retrying it.
+    if (/forbidden/i.test(err.message)) localStorage.removeItem("liveAccessCode");
+    $("live-state").textContent = err.message;
+    $("talk").disabled = false;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+onLive("transcript", (msg) => {
+  addBubble(msg.role === "user" ? "user" : "tutor", msg.text, "");
+});
+// An error is always followed by the session ending, so "ended" must not wipe the reason off the
+// screen — otherwise every failure looks identical to a clean finish, which is the one thing a tester
+// comparing two vendors cannot afford.
+let liveError = null;
+
+onLive("state", (status) => {
+  if (status === "ended") {
+    $("live-state").textContent = liveError ? `live error: ${liveError}` : "";
+    $("go-live").textContent = "🎙 Go live";
+    $("talk").disabled = false;
+    return;
+  }
+  liveError = null;
+  $("live-state").textContent = status;
+});
+onLive("error", (code) => {
+  liveError = code;
+  $("live-state").textContent = `live error: ${code}`;
+});
 
 // ---- ② Live AI tutor: the single live surface. Zero-state → seed; otherwise → free chat. ----
 function openTutor(opts = {}) {
   chatFocus = opts.focus || [];
   chatRole = opts.role || null;
   chatContext = opts.context || null;
+  chatLessonId = opts.lessonId || chatLessonId;
   showScreen("tutor");
   startTutorSession();
 }
@@ -1716,6 +1788,8 @@ async function init() {
   // Rehearsal tree overlay controls.
   $("dialogue-close").addEventListener("click", closeDialogue);
   $("dialogue-handoff").addEventListener("click", reinforceFromDialogue);
+
+  $("go-live").addEventListener("click", toggleLive);
 
   // Push-to-talk (pointer events cover mouse + touch with one path).
   const btn = $("talk");

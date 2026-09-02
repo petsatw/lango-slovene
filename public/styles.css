@@ -299,6 +299,19 @@ main {
   padding: 12px 18px; font-size: 15px;
 }
 
+/* Go live. Deliberately quieter than the talk button: on this screen push-to-talk is the surface that
+ * teaches, and the live session is the one being evaluated — it should be findable, not the default. */
+.live-bar { display: flex; align-items: center; gap: 10px; justify-content: center; }
+.live-btn {
+  background: transparent; color: #d3dae4;
+  border: 1px solid #414a58; border-radius: 999px;
+  padding: 7px 16px; font-size: 12px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+}
+.live-btn:hover { border-color: var(--green); color: #fff; }
+.live-btn:disabled { opacity: 0.4; cursor: default; }
+.live-state { color: var(--muted); font-size: 12px; min-height: 15px; }
+
 .header-actions { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
 .story-open {
   background: var(--panel); color: var(--text);

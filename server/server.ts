@@ -6,6 +6,7 @@
 
 import "dotenv/config";
 import express from "express";
+import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { understand, converse } from "./orchestrator";
@@ -26,6 +27,7 @@ import { advanceDialogue } from "./adapters/dialogue-scripted";
 import { getLearnable, LEARNABLES } from "./learnables";
 import { buildGalleryHtml } from "./scripts/gallery";
 import { frameFor } from "./scripts/dialogue-lib";
+import { liveRouter, attachLive } from "./live/index";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -48,6 +50,10 @@ function cachePut(key: string, buf: Buffer): void {
 // Audio clips arrive as base64 JSON — allow a generous body size.
 app.use(express.json({ limit: "25mb" }));
 app.use(express.static(path.join(__dirname, "..", "public")));
+
+// The live tutor's one HTTP surface (POST /v1/live/sessions). Its WebSocket half is attached to the
+// http server at the bottom of this file — Express does not see upgrades.
+app.use(liveRouter);
 
 // Live catalog gallery — rebuilt from the CURRENT catalog + on-disk renders on every request, so you
 // can just refresh http://localhost:PORT/gallery after rendering or adding assets. Read-only, bills
@@ -659,7 +665,16 @@ app.post("/api/sessions/:id/meta", (req, res) => {
 
 const port = Number(process.env.PORT || 8787);
 
-app.listen(port, () => {
+// The live tutor needs the raw http server, not just the Express app: a WebSocket arrives as an HTTP
+// upgrade, which never reaches a route handler. Everything else is unchanged — same app, same port.
+const server = createServer(app);
+attachLive(server);
+
+server.listen(port, () => {
   console.log(`▶ lango-slovenian demo on http://localhost:${port}`);
   console.log(`  E2=${process.env.E2_PROVIDER || "gemini"}  E3=${process.env.E3_PROVIDER || "elevenlabs"}`);
+  const live = process.env.LIVE_ACCESS_CODE
+    ? `LIVE=${process.env.LIVE_PROVIDER || "gemini"} (ttl ${process.env.SESSION_TTL_SEC || 600}s)`
+    : "LIVE=closed (set LIVE_ACCESS_CODE to open it)";
+  console.log(`  ${live}`);
 });

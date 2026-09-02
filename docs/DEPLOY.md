@@ -68,6 +68,10 @@ map per-scenario through the dialogue's `voices` block, then confirm with recipe
 - `OPERATOR_TOOLS` — leave **unset** in prod. It gates the session/transcript endpoints; default-closed keeps
   learner transcripts unreadable on a public URL. Set `=1` only in local dev to use the Replays view.
 - `TURNLOG` — optional `=0` to disable the per-turn diagnostic log on the serving host.
+- `LIVE_ACCESS_CODE` — leave **unset** in a pregenerated deploy. It is the on/off switch for the live tutor
+  ([live-tutor.md](live-tutor.md)), the one surface that meters a vendor by the minute; unset, the create
+  call 403s and no vendor socket can be opened. Its WebSocket rides the same port Railway already injects,
+  so turning it on needs no hosting change — but it does need a provider-side spend cap first.
 - Provider **API keys** (`ELEVENLABS_API_KEY`, `GEMINI_API_KEY`) — omit for a pregenerated alpha. Add a key
   only when you intend that provider to be metered live; pair it with a provider-side spend cap
   ([SECRETS.md](SECRETS.md) §6), because `/api/speak`, `/api/turn`, and `/api/converse` are unauthenticated.
@@ -84,8 +88,8 @@ git add -f assets/audio assets/align    # content-addressed dialogue clips + the
 git commit -m "chore(assets): ship <scenario> audio"
 ```
 
-Commit `assets/audio` and `assets/align` only. Keep `assets/sessions/`, `assets/turnlog/`, `assets/learner.json`
-out — they hold learner PII and have no place in the deploy. Images stay out too (scene backgrounds that the app
+Commit `assets/audio` and `assets/align` only. Keep `assets/sessions/`, `assets/turnlog/`, `assets/live/`
+and `assets/learner.json` out — they hold learner PII and have no place in the deploy. Images stay out too (scene backgrounds that the app
 uses live under `public/backgrounds/` and ship there).
 
 `assets/align` is word-level timings for clips that already exist, and it is **not needed at runtime** — a Key
