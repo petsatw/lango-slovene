@@ -19,7 +19,15 @@ export type LiveErrorCode = "vendor_connect" | "vendor_setup" | "vendor_audio" |
 export interface LiveCallbacks {
   /** Tutor speech, PCM16 LE mono 24 kHz, forwarded to the app as a binary frame. */
   onAudio(pcm24k: Buffer): void;
-  onTranscript(role: "user" | "tutor", text: string): void;
+  /** One utterance, which RESTATES ITSELF as it firms up. `id` identifies the utterance across those
+   *  restatements and `final` says the vendor is finished with it; a later call with the same id
+   *  REPLACES the earlier text rather than adding a line.
+   *
+   *  This shape is the answer to a bug we got wrong twice in both directions. Emitting on every update
+   *  printed each utterance three times; emitting once, early, froze it mid-word ("Ne, pro."). There is
+   *  no correct moment to flush a stream that keeps revising itself — so nothing flushes, and the
+   *  consumer overwrites instead. */
+  onTranscript(role: "user" | "tutor", text: string, id: string, final: boolean): void;
   onState(status: LiveState): void;
   onError(code: LiveErrorCode): void;
 }

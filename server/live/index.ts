@@ -15,6 +15,7 @@ import { getLiveAdapter, providerReady } from "./adapters/index";
 import { buildLessonPrompt, lessonExists } from "./prompt";
 import * as registry from "./registry";
 import * as liveLog from "./log";
+import { glossOf } from "./gloss";
 import type { LiveState, LiveErrorCode } from "./types";
 import type { LiveTranscript } from "./log";
 
@@ -47,6 +48,20 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
   });
 });
 
+// Tap-to-reveal English for one transcript line. A GET so it caches and retries harmlessly; it takes no
+// session, because a translation is not learner state. Catalog hits and cache hits bill nothing.
+liveRouter.get("/api/gloss", async (req, res) => {
+  const sl = String(req.query.sl ?? "").slice(0, 500);
+  if (!sl.trim()) return res.status(400).json({ error: "sl required" });
+  try {
+    const { gloss, source } = await glossOf(sl);
+    res.json({ sl, gloss, source });
+  } catch (err: any) {
+    console.error("[gloss] failed:", err?.message);
+    res.status(502).json({ error: "translation unavailable" });
+  }
+});
+
 export function attachLive(server: HttpServer): void {
   const wss = new WebSocketServer({ noServer: true });
 
@@ -74,6 +89,8 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
   const { sessionId, lessonId, provider } = pending;
   const startedAt = new Date().toISOString();
   const transcripts: LiveTranscript[] = [];
+  /** id → the entry in `transcripts`, so a revision overwrites rather than appends. */
+  const byId = new Map<string, LiveTranscript>();
   let failure: string | null = null;
   let done = false;
 
@@ -101,10 +118,19 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
     onAudio: (pcm24k) => {
       if (!done && ws.readyState === WebSocket.OPEN) ws.send(pcm24k, { binary: true });
     },
-    onTranscript: (role, text) => {
+    // An utterance revises itself, so the log keeps ONE entry per id and overwrites its text. The
+    // timestamp stays the FIRST one — when the learner started speaking, not when the transcriber
+    // finally settled — which is what makes the log readable as a conversation.
+    onTranscript: (role, text, id, final) => {
       if (done) return;
-      transcripts.push({ ts: new Date().toISOString(), role, text });
-      sendJson({ type: "transcript", role, text });
+      const seen = byId.get(id);
+      if (seen) seen.text = text;
+      else {
+        const entry = { ts: new Date().toISOString(), role, text };
+        byId.set(id, entry);
+        transcripts.push(entry);
+      }
+      sendJson({ type: "transcript", role, text, id, final });
     },
     onState: (status) => {
       if (!done) state(status);

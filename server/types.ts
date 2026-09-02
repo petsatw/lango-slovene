@@ -163,6 +163,10 @@ export interface E2Adapter {
     systemPrompt: string;
     history: ConversationTurn[];
   }): Promise<WitnessResult>;
+  /** One Slovene line → a short plain-English gloss. Text only, no audio, no evidence — the tap-to-
+   *  reveal translation on a LIVE transcript, where there is no JSON turn to carry a gloss back.
+   *  Optional so adapters without a text path can omit it. */
+  gloss?(sl: string): Promise<string>;
   /** Cheap credential/endpoint check used by `npm run probe:e2`. Must NOT log the key. */
   ping(): Promise<string>;
 }

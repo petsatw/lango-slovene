@@ -102,6 +102,7 @@ function addBubble(role, text, sub, replayOpts = {}) {
   const tr = $("transcript");
   tr.appendChild(div);
   tr.scrollTo({ top: tr.scrollHeight, behavior: "smooth" });
+  return div; // the live surface addresses a bubble again after it is drawn, to revise its text
 }
 
 // Gemini accepts wav/mp3/aiff/aac/ogg/flac — NOT the webm (Chrome) or mp4 (Safari) that
@@ -674,6 +675,7 @@ async function toggleLive() {
   btn.disabled = true;
   $("talk").disabled = true;
   $("live-state").textContent = "connecting…";
+  liveBubbles.clear(); // ids are per-session; a stale one would revise last session's bubble
   try {
     await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined });
     btn.textContent = "■ End live";
@@ -687,9 +689,50 @@ async function toggleLive() {
   }
 }
 
+// A live transcript line revises itself as the vendor firms it up, so a bubble is addressed by id and
+// its text is REPLACED — one bubble per utterance, not one per revision.
+const liveBubbles = new Map();
+
 onLive("transcript", (msg) => {
-  addBubble(msg.role === "user" ? "user" : "tutor", msg.text, "");
+  const role = msg.role === "user" ? "user" : "tutor";
+  const known = liveBubbles.get(msg.id);
+  if (known) {
+    known.querySelector(".bubble-text").textContent = msg.text;
+    known.dataset.sl = msg.text;
+    // The line changed, so any translation shown under it is now for the wrong text.
+    known.classList.remove("show-translation");
+    const t = known.querySelector(".translation");
+    if (t) { t.remove(); known.classList.remove("has-translation"); }
+    return;
+  }
+  liveBubbles.set(msg.id, addLiveBubble(role, msg.text));
 });
+
+// Live bubbles carry no gloss when they arrive — a speech stream has no JSON to bring one back. The
+// English is fetched on the first tap and then behaves exactly like every other bubble: tap to show,
+// tap to hide, nothing refetched.
+function addLiveBubble(role, text) {
+  const div = addBubble(role, text, "");
+  div.dataset.sl = text;
+  div.classList.add("has-translation");
+  div.addEventListener("click", async () => {
+    const existing = div.querySelector(".translation");
+    if (existing) { div.classList.toggle("show-translation"); return; }
+    const s = document.createElement("small");
+    s.className = "translation";
+    s.textContent = "…";
+    div.appendChild(s);
+    div.classList.add("show-translation");
+    try {
+      const res = await fetch(`/api/gloss?sl=${encodeURIComponent(div.dataset.sl)}`);
+      const data = await res.json();
+      s.textContent = res.ok ? data.gloss || "(no translation)" : "(translation unavailable)";
+    } catch {
+      s.textContent = "(translation unavailable)";
+    }
+  });
+  return div;
+}
 // An error is always followed by the session ending, so "ended" must not wipe the reason off the
 // screen — otherwise every failure looks identical to a clean finish, which is the one thing a tester
 // comparing two vendors cannot afford.

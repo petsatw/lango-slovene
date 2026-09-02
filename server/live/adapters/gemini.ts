@@ -30,9 +30,11 @@ export class GeminiAdapter implements LiveAdapter {
   private ready = false;
   private closed = false;
   private queue: Buffer[] = [];
-  /** Transcripts arrive as fragments across many messages; each is emitted once, at turn end. */
+  /** Transcripts arrive as fragments across many messages, accumulated here and emitted under one id
+   *  per turn — see LiveCallbacks.onTranscript for why nothing waits for a "final" moment. */
   private userText = "";
   private tutorText = "";
+  private turn = 0;
 
   constructor(private cb: LiveCallbacks) {}
 
@@ -107,8 +109,17 @@ export class GeminiAdapter implements LiveAdapter {
   }
 
   private handleServerContent(sc: any): void {
-    if (typeof sc.inputTranscription?.text === "string") this.userText += sc.inputTranscription.text;
-    if (typeof sc.outputTranscription?.text === "string") this.tutorText += sc.outputTranscription.text;
+    // Gemini streams transcripts as FRAGMENTS to concatenate, where Grok restates the whole utterance.
+    // Both reach the app the same way: accumulate here, emit under one id per turn, and let the later
+    // emission overwrite the earlier one.
+    if (typeof sc.inputTranscription?.text === "string") {
+      this.userText += sc.inputTranscription.text;
+      this.emit("user", false);
+    }
+    if (typeof sc.outputTranscription?.text === "string") {
+      this.tutorText += sc.outputTranscription.text;
+      this.emit("tutor", false);
+    }
 
     for (const part of sc.modelTurn?.parts ?? []) {
       const data = part?.inlineData?.data;
@@ -132,13 +143,18 @@ export class GeminiAdapter implements LiveAdapter {
     }
   }
 
+  private emit(role: "user" | "tutor", final: boolean): void {
+    const text = (role === "user" ? this.userText : this.tutorText).trim();
+    if (text) this.cb.onTranscript(role, text, `${role[0]}:${this.turn}`, final);
+  }
+
+  /** End of turn: both sides are final, and the next turn starts fresh ids. */
   private flush(): void {
-    const u = this.userText.trim();
-    const t = this.tutorText.trim();
+    this.emit("user", true);
+    this.emit("tutor", true);
     this.userText = "";
     this.tutorText = "";
-    if (u) this.cb.onTranscript("user", u);
-    if (t) this.cb.onTranscript("tutor", t);
+    this.turn++;
   }
 
   sendPcm16(bytes: Buffer): void {

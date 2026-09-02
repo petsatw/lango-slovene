@@ -28,8 +28,8 @@ export class GrokAdapter implements LiveAdapter {
   /** Mic frames that arrived before `session.updated`. Both vendors drop pre-setup audio, and the
    *  learner is already holding the button by then, so we hold rather than lose them. */
   private queue: Buffer[] = [];
-  /** Latest cumulative user transcript, keyed by conversation item. Flushed when the item ends. */
-  private userText = new Map<string, string>();
+  /** The tutor's turn counter — Grok's response events carry no id we can use as one. */
+  private turn = 0;
   private tutorText = "";
   /** The Slovene language hint is best-effort; if xAI rejects the code we retry once without it. */
   private hintDropped = false;
@@ -102,8 +102,7 @@ export class GrokAdapter implements LiveAdapter {
       });
 
       ws.on("close", () => {
-        this.flushUser();
-        this.flushTutor();
+        this.emitTutor(true);
         this.cb.onState("ended");
         if (!settled) fail("vendor_connect", new Error("xAI socket closed before setup"));
       });
@@ -143,58 +142,69 @@ export class GrokAdapter implements LiveAdapter {
         return;
       }
 
-      // The user's transcript restates itself as it firms up — keep the latest and emit once.
+      // The user's transcript restates itself as it firms up. Every restatement is forwarded under the
+      // SAME id, so the screen and the log show the finished sentence rather than the first guess at it.
       case "conversation.item.input_audio_transcription.updated": {
-        const id = String(evt.item_id ?? "user");
         const text = evt.transcript ?? evt.text;
-        if (typeof text === "string") this.userText.set(id, text);
+        if (typeof text === "string" && text.trim()) {
+          this.cb.onTranscript("user", text.trim(), `u:${evt.item_id ?? "user"}`, false);
+        }
         return;
       }
       case "conversation.item.input_audio_transcription.completed": {
-        const id = String(evt.item_id ?? "user");
         const text = evt.transcript ?? evt.text;
-        if (typeof text === "string") this.userText.set(id, text);
-        this.flushUser(id);
+        if (typeof text === "string" && text.trim()) {
+          this.cb.onTranscript("user", text.trim(), `u:${evt.item_id ?? "user"}`, true);
+        }
         return;
       }
 
+      // The tutor's own words. The first real session logged NONE of these, so the names below are a
+      // net rather than a guess — xAI documents `response.text.*`, and the OpenAI-compatible surface
+      // it mirrors uses `response.audio_transcript.*` for the spoken half. Unknown events are logged
+      // under LIVE_DEBUG so the next miss names itself instead of vanishing.
       case "response.text.delta":
-      case "response.output_text.delta": {
-        if (typeof evt.delta === "string") this.tutorText += evt.delta;
+      case "response.output_text.delta":
+      case "response.audio_transcript.delta":
+      case "response.output_audio_transcript.delta": {
+        const d = evt.delta ?? evt.text;
+        if (typeof d === "string") {
+          this.tutorText += d;
+          this.emitTutor(false);
+        }
         return;
       }
       case "response.text.done":
-      case "response.output_text.done": {
-        if (typeof evt.text === "string") this.tutorText = evt.text;
-        this.flushTutor();
+      case "response.output_text.done":
+      case "response.audio_transcript.done":
+      case "response.output_audio_transcript.done": {
+        const t = evt.text ?? evt.transcript;
+        if (typeof t === "string") this.tutorText = t;
+        this.emitTutor(true);
         return;
       }
 
       case "response.created":
-        // The learner's turn just ended — whatever they said is final now.
-        this.flushUser();
+        this.turn++;
+        this.tutorText = "";
         return;
 
       case "response.done":
-        this.flushTutor();
+        this.emitTutor(true);
+        this.tutorText = "";
+        // Generation is finished. This is NOT "playback finished" — the client must not stop speaking
+        // on it, and does not.
         this.cb.onState("listening");
         return;
+
+      default:
+        if (process.env.LIVE_DEBUG) console.log(`[live/grok] unhandled event: ${evt.type}`);
     }
   }
 
-  private flushUser(only?: string): void {
-    for (const [id, text] of this.userText) {
-      if (only && id !== only) continue;
-      const t = text.trim();
-      if (t) this.cb.onTranscript("user", t);
-      this.userText.delete(id);
-    }
-  }
-
-  private flushTutor(): void {
+  private emitTutor(final: boolean): void {
     const t = this.tutorText.trim();
-    this.tutorText = "";
-    if (t) this.cb.onTranscript("tutor", t);
+    if (t) this.cb.onTranscript("tutor", t, `t:${this.turn}`, final);
   }
 
   sendPcm16(bytes: Buffer): void {
