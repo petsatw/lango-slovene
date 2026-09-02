@@ -25,6 +25,7 @@
     "build:backchannels": "tsx server/scripts/build-backchannels.ts",
     "prompts": "tsx server/scripts/show-prompts.ts",
     "script:lesson": "tsx server/scripts/lesson-script.ts",
+    "playthrough:lesson": "tsx server/scripts/lesson-playthrough.ts",
     "lint:scenario": "tsx server/scripts/lint-scenario.ts",
     "lint:dialogue": "tsx server/scripts/lint-dialogue.ts",
     "lint:tree": "tsx server/scripts/lint-tree.ts",
