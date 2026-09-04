@@ -1,0 +1,20 @@
+{
+  "note": "PARKED, INCOMPLETE. Demo level 2 is the lesson that teaches the run controls. It has no dialogue yet — this file holds only the tutorial slice, lifted off demo-l1 where it did not belong. Nothing loads it: the server reads server/dialogues/*.json, and authoring/ is touched only by the authoring scripts. To finish it, author the lesson through create-dialogue and carry `tutorial` onto it.",
+  "id": "demo-l2",
+  "scenarioId": "demo",
+  "level": 2,
+  "title": "The controls",
+  "tutorial": [
+    { "target": "slower", "text": "Tap the tortoise to hear a line slowly." }
+  ],
+  "pattern": {
+    "howItPlays": "Before the first beat, the screen dims, one chip lights, and a line of English says what it does. A tap advances to the next step. server/server.ts sends `tutorial` with the opening beat; public/app.js scenePlayTutorial() draws it.",
+    "isTheModelFor": "The remaining chips, written the same way — one step each, one chip lit, one sentence.",
+    "targets": {
+      "slower": "🐢 — hear the line slowly (drafted above)",
+      "back": "« — put the previous line back",
+      "skip": "» — move on to the next line",
+      "quit": "✕ — leave the lesson"
+    }
+  }
+}

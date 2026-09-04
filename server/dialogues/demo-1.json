@@ -52,12 +52,6 @@
     "When it's your turn, the words appear — say them out loud, then press <b>continue</b>.",
     "Let's go!"
   ],
-  "tutorial": [
-    {
-      "target": "slower",
-      "text": "Tap the tortoise to hear a line slowly."
-    }
-  ],
   "practice": {
     "scenarioId": "library",
     "level": 1
