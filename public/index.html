@@ -82,8 +82,8 @@
   </main>
 
   <!-- Consent gate: shown every time this surface is entered, because every session is disposable and
-       nothing about the tester is remembered between them. That is also why the tutorial skip lives
-       here — a returning tester clears the whole entry sequence in two clicks. -->
+       nothing about the tester is remembered between them. Two clicks clears it: it asks the one thing
+       it has to ask and nothing else. -->
   <div id="consent" class="story-overlay" hidden>
     <div class="story-card consent-card">
       <h2 class="consent-title">Before you start</h2>
@@ -99,11 +99,23 @@
         <input type="checkbox" id="consent-agree" />
         <span>I understand my voice will be recorded and processed by a third-party AI provider, and I consent to this.</span>
       </label>
-      <label class="consent-check">
-        <input type="checkbox" id="consent-skip" />
-        <span>Skip the tutorial.</span>
-      </label>
       <button id="consent-continue" class="consent-continue" type="button" disabled>Continue</button>
+    </div>
+  </div>
+
+  <!-- Choosing tap-to-speak asks what comes across with the learner: the thread they are already in,
+       or the tutorial that shows them what holding the button does. Cancel leaves them in live. -->
+  <div id="mode-switch" class="story-overlay" hidden>
+    <div class="story-card switch-card">
+      <h2 class="switch-title">Tap to speak</h2>
+      <p class="switch-body">
+        In this mode you hold the button down while you talk and release it when you are done.
+      </p>
+      <div class="switch-actions">
+        <button id="mode-switch-demo" class="switch-primary" type="button">Show me how first</button>
+        <button id="mode-switch-continue" class="switch-alt" type="button">Continue this conversation</button>
+        <button id="mode-switch-cancel" class="switch-alt" type="button">Cancel</button>
+      </div>
     </div>
   </div>
 

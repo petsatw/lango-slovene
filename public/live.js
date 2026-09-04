@@ -212,13 +212,15 @@ function stopPlayback() {
 
 // ---- session ----
 
-export async function startLive({ lessonId, accessCode, provider }) {
+export async function startLive({ lessonId, accessCode, provider, learnerId, runId }) {
   if (ws) return; // one live session per tab, by construction
 
+  // `learnerId` is whose palette the session's prompt is built from; `runId` is the sitting, and it is
+  // what lines this session up with the tap-to-speak turns of the same sitting afterwards.
   const res = await fetch("/v1/live/sessions", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ lessonId, accessCode, provider }),
+    headers: { "Content-Type": "application/json", "x-learner-id": learnerId },
+    body: JSON.stringify({ lessonId, accessCode, provider, runId }),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);

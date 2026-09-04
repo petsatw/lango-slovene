@@ -353,6 +353,22 @@ main {
 }
 .consent-continue:disabled { opacity: 0.35; cursor: default; }
 
+/* ---- Mode switch ----------------------------------------------------------------------------- */
+.story-card.switch-card { text-align: left; max-width: 420px; }
+.switch-title { font-size: 20px; margin: 4px 0 10px; text-align: center; }
+.switch-body { font-size: 14px; line-height: 1.5; color: #d3dae4; margin: 0 0 14px; }
+.switch-actions { display: flex; flex-direction: column; gap: 8px; }
+.switch-primary {
+  border: none; border-radius: 12px; background: var(--green); color: #fff;
+  padding: 13px 18px; font-size: 16px; font-weight: 600; cursor: pointer;
+}
+.switch-alt {
+  background: none; color: var(--text);
+  border: 1px solid #3a4250; border-radius: 12px;
+  padding: 11px 18px; font-size: 15px; font-weight: 600; cursor: pointer;
+}
+.switch-alt:hover { border-color: var(--green); }
+
 .header-actions { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
 .story-open {
   background: var(--panel); color: var(--text);
