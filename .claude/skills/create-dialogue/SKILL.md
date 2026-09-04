@@ -22,8 +22,9 @@ voice/env matrix) before you start — they are authoritative and win over anyth
 
 - **J — Judgment (content):** the scene, the per-level objectives, the branching graph (ids + who speaks +
   the English intent per node + where branches re-converge), and **every word the learner reads or hears**.
-  Done by `lesson-designer` ×3, `learning-designer`, `slovenian-author` (LS), `review-lesson-script` and
-  `scenario-critic`.
+  Done by `lesson-designer` ×3, `learning-designer`, `slovenian-author` (LS), `review-lesson-script`,
+  `scenario-critic` and — where the reading and the critic show the lesson is badly wrong —
+  `lesson-editor` (E).
 - **L — Logic:** id assignment, catalog merge, `introduces` computation, file writes, the structural +
   catalog + a1 lints. Done by **scripts** (`reconcile-dialogue`, `lint:*`), never by hand.
 - **G — Generation:** per-speaker audio bytes. `build:dialogue-assets` / `build:dialogue-intros` —
@@ -32,8 +33,33 @@ voice/env matrix) before you start — they are authoritative and win over anyth
 
 **Golden rule:** the designers propose how the lesson teaches; the learning-designer returns the design
 that gets built, complete; C transcribes it and moves it through the pipeline; LS writes the language; a
-reader hears it as a conversation; the critic rules; the reconcile assembles/mints/writes; R approves and
-generates.
+reader hears it as a conversation; the critic rules; where the lesson is badly wrong the editor fixes it
+outright; the reconcile assembles/mints/writes; R approves and generates.
+
+## One pass — each stage decides once, and the run moves forward
+
+The pipeline is a line: designs → language → reading → critique → editorial repair where it is called for
+→ reconcile → gates → R. **Each stage is entered once and owns its decision.** Whatever it hands on is
+what the next stage works with.
+
+Authorship travels with the run and lands in one place at a time. The designers own how the lesson
+teaches, and their work is finished the moment LS writes it. From there the lesson belongs to whoever
+holds it: LS writes the language, the reader reports how it lands, the critic rules, and **the editor
+holds final authorship**.
+
+**Stage 5b — `lesson-editor`** is where a lesson gets repaired. It has wide discretion: it may rewrite
+any line in either language, cut or add a beat, move where a word is introduced, or reorder the spine, to
+make the lesson work for the learner. Serious problems found by `review-lesson-script` or by the critic
+are its remit, and it gets one pass, like every other stage.
+
+Keeping one author at a time is what keeps a run converging. When a lesson can return to an earlier stage,
+each pass repairs the previous pass's damage and the lesson drifts while the work looks like progress.
+
+**C owns the finish line.** A lesson is done when nothing reads as `broken`, the friction that remains is
+either inherent to teaching or named as such, and the deterministic gates are green. When that holds, it
+goes to R. A blind reader asked for findings will always return findings — including ones its last fix
+created — so a silent reader is a mirage rather than a target, and C calls the finish from the state of
+the lesson instead of from a reader's verdict.
 
 ### The two things C owns, and the line that separates them from J
 
@@ -341,8 +367,10 @@ Every brief carries, identically:
   >   follows the Slovene on its own), or `"held"` (the situation carries the meaning here).
   > - **One node is one caption — one thing on screen.** Two sentences that want different captions or
   >   different timing are two nodes.
-  > - A repeated target phrase rides its own node: said inside a sentence, then again on its own, is one
-  >   node, and does not count toward length or the split.
+  > - **A phrase is said twice only to lift it out of what surrounds it.** Where the target is buried in a
+  >   sentence of three or more other words, the isolated repeat rides the same node — said inside the
+  >   sentence, then again alone, is one node, and counts once toward length and the split. Where the
+  >   phrase already stands alone or carries one or two words of company, it is heard once and moves on.
 
 - **What the format can do — `advance: "audio"` only.** Quote this block **only when the level is
   spoken**; a tapped tree has none of these fields and a brief that carries them invites a design that
@@ -362,6 +390,11 @@ Every brief carries, identically:
   > - A spoken level is a linear spine; `next[0]` is the path. A "branch" lives in the slot, not the tree.
   >   `lint:tree` errors on any node off that spine — it would never be played and would still bill for a
   >   clip.
+  > - **The learner meets sound and one caption.** A delivery tag (`[brightly, as if meeting again]`) is
+  >   authoring metadata that reaches the synthesiser and stops there, and the caption glosses what is
+  >   said. So a beat carries its meaning in the words, the voice, and the silence around them — a scene
+  >   that changes frame says so in Slovene the learner already owns, or it happens in a lesson that has
+  >   the words for it. Design each beat so it reads with the tag deleted.
   > - `focusSpan` marks the shape inside a caption. It must occur **exactly once** in that node's `sl`.
   > - The four run controls (🐢 « » ✕) are on screen throughout, and a level may teach them with
   >   `tutorial: [{ target: "slower"|"back"|"skip"|"quit", text }]` before its first line.
@@ -518,9 +551,12 @@ it** into the per-level shape the reconcile input takes and checks it against th
 construct it.
 
 **If you are about to write something that did not come from a designer, LS or the critic, stop.** That is
-a gap in the stage that owns it — re-dispatch that stage. Failures found here go back to 2b; C fixes
-nothing itself. This is the last point where the shape is free to change: once LS has written the level,
-changing it costs a re-dispatch; once the audio is built it costs clips.
+a gap in the stage that owns it. C fixes nothing itself.
+
+2b has not been read or ruled on yet, so this stage — and only this stage — may still ask it to complete
+what it returned: **a design that is missing a piece, or fails a check below, goes back to 2b once.** That
+is completion of an unfinished hand-off, not a redesign, and it is the last point at which the shape is
+free to change. After stage 3 the run only goes forward; a problem found later is the editor's (5b).
 
 **Checks:**
 
@@ -576,8 +612,14 @@ For an `advance: "audio"` beginner level these are construction rules, not polis
 
 - **Nothing reaches a slot that has not been heard.** Every client `sl` is either voiced **verbatim** by an
   npc node earlier in the same level, or is a **known word swapped into a shape** voiced seconds earlier.
-  Introduce anything new on the full ladder — heard inside a sentence → heard on its own → heard slowly
-  (`slowSL`) → in the slot. Skipping the isolated pass leaves a beginner unable to find the word boundaries.
+  Introduce anything new on the ladder — heard → heard slowly (`slowSL`) → in the slot.
+- **The learner must hear the target standing clear of its neighbours**, because that is what lets them
+  find where it starts and stops. **How much work that takes depends on how buried it is.** A target
+  carried inside a sentence of three or more other words gets an isolated pass — the phrase again, alone,
+  on the same node — so it can be picked out. A target that already **stands alone, or sits with one or
+  two words of company, arrives clear the first time and is said once.** *Živjo!* is heard once. *Adijo!*
+  is heard once. *Sem Slavko.* is heard once. A line that repeats itself with nothing buried in it reads
+  as a stumble or a tic, and the learner spends the beat working out what changed between the two copies.
 - **Never elicit a form that has not been modelled.** Hearing *govoriš* licenses saying *govoriš*. If the
   lesson wants a second-person form, the character says it first, with a filler in it, on the full ladder —
   a rung to build, not a reason to avoid the form.
@@ -623,10 +665,10 @@ C reads the returned levels for: native-not-textbook; register held; a client li
 carrying its `variants` rather than one gender's form alone; no npc-only line minted in a delta; branches
 re-converging coherently.
 
-**This stage has no verdict.** It is routing, not judgment: C re-dispatches a level's LS **only** where it
-can state a specific, addressed note ("`c3`'s `sl` is `vi` in a `ti` register"). Anything C cannot name that
-precisely goes forward untouched — stage 5's critic is the judge, and a vague note from C is C editorializing
-content.
+**This stage has no verdict, and nothing goes back.** It is routing, not judgment. Where C can state a
+specific, addressed note ("`c3`'s `sl` is `vi` in a `ti` register"), it **carries that note forward into
+the stage-5 critic brief** as its own observation. Anything C cannot name that precisely goes forward
+untouched — the critic is the judge, and a vague note from C is C editorializing content.
 
 ### 4b — Read it as a conversation (J → `review-lesson-script`) — spoken levels only
 
@@ -646,9 +688,9 @@ Run the reader once per answer to any fact the level asks or declares in `needs`
 each answer is a different student hearing a different conversation. Keep each report whole — the per-beat
 lines and the findings — and carry it into stage 5.
 
-**C does not act on the report.** It is evidence for the critic, not a verdict, and C re-dispatching LS off
-the back of it would be C steering content. The one exception is the routing rule already in force at stage
-4: a specific, addressed note goes back to LS as itself.
+**C does not act on the report.** It is evidence for the critic, not a verdict, and C editing off the back
+of it would be C steering content. Nothing is re-dispatched here: the report goes to the critic at stage 5,
+and if what it found is bad enough to need a rewrite, the critic says so and the editor does it at 5b.
 
 A **tapped** tree skips this stage. Its student reads as much as listens, and the tool prints one arm of a
 branching tree — a partial page the reader would judge as if it were the whole lesson.
@@ -664,8 +706,37 @@ second recording. Its own definition carries the adjacent spoken
 axes (load asymmetry, the prompt-is-the-client-line rule, the stall ladder, the on-ramp, slow lines, chunk
 breaks) but not this test, so the quotation is the only place it gets it. It returns
 `{ verdict, fixes:[{level,nodeId,field,oldExact,newExact,reason}], deltaFindings, convergenceReviewed,
-notes }`. Its `fixes` are the structured, addressed edits the reconcile applies; its `deltaFindings` flag
-mint/reuse problems. If a `deltaFinding` is `block`, route it back to LS (stage 3) and re-critique.
+notes, needsEditor:{ required, why, whatToFix } }`. Its `fixes` are the structured, addressed edits the
+reconcile applies; its `deltaFindings` flag mint/reuse problems.
+
+**The critic also decides whether the editor is needed**, and this is the one call that routes the rest of
+the run. Ask it directly, in the brief:
+
+> An addressed fix replaces exact text in one field of one node. Some problems cannot be repaired that
+> way — a beat whose meaning depends on a stage direction nobody hears, a question the lesson never lets
+> the learner answer, a close that lands on a repeat of the opening, a word demanded in a slot whose only
+> exposure was four beats ago. Those need a beat rewritten, cut, split, or moved.
+>
+> Set `needsEditor.required` when any finding is of that kind, or when a `deltaFinding` is `block`, and
+> say in `whatToFix` what must end up true of the lesson — not how to write it. Nothing goes back to the
+> designers, so if you leave a real problem unnamed here it ships.
+
+### 5b — Editorial repair (J → `lesson-editor`) — only when stage 5 asks for it
+
+`needsEditor.required` is false → skip this stage; the critic's addressed fixes are enough.
+
+Otherwise dispatch **`lesson-editor`** once for the level. Give it: the full node set with the critic's
+`fixes` already folded in, stage 4b's report whole (every fact answer), the critic's verdict including
+`whatToFix`, the level's **ear inventory** in order, the settings, the one new shape, the clip-fork budget
+and how much of it is spent, and the turn floor with the current count.
+
+It returns the whole edited node set, a reason per change, its dissents from findings it judged wrong, its
+`appNotes`, and its recount. **Take what it returns.** It is the last author in the run: C does not
+re-read the lesson to see whether the edit improved it, does not dispatch another reader, and does not
+send it back. What comes out of 5b goes to the reconcile.
+
+If it reports in `concerns` that something could not be fixed, that is a finding for R at stage 9 — not a
+reason to run the stage again.
 
 **For a beginner `advance: "audio"` level, the critic must also rule on five things a linter cannot:**
 
@@ -756,8 +827,12 @@ real gate output to show; the committed run is the one above.
 npm run lint:dialogue && npm run lint:tree && npm run lint:a1 && npm run test:dialogue
 ```
 
-then `npm run lint:audio -- <scenarioId>` **for information only at this stage**. Route any failure to its
-stage and re-run: a duplicate surface → LS reuse; a convergence node → the critic.
+then `npm run lint:audio -- <scenarioId>` **for information only at this stage**.
+
+**A gate failure is the editor's to repair** (5b) — a duplicate surface, a node off the spine, a
+`focusSpan` that matches twice, a `slowSL` equal to its `sl`. Hand it the failing output verbatim with the
+current nodes and take back what it returns. Where 5b has already run, this is a second, narrowly scoped
+dispatch: the gate names exactly what is wrong, so the edit is addressed rather than open.
 
 **`lint:tree` lists the convergence nodes to eyeball.** A convergence node **reads on all paths** when,
 taking each incoming parent in turn, parent-line → node-line is true, responsive, and not a repeat. The
@@ -836,6 +911,12 @@ Present R:
 - **how the lesson read as a conversation** (spoken levels): stage 4b's findings and what the critic did
   with each — fixed, noted, or dissented from. R is being asked to approve a lesson someone will sit
   through, so what a first reading of it caught belongs in front of them
+- **what the editor changed** (where 5b ran): its reasons, its dissents, and anything it reported as
+  unfixable
+- **`appNotes`** — findings about the app rather than this lesson: how long a caption is held, what the
+  button says, what the tortoise does, when the stall ladder fires. They surface in every lesson review
+  and they are fixed in the renderer or the pacing profile, so they reach R as a standing list rather than
+  bending a lesson around them. Say which recur from previous runs.
 - any floor note from 2c
 - the green lint/test output
 - the register + voices, stated explicitly, with an invitation to confirm or override
@@ -847,8 +928,9 @@ shipping it quietly.
 
 ### 10 — Review gate (J, R)
 
-R replies **approve** or **reject(notes)**. On reject, route each note to its stage (language → LS/3; a
-branch → 2; a mint → LS/3 + reconcile), re-run 6–8, re-submit.
+R replies **approve** or **reject(notes)**. **R's notes go to the editor** (5b) as a fixed brief — R is the
+one authority whose direction sets what the lesson must become — and the run continues at 6–8 with what
+the editor returns. One editorial pass per rejection, then back to R.
 
 **A headless run ends here**, with the package and the stage-11 command block printed for R to run.
 

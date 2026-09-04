@@ -27,100 +27,129 @@
       "frameEN": [
         "Hi.",
         "Ready to learn Slovene?",
-        "You will meet and practice with Slavko.",
-        "Say the phrase, then press <b>continue</b> to move on.",
+        "You're about to meet Slavko. He'll be your teacher.",
+        "He speaks first. Just listen, and press <b>continue</b>.",
+        "When it's your turn, the words appear — say them out loud, then press <b>continue</b>.",
         "Let's go!"
       ],
       "tutorial": [
         {
           "target": "slower",
-          "text": "Tap the tortoise any time to hear a line again, slowly."
+          "text": "Tap the tortoise to hear a line slowly."
         }
       ],
       "objectives": [
         {
+          "label": "Open and close the conversation",
+          "descriptorEN": "Greet Slavko when he greets you, and say goodbye at the end."
+        },
+        {
           "label": "Say who you are",
-          "descriptorEN": "Say \"I am a student\" — in the form that is yours."
+          "descriptorEN": "Tell Slavko your name."
         },
         {
           "label": "Tell him which one you are",
-          "descriptorEN": "Slovene gives a student two names. Hear both, pick yours, and hear him say it back."
+          "descriptorEN": "Say whether you're a student — the form that fits you."
         },
         {
           "label": "Say who he is",
-          "descriptorEN": "Tell Slavko what he is and who he is — the \"you are\" form."
+          "descriptorEN": "Tell Slavko what he is, and say his name back to him."
         },
         {
-          "label": "Say goodbye",
-          "descriptorEN": "Close the conversation the way Slavko does."
+          "label": "Put both of you in one answer",
+          "descriptorEN": "Say who you are and who he is in a single turn."
         }
       ],
       "root": "n1",
       "nodes": {
         "n1": {
           "speaker": "npc",
-          "sl": "Živjo! Jaz sem Slavko. Sem Slavko.",
-          "en": "Hi! I'm Slavko. I'm Slavko.",
-          "deliverySL": "[delighted] Živjo! Jaz sem Slavko. Sem Slavko.",
-          "slowSL": "Živjo! … Jaz sem … Slavko. … Sem … Slavko.",
-          "deliverySlowSL": "[speaking very slowly and clearly] Živjo! … Jaz sem … Slavko. … [slowly] Sem … Slavko.",
-          "focusSpan": "Sem Slavko",
+          "sl": "Živjo!",
+          "en": "Hi!",
+          "deliverySL": "[delighted] Živjo!",
+          "glossPolicy": "after",
+          "next": [
+            "c1"
+          ],
+          "learnables": [
+            "zivjo"
+          ],
+          "focusSpan": "Živjo",
+          "stallHandlers": [
+            {
+              "kind": "pulse",
+              "afterMs": 1500
+            },
+            {
+              "kind": "soften",
+              "afterMs": 3000,
+              "label": "Say hi back to him."
+            }
+          ]
+        },
+        "c1": {
+          "speaker": "client",
+          "sl": "Živjo!",
+          "en": "Hi!",
+          "focusSpan": "Živjo",
           "glossPolicy": "after",
           "next": [
             "n2"
           ],
           "learnables": [
-            "zivjo",
-            "sem_ime"
+            "zivjo"
           ]
         },
         "n2": {
           "speaker": "npc",
-          "sl": "Jaz sem učitelj. Sem učitelj.",
-          "en": "I'm the teacher. I'm the teacher.",
-          "deliverySL": "[warmly] Jaz sem učitelj. Sem učitelj.",
-          "slowSL": "Jaz sem … učitelj. … Sem … učitelj.",
-          "deliverySlowSL": "[speaking very slowly and clearly] Jaz sem … učitelj. … [slowly] Sem … učitelj.",
-          "focusSpan": "Sem učitelj",
+          "sl": "Sem Slavko.",
+          "en": "I'm Slavko.",
+          "deliverySL": "[warmly] Sem Slavko.",
           "glossPolicy": "after",
           "next": [
             "n3"
           ],
           "learnables": [
-            "sem_ime",
-            "ucitelj"
-          ]
+            "sem_ime"
+          ],
+          "slowSL": "Sem … Slavko.",
+          "deliverySlowSL": "[speaking very slowly and clearly] Sem … Slavko.",
+          "focusSpan": "Sem Slavko"
         },
         "n3": {
           "speaker": "npc",
-          "sl": "Ti si študent ali študentka?",
-          "en": "Are you a student (male) or a student (female)?",
-          "deliverySL": "[wondering aloud, working it out] Ti si študent ali študentka?",
-          "slowSL": "Ti si … študent … ali … študentka?",
-          "deliverySlowSL": "[speaking very slowly and clearly] Ti si … študent … [slowly] ali … študentka?",
-          "focusSpan": "študent ali študentka",
+          "sl": "Sem učitelj.",
+          "en": "I'm the teacher.",
+          "deliverySL": "[warmly] Sem učitelj.",
           "glossPolicy": "after",
           "next": [
             "n4"
           ],
           "learnables": [
             "sem_ime",
-            "student",
-            "ali_or"
-          ]
+            "ucitelj"
+          ],
+          "slowSL": "Sem … učitelj.",
+          "deliverySlowSL": "[speaking very slowly and clearly] Sem … učitelj.",
+          "focusSpan": "Sem učitelj"
         },
         "n4": {
           "speaker": "npc",
-          "sl": "Jaz sem učitelj. In ti?",
-          "en": "I'm the teacher. And you?",
-          "deliverySL": "[warmly, handing the turn over] Jaz sem učitelj. In ti?",
-          "slowSL": "Jaz sem … učitelj. … In ti?",
-          "deliverySlowSL": "[speaking very slowly and clearly] Jaz sem … učitelj. … [slowly] In ti?",
-          "focusSpan": "In ti",
+          "sl": "In ti? Si študent ali študentka?",
+          "en": "And you? Are you a student (m) or a student (f)?",
+          "deliverySL": "[warmly, curious] In ti? Si študent ali študentka?",
           "glossPolicy": "after",
-          "choice": {
-            "fact": "gender"
-          },
+          "next": [
+            "c2"
+          ],
+          "learnables": [
+            "sem_ime",
+            "student",
+            "ali_or"
+          ],
+          "slowSL": "In ti? … Si študent … ali študentka?",
+          "deliverySlowSL": "[speaking very slowly and clearly] In ti? … Si študent … ali študentka?",
+          "focusSpan": "študent ali študentka",
           "stallHandlers": [
             {
               "kind": "pulse"
@@ -129,21 +158,24 @@
               "kind": "respeak"
             }
           ],
-          "next": [
-            "c1"
-          ],
-          "learnables": [
-            "sem_ime",
-            "ucitelj"
-          ]
+          "choice": {
+            "fact": "gender"
+          }
         },
-        "c1": {
+        "c2": {
           "speaker": "client",
           "sl": "Sem študent.",
           "en": "I'm a student. (male)",
-          "chooseEN": "Choose which one best suits you.\n(We'll learn more about gender later.)",
           "focusSpan": "Sem študent",
           "glossPolicy": "after",
+          "next": [
+            "n5"
+          ],
+          "learnables": [
+            "sem_ime",
+            "student"
+          ],
+          "chooseEN": "Slovene has two words for \"student\".\nSay the one that fits you.",
           "variesBy": "gender",
           "variants": {
             "f": {
@@ -151,51 +183,26 @@
               "en": "I'm a student. (female)",
               "focusSpan": "Sem študentka"
             }
-          },
-          "next": [
-            "n6"
-          ],
-          "learnables": [
-            "sem_ime",
-            "student"
-          ]
+          }
         },
-        "n6": {
+        "n5": {
           "speaker": "npc",
-          "sl": "Ja! Ti si študent.",
-          "en": "Yes! You are a student.",
-          "deliverySL": "[pleased] Ja! Ti si študent.",
-          "slowSL": "Ja! … Ti si … študent.",
-          "deliverySlowSL": "[speaking very slowly and clearly] Ja! … Ti si … [slowly] študent.",
-          "focusSpan": "Ti si študent",
-          "glossPolicy": "tap",
-          "variesBy": "gender",
-          "variants": {
-            "f": {
-              "sl": "Ja! Ti si študentka.",
-              "deliverySL": "[pleased] Ja! Ti si študentka.",
-              "slowSL": "Ja! … Ti si … študentka.",
-              "deliverySlowSL": "[speaking very slowly and clearly] Ja! … Ti si … [slowly] študentka.",
-              "focusSpan": "Ti si študentka"
-            }
-          },
+          "sl": "Ja! Ti si študent. In jaz? Kaj sem jaz?",
+          "en": "Yes! You are a student. And me? What am I?",
+          "deliverySL": "[pleased, then playfully] Ja! Ti si študent. In jaz? Kaj sem jaz?",
+          "glossPolicy": "after",
           "next": [
-            "n7"
+            "c3"
           ],
           "learnables": [
             "ja",
             "sem_ime",
-            "student"
-          ]
-        },
-        "n7": {
-          "speaker": "npc",
-          "sl": "In jaz? Kaj sem jaz?",
-          "en": "And me? What am I?",
-          "deliverySL": "[playfully] In jaz? Kaj sem jaz?",
-          "slowSL": "In jaz? … Kaj sem … jaz?",
-          "deliverySlowSL": "[speaking very slowly and clearly] In jaz? … [slowly] Kaj sem … jaz?",
-          "glossPolicy": "after",
+            "student",
+            "kaj"
+          ],
+          "slowSL": "Ja! … Ti si … študent. … In jaz? … Kaj sem … jaz?",
+          "deliverySlowSL": "[speaking very slowly and clearly] Ja! … Ti si … študent. … In jaz? … Kaj sem … jaz?",
+          "focusSpan": "Kaj sem jaz",
           "stallHandlers": [
             {
               "kind": "pulse"
@@ -205,39 +212,67 @@
             },
             {
               "kind": "soften",
-              "label": "Tell him what he is. Press and speak."
+              "label": "Tell him what he is."
             }
           ],
-          "next": [
-            "c2"
-          ],
-          "learnables": [
-            "kaj"
-          ]
+          "variesBy": "gender",
+          "variants": {
+            "f": {
+              "sl": "Ja! Ti si študentka. In jaz? Kaj sem jaz?",
+              "deliverySL": "[pleased, then playfully] Ja! Ti si študentka. In jaz? Kaj sem jaz?",
+              "slowSL": "Ja! … Ti si … študentka. … In jaz? … Kaj sem … jaz?",
+              "deliverySlowSL": "[speaking very slowly and clearly] Ja! … Ti si … [slowly] študentka. … In jaz? … Kaj sem … jaz?",
+              "focusSpan": "Kaj sem jaz"
+            }
+          }
         },
-        "c2": {
+        "c3": {
           "speaker": "client",
           "sl": "Ti si učitelj.",
           "en": "You are the teacher.",
           "focusSpan": "Ti si učitelj",
           "glossPolicy": "after",
           "next": [
-            "n8"
+            "n6"
           ],
           "learnables": [
             "sem_ime",
             "ucitelj"
           ]
         },
-        "n8": {
+        "n6": {
           "speaker": "npc",
-          "sl": "Jaz sem Slavko. Sem Slavko. In ti?",
-          "en": "I'm Slavko. I'm Slavko. And you?",
-          "deliverySL": "[warmly] Jaz sem Slavko. Sem Slavko. In ti?",
-          "slowSL": "Jaz sem … Slavko. … Sem … Slavko. … In ti?",
-          "deliverySlowSL": "[speaking very slowly and clearly] Jaz sem … Slavko. … [slowly] Sem … Slavko. … In ti?",
-          "focusSpan": "Sem Slavko",
+          "sl": "Ja! Sem učitelj.",
+          "en": "Yes! I'm the teacher.",
+          "deliverySL": "[pleased] Ja! Sem učitelj.",
           "glossPolicy": "after",
+          "next": [
+            "n7"
+          ],
+          "learnables": [
+            "ja",
+            "sem_ime",
+            "ucitelj"
+          ],
+          "slowSL": "Ja! … Sem … učitelj.",
+          "deliverySlowSL": "[speaking very slowly and clearly] Ja! … Sem … učitelj."
+        },
+        "n7": {
+          "speaker": "npc",
+          "sl": "Kdo si ti?",
+          "en": "Who are you?",
+          "deliverySL": "[warmly] Kdo si ti?",
+          "glossPolicy": "after",
+          "next": [
+            "c4"
+          ],
+          "learnables": [
+            "kdo",
+            "sem_ime"
+          ],
+          "slowSL": "Kdo si … ti?",
+          "deliverySlowSL": "[speaking very slowly and clearly] Kdo si … ti?",
+          "focusSpan": "Kdo si ti",
           "stallHandlers": [
             {
               "kind": "pulse"
@@ -247,21 +282,56 @@
             },
             {
               "kind": "soften",
-              "label": "Say your own name. Press and speak."
+              "label": "Say your own name."
             }
-          ],
+          ]
+        },
+        "c4": {
+          "speaker": "client",
+          "sl": "Sem ___.",
+          "en": "I'm ___. (your name)",
+          "focusSpan": "Sem ___",
+          "glossPolicy": "after",
           "next": [
-            "c3"
+            "n8"
           ],
           "learnables": [
             "sem_ime"
           ]
         },
-        "c3": {
+        "n8": {
+          "speaker": "npc",
+          "sl": "Super! Kdo sem jaz?",
+          "en": "Great! Who am I?",
+          "deliverySL": "[playfully] Super! Kdo sem jaz?",
+          "glossPolicy": "after",
+          "next": [
+            "c5"
+          ],
+          "learnables": [
+            "kdo"
+          ],
+          "slowSL": "Super! … Kdo sem … jaz?",
+          "deliverySlowSL": "[speaking very slowly and clearly] Super! … Kdo sem … jaz?",
+          "focusSpan": "Kdo sem jaz",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Tell him who he is."
+            }
+          ]
+        },
+        "c5": {
           "speaker": "client",
-          "sl": "Sem ___.",
-          "en": "I'm ___. (your name)",
-          "focusSpan": "Sem ___",
+          "sl": "Ti si Slavko.",
+          "en": "You are Slavko.",
+          "focusSpan": "Ti si Slavko",
           "glossPolicy": "after",
           "next": [
             "n9"
@@ -272,172 +342,111 @@
         },
         "n9": {
           "speaker": "npc",
-          "sl": "Super! Kdo sem pa jaz?",
-          "en": "Great! And who am I, then?",
-          "deliverySL": "[playfully] Super! Kdo sem pa jaz?",
-          "slowSL": "Super! … Kdo sem pa … jaz?",
-          "deliverySlowSL": "[speaking very slowly and clearly] Super! … Kdo sem pa … [slowly] jaz?",
-          "glossPolicy": "after",
-          "stallHandlers": [
-            {
-              "kind": "pulse"
-            },
-            {
-              "kind": "respeak"
-            },
-            {
-              "kind": "soften",
-              "label": "Tell him who he is. Press and speak."
-            }
-          ],
-          "next": [
-            "c4"
-          ],
-          "learnables": [
-            "kdo"
-          ]
-        },
-        "c4": {
-          "speaker": "client",
-          "sl": "Ti si Slavko.",
-          "en": "You are Slavko.",
-          "focusSpan": "Ti si Slavko",
+          "sl": "Ja! Sem Slavko.",
+          "en": "Yes! I'm Slavko.",
+          "deliverySL": "[delighted] Ja! Sem Slavko.",
           "glossPolicy": "after",
           "next": [
             "n10"
           ],
           "learnables": [
+            "ja",
             "sem_ime"
-          ]
+          ],
+          "slowSL": "Ja! … Sem … Slavko.",
+          "deliverySlowSL": "[speaking very slowly and clearly] Ja! … Sem … Slavko."
         },
         "n10": {
           "speaker": "npc",
-          "sl": "Ja! Sem Slavko.",
-          "en": "Yes! I'm Slavko.",
-          "deliverySL": "[delighted] Ja! Sem Slavko.",
-          "slowSL": "Ja! … Sem … Slavko.",
-          "deliverySlowSL": "[speaking very slowly and clearly] Ja! … Sem … [slowly] Slavko.",
-          "focusSpan": "Sem Slavko",
-          "glossPolicy": "tap",
+          "sl": "Kdo sem jaz in kdo si ti?",
+          "en": "Who am I and who are you?",
+          "deliverySL": "[playfully, one more time] Kdo sem jaz in kdo si ti?",
+          "glossPolicy": "after",
+          "next": [
+            "c6"
+          ],
+          "learnables": [
+            "kdo",
+            "sem_ime"
+          ],
+          "slowSL": "Kdo sem jaz … in kdo si ti?",
+          "deliverySlowSL": "[speaking very slowly and clearly] Kdo sem jaz … in kdo si ti?",
+          "focusSpan": "in kdo si ti",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Tell him who he is, then say your name."
+            }
+          ]
+        },
+        "c6": {
+          "speaker": "client",
+          "sl": "Ti si Slavko. Sem ___.",
+          "en": "You are Slavko. I'm ___ (your name).",
+          "focusSpan": "Sem ___",
+          "glossPolicy": "after",
           "next": [
             "n11"
           ],
           "learnables": [
-            "ja",
             "sem_ime"
           ]
         },
         "n11": {
           "speaker": "npc",
-          "sl": "Jutri spet? Jaz sem učitelj. In ti?",
-          "en": "Tomorrow again? I'm the teacher. And you?",
-          "deliverySL": "[warmly] Jutri spet? Jaz sem učitelj. In ti?",
-          "slowSL": "Jutri spet? … Jaz sem … učitelj. … In ti?",
-          "deliverySlowSL": "[speaking very slowly and clearly] Jutri spet? … Jaz sem … [slowly] učitelj. … In ti?",
-          "focusSpan": "sem učitelj",
+          "sl": "Super! Adijo!",
+          "en": "Great! Bye!",
+          "deliverySL": "[delighted, then warmly] Super! Adijo!",
           "glossPolicy": "after",
-          "stallHandlers": [
-            {
-              "kind": "pulse"
-            },
-            {
-              "kind": "respeak"
-            },
-            {
-              "kind": "soften",
-              "label": "Say what you are. Press and speak."
-            }
-          ],
           "next": [
-            "c5"
-          ],
-          "learnables": [
-            "jutri",
-            "sem_ime",
-            "ucitelj"
-          ]
-        },
-        "c5": {
-          "speaker": "client",
-          "sl": "Sem študent.",
-          "en": "I'm a student. (male)",
-          "focusSpan": "Sem študent",
-          "glossPolicy": "tap",
-          "variesBy": "gender",
-          "variants": {
-            "f": {
-              "sl": "Sem študentka.",
-              "en": "I'm a student. (female)",
-              "focusSpan": "Sem študentka"
-            }
-          },
-          "next": [
-            "n12"
-          ],
-          "learnables": [
-            "sem_ime",
-            "student"
-          ]
-        },
-        "n12": {
-          "speaker": "npc",
-          "sl": "Se vidiva! Adijo. Adijo.",
-          "en": "See you! Bye. Bye.",
-          "deliverySL": "[warmly] Se vidiva! Adijo. Adijo.",
-          "slowSL": "Se vidiva! … Adijo. … Adijo.",
-          "deliverySlowSL": "[speaking very slowly and clearly] Se vidiva! … Adijo. … [slowly] Adijo.",
-          "glossPolicy": "after",
-          "stallHandlers": [
-            {
-              "kind": "pulse"
-            },
-            {
-              "kind": "respeak"
-            },
-            {
-              "kind": "soften",
-              "label": "Say goodbye. Press and speak."
-            }
-          ],
-          "next": [
-            "c6"
+            "c7"
           ],
           "learnables": [
             "adijo"
+          ],
+          "slowSL": "Super! … Adijo!",
+          "deliverySlowSL": "[speaking very slowly and clearly] Super! … Adijo!",
+          "focusSpan": "Adijo",
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Say goodbye."
+            }
           ]
         },
-        "c6": {
+        "c7": {
           "speaker": "client",
           "sl": "Adijo.",
           "en": "Bye.",
+          "focusSpan": "Adijo",
           "glossPolicy": "after",
-          "next": [
-            "n13"
-          ],
-          "learnables": [
-            "adijo"
-          ]
-        },
-        "n13": {
-          "speaker": "npc",
-          "sl": "Adijo! Se vidiva kmalu.",
-          "en": "Bye! See you soon.",
-          "deliverySL": "[warmly] Adijo! Se vidiva kmalu.",
-          "slowSL": "Adijo! … Se vidiva … kmalu.",
-          "deliverySlowSL": "[speaking very slowly and clearly] Adijo! … Se vidiva … [slowly] kmalu.",
-          "glossPolicy": "tap",
           "next": [],
           "learnables": [
-            "adijo",
-            "kmalu"
+            "adijo"
           ]
         }
       },
       "catalog": {
         "reuse": [
-          "sem_ime",
           "adijo",
-          "ali_or"
+          "ali_or",
+          "ja",
+          "kaj",
+          "kdo",
+          "sem_ime",
+          "zivjo"
         ],
         "new": [
           {
