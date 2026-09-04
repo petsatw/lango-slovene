@@ -54,15 +54,70 @@
     <div id="level-list" class="level-list"></div>
   </main>
 
-  <!-- ② LIVE AI TUTOR — the single live surface. Push-to-talk; Slovene in/out; crediting is invisible. -->
+  <!-- ② LIVE AI TUTOR — ONE practice surface running either of the two speaking modes behind an
+       identical interface, so the same lesson can be run both ways and compared. It borrows the
+       rehearsal-dialogue language (a card, a bubble transcript) and departs from it in exactly one
+       place: there are no choice buttons, because here the learner speaks. What the learner sees is
+       the same in both modes — only the button's label, its held/live behaviour, and its animation
+       differ. Everything that says WHICH mode is running is a tester control, not a learner one. -->
   <main id="tutor" class="screen tutor" hidden>
-    <div id="transcript" class="transcript" aria-live="polite"></div>
-    <button id="talk" class="talk" disabled>
-      <span id="talk-label">Hold to speak</span>
-    </button>
-    <p class="hint">Hold the button, speak (English + Slovenian is fine), then release.</p>
-    <button id="play-fallback" class="play-fallback" hidden>▶ Tap to hear the tutor</button>
+    <div class="story-card dialogue-card practice-surface">
+      <p id="practice-title" class="practice-label">Live AI tutor</p>
+      <div id="transcript" class="dialogue-convo" aria-live="polite"></div>
+      <!-- Which mode is being evaluated. It does not persist: every session starts on live. -->
+      <div id="mode-toggle" class="mode-toggle" role="group" aria-label="Practice mode">
+        <button class="mode-opt" type="button" data-mode="live">Live</button>
+        <button class="mode-opt" type="button" data-mode="tap">Tap to speak</button>
+      </div>
+      <!-- THE one button. In live mode it starts and cancels the session; in tap-to-speak it is held
+           down while the learner talks. Same object, same place, both modes. -->
+      <button id="practice-talk" class="practice-talk" type="button">
+        <span id="practice-bars" class="scene-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span id="practice-talk-label" class="practice-talk-label">Go Live</span>
+      </button>
+      <p id="practice-hint" class="practice-hint"></p>
+      <p id="live-state" class="live-state"></p>
+      <button id="play-fallback" class="play-fallback" hidden>▶ Tap to hear the tutor</button>
+    </div>
   </main>
+
+  <!-- Consent gate: shown every time this surface is entered, because every session is disposable and
+       nothing about the tester is remembered between them. Two clicks clears it: it asks the one thing
+       it has to ask and nothing else. -->
+  <div id="consent" class="story-overlay" hidden>
+    <div class="story-card consent-card">
+      <h2 class="consent-title">Before you start</h2>
+      <p class="consent-body">
+        This session <b>records your voice</b> and sends the audio to a <b>third-party AI provider</b> to
+        transcribe it and answer you. Recordings and transcripts of this session are kept only while it
+        is being reviewed, and the session is not linked to any account.
+      </p>
+      <p class="consent-body">
+        <a id="consent-privacy" class="consent-link" href="/privacy" target="_blank" rel="noopener">Read the privacy policy</a>
+      </p>
+      <label class="consent-check">
+        <input type="checkbox" id="consent-agree" />
+        <span>I understand my voice will be recorded and processed by a third-party AI provider, and I consent to this.</span>
+      </label>
+      <button id="consent-continue" class="consent-continue" type="button" disabled>Continue</button>
+    </div>
+  </div>
+
+  <!-- Choosing tap-to-speak asks what comes across with the learner: the thread they are already in,
+       or the tutorial that shows them what holding the button does. Cancel leaves them in live. -->
+  <div id="mode-switch" class="story-overlay" hidden>
+    <div class="story-card switch-card">
+      <h2 class="switch-title">Tap to speak</h2>
+      <p class="switch-body">
+        In this mode you hold the button down while you talk and release it when you are done.
+      </p>
+      <div class="switch-actions">
+        <button id="mode-switch-demo" class="switch-primary" type="button">Show me how first</button>
+        <button id="mode-switch-continue" class="switch-alt" type="button">Continue this conversation</button>
+        <button id="mode-switch-cancel" class="switch-alt" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
 
   <!-- SPOKEN SCENE — the first-meeting surface. Full-bleed image, the character, a caption low on
        screen, one mic button, and no chrome at all: no header, no back, no counters. The mic is the
@@ -106,6 +161,12 @@
         <span id="scene-talk-bars" class="scene-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <span id="scene-talk-label" class="scene-talk-label"></span>
       </button>
+      <!-- The beat that asks the learner something about themselves. The one button becomes several, in
+           the same place and the same shape, and each carries a whole line the learner can say — the
+           Slovene they are about to speak, with its English under it. Pressing one is the same gesture as
+           pressing Continue, which is why it needs no explanation: it is the turn, offered as sentences
+           instead of as a single "go on". -->
+      <div id="scene-choice" class="scene-choice" hidden></div>
     </div>
     <!-- The controls tutorial: the screen dims, one chip stays lit, and a line of English says what it
          does. The chips themselves are never moved or copied — the scrim goes UNDER them, so the thing
@@ -114,24 +175,30 @@
       <p id="scene-tutorial-text" class="scene-tutorial-text"></p>
       <p class="scene-tutorial-next">Tap to continue</p>
     </div>
-    <!-- The close: his last line stays up, unglossed. Key Phrases is a button, not a screen you must
-         pass through — no counts, no badges, nothing that reads as a measure. -->
+    <!-- The close: his last line stays up, unglossed. No counts, no badges, nothing that reads as a
+         measure. ONE door, not two — the phrases and both ways of taking them further live behind a
+         single "Review", so the closed screen holds exactly two controls and nothing is positioned
+         beside anything. -->
     <div id="scene-close" class="scene-close" hidden>
-      <!-- Carrying on is the default, so it leads: the solid button, first, in the same place every
-           lesson. Everything under it is optional and quieter. -->
-      <button id="scene-next" class="scene-close-btn" type="button">Next lesson</button>
-      <div id="scene-phrases" class="scene-phrases" hidden></div>
-      <button id="scene-phrases-btn" class="scene-close-btn ghost" type="button">Key Phrases</button>
-      <!-- The two ways to take this lesson further, folded away until asked for: the same material read
-           and listened to at your own pace, or spoken live with the tutor carrying this scene. The menu
-           hangs off the button rather than sitting in the column, so opening it moves nothing else. -->
-      <div class="scene-deeper-wrap">
-        <button id="scene-deeper-btn" class="scene-close-btn ghost" type="button">Go Deeper</button>
-        <div id="scene-deeper" class="scene-deeper" hidden>
-          <button id="scene-deeper-read" class="scene-close-btn ghost" type="button">Read and Listen</button>
-          <button id="scene-deeper-speak" class="scene-close-btn ghost" type="button">Speaking</button>
+      <div id="scene-review" class="scene-review" hidden>
+        <div id="scene-phrases" class="scene-phrases"></div>
+        <!-- The two ways onward, at the foot of the phrases they act on. Labelled by what they ARE — a
+             learner reading "Speak Live with AI" needs no prior knowledge of the app to know what
+             happens. Their faint fill is what says "tappable"; the › alone did not. -->
+        <div class="phrase-exits">
+          <p class="phrase-exits-title">Practice these phrases more?</p>
+          <button id="scene-deeper-speak" class="phrase-exit" type="button">
+            <span>Speak Live with AI</span><span class="phrase-exit-go" aria-hidden="true">›</span>
+          </button>
+          <button id="scene-deeper-read" class="phrase-exit" type="button">
+            <span>Listen to More Examples</span><span class="phrase-exit-go" aria-hidden="true">›</span>
+          </button>
         </div>
       </div>
+      <button id="scene-phrases-btn" class="scene-close-btn ghost scene-review-btn" type="button">Review</button>
+      <!-- Carrying on is the default, so it is the only thing here that reads as an action: bigger than
+           Review, not merely brighter, and last so it sits under the thumb. -->
+      <button id="scene-next" class="scene-close-btn scene-next-btn" type="button">Next lesson</button>
     </div>
   </main>
 
@@ -165,7 +232,8 @@
     </div>
   </div>
 
-  <!-- Observability overlay — dev only; shown on the live-tutor screen so pipeline failures are visible. -->
+  <!-- Observability overlay — dev only, opt in with ?obs=1. It prints transcripts and raw model
+       timings, so it stays off the practice surface unless someone has asked for it by URL. -->
   <section id="obs" class="obs" hidden>
     <div class="obs-row"><span>state</span><b id="obs-state">idle</b></div>
     <div class="obs-row"><span>providers</span><b id="obs-providers">—</b></div>

@@ -16,6 +16,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { CATALOG } from "./catalog";
 import { LEARNABLES } from "./learnables";
+import { getFact, factValues } from "./facts";
 import { PACING, DEFAULT_PACING, pacingFor } from "./pacing";
 
 export type DialogueSpeaker = "npc" | "client";
@@ -98,6 +99,49 @@ export interface DialogueVoicing {
   heard?: string;
 }
 
+/** A beat that asks the learner for one FACT about themselves (server/facts.ts) instead of simply
+ *  handing the turn over.
+ *
+ *  A spoken lesson has one input channel: the button that says the learner is ready to move on. That is
+ *  enough to run a scene and it is not enough to learn anything about the person in it — the recording is
+ *  never inspected, so a lesson can ask "which of these are you?" and hear nothing back. This is the
+ *  channel that answers it. The beat hands the turn over as SEVERAL buttons rather than one, each one a
+ *  whole line the learner can say; the one they press is both the line they produce and the answer they
+ *  give. Pressing it stores the fact and advances the spine exactly as the plain button does.
+ *
+ *  The options are not authored here. They come from the fact's declared values, rendered through the
+ *  upcoming client node's own variants — so the learner reads the Slovene they are about to say, and the
+ *  set of answers is decided in one place (the fact) rather than restated per lesson.
+ *
+ *  Gender is the first fact to use this. Nothing about the mechanism is about gender: a later lesson can
+ *  ask anything the course declares, and its lines vary the same way. */
+export interface DialogueChoice {
+  /** The fact id this beat asks for. Must resolve in server/catalog/facts.json. */
+  fact: string;
+}
+
+/** One node's line, said in the form a single fact value calls for.
+ *
+ *  A variant is the SAME beat in a different shape — the same moment, the same turn, the same catalog
+ *  items — so it may override text and nothing else. `next`, `learnables`, `stallHandlers` and the
+ *  timings belong to the beat and are shared by every form of it; a node that wants a different one of
+ *  those wants a different node.
+ *
+ *  Because the audio key is (provider, voiceTag, text), a variant's `sl` is automatically its own clip:
+ *  adding one can never disturb a clip already on disk. */
+export interface DialogueVariant {
+  sl?: string;
+  en?: string;
+  deliverySL?: string;
+  slowSL?: string;
+  deliverySlowSL?: string;
+  focusSpan?: string;
+}
+
+/** The text fields a variant may carry — the closed set, so a field the loader would silently ignore is
+ *  rejected instead. */
+const VARIANT_FIELDS = ["sl", "en", "deliverySL", "slowSL", "deliverySlowSL", "focusSpan"] as const;
+
 export interface DialogueNode {
   speaker: DialogueSpeaker;
   /** The line, in Slovene. This is the DISPLAY caption AND the audio cache key. */
@@ -134,6 +178,18 @@ export interface DialogueNode {
    *  exercises no catalog item, and an empty list says so rather than leaving it unanswered. Absent →
    *  untagged, which leaves the line unmeasured. */
   learnables?: string[];
+  /** The English shown ONCE above the options at a beat that asks the learner about themselves — what
+   *  they are being asked to do with the buttons.
+   *
+   *  It lives on the CLIENT node because it stands in for that line's own gloss: the line has several
+   *  forms here, so the prompt slot cannot show one of them without contradicting the other. Each option
+   *  carries its own `en` on its own button; this is the one line that speaks for the whole beat, and it
+   *  is on screen from the moment the turn opens rather than waiting on the stall ladder — a learner
+   *  meeting a new control should not have to fall silent to find out what it is for.
+   *
+   *  Shared by every form of the line, so it is not something a variant may override. A `\n` in it reaches
+   *  the screen as a line break. Absent → the slot stays empty and the options speak for themselves. */
+  chooseEN?: string;
   /** Optional short parenthetical CONTEXT for a client choice (docs/dialogue-difficulty-model.md §5) —
    *  the situation that choice selects when one branch depends on context the line itself can't carry
    *  (e.g. "if the book is damaged", "no ID on you"). Rendered as a muted "(…)" tag on the choice, never
@@ -161,9 +217,47 @@ export interface DialogueNode {
   /** Where this CLIENT line's Key Phrases play button gets its sound. Absent → no button, which is a valid
    *  and often correct answer: a badly-cut excerpt teaches wrong prosody, which is worse than silence. */
   audio?: DialogueVoicing;
+  /** This beat asks the learner for a fact about themselves. Valid on an `npc` node in a spoken lesson —
+   *  the character is the one who asks, and the beat he asks on is the one that hands the turn over.
+   *  Absent → the turn is handed over as the single "Continue" button, which is every other beat. */
+  choice?: DialogueChoice;
+  /** The fact id this line's wording depends on. Present ⇒ `variants` says what each answer changes.
+   *
+   *  On a `client` node this costs nothing: a spoken lesson never synthesizes the learner's lines, so a
+   *  variant there is a second caption and no second clip. On an `npc` node it forks a RECORDING, which
+   *  is the one place a variant is expensive — see docs/rehearsal-dialogues.md › Learner facts. */
+  variesBy?: string;
+  /** fact VALUE → what that answer changes about this line. A partial map: a value with no entry keeps
+   *  the node as authored, so the base `sl` is the form the unmarked answer takes and only the answers
+   *  that differ from it are written out. */
+  variants?: Record<string, DialogueVariant>;
   /** Next node ids. On an npc node: the client-reply choices the learner picks between (may be more than
    *  two — the renderer scrolls). On a client node: the npc's response (one id). Empty = end. */
   next: string[];
+}
+
+/** This node's line as it reaches a learner the app knows `facts` about — the ONE place a variant is
+ *  chosen, so the caption, the audio key, the prompt and the asset builder can never disagree about
+ *  which words this beat says.
+ *
+ *  A node that varies on a fact with no stored answer resolves to its base. That is the honest fallback
+ *  for the learner's own captions and it must never reach a synthesized line, which is why `lint:tree`
+ *  requires an npc line's fact to be known before the beat can be played. */
+export function resolveNode(node: DialogueNode, facts: Record<string, string>): DialogueNode {
+  if (!node.variesBy) return node;
+  const variant = node.variants?.[facts[node.variesBy] ?? ""];
+  return variant ? { ...node, ...variant } : node;
+}
+
+/** Every form this node can take, keyed by the fact value that produces it (`""` = the base). What the
+ *  asset builder synthesizes and what `lint:audio` checks: a forked line is two clips, and both have to
+ *  exist before the level can honestly call its audio ready. */
+export function nodeForms(node: DialogueNode): Array<{ value: string; node: DialogueNode }> {
+  const forms = [{ value: "", node }];
+  for (const value of Object.keys(node.variants ?? {})) {
+    forms.push({ value, node: resolveNode(node, { [node.variesBy!]: value }) });
+  }
+  return forms;
 }
 
 /** What the learner is being asked to say, surfaced at the moment their turn opens. It is the upcoming
@@ -248,6 +342,15 @@ export interface Dialogue {
   /** How the learner advances this level — tapped choices (default) or spoken turns. Absent → "tap", so
    *  every dialogue authored before this field keeps its behaviour. See DialogueAdvance. */
   advance?: DialogueAdvance;
+  /** Learner facts (server/facts.ts) this level takes as ALREADY ANSWERED — a lesson that speaks to the
+   *  learner in a gendered form without stopping to ask, because an earlier lesson asked.
+   *
+   *  It is a declaration to the gates, and the gate it satisfies is the one that matters: `lint:tree`
+   *  lets a character's line vary on a fact only where that fact is known by the time the beat plays —
+   *  asked on this level's own spine, or named here. Reaching a level whose needs are unanswered plays
+   *  the base form of every line, so the declaration is also the record of which lesson has to come
+   *  first. Absent → the level asks for whatever it varies on. */
+  needs?: string[];
   /** Which PACING PROFILE times this lesson (server/catalog/pacing.json) — every engineered silence in
    *  the run, named and dialed in one place. Absent → the default profile. Only meaningful for
    *  `advance: "audio"`; a tapped tree is paced by the learner's own finger. */
@@ -283,6 +386,97 @@ function asProfile(file: string, obj: any, key: string, where: string): string {
   return id;
 }
 
+/** The text invariants one FORM of a node must satisfy — the base line, or the line a variant resolves
+ *  to. Each form is a caption in its own right and an audio key in its own right, so each answers for
+ *  itself. */
+function checkForm(file: string, where: string, n: any): void {
+  asString(file, n, "sl", where);
+  asString(file, n, "en", where);
+  if (n.deliverySL !== undefined) asString(file, n, "deliverySL", where);
+  if (n.slowSL !== undefined) {
+    asString(file, n, "slowSL", where);
+    // Same text ⇒ same audio key ⇒ one clip. The slow variant would silently be the natural one.
+    if (n.slowSL === n.sl) fail(file, `${where}: "slowSL" must differ from "sl" (identical text is one audio clip)`);
+  }
+  if (n.deliverySlowSL !== undefined) {
+    asString(file, n, "deliverySlowSL", where);
+    if (!n.slowSL) fail(file, `${where}: "deliverySlowSL" needs a "slowSL" to direct`);
+  }
+  if (n.focusSpan !== undefined) {
+    asString(file, n, "focusSpan", where);
+    // Exactly once, or the renderer has to guess which occurrence carries the emphasis — and a span
+    // that isn't in the line at all marks nothing while looking authored.
+    const hits = n.sl.split(n.focusSpan).length - 1;
+    if (hits !== 1) fail(file, `${where}: "focusSpan" occurs ${hits} times in "sl" — it must occur exactly once`);
+  }
+}
+
+/** The `variesBy` / `variants` pair on one node: a declared fact, a closed set of its answers, and text
+ *  overrides only. The per-form text invariants are checked separately (checkForm), over each resolved
+ *  line rather than over the override fragment. */
+function checkVariants(file: string, where: string, n: any): void {
+  if (n.variesBy === undefined && n.variants === undefined) return;
+  if (n.variesBy === undefined) fail(file, `${where}: "variants" needs a "variesBy" naming which fact they answer`);
+  asString(file, n, "variesBy", where);
+  const fact = getFact(n.variesBy);
+  if (!fact) fail(file, `${where}: "variesBy" names fact "${n.variesBy}", which is not in server/catalog/facts.json`);
+  if (!n.variants || typeof n.variants !== "object" || !Object.keys(n.variants).length)
+    fail(file, `${where}: "variesBy" needs a non-empty "variants" saying what each answer changes`);
+  const allowed = factValues(n.variesBy);
+  for (const [value, v] of Object.entries<any>(n.variants)) {
+    const vw = `${where} variant "${value}"`;
+    if (!allowed.has(value))
+      fail(file, `${vw}: fact "${n.variesBy}" answers ${[...allowed].map((a) => `"${a}"`).join(" | ")} — "${value}" is not one of them`);
+    if (!v || typeof v !== "object") fail(file, `${vw}: must be an object of text overrides`);
+    if (!Object.keys(v).length) fail(file, `${vw}: is empty — a variant that changes nothing is the base line`);
+    for (const [k, text] of Object.entries<any>(v)) {
+      if (!VARIANT_FIELDS.includes(k as any))
+        fail(file, `${vw}: "${k}" is not one of ${VARIANT_FIELDS.join(", ")}. A variant is the same beat in a `
+          + `different form — its turn, its "next" and its learnables belong to the beat and are shared.`);
+      if (typeof text !== "string" || !text) fail(file, `${vw}: "${k}" must be a non-empty string`);
+    }
+    // A focus span is a SUBSTRING match, and the two forms of a word usually share a stem — "Sem študent"
+    // sits inside "Sem študentka." and passes the occurs-exactly-once test while marking two thirds of a
+    // word. So a variant that rewrites the line states its own span rather than inheriting one that was
+    // measured against different words.
+    if (v.sl !== undefined && n.focusSpan !== undefined && v.focusSpan === undefined)
+      fail(file, `${vw}: rewrites "sl", so it needs its own "focusSpan" — the base's was chosen against the base line, `
+        + `and a span is matched as a substring, so an inherited one can mark part of a word without failing`);
+  }
+}
+
+/** A beat that asks the learner for a fact. It stands or falls on the client node it hands over to: that
+ *  node's variants are what the buttons say, so the question and the answers are one authored thing. */
+function checkChoice(file: string, where: string, n: any, nodes: Record<string, any>): void {
+  if (n.choice === undefined) return;
+  if (!n.choice || typeof n.choice !== "object") fail(file, `${where}: "choice" must be an object { fact }`);
+  if (n.speaker !== "npc")
+    fail(file, `${where}: "choice" is only valid on an npc node — the character is the one who asks, and his beat is the one that hands the turn over`);
+  asString(file, n.choice, "fact", `${where} "choice"`);
+  const fact = getFact(n.choice.fact);
+  if (!fact) fail(file, `${where}: "choice" asks for fact "${n.choice.fact}", which is not in server/catalog/facts.json`);
+
+  const clientId = n.next.find((id: string) => nodes[id]?.speaker === "client");
+  if (!clientId)
+    fail(file, `${where}: "choice" hands the turn over, so this beat needs a client node in "next" whose lines the buttons carry`);
+  const client = nodes[clientId];
+  if (client.variesBy !== n.choice.fact)
+    fail(file, `${where}: "choice" asks for "${n.choice.fact}", so its client line "${clientId}" must carry `
+      + `"variesBy": "${n.choice.fact}" — the buttons ARE that line, said each way`);
+
+  // Every answer gets a button, and each button has to read as a different sentence. Two answers that
+  // resolve to the same line offer the learner a choice between two identical options.
+  const bySurface = new Map<string, string>();
+  for (const { value } of fact.values) {
+    const sl = resolveNode(client, { [n.choice.fact]: value }).sl;
+    const twin = bySurface.get(sl);
+    if (twin)
+      fail(file, `${where}: answers "${twin}" and "${value}" both put "${sl}" on a button — `
+        + `"${clientId}" needs a variant for each answer that differs from the base line`);
+    bySurface.set(sl, value);
+  }
+}
+
 export function validateDialogue(file: string, raw: any): Dialogue {
   if (!raw || typeof raw !== "object") fail(file, "not an object");
   asString(file, raw, "id", "dialogue");
@@ -308,6 +502,13 @@ export function validateDialogue(file: string, raw: any): Dialogue {
   asProfile(file, raw.voices, "client", "voices");
   if (raw.advance !== undefined && raw.advance !== "tap" && raw.advance !== "audio")
     fail(file, `"advance" must be "tap" | "audio"`);
+  if (raw.needs !== undefined) {
+    if (!Array.isArray(raw.needs)) fail(file, `"needs" must be an array of fact ids`);
+    for (const id of raw.needs) {
+      if (typeof id !== "string" || !getFact(id))
+        fail(file, `needs: fact "${id}" is not in server/catalog/facts.json`);
+    }
+  }
   if (raw.pacing !== undefined) {
     asString(file, raw, "pacing", "dialogue");
     if (!PACING[raw.pacing])
@@ -350,17 +551,12 @@ export function validateDialogue(file: string, raw: any): Dialogue {
   for (const [nid, n] of Object.entries<any>(raw.nodes)) {
     const where = `node "${nid}"`;
     if (n?.speaker !== "npc" && n?.speaker !== "client") fail(file, `${where}: speaker must be "npc" | "client"`);
-    asString(file, n, "sl", where);
-    asString(file, n, "en", where);
-    if (n.deliverySL !== undefined) asString(file, n, "deliverySL", where);
-    if (n.slowSL !== undefined) {
-      asString(file, n, "slowSL", where);
-      // Same text ⇒ same audio key ⇒ one clip. The slow variant would silently be the natural one.
-      if (n.slowSL === n.sl) fail(file, `${where}: "slowSL" must differ from "sl" (identical text is one audio clip)`);
-    }
-    if (n.deliverySlowSL !== undefined) {
-      asString(file, n, "deliverySlowSL", where);
-      if (!n.slowSL) fail(file, `${where}: "deliverySlowSL" needs a "slowSL" to direct`);
+    checkVariants(file, where, n);
+    // The text invariants hold PER FORM, not per node: each variant is its own caption and its own audio
+    // key, so each has to satisfy them on its own terms. A variant that changes the surface of a line
+    // needs its own `focusSpan` and its own `slowSL` to go with it.
+    for (const { value, node } of nodeForms(n)) {
+      checkForm(file, value ? `${where} variant "${value}"` : where, node);
     }
     if (n.learnables !== undefined) {
       if (!Array.isArray(n.learnables)) fail(file, `${where}: "learnables" must be an array of catalog ids`);
@@ -371,13 +567,6 @@ export function validateDialogue(file: string, raw: any): Dialogue {
     if (n.captionDelayMs !== undefined) {
       if (typeof n.captionDelayMs !== "number" || !Number.isFinite(n.captionDelayMs) || n.captionDelayMs < 0)
         fail(file, `${where}: "captionDelayMs" must be a non-negative number of milliseconds`);
-    }
-    if (n.focusSpan !== undefined) {
-      asString(file, n, "focusSpan", where);
-      // Exactly once, or the renderer has to guess which occurrence carries the emphasis — and a span
-      // that isn't in the line at all marks nothing while looking authored.
-      const hits = n.sl.split(n.focusSpan).length - 1;
-      if (hits !== 1) fail(file, `${where}: "focusSpan" occurs ${hits} times in "sl" — it must occur exactly once`);
     }
     if (n.glossPolicy !== undefined && !["tap", "after", "held"].includes(n.glossPolicy))
       fail(file, `${where}: "glossPolicy" must be "tap" | "after" | "held"`);
@@ -397,13 +586,26 @@ export function validateDialogue(file: string, raw: any): Dialogue {
         if (atMs <= prev) fail(file, `${hw}: fires at ${atMs}ms, which is not after the previous rung (${prev}ms)`);
         prev = atMs;
         if (!["pulse", "respeak", "soften"].includes(h.kind)) fail(file, `${hw}: "kind" must be "pulse" | "respeak" | "soften"`);
-        if (h.kind === "soften") asString(file, h, "label", hw);
+        if (h.kind === "soften") {
+          asString(file, h, "label", hw);
+          // `soften` lowers the bar by relabelling the single button — and a beat that ASKS has no single
+          // button, only its options. Its instruction is the client line's `chooseEN`, which says the same
+          // thing and says it from the moment the turn opens, so there is one place a choice beat's English
+          // is authored rather than two writing over each other.
+          if (n.choice)
+            fail(file, `${hw}: this beat asks the learner for "${n.choice.fact}", so its English belongs in the client line's "chooseEN" — shown immediately, above the options`);
+        }
         if (h.kind === "respeak" && !n.slowSL) fail(file, `${hw}: "respeak" needs the node to have a "slowSL" to re-speak`);
       }
     }
     if (n.context !== undefined) {
       asString(file, n, "context", where);
       if (n.speaker !== "client") fail(file, `${where}: "context" is only valid on a client choice`);
+    }
+    if (n.chooseEN !== undefined) {
+      asString(file, n, "chooseEN", where);
+      if (n.speaker !== "client")
+        fail(file, `${where}: "chooseEN" is only valid on a client node — it stands in for that line's own gloss while the learner picks between its forms`);
     }
     if (n.audio !== undefined) {
       const aw = `${where} "audio"`;
@@ -437,6 +639,9 @@ export function validateDialogue(file: string, raw: any): Dialogue {
       if (typeof id !== "string" || !ids.has(id)) fail(file, `${where}: next references unknown node "${id}"`);
     }
   }
+  // Checked after the whole node map is known — a choice beat is judged against the client node it hands
+  // the turn to, which may be validated later in the loop above.
+  for (const [nid, n] of Object.entries<any>(raw.nodes)) checkChoice(file, `node "${nid}"`, n, raw.nodes);
   return raw as Dialogue;
 }
 

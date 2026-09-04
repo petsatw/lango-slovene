@@ -143,7 +143,18 @@ export interface ScenarioContext {
   practiced: string[]; // the level's objective descriptors the learner just rehearsed
 }
 
-export function buildConversationPrompt(
+/** The TEACHING half of the free-conversation prompt: who the tutor is, how it talks, the learner's
+ *  palette, and today's targets. Everything that decides what the learner hears.
+ *
+ *  It is split out because a second surface needs it. `buildConversationPrompt` below adds the evidence
+ *  contract — the JSON the model returns so the server can credit — and that half is transport, not
+ *  teaching: a REALTIME session has no JSON hop to return anything through, and a speech model handed
+ *  an output schema would try to say it out loud. So the live tutor composes this body with a spoken-
+ *  medium tail of its own (server/live/prompt.ts).
+ *
+ *  The consequence to hold on to: this is one string with two callers, so the live tutor cannot drift
+ *  from the production prompt by accident. Changing how the tutor teaches changes it in both places. */
+export function conversationTeachingBody(
   familiar: Learnable[],
   targets: Learnable[],
   directive: string = DEFAULT_DIRECTIVE,
@@ -225,6 +236,18 @@ export function buildConversationPrompt(
     "",
     "TODAY’S TARGETS  (warmly draw the learner toward saying each one)",
     ...targetBlock,
+  ].join("\n");
+}
+
+export function buildConversationPrompt(
+  familiar: Learnable[],
+  targets: Learnable[],
+  directive: string = DEFAULT_DIRECTIVE,
+  role?: string | null,
+  context?: ScenarioContext | null,
+): string {
+  return [
+    conversationTeachingBody(familiar, targets, directive, role, context),
     "",
     "After you reply, jot down what the learner did this turn so their progress can be tracked:",
     "- transcript_verbatim: exactly what the learner said, word for word, in whatever language(s) — keep",

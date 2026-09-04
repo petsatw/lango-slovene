@@ -27,6 +27,26 @@ ELEVENLABS_VOICE_ID_SHOP_ASSISTANT=
 GROK_API_KEY=
 GROK_IMAGE_MODEL=grok-imagine-image-quality
 
+# --- LIVE TUTOR (continuous speech; "Go live"). Internal testing only — this is the one surface that
+#     meters a vendor BY THE MINUTE, so it stays closed until LIVE_ACCESS_CODE is set, and the real
+#     ceiling is a provider-side spend cap in the vendor console, not anything in this file. ---
+# Unset = the live tutor is closed. Any non-empty value opens it to whoever has the string.
+LIVE_ACCESS_CODE=
+# Which vendor answers. Testers may override per session (?provider=grok); everyone else gets this.
+LIVE_PROVIDER=gemini
+SESSION_TTL_SEC=600
+LIVE_MAX_CONCURRENT=3
+# =1 logs vendor events the adapter does not handle. Set it when a transcript or a state never arrives:
+# the event is being dropped silently, and this is what names it.
+LIVE_DEBUG=
+
+# Gemini Live (native audio, separate model from the E2 turn model above).
+GEMINI_MODEL_LIVE=gemini-3.1-flash-live-preview
+# Grok Voice. Falls back to GROK_API_KEY (same xAI account as E4) when XAI_API_KEY is unset.
+XAI_API_KEY=
+XAI_MODEL=grok-voice-think-fast-2.0
+XAI_VOICE=eve
+
 # --- Optional alternates for the blind A/B (leave blank until needed) ---
 # OPENAI_API_KEY=
 

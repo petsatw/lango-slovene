@@ -243,6 +243,40 @@ export class GeminiE2 implements E2Adapter {
     };
   }
 
+  // Text in, text out — the cheapest call this adapter makes. Deliberately unconstrained by the
+  // learner model: the learner is asking what a line MEANS, and answering only for catalog words
+  // would leave exactly the unfamiliar ones blank.
+  async gloss(sl: string): Promise<string> {
+    const key = requireKey();
+    const res = await fetch(`${BASE}/${this.model}:generateContent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [
+            {
+              text:
+                "Translate the Slovene into short, plain English. Reply with the translation ALONE — " +
+                "no quotes, no notes, no grammar, no alternatives. Keep a question a question.",
+            },
+          ],
+        },
+        contents: [{ role: "user", parts: [{ text: sl }] }],
+        // A thinking model spends maxOutputTokens on reasoning BEFORE it answers, so a tight cap
+        // truncates the translation rather than shortening it ("One coffee, right"). Translating one
+        // sentence needs no reasoning at all: switch thinking off and leave real headroom.
+        generationConfig: {
+          temperature: 0,
+          maxOutputTokens: 512,
+          thinkingConfig: { thinkingBudget: 0 },
+        },
+      }),
+    });
+    if (!res.ok) throw shortError(res.status, await res.text());
+    const data: any = await res.json();
+    return String(data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "").trim();
+  }
+
   async ping(): Promise<string> {
     const key = requireKey();
     const res = await fetch(`${BASE}/${this.model}:generateContent`, {

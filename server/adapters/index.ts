@@ -1,5 +1,10 @@
-// Adapter registry — the swap point. E2_PROVIDER / E3_PROVIDER env vars choose the
-// implementation. To run the blind A/B across providers, add a class here and flip the env var.
+// Adapter registry — the swap point. E2_PROVIDER / E3_PROVIDER env vars choose the implementation. To
+// run the blind A/B across providers, add a class here and select it per request.
+//
+// A CALLER MAY NAME ONE, and a named-but-unregistered provider falls back to the configured one rather
+// than failing the turn. That is what lets a tester compare two providers inside one sitting, the same
+// way the live surface does it (server/live/registry.ts resolveProvider) — without it, comparing them
+// means restarting the server between runs, and a restart between runs only adds noise.
 
 import type { E2Adapter, E3Adapter, ImageAdapter } from "../types";
 import { GeminiE2 } from "./gemini";
@@ -18,14 +23,18 @@ const E3_REGISTRY: Record<string, () => E3Adapter> = {
   // azure:  () => new AzureE3(),
 };
 
-export function getE2(): E2Adapter {
+export function getE2(requested?: unknown): E2Adapter {
+  const asked = typeof requested === "string" ? requested.toLowerCase() : "";
+  if (E2_REGISTRY[asked]) return E2_REGISTRY[asked]!();
   const name = (process.env.E2_PROVIDER || "gemini").toLowerCase();
   const make = E2_REGISTRY[name];
   if (!make) throw new Error(`Unknown E2_PROVIDER "${name}". Known: ${Object.keys(E2_REGISTRY).join(", ")}`);
   return make();
 }
 
-export function getE3(): E3Adapter {
+export function getE3(requested?: unknown): E3Adapter {
+  const asked = typeof requested === "string" ? requested.toLowerCase() : "";
+  if (E3_REGISTRY[asked]) return E3_REGISTRY[asked]!();
   const name = (process.env.E3_PROVIDER || "elevenlabs").toLowerCase();
   const make = E3_REGISTRY[name];
   if (!make) throw new Error(`Unknown E3_PROVIDER "${name}". Known: ${Object.keys(E3_REGISTRY).join(", ")}`);

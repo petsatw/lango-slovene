@@ -68,13 +68,14 @@ export async function understand(input: {
   mimeType: string;
   history: ConversationTurn[];
   session?: SessionState;
+  learnerId: string;
 }): Promise<UnderstandResult> {
   const scenario = getScenario(input.session?.scenarioId);
   const session = input.session ?? freshSession(scenario);
 
-  // MASTERY layer: read the durable model so presentation can steer toward the still-unmastered
-  // learnable within each objective (and stop pushing mastered ones).
-  const model = learner.load();
+  // MASTERY layer: read the model so presentation can steer toward the still-unmastered learnable
+  // within each objective (and stop pushing mastered ones).
+  const model = learner.load(input.learnerId);
   const presentation = presentObjectives(scenario.objectives, model);
   const systemPrompt = buildSystemPrompt(scenario, session, presentation);
   const e2 = getE2();
@@ -93,7 +94,7 @@ export async function understand(input: {
   let saved = model;
   if (r.learnableProgress.length) {
     saved = applyCredit(model, r.learnableProgress);
-    learner.save(saved);
+    learner.save(input.learnerId, saved);
   }
 
   turnlog.record({
@@ -133,8 +134,10 @@ export async function converse(input: {
   role?: string | null; // free chat: the pinned role the client carries back each turn (null = decide)
   focusLearnables?: string[]; // rehearsal→free-chat handoff: bias this turn's targets toward these ids
   context?: ScenarioContext | null; // rehearsal→free-chat handoff: the scene + practiced objectives (English priming)
+  learnerId: string;
+  e2Provider?: string; // a tester naming the understand+tutor provider for THIS turn (adapters/index.ts)
 }): Promise<ConverseResult> {
-  const model = learner.load();
+  const model = learner.load(input.learnerId);
 
   // Seed onboarding: same pipeline, same chat surface — only the brain is swapped for a static script.
   if (input.seedId) {
@@ -142,7 +145,7 @@ export async function converse(input: {
     let saved = model;
     if (r.learnableProgress.length) {
       saved = applyCredit(model, r.learnableProgress);
-      learner.save(saved);
+      learner.save(input.learnerId, saved);
     }
     turnlog.record({
       path: "seed",
@@ -188,7 +191,7 @@ export async function converse(input: {
   const level: 1 | 2 = input.level === 1 ? 1 : 2;
   const { familiar, targets } = selectForWitness(model, level, input.focusLearnables ?? []);
   const systemPrompt = buildConversationPrompt(familiar, targets, undefined, input.role, input.context);
-  const e2 = getE2();
+  const e2 = getE2(input.e2Provider);
   if (!e2.witness) {
     throw new Error(`E2 provider "${e2.name}" does not support free-conversation witness turns`);
   }
@@ -205,7 +208,7 @@ export async function converse(input: {
   // Server owns ALL crediting: successes gated to the in-play targets + Slovene + transcript span;
   // off-target Slovene earns attempts; novel Slovene becomes a catalog candidate (mastery.ts).
   const credit = creditFromEvidence(model, w, targets);
-  if (credit.progress.length) learner.save(credit.model);
+  if (credit.progress.length) learner.save(input.learnerId, credit.model);
   if (credit.candidates.length) candidates.record(credit.candidates);
 
   turnlog.record({
@@ -256,6 +259,7 @@ export async function runTurn(input: {
   mimeType: string;
   history: ConversationTurn[];
   session?: SessionState;
+  learnerId: string;
 }): Promise<TurnResult> {
   const u = await understand(input);
   const e3 = getE3();

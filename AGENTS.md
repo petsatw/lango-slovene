@@ -102,6 +102,9 @@ When diagnosing a problem or analyzing a behavior:
 1. **Deterministic pure logic** (parsing, validation, clustering, payload shaping, formatting) → **extract a pure function, unit-test with plain inputs.** No client, no I/O, no mock. Highest fidelity for logic, zero infra. *(pure-function extraction pattern.)*
 2. **DB / external effect** (insert/update/delete/select, RPC, embeddings) → **integration-test against the local stack with the real client**: seed a real row → invoke handler → assert the real resulting state → clean up. Cloud-portable by construction. *(seed → invoke → assert → clean up pattern.)*
 3. **Never hand-roll a typed mock of the client's fluent chain.** Low-fidelity (verifies your fake, not the real system), high-maintenance (the literal "slave to test infra" trap), migrates nothing. *(The anti-pattern that churns test runs without adding fidelity.)*
+`npm run test:dialogue` **rewrites** `server/dialogues/demo-1.json` and
+`authoring/dialogues/demo/reconcile-input.json` as it runs. Check `git status` after it.
+
 4. **Source-text assertions** (grep a module for a substring) → allowed **only** as cheap contract guards for things with no runtime behavior to exercise ("tool is registered", "auth check still present"). Never the primary behavioral test.
 
 **Cross-cutting rules:**
@@ -191,7 +194,13 @@ npm run probe:e2       # understand+tutor adapter reachable
 npm run probe:e3       # voice adapter returns real audio
 npm run replay         # recorded clips → full pipeline → audio
 npm run test:mastery   # the deterministic mastery-loop rules
+npm run runs           # both speaking modes' records of a sitting, side by side
 ```
+
+`PORT` is case-sensitive — `port=3000` is ignored silently and the server binds 8787. `tsx watch`
+respawns its child on `SIGTERM`; stop a dev server with `pkill -9 -f "tsx watch server/server.ts"`, and
+check for a surviving child on the port (`lsof -nP -iTCP:<port> -sTCP:LISTEN`) before assuming a restart
+took.
 
 **Testing philosophy:** test the seams with real services, observe the pipeline live, never mock the
 heart. The probes and replay exist to exercise the real integration. (Full command list:

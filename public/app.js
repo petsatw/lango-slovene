@@ -3,7 +3,16 @@
 // The live tutor is the single production surface (push-to-talk → /api/converse). Rehearsal trees are
 // exposure only (no mic, no credit). The "engine" stays invisible everywhere except A1 Readiness.
 
+import { startLive, stopLive, liveActive, onLive, hasLiveAudio, playLiveUtterance, liveSpeaking } from "/live.js";
+
 const $ = (id) => document.getElementById(id);
+
+// The observability panel is opt-in per tab (`?obs=1`). It used to show for anyone who opened the
+// tutor screen, which was harmless while that screen was an internal push-to-talk surface. It is now
+// the surface testers are RECORDED on, behind a consent gate — and the panel prints their transcripts
+// and raw model timings next to the conversation. Nothing about it belongs in a tester's view.
+const obsEnabled = new URLSearchParams(location.search).get("obs") === "1";
+
 const obs = {
   state: (s) => ($("obs-state").textContent = s),
   providers: (p) => ($("obs-providers").textContent = p),
@@ -16,6 +25,17 @@ const obs = {
 
 const CHAT_LEVEL = 2; // the internal free-chat ceiling — server-side only, never a learner-visible knob.
 
+// WHOSE progress this is. One id per page load, because a sitting is disposable: progress accrues
+// normally while the learner is here — they are met where they left off five minutes ago — and nothing
+// is kept once they leave. The server keys the learner model by it (server/assets/learner.ts), and it is
+// the seam accounts arrive on: an account id would simply replace what this line mints.
+const learnerId = crypto.randomUUID ? crypto.randomUUID() : newRunId("learner");
+
+// Every call names the learner it is about. One wrapper, so no call site has to remember to.
+function api(url, opts = {}) {
+  return fetch(url, { ...opts, headers: { ...(opts.headers || {}), "x-learner-id": learnerId } });
+}
+
 const history = [];
 let mediaRecorder = null;
 let chunks = [];
@@ -27,17 +47,25 @@ let seedActive = false;      // the zero-state tutorial is running through the s
 let chatRole = null;         // free chat: the role the tutor pinned this session (carried back each turn)
 let chatFocus = [];          // free chat: learnable ids to bias this session toward (set by a rehearsal handoff)
 let chatContext = null;      // free chat: the scene the learner arrived from (situation + practiced objectives)
-let runId = null;            // unique id for THIS free-chat session — groups its turns into one replayable record
+let chatLessonId = null;     // go-live: which lesson's plan the realtime tutor works (set by a rehearsal handoff)
+let runId = null;            // THIS sitting on the practice surface — both modes record under it (npm run runs)
 
 // ---- Screen router — one screen visible at a time; the tree + obs are overlays on top. ----
 const SCREENS = ["home", "practice", "levels", "tutor", "replays", "a1", "scene"];
 let currentScreen = "home";
 
 function showScreen(id) {
+  // Leaving the practice surface ends whatever it was running. A live session left open behind a
+  // screen the learner has walked away from is a metered vendor billing an empty room, and the consent
+  // that was granted for it does not carry to the next visit.
+  if (currentScreen === "tutor" && id !== "tutor") {
+    $("consent").hidden = true;
+    if (liveActive()) stopLive();
+  }
   currentScreen = id;
   for (const s of SCREENS) $(s).hidden = s !== id;
   $("back").hidden = id === "home" || id === "scene";
-  $("obs").hidden = id !== "tutor"; // observability panel is a dev affordance on the live surface only
+  $("obs").hidden = id !== "tutor" || !obsEnabled; // dev affordance, opt-in per tab — see obsEnabled
   // The scene owns the whole viewport — beat 15 is zero chrome, header included.
   document.body.classList.toggle("in-scene", id === "scene");
 }
@@ -74,8 +102,12 @@ function addBubble(role, text, sub, replayOpts = {}) {
   span.textContent = text;
   div.appendChild(span);
 
-  // Tutor bubbles get a replay icon — re-streams the cached audio for that line (teacher voice: the free
-  // tutor has no scenario character).
+  // Tutor bubbles get a replay icon. What it replays depends on where the line came from, and the two
+  // are NOT interchangeable: a tap-to-speak reply was synthesized by ElevenLabs and is cached on disk,
+  // so re-streaming it is free and returns the same voice. A live line was improvised by the vendor in
+  // the vendor's own voice and never went through /api/speak at all — re-synthesizing it would bill a
+  // fresh call and answer in a different voice than the learner just heard. So the live surface hands
+  // in its own player over the audio it kept.
   if (role === "tutor") {
     const replay = document.createElement("button");
     replay.className = "replay";
@@ -83,7 +115,8 @@ function addBubble(role, text, sub, replayOpts = {}) {
     replay.title = "Replay";
     replay.setAttribute("aria-label", "Replay this line");
     replay.textContent = "▶";
-    replay.addEventListener("click", (e) => { e.stopPropagation(); playReplyStreaming(text, replayOpts); });
+    const play = replayOpts.play || (() => playReplyStreaming(div.dataset.sl || text, replayOpts));
+    replay.addEventListener("click", (e) => { e.stopPropagation(); play(); });
     div.appendChild(replay);
   }
 
@@ -99,6 +132,7 @@ function addBubble(role, text, sub, replayOpts = {}) {
   const tr = $("transcript");
   tr.appendChild(div);
   tr.scrollTo({ top: tr.scrollHeight, behavior: "smooth" });
+  return div; // the live surface addresses a bubble again after it is drawn, to revise its text
 }
 
 // Gemini accepts wav/mp3/aiff/aac/ogg/flac — NOT the webm (Chrome) or mp4 (Safari) that
@@ -159,6 +193,15 @@ function wavBase64FromBuffer(buffer) {
 
 // Streaming playback: point an <audio> at /api/speak; the browser streams and plays the mp3
 // progressively, so audio starts on the first chunk. Default voice = teacher (no scenario character).
+// A failure the learner is entitled to see. The observability panel is opt-in (?obs=1), so without this
+// a tester whose turn failed watched it go nowhere with nothing on screen saying so. It reports through
+// the same line under the button that live mode reports through, and the next turn clears it.
+function practiceProblem(msg) {
+  obs.state("error");
+  obs.error(msg);
+  $("live-state").textContent = msg;
+}
+
 async function playReplyStreaming(text, opts = {}) {
   const audio = new Audio();
   audio.preload = "auto";
@@ -175,7 +218,7 @@ async function playReplyStreaming(text, opts = {}) {
     obs.timings(`e2=${lastE2Ms}ms  audio-start=${ttfa}ms`);
   }, { once: true });
   audio.onended = () => obs.state("idle");
-  audio.onerror = () => { obs.state("error"); obs.error("audio stream failed"); };
+  audio.onerror = () => practiceProblem("the tutor's voice didn't play");
 
   try {
     await audio.play();
@@ -189,6 +232,7 @@ async function playReplyStreaming(text, opts = {}) {
 
 async function startRecording() {
   obs.error("");
+  $("live-state").textContent = ""; // a new turn clears the last one's failure
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   recMime = pickMimeType();
   mediaRecorder = recMime ? new MediaRecorder(stream, { mimeType: recMime }) : new MediaRecorder(stream);
@@ -197,15 +241,15 @@ async function startRecording() {
   mediaRecorder.ondataavailable = (e) => e.data.size && chunks.push(e.data);
   mediaRecorder.start();
   obs.state("recording");
-  $("talk").classList.add("recording");
-  $("talk-label").textContent = "Listening…";
+  holding = true;
+  renderPractice(); // the whole button lights while the mic is open, and only while it is open
 }
 
 // One live turn — always the free-chat witness path (/api/converse). The seed rides the same gesture.
 async function stopRecordingAndSend() {
   if (!mediaRecorder) return;
-  $("talk").classList.remove("recording");
-  $("talk-label").textContent = "Hold to speak";
+  holding = false;
+  renderPractice();
 
   const done = new Promise((resolve) => (mediaRecorder.onstop = resolve));
   mediaRecorder.stop();
@@ -220,10 +264,12 @@ async function stopRecordingAndSend() {
     const audioBase64 = await blobToWavBase64(blob);
     if (seedActive) { await seedTurn(audioBase64); return; } // zero-state tutorial → scripted adapter
 
-    const res = await fetch("/api/converse", {
+    const res = await api("/api/converse", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ audioBase64, mimeType: "audio/wav", history, level: CHAT_LEVEL, role: chatRole, focusLearnables: chatFocus, context: chatContext, runId }),
+      // `e2` is the tester's provider for this turn, named in the URL (?e2=…) exactly the way live mode
+      // takes ?provider= — so one screen can run both modes against a provider of the tester's choosing.
+      body: JSON.stringify({ audioBase64, mimeType: "audio/wav", history, level: CHAT_LEVEL, role: chatRole, focusLearnables: chatFocus, context: chatContext, runId, e2: liveParams.get("e2") || undefined }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
@@ -242,8 +288,7 @@ async function stopRecordingAndSend() {
     if (data.role) chatRole = data.role;
     await playReplyStreaming(data.tutorReply, {}); // teacher voice
   } catch (err) {
-    obs.state("error");
-    obs.error(err.message);
+    practiceProblem(`the tutor didn't answer — ${err.message}`);
   }
 }
 
@@ -256,7 +301,7 @@ async function loadPractice() {
   const el = $("scenario-list");
   el.innerHTML = "<p class='muted'>Loading…</p>";
   try {
-    const { scenarios } = await (await fetch("/api/practice")).json();
+    const { scenarios } = await (await api("/api/practice")).json();
     if (!scenarios.length) { el.innerHTML = "<p class='muted'>No scenarios yet.</p>"; return; }
     el.innerHTML = "";
     // Two groups, because they are two different things to do: the spoken lessons are the course, the
@@ -635,30 +680,229 @@ function reinforceFromDialogue() {
   const practiced = (dialogue && dialogue.objectives) ? dialogue.objectives.map((o) => o.descriptorEN) : [];
   const context = scene ? { scene: `${scene} — ${dialogue.title}`, practiced } : null;
   const role = currentScenario ? (currentScenario.role || null) : null;
+  const lessonId = dialogue ? dialogue.id : null;
   closeDialogue();
-  openTutor({ focus, role, context });
+  openTutor({ focus, role, context, lessonId });
 }
 
-// ---- ② Live AI tutor: the single live surface. Zero-state → seed; otherwise → free chat. ----
+// ---- Go live: continuous speech against a vendor's realtime model, on the SAME screen as push-to-talk
+// so the two can be compared with the same lesson in front of the same learner. The mic contention is
+// real — both want it — so the two never run at once, and the talk button is disabled while live. ----
+// The bake-off needs the SAME lesson run twice against two vendors, so a tester can name both in the
+// URL (?lesson=restaurant-l1&provider=grok) rather than rehearsing their way back to the same place.
+// The provider is honoured server-side for testers only; a learner arriving normally names neither and
+// gets the lesson they just rehearsed on whichever provider is configured.
+const liveParams = new URLSearchParams(location.search);
+
+// ---- The two modes, behind one button --------------------------------------------------------
+//
+// `live` is continuous speech against a realtime vendor; `tap` is hold-to-talk against /api/converse.
+// The learner sees the same card, the same transcript and the same button in both — only the button's
+// label, its held/live behaviour and its animation differ. Which mode is running is a TESTER's
+// question, so the toggle is a quiet pill and nothing else on the surface answers it.
+//
+// The mode does NOT persist. Every session starts on live, deliberately: a per-tester preference
+// would put testers on different modes without either of them choosing, which is the one thing an
+// A/B cannot survive.
+let mode = "live";
+let holding = false;       // tap mode: the button is down and the mic is open
+let freeChatBegun = false; // tap mode opens with the tutor speaking first — once per session
+let liveTick = null;       // polls tutor-speaking, which no message reports (see liveSpeaking)
+
+// Going the other way is free: live just starts talking. Going INTO tap hands the learner a button
+// they have to work, so the switch asks first — carry this conversation across, or see the tutorial
+// that shows them the button. Cancel is the third answer, and it leaves them where they were.
+function setMode(next) {
+  if (mode === next) { renderPractice(); return; }
+  if (liveActive() || holding || seedActive) return; // never switch out from under a running mode
+  if (next === "tap") { $("mode-switch").hidden = false; return; }
+  applyMode(next);
+}
+
+function applyMode(next) {
+  mode = next;
+  renderPractice();
+  // Tap-to-speak opens with the tutor speaking first, so the learner is not staring at an empty card
+  // wondering what to say. Live has its own opening — the vendor speaks when the session connects.
+  if (mode === "tap" && !freeChatBegun) { freeChatBegun = true; beginFreeChat(); }
+}
+
+// One place decides what the button says and how it moves. Every state change routes through here so
+// the two modes cannot drift into two different renderers.
+function renderPractice() {
+  const btn = $("practice-talk");
+  const label = $("practice-talk-label");
+  const live = liveActive();
+
+  btn.classList.toggle("is-live", mode === "live" && live);
+  btn.classList.toggle("held", mode === "tap" && holding);
+  // Live is HALF DUPLEX — while the tutor is audible nothing leaves the browser. So tutor-speaking and
+  // your-turn are drawn differently: a level meter beside the label while he talks, a slow breath
+  // while he waits. An animation that suggested an open mic during his speech would be lying.
+  btn.classList.toggle("speaking", mode === "live" && live && liveSpeaking());
+  btn.classList.toggle("listening", mode === "live" && live && !liveSpeaking());
+
+  if (mode === "live") label.textContent = live ? "Cancel" : "Go Live";
+  else label.textContent = holding ? "Listening…" : "🎤 Hold to Speak";
+
+  $("practice-hint").textContent = seedActive
+    ? "Hold the button and answer out loud."
+    : mode === "live"
+      ? (live ? "Just talk — you can speak over the tutor." : "The tutor talks with you continuously. Tap to begin.")
+      : "Hold the button, speak (English + Slovenian is fine), then release.";
+
+  for (const opt of document.querySelectorAll(".mode-opt")) {
+    opt.classList.toggle("active", opt.dataset.mode === mode);
+    opt.disabled = live || holding || seedActive;
+  }
+}
+
+async function toggleLive() {
+  if (liveActive()) {
+    stopLive();
+    return;
+  }
+  const lessonId = liveParams.get("lesson") || chatLessonId;
+  if (!lessonId) {
+    $("live-state").textContent = "rehearse a lesson first, or add ?lesson=<id>";
+    return;
+  }
+  // One shared code for the internal group. Kept in localStorage so a tester types it once; it is a
+  // gate on metered vendor minutes, not a login, and it protects no learner data.
+  let code = localStorage.getItem("liveAccessCode");
+  if (!code) {
+    code = window.prompt("Access code for the live tutor:") || "";
+    if (!code) return;
+    localStorage.setItem("liveAccessCode", code);
+  }
+  const btn = $("practice-talk");
+  btn.disabled = true;
+  $("live-state").textContent = "connecting…";
+  liveBubbles.clear(); // ids are per-session; a stale one would revise last session's bubble
+  try {
+    await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined,
+                      learnerId, runId });
+    // Nothing in the protocol says the tutor has started or stopped speaking — `state` reports when the
+    // vendor finished GENERATING, which is well before the audio is heard. So the surface asks the
+    // playback queue instead, often enough to look like a response and cheaply enough not to matter.
+    clearInterval(liveTick);
+    liveTick = setInterval(renderPractice, 150);
+  } catch (err) {
+    // A rejected code is the one failure worth un-remembering, or the tester is stuck retrying it.
+    if (/forbidden/i.test(err.message)) localStorage.removeItem("liveAccessCode");
+    $("live-state").textContent = err.message;
+  } finally {
+    btn.disabled = false;
+    renderPractice();
+  }
+}
+
+// A live transcript line revises itself as the vendor firms it up, so a bubble is addressed by id and
+// its text is REPLACED — one bubble per utterance, not one per revision.
+const liveBubbles = new Map();
+
+onLive("transcript", (msg) => {
+  const role = msg.role === "user" ? "user" : "tutor";
+  const known = liveBubbles.get(msg.id);
+  if (known) {
+    known.querySelector(".bubble-text").textContent = msg.text;
+    known.dataset.sl = msg.text;
+    // The line changed, so any translation shown under it is now for the wrong text.
+    known.classList.remove("show-translation");
+    const t = known.querySelector(".translation");
+    if (t) { t.remove(); known.classList.remove("has-translation"); }
+    return;
+  }
+  liveBubbles.set(msg.id, addLiveBubble(role, msg.text, msg.id));
+});
+
+// Live bubbles carry no gloss when they arrive — a speech stream has no JSON to bring one back. The
+// English is fetched on the first tap and then behaves exactly like every other bubble: tap to show,
+// tap to hide, nothing refetched.
+function addLiveBubble(role, text, id) {
+  // ▶ replays the retained PCM for this utterance — the audio the learner actually heard, in the
+  // voice they heard it in. It stays silent rather than falling back to /api/speak: a live line has
+  // no cached synthesis, so the fallback would be a paid call answering in the wrong voice.
+  const div = addBubble(role, text, "", { play: () => hasLiveAudio(id) && playLiveUtterance(id) });
+  div.dataset.sl = text;
+  div.classList.add("has-translation");
+  div.addEventListener("click", async () => {
+    const existing = div.querySelector(".translation");
+    if (existing) { div.classList.toggle("show-translation"); return; }
+    const s = document.createElement("small");
+    s.className = "translation";
+    s.textContent = "…";
+    div.appendChild(s);
+    div.classList.add("show-translation");
+    try {
+      const res = await api(`/api/gloss?sl=${encodeURIComponent(div.dataset.sl)}`);
+      const data = await res.json();
+      s.textContent = res.ok ? data.gloss || "(no translation)" : "(translation unavailable)";
+    } catch {
+      s.textContent = "(translation unavailable)";
+    }
+  });
+  return div;
+}
+// An error is always followed by the session ending, so "ended" must not wipe the reason off the
+// screen — otherwise every failure looks identical to a clean finish, which is the one thing a tester
+// comparing two vendors cannot afford.
+let liveError = null;
+
+onLive("state", (status) => {
+  if (status === "ended") {
+    clearInterval(liveTick);
+    liveTick = null;
+    $("live-state").textContent = liveError ? `live error: ${liveError}` : "";
+    renderPractice();
+    return;
+  }
+  liveError = null;
+  $("live-state").textContent = status;
+  renderPractice();
+});
+onLive("error", (code) => {
+  liveError = code;
+  $("live-state").textContent = `live error: ${code}`;
+});
+
+// ---- ② Live AI tutor: the one practice surface. Consent gate → optional tutorial → either mode. ----
 function openTutor(opts = {}) {
   chatFocus = opts.focus || [];
   chatRole = opts.role || null;
   chatContext = opts.context || null;
+  chatLessonId = opts.lessonId || chatLessonId;
   showScreen("tutor");
-  startTutorSession();
+  openConsent();
+}
+
+// The gate appears EVERY time, because nothing about the tester is remembered between sessions and a
+// consent nobody stored is a consent that has to be asked for again. Two clicks clears it.
+function openConsent() {
+  $("consent-agree").checked = false;
+  $("consent-continue").disabled = true;
+  $("consent").hidden = false;
+  $("mode-switch").hidden = true; // a session left mid-question must not come back to the answer
+  $("practice-talk").disabled = true;
+  $("transcript").innerHTML = "";
+  $("live-state").textContent = "";
 }
 
 function startTutorSession() {
   stopAllAudio();
   $("transcript").innerHTML = "";
   history.length = 0;
+  liveBubbles.clear();
   seedActive = false;
-  runId = newRunId("free-chat"); // a fresh replayable session record for this sitting
+  holding = false;
+  freeChatBegun = false;
+  mode = "live"; // the toggle does not persist — every session starts on live
+  runId = newRunId("practice"); // one record per sitting, and the id both modes are logged under
   $("play-fallback").hidden = true;
-  $("talk").disabled = false;
+  $("practice-talk").disabled = false;
+  $("mode-toggle").hidden = false; // a replay may have borrowed the surface and hidden it
   obs.state("idle");
-  if (!learnerStarted) { enterSeed(); return; } // no attempts yet → the how-to-talk-to-the-tutor tutorial
-  beginFreeChat();
+  renderPractice();
 }
 
 // Free chat opens with the tutor speaking first — a static Slovene "Začnemo?" (the learner knows it from
@@ -667,7 +911,7 @@ async function beginFreeChat() {
   // Do NOT reset chatRole here — a rehearsal handoff may have pinned the scenario's role already.
   obs.state("free conversation");
   try {
-    const res = await fetch("/api/converse", {
+    const res = await api("/api/converse", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ begin: true, level: CHAT_LEVEL }),
@@ -678,12 +922,16 @@ async function beginFreeChat() {
     history.push({ role: "tutor", text: data.tutorReply });
     await playReplyStreaming(data.tutorReply, {}); // teacher voice
   } catch (err) {
-    obs.error(`opening: ${err.message}`);
+    practiceProblem(`the tutor didn't answer — ${err.message}`);
   }
 }
 
 // ---- Seed onboarding: the zero-context learner's first conversation, delivered through the SAME chat
-// surface. Only the brain differs — a server-side scripted adapter supplies the tutor lines. ----
+// surface. Only the brain differs — a server-side scripted adapter supplies the tutor lines.
+//
+// The learner asks for it, at the one moment it answers a question they have: switching to tap-to-speak,
+// where a button has to be worked. Live mode is just talking, so nothing there needs teaching, and a
+// tutorial nobody asked for is what a returning tester has to click past every session. ----
 function playTeacherToEnd(text) {
   return new Promise((resolve) => {
     const audio = new Audio();
@@ -706,9 +954,14 @@ async function renderSeedTutor(data) {
 
 async function enterSeed() {
   seedActive = true;
+  // The tutorial is scripted push-to-talk — it hands the learner a turn and waits for it — so it runs
+  // in tap mode with the toggle locked. One tutorial serves both modes: the only difference between
+  // them is holding a button versus just talking, which does not warrant teaching twice.
+  mode = "tap";
+  renderPractice();
   obs.state("getting started");
   try {
-    const res = await fetch("/api/converse", {
+    const res = await api("/api/converse", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ seedId: "getting-started", begin: true }),
@@ -718,7 +971,7 @@ async function enterSeed() {
     await renderSeedTutor(data);
   } catch (err) {
     seedActive = false;
-    obs.error(`seed: ${err.message}`);
+    practiceProblem(`the tutorial didn't start — ${err.message}`);
   }
 }
 
@@ -726,7 +979,7 @@ async function enterSeed() {
 async function seedTurn(audioBase64) {
   obs.state("…");
   try {
-    const res = await fetch("/api/converse", {
+    const res = await api("/api/converse", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ audioBase64, mimeType: "audio/wav", history, seedId: "getting-started" }),
@@ -739,15 +992,18 @@ async function seedTurn(audioBase64) {
     }
     await renderSeedTutor(data);
     if (data.seedDone) {
-      // Tutorial finished — hand straight into free chat so the learner keeps going.
+      // Tutorial finished — hand straight into free chat so the learner keeps going. They stay in tap
+      // mode: they are mid-conversation in it, and moving them to live mid-thread would throw away the
+      // thread. The toggle unlocks here, so switching is theirs to do.
       seedActive = false;
       learnerStarted = true;
+      freeChatBegun = true;
       obs.state("idle");
+      renderPractice();
       beginFreeChat();
     }
   } catch (err) {
-    obs.state("error");
-    obs.error(err.message);
+    practiceProblem(`the tutor didn't answer — ${err.message}`);
   }
 }
 
@@ -766,8 +1022,8 @@ async function seedTurn(audioBase64) {
 // screen. It exists so `«` can put a line back WITHOUT asking the server: /api/scene only ever walks
 // forward, and there is no beat to re-fetch — the client already holds the shaped node it played.
 let scene = { scenarioId: null, level: null, voice: null, audio: null, node: null, stalls: [], armed: false,
-              backchannel: null, pacing: null, nextLevel: null, keyPhrases: null, practice: null,
-              handoff: null, trail: [], trailAt: -1 };
+              choosing: false, backchannel: null, pacing: null, nextLevel: null, keyPhrases: null,
+              practice: null, handoff: null, trail: [], trailAt: -1 };
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -837,6 +1093,7 @@ function sceneCancel() {
   sceneGen++;
   sceneClearStalls();
   scene.armed = false;
+  scene.choosing = false;
   sceneSlowPass = null;
   // An on-ramp dwell and a tutorial step are waits like any other — leaving either pending hangs the run.
   frameAdvance?.();
@@ -904,8 +1161,10 @@ function scenePlaySlow(npc) {
   const chip = $("scene-slower");
   if (chip.classList.contains("blinking")) return Promise.resolve();  // a second tap is not a queue
   const gen = sceneGen;
-  // The character takes the floor back for a moment: the button says so, then returns the turn.
+  // The character takes the floor back for a moment: the button says so, then returns the turn — as the
+  // turn was, so a beat offering the learner a choice gets its options back rather than a bare Continue.
   const handed = scene.armed;
+  const phase = scene.choosing ? "choice" : "ready";
   const label = $("scene-talk-label").textContent;
   if (handed) sceneSetPhase("speaking");
   chip.classList.add("blinking");
@@ -917,7 +1176,7 @@ function scenePlaySlow(npc) {
     // caption over the next node's line would be worse than not restoring it at all.
     if (gen !== sceneGen || scene.node !== npc) return;
     sceneCaption(npc.sl, { focus: npc.focusSpan });
-    if (handed && scene.armed) sceneSetPhase("ready", label);
+    if (handed && scene.armed) sceneSetPhase(phase, label);
   })();
   const gate = run.then(() => { if (sceneSlowPass === gate) sceneSlowPass = null; });
   sceneSlowPass = gate;
@@ -937,13 +1196,67 @@ async function sceneAwaitSlow() {
 // The button is the one object that is always on screen and never moves; it changes PHASE instead of
 // appearing and disappearing. "speaking" wears a level meter and no words (sound is happening, and it is
 // not yours); "ready" carries the single action the learner is meant to take.
+// "choice" is the same hand-over as "ready", offered as several lines instead of one: the single button
+// steps aside and the options take its place, in its position and its shape. Both are the learner's turn,
+// so both recede the character's caption; they differ only in how many sentences the turn is worth.
 function sceneSetPhase(phase, label) {
   const btn = $("scene-talk");
+  const choosing = phase === "choice";
+  btn.hidden = choosing;
+  $("scene-choice").hidden = !choosing;
   btn.classList.toggle("speaking", phase === "speaking");
   btn.classList.toggle("waiting", phase === "ready");
   btn.setAttribute("aria-disabled", phase === "speaking" ? "true" : "false");
   if (label !== undefined) $("scene-talk-label").textContent = label;
-  sceneRecede(phase === "ready");
+  sceneRecede(phase === "ready" || choosing);
+}
+
+// The options, in the order the fact declares them. Each is a whole line, so nothing repeats them: the
+// prompt slot above holds the one line that speaks for the whole beat — what the learner is being asked to
+// do with the buttons — and it is there from the moment the turn opens. A learner meeting a control for
+// the first time should not have to fall silent before the app tells them what it is for.
+function sceneRenderChoice(npc) {
+  const box = $("scene-choice");
+  const en = $("scene-prompt-en");
+  en.textContent = npc.choice.en ?? "";
+  en.classList.remove("held");
+  $("scene-prompt").classList.toggle("bare", !!npc.choice.en);
+  $("scene-prompt").classList.toggle("shown", !!npc.choice.en);
+  $("scene-prompt").onclick = null;   // nothing here replays a line; the options are the only action
+  box.innerHTML = "";
+  for (const opt of npc.choice.options) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "scene-choice-btn";
+    const sl = document.createElement("span");
+    sl.className = "scene-choice-sl";
+    writeFocused(sl, opt.sl, opt.focusSpan);
+    const en = document.createElement("span");
+    en.className = "scene-choice-en";
+    en.textContent = opt.en;
+    btn.append(sl, en);
+    btn.addEventListener("click", () => sceneAnswer(opt.value));
+    box.appendChild(btn);
+  }
+  scene.choosing = true;
+  sceneSetPhase("choice");
+}
+
+// Pressing an option is the same act as pressing Continue — the turn moves on — and it also tells the app
+// one thing about the person, which is the only way a spoken lesson can learn one. The answer goes with
+// the step; the server stores it and answers in that form from the very next line.
+async function sceneAnswer(value) {
+  if (!scene.armed || !scene.choosing) return;
+  sceneClearStalls();
+  try { navigator.vibrate?.(10); } catch {}
+  const from = scene.node?.id;
+  scene.armed = false;
+  scene.choosing = false;
+  sceneSetPhase("speaking");
+  const ack = scene.backchannel
+    ? Promise.all([sceneSay(scene.backchannel), sleep(scene.pacing?.backchannelMs ?? 0)])
+    : null;
+  try { await sceneStep(from, ack, value); } catch (err) { obs.error(`scene: ${err.message}`); }
 }
 
 // The character's line recedes once the turn stops being his, so the only thing at full brightness is
@@ -1096,6 +1409,7 @@ async function scenePlayBeat(npc, { replay = false } = {}) {
   const live = () => gen === sceneGen;
   scene.node = npc;
   scene.armed = false;
+  scene.choosing = false;
   const cap = $("scene-caption");
   const gloss = $("scene-gloss");
   cap.classList.remove("shown", "pulse");
@@ -1107,7 +1421,10 @@ async function scenePlayBeat(npc, { replay = false } = {}) {
   // two words, and making them sit through the rest of a sentence they are not following before they
   // may ask is the opposite of help. Tapping it INTERRUPTS: the natural pass stops mid-word and the
   // slow one starts.
-  sceneChips({ slower: !!npc.slowSL, back: scene.trailAt > 0, skip: !npc.terminal });
+  // A beat that asks the learner about themselves cannot be stepped past: skipping it would leave the app
+  // to decide the answer, which is the one thing this beat exists to stop it doing. The chip dims rather
+  // than disappears, the way it does on every other beat that has nothing to offer.
+  sceneChips({ slower: !!npc.slowSL, back: scene.trailAt > 0, skip: !npc.terminal && !npc.choice });
 
   // The line lands as SOUND, then the silence is held, and only then does it become text (beats 19-22).
   // These are three steps in sequence, not three timers racing: a hold that runs concurrently with the
@@ -1168,17 +1485,24 @@ async function scenePlayBeat(npc, { replay = false } = {}) {
   await sleep(pace.handoverMs);
   await sceneAwaitSlow();     // the turn is not offered over the top of the line being said again
   if (!live()) return;
-  // What they are being asked to say — their own line, beside the button that produces it. When the turn
-  // expects no Slovene (the learner says their own name) there is no stem, and the English instruction
-  // stands on its own rather than under a bold blank.
-  const sl = npc.prompt?.sl ?? "";
-  writeFocused($("scene-prompt-sl"), sl, npc.prompt?.focusSpan);
-  $("scene-prompt-sl").hidden = !sl;
-  scenePromptGloss(npc);
-  $("scene-prompt").classList.toggle("bare", !!npc.prompt && !sl);
-  if (npc.prompt) $("scene-prompt").classList.add("shown");
-  // Same button, same place — the meter gives way to the one action being asked for.
-  sceneSetPhase("ready", "Continue");
+  if (npc.choice) {
+    // The options say the whole line each, so the prompt slot never repeats one of them: it carries the
+    // beat's own instruction instead. Showing one option a second time above the buttons would make the
+    // learner read the same sentence twice and wonder how the two relate.
+    sceneRenderChoice(npc);
+  } else {
+    // What they are being asked to say — their own line, beside the button that produces it. When the turn
+    // expects no Slovene (the learner says their own name) there is no stem, and the English instruction
+    // stands on its own rather than under a bold blank.
+    const sl = npc.prompt?.sl ?? "";
+    writeFocused($("scene-prompt-sl"), sl, npc.prompt?.focusSpan);
+    $("scene-prompt-sl").hidden = !sl;
+    scenePromptGloss(npc);
+    $("scene-prompt").classList.toggle("bare", !!npc.prompt && !sl);
+    if (npc.prompt) $("scene-prompt").classList.add("shown");
+    // Same button, same place — the meter gives way to the one action being asked for.
+    sceneSetPhase("ready", "Continue");
+  }
   if (npc.stallHandlers?.length) sceneArmStalls(npc.stallHandlers, npc);
   scene.armed = true;
 }
@@ -1186,14 +1510,15 @@ async function scenePlayBeat(npc, { replay = false } = {}) {
 // `ack` is the character's backchannel, already playing. The fetch overlaps with it, but the next line
 // must not START until it has finished — `sceneSay` stops whatever is playing, so without this the
 // "Mhm." is cut off within ~50ms and the instant-acknowledgement beat never reaches the learner at all.
-async function sceneStep(from, ack) {
+async function sceneStep(from, ack, answer) {
   // The fetch outlives a skip that lands while it is in flight, and its reply would otherwise overwrite
   // the state of the beat that superseded it.
   const gen = sceneGen;
-  const res = await fetch("/api/scene", {
+  const res = await api("/api/scene", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ scenarioId: scene.scenarioId, ...(scene.level ? { level: scene.level } : {}), ...(from ? { from } : {}) }),
+    body: JSON.stringify({ scenarioId: scene.scenarioId, ...(scene.level ? { level: scene.level } : {}),
+                           ...(from ? { from } : {}), ...(answer ? { answer } : {}) }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
@@ -1203,6 +1528,8 @@ async function sceneStep(from, ack) {
   if (data.level) scene.level = data.level;
   // The close screen's material, all of it sent once with the opening line — the close is reached by a
   // beat that has no payload of its own.
+  // ANY new close-screen field must be captured HERE. `sceneFinish` reads only `scene`, so a field left
+  // uncaptured never reaches it: the control renders permanently hidden, or renders and does nothing.
   if (data.keyPhrases) {
     scene.keyPhrases = data.keyPhrases;
     scene.nextLevel = data.nextLevel ?? null;
@@ -1223,9 +1550,9 @@ async function sceneStep(from, ack) {
   else sceneFinish();
 }
 
-// The close: the character's last line, unglossed, still on screen — then a way to look back at the
-// phrases and a way onward. Key Phrases is a button, never a screen you have to pass through, and it
-// carries no counts, no badges, nothing that reads as a measure.
+// The close: the character's last line, unglossed, still on screen — then Review, and the way onward.
+// Review is a button, never a screen you have to pass through, and it carries no counts, no badges,
+// nothing that reads as a measure.
 function sceneFinish() {
   sceneClearStalls();
   scene.armed = false;
@@ -1235,30 +1562,29 @@ function sceneFinish() {
   sceneChips({ back: scene.trailAt > 0 });
   learnerStarted = true;
   $("scene-controls").hidden = true;
-  $("scene-phrases").hidden = true;
   const next = $("scene-next");
   next.textContent = scene.nextLevel ? "Next lesson" : "Done";
   next.onclick = () => (scene.nextLevel ? openScene(scene.scenarioId, scene.nextLevel) : openHome());
+  // One door. Review holds the phrases AND both ways onward, so the closed screen is two controls and
+  // opening it moves nothing beside anything.
   const phrases = scene.keyPhrases;
-  const toggle = $("scene-phrases-btn");
-  toggle.hidden = !(phrases && (phrases.new.length || phrases.review.length));
-  toggle.onclick = () => {
-    const panel = $("scene-phrases");
-    if (panel.hidden) renderKeyPhrases(phrases);
+  const hasPhrases = !!(phrases && (phrases.new.length || phrases.review.length));
+  const panel = $("scene-review");
+  panel.hidden = true;
+  $("scene-phrases").hidden = !hasPhrases;
+  $("scene-phrases-btn").onclick = () => {
+    if (panel.hidden && hasPhrases) renderKeyPhrases(phrases);
     panel.hidden = !panel.hidden;
   };
-  // Two ways onward, folded away until asked for. Reading/Listening only appears where the lesson named
-  // a dialogue — a button that leads nowhere is worse than one that isn't there.
-  const menu = $("scene-deeper");
-  menu.hidden = true;
+  // Listening only appears where the lesson named a dialogue — a row that leads nowhere is worse than one
+  // that isn't there. Speaking always has somewhere to go, so Review is never empty.
   $("scene-deeper-read").hidden = !scene.practice;
   $("scene-deeper-read").onclick = () => openPracticeDialogue(scene.practice);
   $("scene-deeper-speak").onclick = () => {
     const h = scene.handoff;
     sceneCancel();
-    openTutor(h ? { focus: h.focus, role: h.role, context: h.context } : {});
+    openTutor(h ? { focus: h.focus, role: h.role, context: h.context, lessonId: h.lessonId } : {});
   };
-  $("scene-deeper-btn").onclick = () => { menu.hidden = !menu.hidden; };
   $("scene-close").hidden = false;
 }
 
@@ -1268,7 +1594,7 @@ function sceneFinish() {
 async function openPracticeDialogue(target) {
   sceneCancel();
   try {
-    const { scenarios } = await (await fetch("/api/practice")).json();
+    const { scenarios } = await (await api("/api/practice")).json();
     const s = scenarios.find((x) => x.id === target.scenarioId);
     const i = s ? s.dialogues.findIndex((d) => d.level === target.level) : -1;
     if (i < 0) throw new Error(`no dialogue ${target.scenarioId} level ${target.level}`);
@@ -1362,12 +1688,13 @@ async function openScene(scenarioId, level = null) {
   // on over the lesson that replaced it.
   sceneCancel();
   scene = { scenarioId, level, voice: null, audio: null, node: null, stalls: [], armed: false,
-            backchannel: null, pacing: null, nextLevel: null, keyPhrases: null, trail: [], trailAt: -1 };
+            choosing: false, backchannel: null, pacing: null, nextLevel: null, keyPhrases: null,
+            trail: [], trailAt: -1 };
   showScreen("scene");
   $("scene-tutorial").hidden = true;
   $("scene-chips").classList.remove("tutorial");
   $("scene-close").hidden = true;
-  $("scene-phrases").hidden = true;
+  $("scene-review").hidden = true;
   $("scene-controls").hidden = false;
   $("scene-bg").style.backgroundImage = "";
   // Clear the stage before the next lesson's on-ramp plays over it — the previous run's last line and
@@ -1396,7 +1723,9 @@ function wireSceneAdvance() {
 
   const advance = async (e) => {
     e.preventDefault();
-    if (!scene.armed) return;
+    // A beat offering a choice answers through its own options; this button is off screen there, and the
+    // guard keeps a keyboard activation from advancing it without an answer.
+    if (!scene.armed || scene.choosing) return;
     sceneClearStalls();
     buzz(10);
     const from = scene.node?.id;
@@ -1429,7 +1758,9 @@ function wireSceneChips() {
     // English line, not the next beat. The frame owns the chip while it is up.
     if (frameAdvance) { frameAdvance(); return; }
     const from = scene.node?.id;
-    if (!from || scene.node.terminal) return;
+    // A beat that asks the learner about themselves has no "next line" to skip to that would be honest —
+    // the line after it is said in the form of the answer they have not given.
+    if (!from || scene.node.terminal || scene.node.choice) return;
     sceneCancel();
     // Both chips go dark until the next beat lights them again. A second tap landing while the step is
     // still in flight would cancel the beat it just asked for — the line would be cut a few frames in
@@ -1450,7 +1781,7 @@ function wireSceneChips() {
     sceneCancel();
     sceneChips({});
     $("scene-close").hidden = true;
-    $("scene-phrases").hidden = true;
+    $("scene-review").hidden = true;
     $("scene-controls").hidden = false;
     sceneSetPhase("speaking");
     $("scene-prompt").classList.remove("shown");
@@ -1482,7 +1813,7 @@ async function loadRuns() {
   const panel = $("runs-panel");
   panel.innerHTML = "<p class='muted'>Loading…</p>";
   try {
-    const { sessions } = await (await fetch("/api/sessions")).json();
+    const { sessions } = await (await api("/api/sessions")).json();
     if (!sessions.length) { panel.innerHTML = "<p class='muted'>No sessions yet. Talk to the tutor, then come back to hear it.</p>"; return; }
     panel.innerHTML = "";
     for (const s of sessions) {
@@ -1505,7 +1836,7 @@ async function loadRuns() {
 }
 
 async function toggleFavorite(id, favorite) {
-  await fetch(`/api/sessions/${encodeURIComponent(id)}/meta`, {
+  await api(`/api/sessions/${encodeURIComponent(id)}/meta`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ favorite }),
@@ -1516,10 +1847,14 @@ async function toggleFavorite(id, favorite) {
 // Turn-based static replay: step the record in order, playing tutor turns from the store (free) and
 // showing the student lines. Renders into the live transcript so it reads like the original chat.
 async function replayRun(id) {
-  const rec = await (await fetch(`/api/sessions/${encodeURIComponent(id)}`)).json();
+  const rec = await (await api(`/api/sessions/${encodeURIComponent(id)}`)).json();
   if (rec.error) { obs.error(rec.error); return; }
   showScreen("tutor");
-  $("talk").disabled = true; // replay is playback only
+  // A replay borrows the surface as a reading room: no mic, no session, so nothing that offers one.
+  $("practice-talk").disabled = true;
+  $("mode-toggle").hidden = true;
+  $("practice-hint").textContent = "";
+  $("live-state").textContent = "";
   $("transcript").innerHTML = "";
   obs.state(`replaying ${rec.id}…`);
   for (const t of rec.turns) {
@@ -1542,7 +1877,7 @@ async function renderA1() {
   const el = $("a1-body");
   el.innerHTML = "<p class='muted'>Loading…</p>";
   try {
-    const { competencies } = await (await fetch("/api/a1")).json();
+    const { competencies } = await (await api("/api/a1")).json();
     a1Competencies = competencies;
     if (!competencies.length) { el.innerHTML = "<p class='muted'>No competencies yet.</p>"; return; }
     el.innerHTML = "<p class='a1-intro'>How far each everyday skill has come — and where to go next.</p>";
@@ -1609,7 +1944,7 @@ function openCompetency(id) {
 // From A1, open a specific scenario level's rehearsal tree (fetches the practice list, finds the scenario).
 async function jumpToLevel(scenarioId, level) {
   try {
-    const { scenarios } = await (await fetch("/api/practice")).json();
+    const { scenarios } = await (await api("/api/practice")).json();
     const s = scenarios.find((x) => x.id === scenarioId);
     if (!s) return;
     openScenario(s);
@@ -1642,15 +1977,55 @@ async function init() {
   $("dialogue-close").addEventListener("click", closeDialogue);
   $("dialogue-handoff").addEventListener("click", reinforceFromDialogue);
 
-  // Push-to-talk (pointer events cover mouse + touch with one path).
-  const btn = $("talk");
-  btn.disabled = false;
+  // Consent gate. The required acknowledgement is the only thing that gates Continue; the tutorial
+  // skip never does.
+  $("consent-agree").addEventListener("change", (e) => { $("consent-continue").disabled = !e.target.checked; });
+  $("consent-continue").addEventListener("click", () => {
+    if (!$("consent-agree").checked) return;
+    $("consent").hidden = true;
+    startTutorSession();
+  });
+
+  $("mode-toggle").addEventListener("click", (e) => {
+    const opt = e.target.closest(".mode-opt");
+    if (opt && !opt.disabled) setMode(opt.dataset.mode);
+  });
+
+  // The tutorial teaches the button from zero, so it starts from zero: the live thread is cleared
+  // rather than left above it. Continuing keeps the thread and only changes how the learner speaks.
+  $("mode-switch-demo").addEventListener("click", () => {
+    $("mode-switch").hidden = true;
+    stopAllAudio();
+    $("transcript").innerHTML = "";
+    history.length = 0;
+    liveBubbles.clear();
+    enterSeed(); // runs in tap mode, with the toggle locked until it finishes
+  });
+  $("mode-switch-continue").addEventListener("click", () => {
+    $("mode-switch").hidden = true;
+    applyMode("tap");
+  });
+  $("mode-switch-cancel").addEventListener("click", () => { $("mode-switch").hidden = true; });
+
+  // THE button. Live mode acts on the click; tap-to-speak acts on the hold. Both live on the same
+  // element, and the mode guard is what keeps a click at the end of a hold from also starting a
+  // live session. (Pointer events cover mouse + touch with one path.)
+  const btn = $("practice-talk");
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (mode === "live") toggleLive();
+  });
   btn.addEventListener("pointerdown", async (e) => {
+    if (mode !== "tap") return;
     e.preventDefault();
     try { await startRecording(); }
-    catch (err) { obs.state("error"); obs.error(`mic: ${err.message}`); }
+    catch (err) { practiceProblem(`no microphone — ${err.message}`); }
   });
-  const stop = (e) => { e.preventDefault(); stopRecordingAndSend(); };
+  const stop = (e) => {
+    if (mode !== "tap" || !holding) return;
+    e.preventDefault();
+    stopRecordingAndSend();
+  };
   btn.addEventListener("pointerup", stop);
   btn.addEventListener("pointercancel", stop);
   btn.addEventListener("pointerleave", stop);
@@ -1660,7 +2035,7 @@ async function init() {
 
   // Boot metadata: providers (for obs) + the zero-state flag (empty learner → tutor routes to the seed).
   try {
-    const info = await (await fetch("/api/practice")).json();
+    const info = await (await api("/api/practice")).json();
     obs.providers(`${info.providers.e2} + ${info.providers.e3}`);
     learnerStarted = !!info.started;
     // D9 — a learner who has produced nothing meets the scene FIRST, ahead of the shell. `started`

@@ -6,6 +6,7 @@
 
 import "dotenv/config";
 import express from "express";
+import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { understand, converse } from "./orchestrator";
@@ -18,12 +19,15 @@ import { A1_MAP } from "./a1";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
 import { CATALOG } from "./catalog";
-import { getDialoguesForScenario, type Dialogue } from "./dialogues";
+import { getDialoguesForScenario, resolveNode, type Dialogue, type DialogueNode } from "./dialogues";
+import { getFact, factValues } from "./facts";
 import { pacingFor } from "./pacing";
+import { sceneShape } from "./scene-shape";
 import { advanceDialogue } from "./adapters/dialogue-scripted";
 import { getLearnable, LEARNABLES } from "./learnables";
 import { buildGalleryHtml } from "./scripts/gallery";
 import { frameFor } from "./scripts/dialogue-lib";
+import { liveRouter, attachLive } from "./live/index";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -43,9 +47,19 @@ function cachePut(key: string, buf: Buffer): void {
   audioCache.set(key, buf);
 }
 
+// WHOSE progress a request is about. The client mints one id per sitting at the consent gate and sends
+// it on every call; a request that names none is served as the operator at their own machine. This is
+// the seam accounts arrive on — the id stops being a session id and becomes an account id, and nothing
+// below changes (server/assets/learner.ts).
+const learnerOf = (req: express.Request) => learner.idFrom(req.get("x-learner-id"));
+
 // Audio clips arrive as base64 JSON — allow a generous body size.
 app.use(express.json({ limit: "25mb" }));
 app.use(express.static(path.join(__dirname, "..", "public")));
+
+// The live tutor's one HTTP surface (POST /v1/live/sessions). Its WebSocket half is attached to the
+// http server at the bottom of this file — Express does not see upgrades.
+app.use(liveRouter);
 
 // Live catalog gallery — rebuilt from the CURRENT catalog + on-disk renders on every request, so you
 // can just refresh http://localhost:PORT/gallery after rendering or adding assets. Read-only, bills
@@ -93,7 +107,7 @@ app.get("/api/config", (req, res) => {
     session: freshSession(scenario),
     scenarios: SCENARIOS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, status: s.status })),
     // Has this learner produced anything yet? If not, free conversation routes them into the seed.
-    started: Object.keys(learner.load().learnables).length > 0,
+    started: Object.keys(learner.load(learnerOf(req)).learnables).length > 0,
   });
 });
 
@@ -103,7 +117,7 @@ app.get("/api/config", (req, res) => {
 // turn). Scenarios without dialogues (café, planned stubs) are omitted — this list IS the picker.
 // `started` drives the live-tutor zero-state (empty learner → seed) so the home can route without a
 // second call.
-app.get("/api/practice", (_req, res) => {
+app.get("/api/practice", (req, res) => {
   const scenarios = SCENARIOS.map((s) => ({ s, dialogues: getDialoguesForScenario(s.id) }))
     .filter(({ dialogues }) => dialogues.length > 0)
     .map(({ s, dialogues }) => ({
@@ -125,7 +139,7 @@ app.get("/api/practice", (_req, res) => {
   res.json({
     scenarios,
     providers: { e2: getE2().name, e3: getE3().name },
-    started: Object.keys(learner.load().learnables).length > 0,
+    started: Object.keys(learner.load(learnerOf(req)).learnables).length > 0,
     scene: sceneScenario?.id ?? null,
   });
 });
@@ -143,13 +157,16 @@ app.get("/api/practice", (_req, res) => {
 // What the live tutor needs to carry this lesson into free chat: the learnables the learner actually
 // PRODUCED here (client nodes — the same rule the runtime credits by, and a superset of `introduces`,
 // which is empty on a level that mostly re-works earlier phrases), plus the scene and the objectives so
-// the tutor keeps the situation alive while still tutoring.
+// the tutor keeps the situation alive while still tutoring, and the lesson's own id, which is what the
+// LIVE tutor works from — a live session is opened against a lesson, so a handoff that names none lands
+// the learner on a surface that cannot start.
 function sceneHandoff(scene: Dialogue) {
   const s = SCENARIOS.find((x) => x.id === scene.scenarioId);
   const focus = [...new Set(Object.values(scene.nodes)
     .filter((n) => n.speaker === "client")
     .flatMap((n) => n.learnables ?? []))];
   return {
+    lessonId: scene.id,
     focus: focus.length ? focus : scene.introduces,
     role: s?.role ?? null,
     context: { scene: `${s?.name ?? s?.title ?? scene.scenarioId} — ${scene.title}`,
@@ -158,7 +175,7 @@ function sceneHandoff(scene: Dialogue) {
 }
 
 app.post("/api/scene", (req, res) => {
-  const { scenarioId, level, from } = req.body ?? {};
+  const { scenarioId, level, from, answer } = req.body ?? {};
   if (typeof scenarioId !== "string") return res.status(400).json({ error: "scenarioId is required" });
 
   const spoken = getDialoguesForScenario(scenarioId).filter((d) => (d.advance ?? "tap") === "audio");
@@ -167,47 +184,20 @@ app.post("/api/scene", (req, res) => {
 
   const pacing = pacingFor(scene.pacing);
 
-  const shape = (id: string | null) => {
-    const n = id ? scene.nodes[id] : null;
-    if (!n) return null;
-    // What the learner is asked to say is the upcoming CLIENT node's own line — not a gloss of what the
-    // character just said. A beginner who hears nine words and must produce two cannot tell which two,
-    // and the character's caption can never tell them; their own line can.
-    const client = n.next.map((i) => scene.nodes[i]).find((x) => x?.speaker === "client");
-    // A client line that is nothing but a blank ("___" — the learner saying their own name) has no
-    // Slovene stem to show. Rendering the blank on its own is worse than showing nothing: it is a bold
-    // placeholder that says only "something goes here". In that case the English instruction IS the
-    // prompt, and it carries the beat alone.
-    const stem = client && /\p{L}/u.test(client.sl) ? client.sl : null;
-    return {
-      id,
-      sl: n.sl,
-      en: n.en,
-      slowSL: n.slowSL ?? null,
-      // Resolved here so the renderer never has to know a default: the node's own lead, else the profile's.
-      captionLeadMs: n.captionDelayMs ?? pacing.captionLeadMs,
-      focusSpan: n.focusSpan ?? null,
-      glossPolicy: n.glossPolicy ?? "tap",
-      // Each rung's timing resolved from the profile by position unless the rung overrides it.
-      stallHandlers: (n.stallHandlers ?? []).map((h, i) => ({
-        kind: h.kind,
-        label: h.label ?? null,
-        afterMs: h.afterMs ?? pacing.stallMs[i]!,
-      })),
-      // The Slovene never withdraws; the English does. The client node's own gloss policy rides along so
-      // the surface can show the translation the first time the learner produces a line and hold it
-      // after — the gloss is never dropped from the data, so a tap can always bring it back.
-      prompt: client
-        ? { sl: stem, en: client.en, glossPolicy: client.glossPolicy ?? "tap", focusSpan: client.focusSpan ?? null }
-        : null,
-      // Whether this beat ends in a turn at all. A node that hands to another npc node is the character
-      // carrying himself forward — the renderer plays it and continues rather than arming the button.
-      handsOver: !!client,
-      // A closing beat has nobody to hand the turn to. Without this the renderer armed the button anyway
-      // and the run ended sitting on "Hold and say it" after the character had said goodbye.
-      terminal: !n.next.length,
-    };
-  };
+  // What the app knows about the person, read fresh per request. Every line below is resolved through it
+  // ONCE, here, so the caption the learner reads, the text /api/speak is asked for and the prompt they
+  // answer are the same words by construction — the renderer never sees a line in more than one form and
+  // has no variant logic of its own to keep in step.
+  // Reassigned the moment this request stores an answer, and read through by `say`, because the beat
+  // that ASKS is immediately followed by the beat that uses it: Slavko's "Ti si študentka." is the very
+  // next line after the learner presses. A snapshot taken at the top of the request would answer the
+  // learner in the form they just told him was wrong.
+  const learnerId = learnerOf(req);
+  let facts = learner.load(learnerId).facts;
+  const say = (n: DialogueNode) => resolveNode(n, facts);
+
+  // The beat surface the renderer draws from, and the same one `playthrough:lesson` shows a reviewer.
+  const shape = (id: string | null) => sceneShape(scene.nodes, facts, pacing, id);
   // The character's listening noise, already on disk — the client fires it the instant the learner
   // releases, before anything could have processed what they said.
   const backchannel = CATALOG.voiceProfiles[scene.voices.npc]?.backchannels?.[0] ?? null;
@@ -234,8 +224,11 @@ app.post("/api/scene", (req, res) => {
       const v = n.audio;
       if (!v) return null;
       const src = spoken.find((d) => d.level === v.level);
-      const node = src?.nodes[v.from];
-      if (!src || !node || node.speaker !== "npc") return null;
+      const raw = src?.nodes[v.from];
+      if (!src || !raw || raw.speaker !== "npc") return null;
+      // The delivery this learner was actually played, so the phrase they press replays the clip they
+      // heard rather than a form of the line the run never used.
+      const node = say(raw);
       const voice = src.voices.npc;
       if (!store.has(store.audioKey(e3.name, e3.voiceTagFor(voice), node.sl), "audio")) return null;
       return {
@@ -254,7 +247,10 @@ app.post("/api/scene", (req, res) => {
     // item underneath it, never its wording. (A line carrying no catalog item is its own row — there is
     // nothing to collapse it onto.)
     const groups = new Map<string, typeof scene.nodes[string][]>();
-    for (const n of Object.values(scene.nodes)) {
+    for (const raw of Object.values(scene.nodes)) {
+      // The form of the line THIS learner produced — the close screen is their takeaway list, so it says
+      // back the sentence they said rather than the one the file happens to lead with.
+      const n = say(raw);
       // A turn that expects no Slovene (the learner saying their own name) is not a phrase they met.
       if (n.speaker !== "client" || !/\p{L}/u.test(n.sl) || seen.has(n.sl)) continue;
       seen.add(n.sl);
@@ -285,6 +281,25 @@ app.post("/api/scene", (req, res) => {
     return { ...rows };
   };
 
+  // Everything the close screen shows, built in one place and sent twice: with the opening line, so the
+  // run always holds a complete close even if it is left early, and again on the beat that ends it.
+  //
+  // Sending it only once was wrong the moment a phrase could depend on the learner. The opening line is
+  // played BEFORE they have answered anything, so a panel built there says "Sem študent." back to a woman
+  // who spent the lesson saying "Sem študentka." The closing beat is the first moment every answer is in.
+  const closeScreen = () => ({
+    // What the close screen offers next — the scenario's next spoken level, if one is authored. Null ends
+    // the run at the close screen.
+    nextLevel: spoken.find((d) => d.level > scene.level)?.level ?? null,
+    keyPhrases: keyPhrases(),
+    // Where the lesson goes next, both ways. `practice` names a rehearsal dialogue to read and listen
+    // through; `handoff` is what the live tutor needs to keep this scene alive while still tutoring. Both
+    // are derived HERE, where the authored dialogue lives — the scene renderer holds only the beats it
+    // has played.
+    practice: scene.practice ?? null,
+    handoff: sceneHandoff(scene),
+  });
+
   try {
     if (typeof from !== "string") {
       return res.json({ voice: scene.voices.npc, background: scene.background ?? null, backchannel,
@@ -292,19 +307,20 @@ app.post("/api/scene", (req, res) => {
                         npc: shape(scene.root), done: false,
                         audio: scene.audio,
                         level: scene.level, title: scene.title,
-                        // What the close screen offers next — the scenario's next spoken level, if one
-                        // is authored. Null ends the run at the close screen.
-                        nextLevel: spoken.find((d) => d.level > scene.level)?.level ?? null,
-                        keyPhrases: keyPhrases(),
-                        // Where the lesson goes next, both ways. `practice` names a rehearsal dialogue to
-                        // read and listen through; `handoff` is what the live tutor needs to keep this
-                        // scene alive while still tutoring. Both are derived HERE, where the authored
-                        // dialogue lives — the scene renderer holds only the beats it has played.
-                        practice: scene.practice ?? null,
-                        handoff: sceneHandoff(scene) });
+                        ...closeScreen() });
     }
-    const step = advanceDialogue(scene, from, { kind: "audio" });
-    if (step.learnableProgress.length) learner.save(applyCredit(learner.load(), step.learnableProgress));
+    const step = advanceDialogue(scene, from, { kind: "audio", answer: typeof answer === "string" ? answer : undefined });
+    // The answer the learner pressed, checked against the fact's own closed set before it is stored. The
+    // adapter reports what was chosen; the domain is the catalog's to rule on, and this is the only
+    // write path a fact has — so an answer that is not one of the offered ones is refused rather than
+    // stored and then found later by whatever reads it back.
+    if (step.fact) {
+      if (!factValues(step.fact.id).has(step.fact.value))
+        return res.status(400).json({ error: `"${step.fact.value}" is not an answer to "${step.fact.id}"` });
+      facts = learner.setFact(learnerId, step.fact.id, step.fact.value).facts;
+    }
+    if (step.learnableProgress.length)
+      learner.save(learnerId, applyCredit(learner.load(learnerId), step.learnableProgress));
     res.json({
       voice: scene.voices.npc,
       background: scene.background ?? null,
@@ -317,8 +333,12 @@ app.post("/api/scene", (req, res) => {
       // real key with undirected audio and the later build skips it.
       audio: scene.audio,
       npc: shape(step.npcNodeId),
-      spoke: step.clientNodeId ? { id: step.clientNodeId, sl: scene.nodes[step.clientNodeId]!.sl } : null,
+      spoke: step.clientNodeId ? { id: step.clientNodeId, sl: say(scene.nodes[step.clientNodeId]!).sl } : null,
       done: step.done,
+      // The last beat of the run: the character's closing line, or the end of the tree. Every answer the
+      // learner gave is in by now, so this is the panel that reflects the lesson they actually had — it
+      // supersedes the one sent with the opening line, which could only guess.
+      ...(step.done || !step.npcNodeId || !scene.nodes[step.npcNodeId]!.next.length ? closeScreen() : {}),
     });
   } catch (err: any) {
     res.status(400).json({ error: err?.message ?? String(err) });
@@ -328,8 +348,8 @@ app.post("/api/scene", (req, res) => {
 // A1 Readiness (MVP destination ④) — the coverage map. Each competency carries REAL progress read from
 // the durable learner model (mastered / attempted counts over its learnables) + the scenario levels that
 // advance it, resolved to display labels. This is the only place progress is visible to the learner.
-app.get("/api/a1", (_req, res) => {
-  const model = learner.load();
+app.get("/api/a1", (req, res) => {
+  const model = learner.load(learnerOf(req));
   const competencies = A1_MAP.map((c) => {
     const ids = c.learnables.filter((id) => LEARNABLES[id]);
     const status = (id: string) => statusOf(model.learnables[id]);
@@ -365,7 +385,7 @@ app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
 // Operator inspection of the durable learner model (US-17) — read-only, derived, bills nothing. The
 // engine stays invisible to the learner; this is for whoever runs the system.
-app.get("/api/learner", (_req, res) => res.json(inspect(learner.load())));
+app.get("/api/learner", (req, res) => res.json(inspect(learner.load(learnerOf(req)))));
 
 // One conversational turn — E2 only. Returns text fast; audio is fetched from /api/speak.
 app.post("/api/turn", async (req, res) => {
@@ -379,6 +399,7 @@ app.post("/api/turn", async (req, res) => {
       mimeType,
       history: Array.isArray(history) ? history : [],
       session,
+      learnerId: learnerOf(req),
     });
 
     // M6 capture (best-effort — never fail a turn because the record couldn't be written).
@@ -421,7 +442,7 @@ app.post("/api/turn", async (req, res) => {
 // One free-conversation turn (E2 only) — scenario-less, bounded by the durable learner model. Audio is
 // fetched from /api/speak exactly like /api/turn (voice=character is irrelevant here → teacher voice).
 app.post("/api/converse", async (req, res) => {
-  const { audioBase64, mimeType, history, level, seedId, begin, role, focusLearnables, context, runId } = req.body ?? {};
+  const { audioBase64, mimeType, history, level, seedId, begin, role, focusLearnables, context, runId, e2 } = req.body ?? {};
   // Every turn needs audio EXCEPT an opening (begin): the seed's step 0 or free chat's "Začnemo?" line
   // is the tutor speaking first, with no learner audio yet.
   if (!begin && (!audioBase64 || !mimeType)) {
@@ -449,6 +470,11 @@ app.post("/api/converse", async (req, res) => {
                 : [],
             }
           : null,
+      learnerId: learnerOf(req),
+      // A tester may name the provider for this turn; everyone else gets the configured one. The live
+      // surface has taken a per-session provider since it shipped — this is the same affordance on the
+      // other mode, so the two can be compared without a restart in between.
+      e2Provider: typeof e2 === "string" ? e2 : undefined,
     });
 
     // M6-for-free-chat (MVP Phase 3): capture the live session so Replays can play it back. Legacy
@@ -475,6 +501,7 @@ app.post("/api/converse", async (req, res) => {
           ],
           finalObjectives: [], // free chat has no objectives; the engine stays invisible here
           complete: false, // a free chat is never "complete" — it stays open until the learner exits
+          provider: result.providers.e2, // who answered, so this run can be read against a live one
         });
       } catch (capErr: any) {
         console.error("[converse capture] failed:", capErr?.message);
@@ -496,7 +523,7 @@ app.get("/api/speak", async (req, res) => {
   const text = String(req.query.text || "");
   if (!text.trim()) return res.status(400).json({ error: "text is required" });
 
-  const e3 = getE3();
+  const e3 = getE3(req.query.e3);
   // Voice selection: `voice=character` → the scenario character's profile (in-scene lines: the tutor
   // reply / opening); `voice=<catalog profile id>` (e.g. shop-assistant, male-speaker) → that profile
   // (rehearsal-dialogue speakers); anything else/absent → the teacher voice (targets, narration, practice).
@@ -655,7 +682,17 @@ app.post("/api/sessions/:id/meta", (req, res) => {
 });
 
 const port = Number(process.env.PORT || 8787);
-app.listen(port, () => {
+
+// The live tutor needs the raw http server, not just the Express app: a WebSocket arrives as an HTTP
+// upgrade, which never reaches a route handler. Everything else is unchanged — same app, same port.
+const server = createServer(app);
+attachLive(server);
+
+server.listen(port, () => {
   console.log(`▶ lango-slovenian demo on http://localhost:${port}`);
   console.log(`  E2=${process.env.E2_PROVIDER || "gemini"}  E3=${process.env.E3_PROVIDER || "elevenlabs"}`);
+  const live = process.env.LIVE_ACCESS_CODE
+    ? `LIVE=${process.env.LIVE_PROVIDER || "gemini"} (ttl ${process.env.SESSION_TTL_SEC || 600}s)`
+    : "LIVE=closed (set LIVE_ACCESS_CODE to open it)";
+  console.log(`  ${live}`);
 });

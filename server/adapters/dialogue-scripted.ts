@@ -16,13 +16,24 @@
 // The mode matters to one authoring rule: in "audio" mode an npc node's `next` is NOT a menu. The
 // learner is speaking, so the tree follows `next[0]` — the canonical spine — and any further entries
 // are alternates a surface may show as previews without them advancing anything. Author the spine first.
+//
+// A spoken lesson does have one place where the learner's own answer reaches the app: a beat carrying a
+// `choice` asks them for a FACT about themselves (their gender, first of these) and hands the turn over
+// as several lines rather than one. That answer changes the WORDING of later lines — each varying node
+// resolves against the stored facts — and leaves the spine exactly as it was. A spoken lesson stays one
+// straight line through the tree; what varies is which form each line takes when it gets there.
 
 import type { Dialogue, DialogueNode } from "../dialogues";
 import type { LearnableProgress } from "../types";
 
 /** What the learner just did. `tap` names the client line they picked; `audio` carries no content on
- *  purpose — the recording is never inspected, only its arrival is the signal. */
-export type DialogueInput = { kind: "tap"; choice: string } | { kind: "audio" };
+ *  purpose — the recording is never inspected, only its arrival is the signal.
+ *
+ *  `answer` is the exception, and it is not the recording: it is the value the learner PRESSED at a beat
+ *  that asks them for a fact about themselves (DialogueChoice). A spoken lesson has no other way to learn
+ *  one — nothing listens — so the button they chose is the whole signal, and it is a deliberate act
+ *  rather than an inference. Beats without a `choice` never carry it. */
+export type DialogueInput = { kind: "tap"; choice: string } | { kind: "audio"; answer?: string };
 
 export interface DialogueStep {
   /** The client line the learner just produced (picked, or spoken along the spine) — null when the npc
@@ -33,6 +44,9 @@ export interface DialogueStep {
   /** The just-produced beat's learnables, as attempts. Always empty in "tap" mode (rehearsal credits
    *  nothing) and for a beat that carries no learnables (e.g. the learner saying their own name). */
   learnableProgress: LearnableProgress[];
+  /** The fact the learner just answered, when the beat they left was one that asked. The caller stores
+   *  it — this returns the answer exactly as it returns the learnable allowlist, and writes neither. */
+  fact: { id: string; value: string } | null;
   /** True once there is no further npc line — the tree is over. */
   done: boolean;
 }
@@ -62,7 +76,18 @@ export function advanceDialogue(dialogue: Dialogue, fromNodeId: string, input: D
   if (from.speaker !== "npc") throw new Error(`Dialogue "${dialogue.id}": can only advance from an npc node, got "${fromNodeId}"`);
 
   // A terminal npc node ends the tree — there is nothing to produce and nothing to credit.
-  if (!from.next.length) return { clientNodeId: null, npcNodeId: null, learnableProgress: [], done: true };
+  if (!from.next.length) return { clientNodeId: null, npcNodeId: null, learnableProgress: [], fact: null, done: true };
+
+  // A beat that ASKS. The learner presses one of several lines rather than the single "Continue", and
+  // which one they pressed is the answer. Advancing it without one would be the app deciding a fact about
+  // the person on their behalf, so the step refuses instead — the same refusal the dimmed skip control
+  // expresses on screen, stated once more where it cannot be routed around.
+  let fact: DialogueStep["fact"] = null;
+  if (from.choice) {
+    if (input.kind !== "audio" || !input.answer)
+      throw new Error(`Dialogue "${dialogue.id}": node "${fromNodeId}" asks the learner for "${from.choice.fact}" — advancing it needs their answer`);
+    fact = { id: from.choice.fact, value: input.answer };
+  }
 
   // A beat the learner is not asked to answer — an acknowledgement, a slow re-model, a nudge onward. In
   // "audio" mode the spine may run npc → npc so the character can say more than one thing before handing
@@ -71,7 +96,7 @@ export function advanceDialogue(dialogue: Dialogue, fromNodeId: string, input: D
   // words in front of the learner than the turn that follows them is worth. Nothing is produced here, so
   // nothing is credited.
   if (input.kind === "audio" && nodeOrThrow(dialogue, from.next[0]!).speaker === "npc") {
-    return { clientNodeId: null, npcNodeId: from.next[0]!, learnableProgress: [], done: false };
+    return { clientNodeId: null, npcNodeId: from.next[0]!, learnableProgress: [], fact, done: false };
   }
 
   const clientNodeId =
@@ -90,5 +115,5 @@ export function advanceDialogue(dialogue: Dialogue, fromNodeId: string, input: D
     input.kind === "audio" ? (client.learnables ?? []).map((id) => ({ id, result: "attempt" as const })) : [];
 
   const npcNodeId = client.next[0] ?? null;
-  return { clientNodeId, npcNodeId, learnableProgress, done: npcNodeId === null };
+  return { clientNodeId, npcNodeId, learnableProgress, fact, done: npcNodeId === null };
 }

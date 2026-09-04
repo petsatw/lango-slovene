@@ -129,7 +129,8 @@ main.screen, main.home {
 .level-chevron { color: var(--muted); font-size: 22px; flex-shrink: 0; }
 
 /* Live tutor screen: keep the talk button anchored at the bottom (override the screen top-align). */
-main.tutor { justify-content: flex-end; }
+/* The practice surface is a card, like the rehearsal tree it borrows from — centred, not bottom-anchored. */
+main.tutor { justify-content: center; }
 
 /* Replays list lives directly on its screen now (no collapsible section chrome). */
 .runs-panel { width: 100%; max-width: 520px; background: transparent; padding: 0; }
@@ -243,19 +244,6 @@ main {
   padding: 16px 20px 24px;
 }
 
-.transcript {
-  width: 100%;
-  max-width: 520px;
-  flex: 1;
-  /* Cap the history so it scrolls INTERNALLY instead of growing the page and pushing the talk button
-     out of frame — the button + the latest message stay visible across turns. */
-  max-height: 48dvh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 8px 0;
-}
 .bubble { padding: 10px 14px; border-radius: 16px; max-width: 85%; font-size: 17px; line-height: 1.35; }
 .bubble.user { align-self: flex-end; background: #2a2f3a; color: var(--text); border-bottom-right-radius: 4px; }
 .bubble.tutor { align-self: flex-start; background: var(--green); color: #fff; border-bottom-left-radius: 4px; }
@@ -282,22 +270,104 @@ main {
 .replay:hover { background: rgba(255, 255, 255, 0.4); }
 .replay:active { transform: scale(0.9); }
 
-.talk {
-  width: 180px; height: 180px; border-radius: 50%;
-  border: none; background: var(--green); color: #fff;
-  font-size: 18px; font-weight: 600;
-  box-shadow: 0 8px 30px rgba(11,110,79,0.45);
-  transition: transform 0.08s ease, background 0.08s ease;
-  touch-action: none; user-select: none;
-}
-.talk:disabled { opacity: 0.4; }
-.talk.recording { background: var(--green-press); transform: scale(0.94); }
 .hint { color: var(--muted); font-size: 13px; margin: 0; text-align: center; }
 
 .play-fallback {
   background: #2a2f3a; color: #fff; border: none; border-radius: 10px;
   padding: 12px 18px; font-size: 15px;
 }
+.live-state { color: var(--muted); font-size: 12px; min-height: 15px; margin: 0; }
+
+/* ---- The unified practice surface: one card, one button, two modes. ----------------------------
+ *
+ * The card is the rehearsal dialogue's, minus the choices — the learner already knows this screen
+ * from clicking through a tree, and the only thing that has changed is that now they speak. What the
+ * mode changes is the BUTTON and nothing else, which is the whole point: two modes cannot be compared
+ * if they are also two layouts. */
+.practice-surface { display: flex; flex-direction: column; align-items: stretch; }
+.practice-surface .dialogue-convo { text-align: left; }
+
+/* Which mode is being evaluated. A tester control, so it is sized like the level pills above a
+ * rehearsal tree rather than like anything the learner is being asked to press. */
+.mode-toggle { display: flex; gap: 6px; justify-content: center; margin: 2px 0 10px; }
+.mode-opt {
+  background: #20242c; color: var(--muted);
+  border: 1px solid #2b2f38; border-radius: 999px;
+  padding: 5px 12px; font-size: 12px; cursor: pointer;
+}
+.mode-opt.active { color: #fff; background: var(--green); border-color: var(--green); }
+.mode-opt:disabled { opacity: 0.4; cursor: default; }
+
+/* THE button. One object, fixed size in both modes, so switching mode never moves it. */
+.practice-talk {
+  align-self: center;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  min-width: 220px; min-height: 60px; padding: 0 26px;
+  border-radius: 999px; border: 1px solid var(--green);
+  background: var(--green); color: #fff;
+  font-size: 18px; font-weight: 600;
+  box-shadow: 0 8px 24px rgba(11, 110, 79, 0.35);
+  transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease;
+  touch-action: none; user-select: none; cursor: pointer;
+}
+.practice-talk:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
+
+/* TAP-TO-SPEAK, held: the whole button lights up for exactly as long as the mic is open. Nothing
+ * else on the surface changes, so "am I being recorded?" has one answer in one place. */
+.practice-talk.held { background: #16a06e; border-color: #16a06e; transform: scale(0.97); }
+
+/* LIVE, running. The label becomes Cancel and the button stops advertising itself as the action —
+ * the conversation is the action now. */
+.practice-talk.is-live { background: transparent; color: #d3dae4; border-color: #414a58; box-shadow: none; }
+.practice-talk.is-live:hover { border-color: var(--green); color: #fff; }
+
+/* Live mode is HALF DUPLEX: while the tutor is audible the mic is not being sent anywhere. So the
+ * two states are drawn differently, and neither of them is a recording indicator sitting on during
+ * tutor speech. Speaking → the level meter, no words: sound is happening and it is not yours.
+ * Listening → the button breathes, the same "your turn" the scene surface uses. */
+/* The meter sits BESIDE the label rather than replacing it, unlike the scene surface: there the
+ * button is not actionable while the character talks, here it still says Cancel and still cancels. */
+.practice-talk.speaking .scene-bars { display: flex; }
+.practice-talk.listening { animation: scene-breathe 2s ease-in-out infinite; border-color: var(--green); }
+@media (prefers-reduced-motion: reduce) {
+  .practice-talk.listening { animation: none; }
+}
+
+/* ---- Consent gate ---------------------------------------------------------------------------- */
+/* Two classes deep on purpose: .story-card centres its contents and is defined further down, and
+ * centred legal copy is markedly harder to read than left-aligned. */
+.story-card.consent-card { text-align: left; max-width: 460px; }
+.consent-title { font-size: 20px; margin: 4px 0 10px; text-align: center; }
+.consent-body { font-size: 14px; line-height: 1.5; color: #d3dae4; margin: 0 0 12px; }
+.consent-link { color: var(--green); }
+.consent-check {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 14px; line-height: 1.45; color: #d3dae4;
+  margin: 0 0 12px; cursor: pointer;
+}
+.consent-check input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--green); flex: none; }
+.consent-continue {
+  width: 100%; border: none; border-radius: 12px;
+  background: var(--green); color: #fff;
+  padding: 13px 18px; font-size: 16px; font-weight: 600; cursor: pointer;
+}
+.consent-continue:disabled { opacity: 0.35; cursor: default; }
+
+/* ---- Mode switch ----------------------------------------------------------------------------- */
+.story-card.switch-card { text-align: left; max-width: 420px; }
+.switch-title { font-size: 20px; margin: 4px 0 10px; text-align: center; }
+.switch-body { font-size: 14px; line-height: 1.5; color: #d3dae4; margin: 0 0 14px; }
+.switch-actions { display: flex; flex-direction: column; gap: 8px; }
+.switch-primary {
+  border: none; border-radius: 12px; background: var(--green); color: #fff;
+  padding: 13px 18px; font-size: 16px; font-weight: 600; cursor: pointer;
+}
+.switch-alt {
+  background: none; color: var(--text);
+  border: 1px solid #3a4250; border-radius: 12px;
+  padding: 11px 18px; font-size: 15px; font-weight: 600; cursor: pointer;
+}
+.switch-alt:hover { border-color: var(--green); }
 
 .header-actions { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
 .story-open {
@@ -644,6 +714,24 @@ body.in-scene header { display: none; }
 .scene-talk:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.16); animation: none; }
 .scene-talk:disabled { opacity: 0.35; cursor: default; }
 
+/* The beat that asks the learner about themselves. It borrows the talk button's shape exactly — same
+   pill, same border, same press — because it IS the talk button, offered as several sentences instead of
+   one "Continue". A learner meeting it has already pressed that button a dozen times, so there is nothing
+   here to explain and nothing new to reach for.
+   Each option carries its own Slovene at prompt weight with the English under it, and the English stays
+   visible: telling which line is yours is the whole question being asked, so this is the one place in the
+   run where the translation is not something to earn. */
+.scene-choice { display: grid; justify-items: stretch; gap: 10px; width: 100%; max-width: 340px; }
+.scene-choice-btn {
+  position: relative; width: 100%; min-height: 62px; padding: 10px 22px; border-radius: 31px;
+  border: 3px solid rgba(255, 255, 255, 0.55); background: rgba(255, 255, 255, 0.1);
+  display: grid; justify-items: center; gap: 2px; cursor: pointer; text-align: center;
+  transition: transform 140ms ease, background 140ms ease;
+}
+.scene-choice-btn:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.16); }
+.scene-choice-sl { font-size: 23px; font-weight: 700; letter-spacing: .01em; color: #fff; line-height: 1.2; }
+.scene-choice-en { font-size: 14px; color: var(--muted); }
+
 /* The English on-ramp, before the scene opens. */
 .scene-frame {
   position: relative; margin: auto 0; text-align: center; max-width: 30ch;
@@ -697,8 +785,11 @@ body.in-scene header { display: none; }
 /* Deliberately the largest, brightest type on screen while the turn is the learner's — it has to
    out-weigh the character's caption, which is longer and would otherwise dominate by sheer size. */
 .scene-prompt-sl { font-size: 27px; font-weight: 700; letter-spacing: .01em; color: #fff; line-height: 1.25; }
-.scene-prompt-en { font-size: 15px; color: var(--muted); }
-.scene-prompt.bare .scene-prompt-en { font-size: 18px; color: #e8ecf2; }
+/* `pre-line` so an authored line break survives to the screen. Almost every line here is a single
+   translation and never uses one; the beat that asks the learner about themselves does, because its
+   English is an instruction plus the promise that the grammar behind it comes later — two thoughts. */
+.scene-prompt-en { font-size: 15px; color: var(--muted); white-space: pre-line; }
+.scene-prompt.bare .scene-prompt-en { font-size: 18px; color: #e8ecf2; line-height: 1.35; }
 
 /* The level meter the button wears while the CHARACTER is speaking: sound is happening and it is not
    yours. Four bars, staggered, the universal "audio is playing" shape — not a mouth, not a face, and
@@ -743,7 +834,12 @@ body.in-scene header { display: none; }
 .scene-prompt.shown { pointer-events: auto; cursor: pointer; }
 .scene-prompt-en.held { visibility: hidden; }
 
-/* The close screen. Two controls in the same place the button lived, so nothing jumps at the end. */
+/* The close screen. Two controls in the same place the button lived, so nothing jumps at the end.
+   THE CONSTRAINT THIS SCREEN LIVES UNDER: `.scene` has 24px of horizontal padding, so the content is
+   `100vw - 48px` — 312px at 360. Anything placed BESIDE a centred stack-width button gets only
+   `(100vw - 190px)/2`, which is 85px at 360, 100px at 390, 120px at 430. Three redesigns were spent
+   discovering that no label fits there. The layout below sidesteps it entirely: nothing sits beside
+   anything, so every control has the full 312px. Keep it that way. */
 .scene-close {
   position: relative; flex-shrink: 0; width: 100%; max-width: 420px;
   margin-top: 30px; display: grid; justify-items: center; gap: 10px;
@@ -755,30 +851,46 @@ body.in-scene header { display: none; }
 }
 .scene-close-btn.ghost { border-color: rgba(255, 255, 255, 0.22); background: transparent; font-weight: 500; }
 
-/* The two ways onward, hanging off the right of the button that opens them. Absolute, so the column
-   below does not move when the menu appears — "Next lesson" stays exactly where the learner last saw it. */
-.scene-deeper-wrap { position: relative; display: inline-grid; justify-items: center; }
-/* It opens UPWARD, centred on the button. Go Deeper is the last thing in the close screen, so there is
-   nothing below it but the edge of the phone; and opening sideways runs past the right edge. Up and
-   centred is the only direction with room on every screen, and it never moves the column. */
-.scene-deeper {
-  position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); z-index: 3;
-  display: grid; gap: 6px; justify-items: center;
-}
-.scene-deeper .scene-close-btn {
-  min-width: 0; width: max-content; white-space: nowrap;
-  height: 44px; padding: 0 16px; font-size: 15px;
-  border-radius: 22px; background: rgba(10, 12, 16, 0.82);
-  border-color: rgba(255, 255, 255, 0.3);
-  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+/* Carrying on is the only thing here that reads as an action, so it is BIGGER than Review rather than
+   merely brighter — 64px against 44, a 19px label against 13. Two buttons of the same size, differing
+   only in fill, make the learner read both before acting. */
+.scene-next-btn { width: 100%; height: 64px; border-radius: 32px; font-size: 19px; margin-top: 4px; }
+/* Review is sized to its own word, not to the column: a small pill under a wide one. That size gap is
+   most of what makes the primary obvious. */
+.scene-review-btn { min-width: 0; height: 44px; padding: 0 22px; font-size: 13px; border-radius: 22px; border-width: 2px; }
+
+/* The close column is taller than any beat's controls, so the stage above it is squeezed — and a
+   two-line last line, centred in what is left, rides up under the run controls. Reserve the chip strip
+   while the close screen is up. Scoped to the close, so no beat's caption moves. */
+.scene:has(#scene-close:not([hidden])) .scene-stage {
+  padding-top: calc(58px + env(safe-area-inset-top));
 }
 
-/* Key Phrases: a list of what you have MET. No ordering or marking that implies mastery — the moment
-   it ranks, it is a measure. */
-.scene-phrases {
-  width: 100%; max-height: 42vh; overflow-y: auto; text-align: left;
-  background: rgba(10, 12, 16, 0.72); border-radius: 16px; padding: 14px 16px; margin-bottom: 4px;
+/* Everything optional lives behind Review, in one panel: the phrases, then the two ways of taking them
+   further. One disclosure, not two — and full width, so no label has to fit in a margin. */
+.scene-review {
+  width: 100%; text-align: left;
+  background: rgba(10, 12, 16, 0.72); border-radius: 16px; padding: 14px 16px; margin-bottom: 6px;
 }
+/* Key Phrases: a list of what you have MET. No ordering or marking that implies mastery — the moment
+   it ranks, it is a measure. Only the LIST scrolls: cap the whole panel instead and a long lesson
+   pushes the two exits out of view, which is the discoverability this layout exists to protect. */
+.scene-phrases { max-height: 38vh; overflow-y: auto; }
+
+.phrase-exits { margin-top: 14px; display: grid; gap: 8px; }
+.phrase-exits-title { margin: 0 0 2px; font-size: 13px; color: var(--muted); }
+/* A FILL, not a chevron, is what says "tappable" — a bare row with a small › reads as a list item. The
+   faintest slab under it reads as a button without any of a button's loudness: flat, no shadow, no
+   border brightness, so it never competes with the 64px primary below. */
+.phrase-exit {
+  width: 100%; display: grid; grid-template-columns: 1fr auto; align-items: center;
+  padding: 13px 14px; cursor: pointer;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
+  color: #fff; font-size: 15px; text-align: left;
+}
+.phrase-exit:active { background: rgba(255, 255, 255, 0.12); }
+.phrase-exit-go { color: rgba(255, 255, 255, 0.5); font-size: 17px; }
 .phrases-title { margin: 0 0 10px; font-size: 17px; font-weight: 700; color: #fff; }
 .phrases-sub { margin: 12px 0 4px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .phrase-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; padding: 6px 0; }

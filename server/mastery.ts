@@ -56,7 +56,11 @@ export function applyCredit(
     learnables[p.id] = entry;
   }
 
-  return { learnables, updatedAt: model.updatedAt };
+  // Spread the incoming model so everything crediting has no business touching — `facts`, the answers
+  // the learner gave about themselves — travels through untouched. This function decides mastery and
+  // nothing else, and a caller does `learner.save(applyCredit(learner.load(), …))`, so a field rebuilt
+  // by name here would be erased from disk by the next credited turn.
+  return { ...model, learnables, updatedAt: model.updatedAt };
 }
 
 /** What the prompt needs to know about one objective this turn — which learnable to steer toward, the

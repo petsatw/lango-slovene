@@ -65,9 +65,20 @@ export interface LearnableMastery {
   successes: number; // rises only on a successful production; mastery measures this
 }
 
-/** The whole learner model — one durable, local, single-learner model (assets/learner.json). */
+/** The whole learner model — one durable, local, single-learner model (assets/learner.json).
+ *
+ *  Two kinds of knowledge live here and stay separate. `learnables` is what the learner can SAY, earned
+ *  on the mic. `facts` is what the learner IS — the answers the language needs before it can address them
+ *  or put words in their mouth (server/facts.ts). A fact is given once, by the learner, at a beat that
+ *  asks for it; nothing infers one.
+ *
+ *  BOTH fields are rebuilt by hand in `learner.load`/`learner.save` (assets/learner.ts). Adding a third
+ *  means editing those two functions as well as this interface — the field would otherwise round-trip to
+ *  undefined with nothing raised. */
 export interface LearnerModel {
   learnables: Record<string, LearnableMastery>;
+  /** fact id → the stored answer, e.g. `{ gender: "f" }`. Present once the learner has answered one. */
+  facts: Record<string, string>;
   updatedAt: string; // ISO
 }
 
@@ -152,6 +163,10 @@ export interface E2Adapter {
     systemPrompt: string;
     history: ConversationTurn[];
   }): Promise<WitnessResult>;
+  /** One Slovene line → a short plain-English gloss. Text only, no audio, no evidence — the tap-to-
+   *  reveal translation on a LIVE transcript, where there is no JSON turn to carry a gloss back.
+   *  Optional so adapters without a text path can omit it. */
+  gloss?(sl: string): Promise<string>;
   /** Cheap credential/endpoint check used by `npm run probe:e2`. Must NOT log the key. */
   ping(): Promise<string>;
 }

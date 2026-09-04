@@ -12,6 +12,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { runTurn } from "../orchestrator";
+import { DEFAULT_LEARNER_ID } from "../assets/learner";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const audioDir = path.join(__dirname, "..", "..", "fixtures", "audio");
@@ -53,7 +54,7 @@ for (const file of files) {
   const audioBase64 = readFileSync(path.join(audioDir, file)).toString("base64");
 
   try {
-    const r = await runTurn({ audioBase64, mimeType, history: [] });
+    const r = await runTurn({ audioBase64, mimeType, history: [], learnerId: DEFAULT_LEARNER_ID });
     const overBudget = r.timings.totalMs > LATENCY_BUDGET_MS;
     if (overBudget) slow++;
 
