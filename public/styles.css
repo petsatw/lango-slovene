@@ -129,7 +129,8 @@ main.screen, main.home {
 .level-chevron { color: var(--muted); font-size: 22px; flex-shrink: 0; }
 
 /* Live tutor screen: keep the talk button anchored at the bottom (override the screen top-align). */
-main.tutor { justify-content: flex-end; }
+/* The practice surface is a card, like the rehearsal tree it borrows from — centred, not bottom-anchored. */
+main.tutor { justify-content: center; }
 
 /* Replays list lives directly on its screen now (no collapsible section chrome). */
 .runs-panel { width: 100%; max-width: 520px; background: transparent; padding: 0; }
@@ -243,19 +244,6 @@ main {
   padding: 16px 20px 24px;
 }
 
-.transcript {
-  width: 100%;
-  max-width: 520px;
-  flex: 1;
-  /* Cap the history so it scrolls INTERNALLY instead of growing the page and pushing the talk button
-     out of frame — the button + the latest message stay visible across turns. */
-  max-height: 48dvh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 8px 0;
-}
 .bubble { padding: 10px 14px; border-radius: 16px; max-width: 85%; font-size: 17px; line-height: 1.35; }
 .bubble.user { align-self: flex-end; background: #2a2f3a; color: var(--text); border-bottom-right-radius: 4px; }
 .bubble.tutor { align-self: flex-start; background: var(--green); color: #fff; border-bottom-left-radius: 4px; }
@@ -282,35 +270,88 @@ main {
 .replay:hover { background: rgba(255, 255, 255, 0.4); }
 .replay:active { transform: scale(0.9); }
 
-.talk {
-  width: 180px; height: 180px; border-radius: 50%;
-  border: none; background: var(--green); color: #fff;
-  font-size: 18px; font-weight: 600;
-  box-shadow: 0 8px 30px rgba(11,110,79,0.45);
-  transition: transform 0.08s ease, background 0.08s ease;
-  touch-action: none; user-select: none;
-}
-.talk:disabled { opacity: 0.4; }
-.talk.recording { background: var(--green-press); transform: scale(0.94); }
 .hint { color: var(--muted); font-size: 13px; margin: 0; text-align: center; }
 
 .play-fallback {
   background: #2a2f3a; color: #fff; border: none; border-radius: 10px;
   padding: 12px 18px; font-size: 15px;
 }
+.live-state { color: var(--muted); font-size: 12px; min-height: 15px; margin: 0; }
 
-/* Go live. Deliberately quieter than the talk button: on this screen push-to-talk is the surface that
- * teaches, and the live session is the one being evaluated — it should be findable, not the default. */
-.live-bar { display: flex; align-items: center; gap: 10px; justify-content: center; }
-.live-btn {
-  background: transparent; color: #d3dae4;
-  border: 1px solid #414a58; border-radius: 999px;
-  padding: 7px 16px; font-size: 12px; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+/* ---- The unified practice surface: one card, one button, two modes. ----------------------------
+ *
+ * The card is the rehearsal dialogue's, minus the choices — the learner already knows this screen
+ * from clicking through a tree, and the only thing that has changed is that now they speak. What the
+ * mode changes is the BUTTON and nothing else, which is the whole point: two modes cannot be compared
+ * if they are also two layouts. */
+.practice-surface { display: flex; flex-direction: column; align-items: stretch; }
+.practice-surface .dialogue-convo { text-align: left; }
+
+/* Which mode is being evaluated. A tester control, so it is sized like the level pills above a
+ * rehearsal tree rather than like anything the learner is being asked to press. */
+.mode-toggle { display: flex; gap: 6px; justify-content: center; margin: 2px 0 10px; }
+.mode-opt {
+  background: #20242c; color: var(--muted);
+  border: 1px solid #2b2f38; border-radius: 999px;
+  padding: 5px 12px; font-size: 12px; cursor: pointer;
 }
-.live-btn:hover { border-color: var(--green); color: #fff; }
-.live-btn:disabled { opacity: 0.4; cursor: default; }
-.live-state { color: var(--muted); font-size: 12px; min-height: 15px; }
+.mode-opt.active { color: #fff; background: var(--green); border-color: var(--green); }
+.mode-opt:disabled { opacity: 0.4; cursor: default; }
+
+/* THE button. One object, fixed size in both modes, so switching mode never moves it. */
+.practice-talk {
+  align-self: center;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  min-width: 220px; min-height: 60px; padding: 0 26px;
+  border-radius: 999px; border: 1px solid var(--green);
+  background: var(--green); color: #fff;
+  font-size: 18px; font-weight: 600;
+  box-shadow: 0 8px 24px rgba(11, 110, 79, 0.35);
+  transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease;
+  touch-action: none; user-select: none; cursor: pointer;
+}
+.practice-talk:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
+
+/* TAP-TO-SPEAK, held: the whole button lights up for exactly as long as the mic is open. Nothing
+ * else on the surface changes, so "am I being recorded?" has one answer in one place. */
+.practice-talk.held { background: #16a06e; border-color: #16a06e; transform: scale(0.97); }
+
+/* LIVE, running. The label becomes Cancel and the button stops advertising itself as the action —
+ * the conversation is the action now. */
+.practice-talk.is-live { background: transparent; color: #d3dae4; border-color: #414a58; box-shadow: none; }
+.practice-talk.is-live:hover { border-color: var(--green); color: #fff; }
+
+/* Live mode is HALF DUPLEX: while the tutor is audible the mic is not being sent anywhere. So the
+ * two states are drawn differently, and neither of them is a recording indicator sitting on during
+ * tutor speech. Speaking → the level meter, no words: sound is happening and it is not yours.
+ * Listening → the button breathes, the same "your turn" the scene surface uses. */
+/* The meter sits BESIDE the label rather than replacing it, unlike the scene surface: there the
+ * button is not actionable while the character talks, here it still says Cancel and still cancels. */
+.practice-talk.speaking .scene-bars { display: flex; }
+.practice-talk.listening { animation: scene-breathe 2s ease-in-out infinite; border-color: var(--green); }
+@media (prefers-reduced-motion: reduce) {
+  .practice-talk.listening { animation: none; }
+}
+
+/* ---- Consent gate ---------------------------------------------------------------------------- */
+/* Two classes deep on purpose: .story-card centres its contents and is defined further down, and
+ * centred legal copy is markedly harder to read than left-aligned. */
+.story-card.consent-card { text-align: left; max-width: 460px; }
+.consent-title { font-size: 20px; margin: 4px 0 10px; text-align: center; }
+.consent-body { font-size: 14px; line-height: 1.5; color: #d3dae4; margin: 0 0 12px; }
+.consent-link { color: var(--green); }
+.consent-check {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 14px; line-height: 1.45; color: #d3dae4;
+  margin: 0 0 12px; cursor: pointer;
+}
+.consent-check input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--green); flex: none; }
+.consent-continue {
+  width: 100%; border: none; border-radius: 12px;
+  background: var(--green); color: #fff;
+  padding: 13px 18px; font-size: 16px; font-weight: 600; cursor: pointer;
+}
+.consent-continue:disabled { opacity: 0.35; cursor: default; }
 
 .header-actions { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
 .story-open {

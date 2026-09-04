@@ -3,9 +3,16 @@
 // The live tutor is the single production surface (push-to-talk → /api/converse). Rehearsal trees are
 // exposure only (no mic, no credit). The "engine" stays invisible everywhere except A1 Readiness.
 
-import { startLive, stopLive, liveActive, onLive } from "/live.js";
+import { startLive, stopLive, liveActive, onLive, hasLiveAudio, playLiveUtterance, liveSpeaking } from "/live.js";
 
 const $ = (id) => document.getElementById(id);
+
+// The observability panel is opt-in per tab (`?obs=1`). It used to show for anyone who opened the
+// tutor screen, which was harmless while that screen was an internal push-to-talk surface. It is now
+// the surface testers are RECORDED on, behind a consent gate — and the panel prints their transcripts
+// and raw model timings next to the conversation. Nothing about it belongs in a tester's view.
+const obsEnabled = new URLSearchParams(location.search).get("obs") === "1";
+
 const obs = {
   state: (s) => ($("obs-state").textContent = s),
   providers: (p) => ($("obs-providers").textContent = p),
@@ -37,10 +44,17 @@ const SCREENS = ["home", "practice", "levels", "tutor", "replays", "a1", "scene"
 let currentScreen = "home";
 
 function showScreen(id) {
+  // Leaving the practice surface ends whatever it was running. A live session left open behind a
+  // screen the learner has walked away from is a metered vendor billing an empty room, and the consent
+  // that was granted for it does not carry to the next visit.
+  if (currentScreen === "tutor" && id !== "tutor") {
+    $("consent").hidden = true;
+    if (liveActive()) stopLive();
+  }
   currentScreen = id;
   for (const s of SCREENS) $(s).hidden = s !== id;
   $("back").hidden = id === "home" || id === "scene";
-  $("obs").hidden = id !== "tutor"; // observability panel is a dev affordance on the live surface only
+  $("obs").hidden = id !== "tutor" || !obsEnabled; // dev affordance, opt-in per tab — see obsEnabled
   // The scene owns the whole viewport — beat 15 is zero chrome, header included.
   document.body.classList.toggle("in-scene", id === "scene");
 }
@@ -77,8 +91,12 @@ function addBubble(role, text, sub, replayOpts = {}) {
   span.textContent = text;
   div.appendChild(span);
 
-  // Tutor bubbles get a replay icon — re-streams the cached audio for that line (teacher voice: the free
-  // tutor has no scenario character).
+  // Tutor bubbles get a replay icon. What it replays depends on where the line came from, and the two
+  // are NOT interchangeable: a tap-to-speak reply was synthesized by ElevenLabs and is cached on disk,
+  // so re-streaming it is free and returns the same voice. A live line was improvised by the vendor in
+  // the vendor's own voice and never went through /api/speak at all — re-synthesizing it would bill a
+  // fresh call and answer in a different voice than the learner just heard. So the live surface hands
+  // in its own player over the audio it kept.
   if (role === "tutor") {
     const replay = document.createElement("button");
     replay.className = "replay";
@@ -86,7 +104,8 @@ function addBubble(role, text, sub, replayOpts = {}) {
     replay.title = "Replay";
     replay.setAttribute("aria-label", "Replay this line");
     replay.textContent = "▶";
-    replay.addEventListener("click", (e) => { e.stopPropagation(); playReplyStreaming(text, replayOpts); });
+    const play = replayOpts.play || (() => playReplyStreaming(div.dataset.sl || text, replayOpts));
+    replay.addEventListener("click", (e) => { e.stopPropagation(); play(); });
     div.appendChild(replay);
   }
 
@@ -201,15 +220,15 @@ async function startRecording() {
   mediaRecorder.ondataavailable = (e) => e.data.size && chunks.push(e.data);
   mediaRecorder.start();
   obs.state("recording");
-  $("talk").classList.add("recording");
-  $("talk-label").textContent = "Listening…";
+  holding = true;
+  renderPractice(); // the whole button lights while the mic is open, and only while it is open
 }
 
 // One live turn — always the free-chat witness path (/api/converse). The seed rides the same gesture.
 async function stopRecordingAndSend() {
   if (!mediaRecorder) return;
-  $("talk").classList.remove("recording");
-  $("talk-label").textContent = "Hold to speak";
+  holding = false;
+  renderPractice();
 
   const done = new Promise((resolve) => (mediaRecorder.onstop = resolve));
   mediaRecorder.stop();
@@ -653,8 +672,62 @@ function reinforceFromDialogue() {
 // gets the lesson they just rehearsed on whichever provider is configured.
 const liveParams = new URLSearchParams(location.search);
 
+// ---- The two modes, behind one button --------------------------------------------------------
+//
+// `live` is continuous speech against a realtime vendor; `tap` is hold-to-talk against /api/converse.
+// The learner sees the same card, the same transcript and the same button in both — only the button's
+// label, its held/live behaviour and its animation differ. Which mode is running is a TESTER's
+// question, so the toggle is a quiet pill and nothing else on the surface answers it.
+//
+// The mode does NOT persist. Every session starts on live, deliberately: a per-tester preference
+// would put testers on different modes without either of them choosing, which is the one thing an
+// A/B cannot survive.
+let mode = "live";
+let holding = false;       // tap mode: the button is down and the mic is open
+let freeChatBegun = false; // tap mode opens with the tutor speaking first — once per session
+let liveTick = null;       // polls tutor-speaking, which no message reports (see liveSpeaking)
+
+function setMode(next) {
+  if (mode === next) { renderPractice(); return; }
+  if (liveActive() || holding || seedActive) return; // never switch out from under a running mode
+  mode = next;
+  renderPractice();
+  // Tap-to-speak opens with the tutor speaking first, so the learner is not staring at an empty card
+  // wondering what to say. Live has its own opening — the vendor speaks when the session connects.
+  if (mode === "tap" && !freeChatBegun) { freeChatBegun = true; beginFreeChat(); }
+}
+
+// One place decides what the button says and how it moves. Every state change routes through here so
+// the two modes cannot drift into two different renderers.
+function renderPractice() {
+  const btn = $("practice-talk");
+  const label = $("practice-talk-label");
+  const live = liveActive();
+
+  btn.classList.toggle("is-live", mode === "live" && live);
+  btn.classList.toggle("held", mode === "tap" && holding);
+  // Live is HALF DUPLEX — while the tutor is audible nothing leaves the browser. So tutor-speaking and
+  // your-turn are drawn differently: a level meter beside the label while he talks, a slow breath
+  // while he waits. An animation that suggested an open mic during his speech would be lying.
+  btn.classList.toggle("speaking", mode === "live" && live && liveSpeaking());
+  btn.classList.toggle("listening", mode === "live" && live && !liveSpeaking());
+
+  if (mode === "live") label.textContent = live ? "Cancel" : "Go Live";
+  else label.textContent = holding ? "Listening…" : "🎤 Hold to Speak";
+
+  $("practice-hint").textContent = seedActive
+    ? "Hold the button and answer out loud."
+    : mode === "live"
+      ? (live ? "Just talk — you can speak over the tutor." : "The tutor talks with you continuously. Tap to begin.")
+      : "Hold the button, speak (English + Slovenian is fine), then release.";
+
+  for (const opt of document.querySelectorAll(".mode-opt")) {
+    opt.classList.toggle("active", opt.dataset.mode === mode);
+    opt.disabled = live || holding || seedActive;
+  }
+}
+
 async function toggleLive() {
-  const btn = $("go-live");
   if (liveActive()) {
     stopLive();
     return;
@@ -672,20 +745,24 @@ async function toggleLive() {
     if (!code) return;
     localStorage.setItem("liveAccessCode", code);
   }
+  const btn = $("practice-talk");
   btn.disabled = true;
-  $("talk").disabled = true;
   $("live-state").textContent = "connecting…";
   liveBubbles.clear(); // ids are per-session; a stale one would revise last session's bubble
   try {
     await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined });
-    btn.textContent = "■ End live";
+    // Nothing in the protocol says the tutor has started or stopped speaking — `state` reports when the
+    // vendor finished GENERATING, which is well before the audio is heard. So the surface asks the
+    // playback queue instead, often enough to look like a response and cheaply enough not to matter.
+    clearInterval(liveTick);
+    liveTick = setInterval(renderPractice, 150);
   } catch (err) {
     // A rejected code is the one failure worth un-remembering, or the tester is stuck retrying it.
     if (/forbidden/i.test(err.message)) localStorage.removeItem("liveAccessCode");
     $("live-state").textContent = err.message;
-    $("talk").disabled = false;
   } finally {
     btn.disabled = false;
+    renderPractice();
   }
 }
 
@@ -705,14 +782,17 @@ onLive("transcript", (msg) => {
     if (t) { t.remove(); known.classList.remove("has-translation"); }
     return;
   }
-  liveBubbles.set(msg.id, addLiveBubble(role, msg.text));
+  liveBubbles.set(msg.id, addLiveBubble(role, msg.text, msg.id));
 });
 
 // Live bubbles carry no gloss when they arrive — a speech stream has no JSON to bring one back. The
 // English is fetched on the first tap and then behaves exactly like every other bubble: tap to show,
 // tap to hide, nothing refetched.
-function addLiveBubble(role, text) {
-  const div = addBubble(role, text, "");
+function addLiveBubble(role, text, id) {
+  // ▶ replays the retained PCM for this utterance — the audio the learner actually heard, in the
+  // voice they heard it in. It stays silent rather than falling back to /api/speak: a live line has
+  // no cached synthesis, so the fallback would be a paid call answering in the wrong voice.
+  const div = addBubble(role, text, "", { play: () => hasLiveAudio(id) && playLiveUtterance(id) });
   div.dataset.sl = text;
   div.classList.add("has-translation");
   div.addEventListener("click", async () => {
@@ -740,40 +820,65 @@ let liveError = null;
 
 onLive("state", (status) => {
   if (status === "ended") {
+    clearInterval(liveTick);
+    liveTick = null;
     $("live-state").textContent = liveError ? `live error: ${liveError}` : "";
-    $("go-live").textContent = "🎙 Go live";
-    $("talk").disabled = false;
+    renderPractice();
     return;
   }
   liveError = null;
   $("live-state").textContent = status;
+  renderPractice();
 });
 onLive("error", (code) => {
   liveError = code;
   $("live-state").textContent = `live error: ${code}`;
 });
 
-// ---- ② Live AI tutor: the single live surface. Zero-state → seed; otherwise → free chat. ----
+// ---- ② Live AI tutor: the one practice surface. Consent gate → optional tutorial → either mode. ----
 function openTutor(opts = {}) {
   chatFocus = opts.focus || [];
   chatRole = opts.role || null;
   chatContext = opts.context || null;
   chatLessonId = opts.lessonId || chatLessonId;
   showScreen("tutor");
-  startTutorSession();
+  openConsent();
+}
+
+// The gate appears EVERY time, because nothing about the tester is remembered between sessions and a
+// consent nobody stored is a consent that has to be asked for again. Two clicks clears it.
+let skipTutorial = false;
+
+function openConsent() {
+  $("consent-agree").checked = false;
+  $("consent-skip").checked = false;
+  $("consent-continue").disabled = true;
+  $("consent").hidden = false;
+  $("practice-talk").disabled = true;
+  $("transcript").innerHTML = "";
+  $("live-state").textContent = "";
 }
 
 function startTutorSession() {
   stopAllAudio();
   $("transcript").innerHTML = "";
   history.length = 0;
+  liveBubbles.clear();
   seedActive = false;
+  holding = false;
+  freeChatBegun = false;
+  mode = "live"; // the toggle does not persist — every session starts on live
   runId = newRunId("free-chat"); // a fresh replayable session record for this sitting
   $("play-fallback").hidden = true;
-  $("talk").disabled = false;
+  $("practice-talk").disabled = false;
+  $("mode-toggle").hidden = false; // a replay may have borrowed the surface and hidden it
   obs.state("idle");
-  if (!learnerStarted) { enterSeed(); return; } // no attempts yet → the how-to-talk-to-the-tutor tutorial
-  beginFreeChat();
+  renderPractice();
+
+  // The checkbox decides, not the learner model. `learnerStarted` is a property of the DEPLOY — one
+  // shared learner file, every tester writing to it — so it cannot say whether the person in front of
+  // you has seen the tutorial. The tester answers that themselves, and their answer wins both ways.
+  if (!skipTutorial) enterSeed();
 }
 
 // Free chat opens with the tutor speaking first — a static Slovene "Začnemo?" (the learner knows it from
@@ -821,6 +926,11 @@ async function renderSeedTutor(data) {
 
 async function enterSeed() {
   seedActive = true;
+  // The tutorial is scripted push-to-talk — it hands the learner a turn and waits for it — so it runs
+  // in tap mode with the toggle locked. One tutorial serves both modes: the only difference between
+  // them is holding a button versus just talking, which does not warrant teaching twice.
+  mode = "tap";
+  renderPractice();
   obs.state("getting started");
   try {
     const res = await fetch("/api/converse", {
@@ -854,10 +964,14 @@ async function seedTurn(audioBase64) {
     }
     await renderSeedTutor(data);
     if (data.seedDone) {
-      // Tutorial finished — hand straight into free chat so the learner keeps going.
+      // Tutorial finished — hand straight into free chat so the learner keeps going. They stay in tap
+      // mode: they are mid-conversation in it, and moving them to live mid-thread would throw away the
+      // thread. The toggle unlocks here, so switching is theirs to do.
       seedActive = false;
       learnerStarted = true;
+      freeChatBegun = true;
       obs.state("idle");
+      renderPractice();
       beginFreeChat();
     }
   } catch (err) {
@@ -1709,7 +1823,11 @@ async function replayRun(id) {
   const rec = await (await fetch(`/api/sessions/${encodeURIComponent(id)}`)).json();
   if (rec.error) { obs.error(rec.error); return; }
   showScreen("tutor");
-  $("talk").disabled = true; // replay is playback only
+  // A replay borrows the surface as a reading room: no mic, no session, so nothing that offers one.
+  $("practice-talk").disabled = true;
+  $("mode-toggle").hidden = true;
+  $("practice-hint").textContent = "";
+  $("live-state").textContent = "";
   $("transcript").innerHTML = "";
   obs.state(`replaying ${rec.id}…`);
   for (const t of rec.turns) {
@@ -1832,17 +1950,40 @@ async function init() {
   $("dialogue-close").addEventListener("click", closeDialogue);
   $("dialogue-handoff").addEventListener("click", reinforceFromDialogue);
 
-  $("go-live").addEventListener("click", toggleLive);
+  // Consent gate. The required acknowledgement is the only thing that gates Continue; the tutorial
+  // skip never does.
+  $("consent-agree").addEventListener("change", (e) => { $("consent-continue").disabled = !e.target.checked; });
+  $("consent-continue").addEventListener("click", () => {
+    if (!$("consent-agree").checked) return;
+    skipTutorial = $("consent-skip").checked;
+    $("consent").hidden = true;
+    startTutorSession();
+  });
 
-  // Push-to-talk (pointer events cover mouse + touch with one path).
-  const btn = $("talk");
-  btn.disabled = false;
+  $("mode-toggle").addEventListener("click", (e) => {
+    const opt = e.target.closest(".mode-opt");
+    if (opt && !opt.disabled) setMode(opt.dataset.mode);
+  });
+
+  // THE button. Live mode acts on the click; tap-to-speak acts on the hold. Both live on the same
+  // element, and the mode guard is what keeps a click at the end of a hold from also starting a
+  // live session. (Pointer events cover mouse + touch with one path.)
+  const btn = $("practice-talk");
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (mode === "live") toggleLive();
+  });
   btn.addEventListener("pointerdown", async (e) => {
+    if (mode !== "tap") return;
     e.preventDefault();
     try { await startRecording(); }
     catch (err) { obs.state("error"); obs.error(`mic: ${err.message}`); }
   });
-  const stop = (e) => { e.preventDefault(); stopRecordingAndSend(); };
+  const stop = (e) => {
+    if (mode !== "tap" || !holding) return;
+    e.preventDefault();
+    stopRecordingAndSend();
+  };
   btn.addEventListener("pointerup", stop);
   btn.addEventListener("pointercancel", stop);
   btn.addEventListener("pointerleave", stop);

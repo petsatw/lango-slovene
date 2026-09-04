@@ -54,22 +54,58 @@
     <div id="level-list" class="level-list"></div>
   </main>
 
-  <!-- ② LIVE AI TUTOR — the single live surface. Push-to-talk; Slovene in/out; crediting is invisible. -->
+  <!-- ② LIVE AI TUTOR — ONE practice surface running either of the two speaking modes behind an
+       identical interface, so the same lesson can be run both ways and compared. It borrows the
+       rehearsal-dialogue language (a card, a bubble transcript) and departs from it in exactly one
+       place: there are no choice buttons, because here the learner speaks. What the learner sees is
+       the same in both modes — only the button's label, its held/live behaviour, and its animation
+       differ. Everything that says WHICH mode is running is a tester control, not a learner one. -->
   <main id="tutor" class="screen tutor" hidden>
-    <div id="transcript" class="transcript" aria-live="polite"></div>
-    <button id="talk" class="talk" disabled>
-      <span id="talk-label">Hold to speak</span>
-    </button>
-    <p class="hint">Hold the button, speak (English + Slovenian is fine), then release.</p>
-    <button id="play-fallback" class="play-fallback" hidden>▶ Tap to hear the tutor</button>
-    <!-- Go live — the continuous-speech surface. The mic stays open, the tutor answers while you are
-         still listening, and you can talk over it. Internal testing only: it needs an access code and
-         it meters a vendor by the minute, unlike everything else on this screen. -->
-    <div class="live-bar">
-      <button id="go-live" class="live-btn" type="button">🎙 Go live</button>
-      <span id="live-state" class="live-state"></span>
+    <div class="story-card dialogue-card practice-surface">
+      <p id="practice-title" class="practice-label">Live AI tutor</p>
+      <div id="transcript" class="dialogue-convo" aria-live="polite"></div>
+      <!-- Which mode is being evaluated. It does not persist: every session starts on live. -->
+      <div id="mode-toggle" class="mode-toggle" role="group" aria-label="Practice mode">
+        <button class="mode-opt" type="button" data-mode="live">Live</button>
+        <button class="mode-opt" type="button" data-mode="tap">Tap to speak</button>
+      </div>
+      <!-- THE one button. In live mode it starts and cancels the session; in tap-to-speak it is held
+           down while the learner talks. Same object, same place, both modes. -->
+      <button id="practice-talk" class="practice-talk" type="button">
+        <span id="practice-bars" class="scene-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span id="practice-talk-label" class="practice-talk-label">Go Live</span>
+      </button>
+      <p id="practice-hint" class="practice-hint"></p>
+      <p id="live-state" class="live-state"></p>
+      <button id="play-fallback" class="play-fallback" hidden>▶ Tap to hear the tutor</button>
     </div>
   </main>
+
+  <!-- Consent gate: shown every time this surface is entered, because every session is disposable and
+       nothing about the tester is remembered between them. That is also why the tutorial skip lives
+       here — a returning tester clears the whole entry sequence in two clicks. -->
+  <div id="consent" class="story-overlay" hidden>
+    <div class="story-card consent-card">
+      <h2 class="consent-title">Before you start</h2>
+      <p class="consent-body">
+        This session <b>records your voice</b> and sends the audio to a <b>third-party AI provider</b> to
+        transcribe it and answer you. Recordings and transcripts of this session are kept only while it
+        is being reviewed, and the session is not linked to any account.
+      </p>
+      <p class="consent-body">
+        <a id="consent-privacy" class="consent-link" href="/privacy" target="_blank" rel="noopener">Read the privacy policy</a>
+      </p>
+      <label class="consent-check">
+        <input type="checkbox" id="consent-agree" />
+        <span>I understand my voice will be recorded and processed by a third-party AI provider, and I consent to this.</span>
+      </label>
+      <label class="consent-check">
+        <input type="checkbox" id="consent-skip" />
+        <span>Skip the tutorial.</span>
+      </label>
+      <button id="consent-continue" class="consent-continue" type="button" disabled>Continue</button>
+    </div>
+  </div>
 
   <!-- SPOKEN SCENE — the first-meeting surface. Full-bleed image, the character, a caption low on
        screen, one mic button, and no chrome at all: no header, no back, no counters. The mic is the
@@ -184,7 +220,8 @@
     </div>
   </div>
 
-  <!-- Observability overlay — dev only; shown on the live-tutor screen so pipeline failures are visible. -->
+  <!-- Observability overlay — dev only, opt in with ?obs=1. It prints transcripts and raw model
+       timings, so it stays off the practice surface unless someone has asked for it by URL. -->
   <section id="obs" class="obs" hidden>
     <div class="obs-row"><span>state</span><b id="obs-state">idle</b></div>
     <div class="obs-row"><span>providers</span><b id="obs-providers">—</b></div>

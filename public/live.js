@@ -48,6 +48,17 @@ let muteUntil = 0; // context-time until which the upstream stays closed (half d
 let speechStarted = false; // has the learner made a sound since the tutor stopped?
 let listeners = {};
 
+// The tutor's speech is kept, per utterance, so ▶ on a bubble replays THE LINE THE LEARNER HEARD.
+// Nothing else can: this audio is improvised by the live vendor in the vendor's own voice and never
+// reaches /api/speak, so re-synthesising the text bills a fresh ElevenLabs call and answers in a
+// different voice. Chunks carry no id — the association is made here, from the two facts the stream
+// does give us: chunks belong to the most recent tutor transcript id, and a drained playback queue
+// means that utterance is over and the next chunk starts a new one.
+const utterances = new Map(); // transcript id → Int16Array[]
+let unclaimed = []; // audio that arrived before its transcript line did
+let speakingId = null; // the utterance chunks are currently being filed under
+let replayCtx = null; // outlives the session: a bubble is still replayable after the tutor hangs up
+
 const isOpen = () => ws && ws.readyState === WebSocket.OPEN;
 
 function emit(event, detail) {
@@ -98,6 +109,13 @@ function rms(samples) {
 // context clock (a gap in the stream) it resets to now, which is what keeps a pause from compounding.
 function playChunk(pcm16) {
   if (!audioCtx || !playGain) return;
+
+  // Nothing left to hear means the previous utterance finished, so this chunk opens a new one and
+  // waits to be claimed by whichever transcript id names it.
+  if (!stillSpeaking()) speakingId = null;
+  if (speakingId) utterances.get(speakingId).push(pcm16);
+  else unclaimed.push(pcm16);
+
   const frames = pcm16.length;
   const buf = audioCtx.createBuffer(1, frames, OUT_RATE);
   const ch = buf.getChannelData(0);
@@ -113,12 +131,59 @@ function playChunk(pcm16) {
   src.onended = () => playing.delete(src);
 }
 
+// A tutor line names the audio arriving around it. A revision carries the SAME id, so it claims
+// nothing twice; only a genuinely new utterance takes over the filing.
+function claimAudio(id) {
+  if (speakingId === id) return;
+  speakingId = id;
+  const held = utterances.get(id) || [];
+  utterances.set(id, held.concat(unclaimed));
+  unclaimed = [];
+}
+
+/** Is there retained audio for this utterance? The ▶ on a live bubble is drawn only if there is. */
+export function hasLiveAudio(id) {
+  const chunks = utterances.get(id);
+  return !!chunks && chunks.length > 0;
+}
+
+/** Replay one tutor utterance from the audio the learner actually heard. Free, correct voice, no
+ *  server hop — and it keeps working after the session has ended, which is when a learner reviewing
+ *  the transcript will reach for it. */
+export async function playLiveUtterance(id) {
+  const chunks = utterances.get(id);
+  if (!chunks || !chunks.length) return false;
+
+  replayCtx = replayCtx || new (window.AudioContext || window.webkitAudioContext)();
+  if (replayCtx.state === "suspended") await replayCtx.resume();
+
+  const total = chunks.reduce((n, c) => n + c.length, 0);
+  // Authored at the stream's rate whatever the context runs at — Web Audio resamples on playback.
+  const buf = replayCtx.createBuffer(1, total, OUT_RATE);
+  const ch = buf.getChannelData(0);
+  let off = 0;
+  for (const c of chunks) {
+    for (let i = 0; i < c.length; i++) ch[off + i] = c[i] / 0x8000;
+    off += c.length;
+  }
+  const src = replayCtx.createBufferSource();
+  src.buffer = buf;
+  src.connect(replayCtx.destination);
+  src.start();
+  return true;
+}
+
 /** True while there is tutor audio still to be heard — the scheduled queue reaching past now. Note
  *  this is NOT "the vendor is still generating": generation finishes long before playback does, which
  *  is why nothing may stop playback on a `state` message. */
 function stillSpeaking() {
   return !!audioCtx && playhead > audioCtx.currentTime;
 }
+
+/** Tutor speech is audible right now. The surface draws "he is talking" from this rather than from a
+ *  `state` message: generation finishes long before playback does, so the vendor's own "listening"
+ *  arrives while the learner is still hearing the previous sentence. */
+export const liveSpeaking = () => stillSpeaking();
 
 // Barge-in only. A hard stop mid-buffer clicks, so the gain is ramped down first and the sources are
 // dropped after it lands — the tutor ducks out rather than being chopped.
@@ -177,6 +242,10 @@ export async function startLive({ lessonId, accessCode, provider }) {
   loudFrames = 0;
   muteUntil = 0;
   speechStarted = false;
+  // Retained audio is per session, like the transcript ids that address it.
+  utterances.clear();
+  unclaimed = [];
+  speakingId = null;
 
   await audioCtx.audioWorklet.addModule("/live-capture-worklet.js");
   const frameSize = Math.round((audioCtx.sampleRate * FRAME_MS) / 1000);
@@ -242,7 +311,10 @@ export async function startLive({ lessonId, accessCode, provider }) {
       return;
     }
     // Carries an id: a later message with the same id REVISES that line rather than adding one.
-    if (msg.type === "transcript") emit("transcript", msg);
+    if (msg.type === "transcript") {
+      if (msg.role === "tutor") claimAudio(msg.id);
+      emit("transcript", msg);
+    }
     else if (msg.type === "state") {
       // NOTHING here may touch playback. "listening" means the vendor finished GENERATING, which
       // happens well before the audio it generated has been heard — stopping on it truncated every
