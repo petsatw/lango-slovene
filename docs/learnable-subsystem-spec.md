@@ -121,10 +121,25 @@ interface Objective {
 - **`order_coffee`** becomes `learnables: ["eno_femacc", "kava"]`. A `greet` chunk is `learnables:
   ["dober_dan"]` (one item → stays targeted on repeat, per the group rule).
 
-### 2.3 The learner model (NEW, durable)
+### 2.3 The learner model
 
-One file `assets/learner.json` (path overridable by `LEARNER_PATH` so tests use a temp file), written by
-`server/assets/learner.ts` (mirrors `sessions.ts`: load / save, content small, no byte copies).
+Held under a **learner id** by `server/assets/learner.ts` — `load(id)` / `save(id, model)` /
+`setFact(id, …)`. The client mints one id per page load and sends it as `x-learner-id` on every request;
+a request naming none is served as `local`, the operator at their own machine.
+
+Two stores behind that one interface, chosen by `LEARNER_STORE`:
+
+| store | what it holds | used by |
+|---|---|---|
+| `memory` (default) | one model per id, dropped after `LEARNER_TTL_MIN` (180) without a write | the deploy, and the tester rounds |
+| `file` | one model at `LEARNER_PATH` (default `assets/learner.json`), every id reading the same file | single-operator dev, the probes, `npm run learner` |
+
+So progress accrues normally **within** a sitting — the learner is met where they left off five minutes
+ago — and nothing is kept between sittings. The id is the seam accounts arrive on: it becomes an account
+id and the store becomes durable, and no caller moves.
+
+Facts (name, gender — `server/facts.ts`) live in the same model, so a lesson that varies on a fact asks
+for it again in each new sitting.
 
 ```ts
 interface LearnableMastery {

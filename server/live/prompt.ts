@@ -80,13 +80,15 @@ export interface LessonPrompt {
   instructions: string;
 }
 
-export function buildLessonPrompt(lessonId: string): LessonPrompt {
+export function buildLessonPrompt(lessonId: string, learnerId: string): LessonPrompt {
   const d = lessonIndex().get(lessonId);
   if (!d) throw new Error(`no such lesson: ${lessonId}`);
 
   // The witness selection, same call the free-chat turn makes: `familiar` is everything the learner has
   // touched (the tutor's palette), `targets` is the bounded in-play set led by this lesson's material.
-  const model = learner.load();
+  // The palette is THIS session's learner, taken from the live session rather than a global, so two
+  // testers running the same lesson at the same time are given the same prompt.
+  const model = learner.load(learnerId);
   const { familiar, targets } = selectForWitness(model, 2, focusIdsFor(d));
 
   // The scene, built the way the rehearsal handoff builds it — the situation and what the level just

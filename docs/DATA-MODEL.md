@@ -9,6 +9,10 @@ is reference: read [ARCHITECTURE.md](ARCHITECTURE.md) for what these mean and wh
 
 The browser talks only to these. No endpoint ever returns a key.
 
+Every request carries **`x-learner-id`**: whose progress it is about. The client mints one per page load,
+the server keys the learner model by it, and a request naming none is served as `local`
+([learnable-subsystem-spec.md](learnable-subsystem-spec.md) §2.3).
+
 | Method | Path | Purpose | Returns |
 |---|---|---|---|
 | `GET` | `/` | the PWA | `public/index.html` (static) |
@@ -17,7 +21,7 @@ The browser talks only to these. No endpoint ever returns a key.
 | `POST` | `/api/turn` | one conversational turn (E2 only) | `UnderstandResult` — text fast; audio is fetched separately. Also captures the run if `runId` is sent. |
 | `POST` | `/api/converse` | one free-conversation turn (E2 only, scenario-less) | `ConverseResult` — bounded by the learner model; `level: 1\|2`. Credits the durable mastery layer. `begin: true` returns the static opening (`Začnemo?`, no model call/credit); `role` is the client-pinned free-chat role carried back each turn. Also hosts the **seed**: `{ seedId, begin? }` swaps the model for the scripted adapter (returns the next scripted line + `seedDone`). |
 | `POST` | `/api/scene` | one beat of a **spoken scene** (an `advance: "audio"` dialogue) | `{ voice, background, npc: { id, sl, en, slowSL, captionDelayMs, glossPolicy, stallHandlers[] }, spoke, done }`. `{ scenarioId }` returns the opening beat and credits nothing; `{ scenarioId, from }` means the learner spoke at `from` — the server walks the spine and plants that beat's `learnables` as **attempts**. The learner's recording is **never uploaded**: nothing inspects it, so the turn cannot be failed. See [rehearsal-dialogues.md › Tapped vs spoken](rehearsal-dialogues.md). |
-| `GET` | `/api/learner` | inspect the durable learner model (operator) | `LearnerInspection` — derived owned/shaky/unseen + per-learnable counts. Read-only. |
+| `GET` | `/api/learner` | inspect the caller's learner model (operator) | `LearnerInspection` — derived owned/shaky/unseen + per-learnable counts. Read-only. |
 | `GET` | `/api/speak?text=&voice=&scenarioId=&objectiveId=` | stream tutor/teacher audio (E3) | `audio/mpeg`, streamed progressively. `voice=character` → the scenario character's voice; `voice=<catalog profile id>` (e.g. `shop-assistant`) → that named voice (rehearsal-dialogue speakers); otherwise the teacher voice. Cache: L1 memory → L2 disk → synthesize+persist. |
 | `GET` | `/api/image?scenarioId=&objectiveId=` | a story frame or scene image | `image/jpeg` from the store. `objectiveId=scene` → the full tableau. 404 with a build hint if not yet built (`npm run build:assets`). |
 | `GET` | `/api/sessions` | list past runs (newest first) | `{ sessions: [{ id, scenarioId, createdAt, status, turns, label, favorite, completed, objectives }] }` |

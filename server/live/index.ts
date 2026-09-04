@@ -14,6 +14,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { getLiveAdapter, providerReady } from "./adapters/index";
 import { buildLessonPrompt, lessonExists } from "./prompt";
 import * as registry from "./registry";
+import * as learner from "../assets/learner";
 import * as liveLog from "./log";
 import { glossOf } from "./gloss";
 import type { LiveState, LiveErrorCode } from "./types";
@@ -26,7 +27,7 @@ export const liveRouter = express.Router();
 // Open a session. The response carries a wsUrl and NOT the provider — the app cannot know, and cannot
 // accidentally start branching on, which vendor it is talking to.
 liveRouter.post("/v1/live/sessions", (req, res) => {
-  const { lessonId, accessCode, provider: requested } = req.body ?? {};
+  const { lessonId, accessCode, provider: requested, runId } = req.body ?? {};
 
   if (!registry.accessCodeOk(accessCode)) return res.status(403).json({ error: "forbidden" });
   if (typeof lessonId !== "string" || !lessonExists(lessonId)) {
@@ -38,7 +39,12 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
   const provider = registry.resolveProvider(requested);
   if (!providerReady(provider)) return res.status(503).json({ error: "live tutor unavailable" });
 
-  const s = registry.create(lessonId, provider);
+  const s = registry.create({
+    lessonId,
+    provider,
+    learnerId: learner.idFrom(req.get("x-learner-id")),
+    runId: typeof runId === "string" && runId.trim() ? runId : null,
+  });
   const host = req.get("host");
   const scheme = req.protocol === "https" || req.get("x-forwarded-proto") === "https" ? "wss" : "ws";
   res.status(201).json({
@@ -86,7 +92,7 @@ export function attachLive(server: HttpServer): void {
 }
 
 function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & object): void {
-  const { sessionId, lessonId, provider } = pending;
+  const { sessionId, lessonId, provider, learnerId, runId } = pending;
   const startedAt = new Date().toISOString();
   const transcripts: LiveTranscript[] = [];
   /** id → the entry in `transcripts`, so a revision overwrites rather than appends. */
@@ -154,6 +160,7 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
     try {
       liveLog.write({
         sessionId,
+        runId,
         lessonId,
         provider,
         startedAt,
@@ -190,7 +197,7 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
   // which rebuilds every turn, a live session's targets are fixed for its whole length.
   let instructions: string;
   try {
-    instructions = buildLessonPrompt(lessonId).instructions;
+    instructions = buildLessonPrompt(lessonId, learnerId).instructions;
   } catch (err: any) {
     console.error("[live] prompt build failed:", err?.message);
     failure = "vendor_setup";

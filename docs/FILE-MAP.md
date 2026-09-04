@@ -107,7 +107,8 @@ Every operator command maps to a file here (or in `server/probes/` / `server/uti
 | `npm run build:seed-assets` | `server/scripts/build-seed-assets.ts` | pre-build the seed's teacher-voice line audio for the starter pack (operator-run; bills) |
 | `npm run build:dialogue-assets` | `server/scripts/build-dialogue-assets.ts` | pregenerate a scenario's **rehearsal-dialogue** audio (per-speaker voice; `deliverySL` drives synthesis), flip each level to `audio:ready`; `--level <n>`, `--regen` (operator-run; bills). Also emits each node's `slowSL` chunked-slow clip |
 | `npm run build:backchannels` | `server/scripts/build-backchannels.ts` | pregenerate a voice profile's **backchannels** (`"Mhm."`) — declared on `voices.json`, not on any tree; `[<profile>] [--regen]` (operator-run; bills) |
-| `npm run learner` | `server/scripts/learner-show.ts` | print the durable learner model (owned/shaky/unseen) |
+| `npm run learner` | `server/scripts/learner-show.ts` | print the learner model on disk — the file store (owned/shaky/unseen) |
+| `npm run runs` | `server/scripts/runs.ts` | both speaking modes' records of a sitting, normalised to one shape; `-- <runId>` for transcripts, `-- --json` for a scorer |
 | `npm run build:assets` | `server/scripts/build-assets.ts` | materialize a scenario's audio + images; `--regen` for one leaf |
 | `npm run render:asset` | `server/scripts/render-asset.ts` | render one/more catalog objects or characters by id |
 | `npm run render:concept` | `server/scripts/render-concept.ts` | render one/more composed concepts (greet, leave, a location) |

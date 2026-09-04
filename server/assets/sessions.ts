@@ -36,6 +36,9 @@ export interface SessionRecord {
   turns: SessionTurn[];
   label?: string; // optional human name (UC3: "the one I like")
   favorite?: boolean; // a promoted/preferred run
+  /** Which provider answered these turns. The live log has carried its provider since it shipped; a run
+   *  of the other mode is only comparable to it if it says the same thing (server/scripts/runs.ts). */
+  provider?: string;
 }
 
 // runId can originate client-side — keep it filesystem-safe and reject path traversal.
@@ -79,6 +82,7 @@ export function appendTurns(args: {
   turns: Omit<SessionTurn, "index">[];
   finalObjectives: ObjectiveState[];
   complete: boolean;
+  provider?: string;
 }): SessionRecord {
   const ts = nowIso();
   const rec: SessionRecord = load(args.id) ?? {
@@ -93,6 +97,7 @@ export function appendTurns(args: {
   let next = rec.turns.length;
   for (const t of args.turns) rec.turns.push({ ...t, index: next++ });
   rec.finalObjectives = args.finalObjectives;
+  if (args.provider) rec.provider = args.provider;
   rec.status = args.complete ? "completed" : "abandoned";
   rec.updatedAt = ts;
   write(rec);

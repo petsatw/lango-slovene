@@ -23,6 +23,11 @@ interface PendingSession {
   token: string;
   lessonId: string;
   provider: LiveProvider;
+  /** Whose palette the prompt is built from, and whose sitting the log belongs to. */
+  learnerId: string;
+  /** The sitting this session belongs to — the same id the tap-to-speak turns are recorded under, so
+   *  the two modes can be lined up afterwards (server/scripts/runs.ts). */
+  runId: string | null;
   expiresAt: number;
 }
 
@@ -56,13 +61,20 @@ export function atCapacity(): boolean {
   return active.size + pending.size >= MAX_CONCURRENT;
 }
 
-export function create(lessonId: string, provider: LiveProvider): PendingSession {
+export function create(args: {
+  lessonId: string;
+  provider: LiveProvider;
+  learnerId: string;
+  runId: string | null;
+}): PendingSession {
   sweep();
   const s: PendingSession = {
     sessionId: randomUUID(),
     token: randomBytes(24).toString("base64url"),
-    lessonId,
-    provider,
+    lessonId: args.lessonId,
+    provider: args.provider,
+    learnerId: args.learnerId,
+    runId: args.runId,
     // The token has to survive only the round trip from the create call to the WS open, so it expires
     // far sooner than the session it authorizes.
     expiresAt: Date.now() + 60_000,

@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { understand } from "../orchestrator";
 import { getScenario, freshSession } from "../scenarios";
+import { DEFAULT_LEARNER_ID } from "../assets/learner";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const clip = path.join(__dirname, "..", "..", "fixtures", "out", "e3-probe.mp3");
@@ -22,7 +23,8 @@ const scenario = getScenario("cafe");
 const audioBase64 = readFileSync(clip).toString("base64");
 
 try {
-  const r = await understand({ audioBase64, mimeType: "audio/mp3", history: [], session: freshSession(scenario) });
+  const r = await understand({ audioBase64, mimeType: "audio/mp3", history: [], session: freshSession(scenario),
+                              learnerId: DEFAULT_LEARNER_ID });
   console.log(`✅ mastery turn OK  e2=${r.timings.e2Ms}ms`);
   console.log(`   verbatim: ${r.userVerbatim}`);
   console.log(`   english:  ${r.userSaid}`);

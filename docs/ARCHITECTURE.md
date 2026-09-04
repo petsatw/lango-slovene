@@ -232,15 +232,18 @@ confusion — so, precisely:
   *right now* — lives in the browser and the conversation history is per-page-load. Reload and the
   *scene-layer dots* start fresh. This is one of **two layers**: the ephemeral scene layer (objective
   dots, 14-turn cap) and a **durable mastery layer** (below) that does carry forward.
-- **Durable (on disk).**
-  - **The learner model** (`assets/learner.json`) — the cross-session mastery layer (roadmap 4). Per
-    **learnable** (vocabulary · chunk · pattern, in `server/catalog/learnables.json`) it counts
-    `attempts`/`successes`; a learnable is *mastered* at a threshold (5) of successful productions,
-    credited per-learnable from the same E2 verdict, accrued across sittings and contexts, with a flub
-    decrementing it. So a returning learner is met where they left off even though the scene dots reset.
-    Mechanism: [learnable-subsystem-spec.md](learnable-subsystem-spec.md); subsystem design:
+  - **The learner model** — the mastery layer, held under a **learner id** the client mints per page
+    load and sends as `x-learner-id`. Per **learnable** (vocabulary · chunk · pattern, in
+    `server/catalog/learnables.json`) it counts `attempts`/`successes`; a learnable is *mastered* at a
+    threshold (5) of successful productions, credited per-learnable from the same E2 verdict, with a flub
+    decrementing it. It carries across the whole sitting — the scene dots reset, this does not — and the
+    default store keeps it in memory, so it ends with the sitting. `LEARNER_STORE=file` holds one model on
+    disk at `assets/learner.json` instead, which is what dev and the probes use. Accounts arrive by making
+    the id an account id and the store durable. Mechanism:
+    [learnable-subsystem-spec.md](learnable-subsystem-spec.md) §2.3; subsystem design:
     [learnable-subsystem.md](learnable-subsystem.md). (Steering/selection over this model — *what* to
     practise next — is still roadmap 5.)
+- **Durable (on disk).**
   - **Session records.** Every *run* is captured to `assets/sessions/<id>.json`, written incrementally
     on each turn — so even an abandoned run (browser/server killed mid-session) leaves its partial
     record. A run is `completed` or `abandoned`, replayable turn-by-turn, and can be named or
@@ -307,6 +310,7 @@ decision-tree exchanges at ascending competency levels, with pregenerated per-sp
 | [learnable-subsystem-stories.md](learnable-subsystem-stories.md) | the mastery loop's captured intent: decisions, canonical user stories, and the mastery-loop flows | speccing or building roadmap 4; reviewing whether the build serves the journey |
 | [learnable-subsystem-spec.md](learnable-subsystem-spec.md) | the mastery loop's **build spec**: data model, per-turn + cross-session control flow, API changes, crediting/presentation rules, the ordered build plan | building/extending the mastery loop; tracing why a counter behaves as it does |
 | [live-tutor.md](live-tutor.md) | the **continuous-speech** surface (Go live): the WebSocket contract, the shared lesson prompt, the spend ceilings, and the Gemini/Grok bake-off | running or extending the live tutor; adding a realtime vendor |
+| [mode-comparison.md](mode-comparison.md) | the two speaking modes side by side: what each leaves behind, how a sitting is read across both (`npm run runs`), and which comparisons the asymmetries rule out | scoring a tester round; choosing between the modes |
 | [free-conversation.md](free-conversation.md) | the **governing ethos** of free conversation: how it threads natural flow + laser mastery focus (situation-first selection, honor-the-topic/hold-the-level, the focus-set/credit firewall, the seed) | designing/building free conversation; deciding what the mode should and shouldn't do |
 | [SECRETS.md](SECRETS.md) | API-key hygiene and the key-isolation boundary | handling credentials |
 | [research/](research/) | the expert-panel research the pedagogy rests on | understanding *why* a teaching rule exists |

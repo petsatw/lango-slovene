@@ -1,12 +1,15 @@
-// Print the durable learner model (US-17 inspection, CLI form). Read-only; bills nothing. Reads the
-// same assets/learner.json the turn loop writes (override with LEARNER_PATH). Run: `npm run learner`.
+// Print the learner model on disk (US-17 inspection, CLI form). Read-only; bills nothing. Reads
+// assets/learner.json (override with LEARNER_PATH) — the file store, which is the operator's own model
+// and what a server run with LEARNER_STORE=file writes. Run: `npm run learner`.
 
 import "dotenv/config";
+
+process.env.LEARNER_STORE = "file"; // the file IS what this script is for
 import * as learner from "../assets/learner";
 import { inspect } from "../mastery";
 import { FACTS } from "../facts";
 
-const model = learner.load();
+const model = learner.load(learner.DEFAULT_LEARNER_ID);
 const view = inspect(model);
 const { owned, shaky, unseen } = view.counts;
 

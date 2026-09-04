@@ -187,23 +187,28 @@ console.log("learner store (temp file):");
   const dir = mkdtempSync(path.join(os.tmpdir(), "learner-test-"));
   const file = path.join(dir, "learner.json");
   const prev = process.env.LEARNER_PATH;
+  const prevStore = process.env.LEARNER_STORE;
   process.env.LEARNER_PATH = file;
+  process.env.LEARNER_STORE = "file"; // this block is about the on-disk store specifically
   try {
     // fresh import is unnecessary — the module reads LEARNER_PATH lazily per call
     const learner = await import("../assets/learner");
-    check("load() of a missing file is empty", Object.keys(learner.load().learnables).length === 0);
+    const id = learner.DEFAULT_LEARNER_ID;
+    check("load() of a missing file is empty", Object.keys(learner.load(id).learnables).length === 0);
 
-    const credited = applyCredit(learner.load(), [{ id: "kava", result: "success" }]);
-    learner.save(credited);
+    const credited = applyCredit(learner.load(id), [{ id: "kava", result: "success" }]);
+    learner.save(id, credited);
     check("file written to LEARNER_PATH", existsSync(file));
 
-    const reloaded = learner.load();
+    const reloaded = learner.load(id);
     check("persisted success survives reload", reloaded.learnables.kava?.successes === 1, JSON.stringify(reloaded.learnables));
     const onDisk = JSON.parse(readFileSync(file, "utf8"));
     check("on-disk JSON has the expected shape", onDisk.learnables?.kava?.attempts === 1 && typeof onDisk.updatedAt === "string");
   } finally {
     if (prev === undefined) delete process.env.LEARNER_PATH;
     else process.env.LEARNER_PATH = prev;
+    if (prevStore === undefined) delete process.env.LEARNER_STORE;
+    else process.env.LEARNER_STORE = prevStore;
     rmSync(dir, { recursive: true, force: true });
   }
 }
@@ -218,16 +223,18 @@ if (process.argv.includes("--live")) {
   } else {
     const dir = mkdtempSync(path.join(os.tmpdir(), "learner-live-"));
     process.env.LEARNER_PATH = path.join(dir, "learner.json");
+    process.env.LEARNER_STORE = "file";
     try {
       const { understand } = await import("../orchestrator");
       const { getScenario, freshSession } = await import("../scenarios");
       const learner = await import("../assets/learner");
       const scenario = getScenario("cafe");
       const audioBase64 = readFileSync(clip).toString("base64");
-      const r = await understand({ audioBase64, mimeType: "audio/mp3", history: [], session: freshSession(scenario) });
+      const r = await understand({ audioBase64, mimeType: "audio/mp3", history: [], session: freshSession(scenario),
+                                   learnerId: learner.DEFAULT_LEARNER_ID });
       console.log(`  verbatim: ${r.userVerbatim}`);
       console.log(`  learnable_progress: ${r.learnableProgress.map((p) => `${p.id}:${p.result}`).join("  ") || "(none)"}`);
-      const model = learner.load();
+      const model = learner.load(learner.DEFAULT_LEARNER_ID);
       check("live: durable model gained at least one learnable", Object.keys(model.learnables).length > 0, JSON.stringify(model.learnables));
       // The fixture says "Ena kava" (the nominative error) → the pattern should be an attempt, not a success.
       const pat = model.learnables.eno_femacc;

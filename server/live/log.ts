@@ -20,6 +20,9 @@ export interface LiveTranscript {
 
 export interface LiveSessionLog {
   sessionId: string;
+  /** The sitting: the id the same tester's tap-to-speak turns are recorded under, so one run of a lesson
+   *  can be read next to the other (server/scripts/runs.ts). Null when the client named none. */
+  runId: string | null;
   lessonId: string;
   provider: LiveProvider;
   startedAt: string;

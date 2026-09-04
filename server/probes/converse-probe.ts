@@ -19,6 +19,7 @@ if (!existsSync(clip)) {
 
 const dir = mkdtempSync(path.join(os.tmpdir(), "converse-probe-"));
 process.env.LEARNER_PATH = path.join(dir, "learner.json");
+process.env.LEARNER_STORE = "file"; // the probe asserts on the model it wrote — hold it on disk
 
 try {
   const { converse } = await import("../orchestrator");
@@ -28,14 +29,16 @@ try {
 
   // Seed a little history so the conversation is in-reach of what the fixture actually says ("Dober dan…
   // kava…") — free conversation is normally entered AFTER some scenario practice, not from zero.
+  const id = learner.DEFAULT_LEARNER_ID;
   learner.save(
-    applyCredit(learner.load(), [
+    id,
+    applyCredit(learner.load(id), [
       { id: "dober_dan", result: "attempt" },
       { id: "kava", result: "attempt" },
     ]),
   );
 
-  const r = await converse({ audioBase64, mimeType: "audio/mp3", history: [], level: 2 });
+  const r = await converse({ audioBase64, mimeType: "audio/mp3", history: [], level: 2, learnerId: id });
   console.log(`✅ converse turn OK  e2=${r.timings.e2Ms}ms`);
   console.log(`   verbatim: ${r.userVerbatim}`);
   console.log(`   english:  ${r.userSaid}`);
@@ -43,7 +46,7 @@ try {
   console.log(`   recast:   ${r.correction || "—"}`);
   console.log(`   learnable_progress: ${r.learnableProgress.map((p) => `${p.id}:${p.result}`).join("  ") || "(none)"}`);
 
-  const model = learner.load();
+  const model = learner.load(id);
   const credited = Object.keys(model.learnables).length;
   if (!r.tutorReply.trim()) throw new Error("empty tutor reply");
   console.log(`   durable model now tracks ${credited} learnable(s)`);

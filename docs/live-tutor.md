@@ -129,13 +129,20 @@ A tester may name the provider per session — `/?lesson=restaurant-l1&provider=
 than restarting between runs: the same person, the same lesson, back to back, is the comparison you
 actually want. Arriving from a rehearsal instead carries that lesson automatically.
 
+The prompt is built from **this session's** learner, taken from the `x-learner-id` the create call
+carries, so two testers running the same lesson at the same time are given the same prompt.
+
 Each session writes `assets/live/<sessionId>.json`:
 
 ```json
-{ "sessionId": "", "lessonId": "", "provider": "gemini|grok",
+{ "sessionId": "", "runId": "", "lessonId": "", "provider": "gemini|grok",
   "startedAt": "", "endedAt": "",
   "transcripts": [{ "ts": "", "role": "user|tutor", "text": "" }], "error": null }
 ```
+
+`runId` is the **sitting** — the id the same tester's tap-to-speak turns are recorded under. It is what
+lets `npm run runs` put one mode's run next to the other's; see
+[mode-comparison.md](mode-comparison.md).
 
 Transcripts and nothing else — scoring *Slovene-only, on-plan, English leak, recovery* is a read of the
 transcript. Like `assets/sessions/`, this is learner speech and **stays out of the deploy**

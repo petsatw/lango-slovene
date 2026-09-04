@@ -8,6 +8,7 @@
 
 import "dotenv/config";
 import { buildLessonPrompt, lessonExists } from "../live/prompt";
+import { DEFAULT_LEARNER_ID } from "../assets/learner";
 import { DIALOGUES } from "../dialogues";
 
 const lessonId = process.argv[2];
@@ -22,6 +23,6 @@ if (!lessonId || !lessonExists(lessonId)) {
   process.exit(1);
 }
 
-const { title, instructions } = buildLessonPrompt(lessonId);
+const { title, instructions } = buildLessonPrompt(lessonId, DEFAULT_LEARNER_ID);
 console.log(`— ${lessonId}: ${title} —\n`);
 console.log(instructions);
