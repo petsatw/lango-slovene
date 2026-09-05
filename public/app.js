@@ -1,5 +1,5 @@
-// MVP front-end. Four learner destinations behind a home shell:
-//   ① Practice scenarios  ② Live AI tutor  ③ Replays  ④ A1 Readiness
+// MVP front-end. Three learner destinations behind a home shell:
+//   ① Practice scenarios  ② Live AI tutor  ③ A1 Readiness
 // The live tutor is the single production surface (push-to-talk → /api/converse). Rehearsal trees are
 // exposure only (no mic, no credit). The "engine" stays invisible everywhere except A1 Readiness.
 
@@ -79,7 +79,7 @@ let chatLessonId = null;     // go-live: which lesson's plan the realtime tutor 
 let runId = null;            // THIS sitting on the practice surface — both modes record under it (npm run runs)
 
 // ---- Screen router — one screen visible at a time; the tree + obs are overlays on top. ----
-const SCREENS = ["home", "practice", "levels", "tutor", "replays", "a1", "scene"];
+const SCREENS = ["home", "practice", "levels", "tutor", "a1", "scene"];
 let currentScreen = "home";
 
 function showScreen(id) {
@@ -100,7 +100,6 @@ function showScreen(id) {
 
 function openHome() { stopAllAudio(); showScreen("home"); }
 function openPractice() { showScreen("practice"); loadPractice(); }
-function openReplays() { showScreen("replays"); loadRuns(); }
 function openA1() { showScreen("a1"); renderA1(); }
 
 function stopAllAudio() { stopDialogueAudio(); }
@@ -338,7 +337,7 @@ async function loadPractice() {
     el.innerHTML = "";
     // Two groups, because they are two different things to do: the spoken lessons are the course, the
     // rehearsal trees are conversations to read through.
-    for (const [heading, mode] of [["Practice!", "spoken"], ["Example Conversations", "rehearsal"]]) {
+    for (const [heading, mode] of [["Practice:", "spoken"], ["Example Conversations:", "rehearsal"]]) {
       const group = scenarios.filter((s) => s.mode === mode);
       if (!group.length) continue;
       const h = document.createElement("p");
@@ -942,7 +941,6 @@ function startTutorSession() {
   runId = newRunId("practice"); // one record per sitting, and the id both modes are logged under
   $("play-fallback").hidden = true;
   $("practice-talk").disabled = false;
-  $("mode-toggle").hidden = false; // a replay may have borrowed the surface and hidden it
   obs.state("idle");
   renderPractice();
 }
@@ -1883,85 +1881,7 @@ function wireSceneChips() {
   $("scene-quit").addEventListener("click", () => { sceneCancel(); openHome(); });
 }
 
-// ---- ③ Replays: play back a captured live session turn-by-turn, free (audio served from the store) ----
-function playClipToEnd(text) {
-  return new Promise((resolve) => {
-    const audio = new Audio();
-    // A replay speaks a captured turn back, so the same rule as the live reply applies to it.
-    const params = new URLSearchParams({ text }); // teacher voice — the free tutor
-    if (!retainSession) params.set("retain", "0");
-    audio.src = `/api/speak?${params.toString()}`;
-    audio.onended = resolve;
-    audio.onerror = resolve;
-    audio.play().catch(resolve);
-  });
-}
-
-function fmtWhen(iso) {
-  try { return new Date(iso).toLocaleString(); } catch { return iso; }
-}
-
-async function loadRuns() {
-  const panel = $("runs-panel");
-  panel.innerHTML = "<p class='muted'>Loading…</p>";
-  try {
-    const { sessions } = await (await api("/api/sessions")).json();
-    if (!sessions.length) { panel.innerHTML = "<p class='muted'>No sessions yet. Talk to the tutor, then come back to hear it.</p>"; return; }
-    panel.innerHTML = "";
-    for (const s of sessions) {
-      const row = document.createElement("div");
-      row.className = "run-row";
-      const star = s.favorite ? "★" : "☆";
-      const name = s.label || s.id;
-      row.innerHTML =
-        `<button class="run-play" type="button" title="Replay this session">▶</button>` +
-        `<span class="run-name">${name}</span>` +
-        `<span class="run-meta">${s.turns} turns · ${fmtWhen(s.createdAt)}</span>` +
-        `<button class="run-fav" type="button" title="Favorite">${star}</button>`;
-      row.querySelector(".run-play").addEventListener("click", () => replayRun(s.id));
-      row.querySelector(".run-fav").addEventListener("click", () => toggleFavorite(s.id, !s.favorite));
-      panel.appendChild(row);
-    }
-  } catch (err) {
-    panel.innerHTML = `<p class='muted'>Failed: ${err.message}</p>`;
-  }
-}
-
-async function toggleFavorite(id, favorite) {
-  await api(`/api/sessions/${encodeURIComponent(id)}/meta`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ favorite }),
-  });
-  loadRuns();
-}
-
-// Turn-based static replay: step the record in order, playing tutor turns from the store (free) and
-// showing the student lines. Renders into the live transcript so it reads like the original chat.
-async function replayRun(id) {
-  const rec = await (await api(`/api/sessions/${encodeURIComponent(id)}`)).json();
-  if (rec.error) { obs.error(rec.error); return; }
-  showScreen("tutor");
-  // A replay borrows the surface as a reading room: no mic, no session, so nothing that offers one.
-  $("practice-talk").disabled = true;
-  $("mode-toggle").hidden = true;
-  $("practice-hint").textContent = "";
-  $("live-state").textContent = "";
-  $("transcript").innerHTML = "";
-  obs.state(`replaying ${rec.id}…`);
-  for (const t of rec.turns) {
-    if (t.role === "tutor") {
-      addBubble("tutor", t.text);
-      await playClipToEnd(t.text);
-    } else {
-      addBubble("user", t.userVerbatim || t.text, t.text && t.userVerbatim ? `≈ ${t.text}` : "");
-      await new Promise((r) => setTimeout(r, 700)); // a beat to read the student line
-    }
-  }
-  obs.state("idle");
-}
-
-// ---- ④ A1 Readiness — the coverage map (the only place progress is visible). A hand-authored
+// ---- ③ A1 Readiness — the coverage map (the only place progress is visible). A hand-authored
 // competency → scenarios mapping; progress read from the durable learner model. List → drill-down. ----
 let a1Competencies = [];
 
@@ -2054,7 +1974,6 @@ async function init() {
       const go = t.dataset.go;
       if (go === "practice") openPractice();
       else if (go === "tutor") openTutor();
-      else if (go === "replays") openReplays();
       else if (go === "a1") openA1();
     }),
   );

@@ -60,10 +60,10 @@ main.screen, main.home {
 }
 .screen-title { font-size: 20px; font-weight: 700; margin: 4px 0 14px; width: 100%; max-width: 520px; text-align: left; }
 
-/* HOME — four big, obvious destination tiles. */
+/* HOME — three big, obvious destination tiles, stacked so each spans the screen. */
 .tiles {
   width: 100%; max-width: 520px;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  display: grid; grid-template-columns: 1fr; gap: 12px;
   margin-top: 8px;
 }
 .tile {
@@ -90,9 +90,10 @@ main.screen, main.home {
   transition: border-color 0.12s ease;
 }
 .scenario-card:hover { border-color: var(--green); }
-/* Two groups on one screen: the spoken lessons, and the conversations to read through. */
-.scenario-group { margin: 14px 0 0; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.scenario-group:first-child { margin-top: 0; }
+/* Two groups on one screen: the spoken lessons, and the conversations to read through. They carry the
+   screen-title styling because with no heading above them they ARE this screen's headings. */
+.scenario-group { margin: 18px 0 4px; font-size: 20px; font-weight: 700; text-align: left; }
+.scenario-group:first-child { margin-top: 4px; }
 .scenario-name { font-size: 18px; font-weight: 600; flex: 1; }
 .scenario-meta { color: var(--muted); font-size: 13px; }
 
@@ -132,10 +133,7 @@ main.screen, main.home {
 /* The practice surface is a card, like the rehearsal tree it borrows from — centred, not bottom-anchored. */
 main.tutor { justify-content: center; }
 
-/* Replays list lives directly on its screen now (no collapsible section chrome). */
-.runs-panel { width: 100%; max-width: 520px; background: transparent; padding: 0; }
-
-/* ④ A1 Readiness — the coverage map. The only place progress is visible. */
+/* ③ A1 Readiness — the coverage map. The only place progress is visible. */
 .a1-body { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 10px; }
 .a1-intro { color: var(--muted); font-size: 13px; margin: 0 0 4px; }
 .a1-card {
@@ -588,28 +586,6 @@ main {
 .story-nav:disabled { opacity: 0.35; }
 .story-progress { color: var(--muted); font-size: 13px; min-width: 48px; }
 
-.runs { border-top: 1px solid #23272f; }
-.runs-toggle {
-  width: 100%; text-align: left;
-  background: var(--panel); color: var(--muted);
-  border: none; padding: 10px 16px; font-size: 13px; cursor: pointer;
-}
-.runs-toggle:hover { color: var(--text); }
-.runs-panel { background: var(--panel); padding: 4px 12px 12px; }
-.runs-empty { color: var(--muted); font-size: 13px; margin: 8px 4px; }
-.run-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 6px; border-bottom: 1px solid #23272f; font-size: 14px;
-}
-.run-row:last-child { border-bottom: none; }
-.run-name { font-weight: 600; flex-shrink: 0; max-width: 40%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.run-meta { color: var(--muted); font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.run-play, .run-fav {
-  border: none; background: #2a2f3a; color: #fff; border-radius: 50%;
-  width: 28px; height: 28px; font-size: 12px; padding: 0; cursor: pointer; flex-shrink: 0;
-}
-.run-play { background: var(--green); }
-.run-fav { background: transparent; color: #ffd479; font-size: 16px; }
 
 .obs {
   background: var(--panel);

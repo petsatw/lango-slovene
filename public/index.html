@@ -16,7 +16,8 @@
     <p class="tagline">Learn Slovenian in real-life situations</p>
   </header>
 
-  <!-- HOME — the four learner destinations. One tap to each; everything else is one level in. -->
+  <!-- HOME — the three learner destinations, stacked full width. One tap to each; everything else is
+       one level in. -->
   <main id="home" class="home">
     <div class="tiles">
       <button class="tile" type="button" data-go="practice">
@@ -29,11 +30,6 @@
         <span class="tile-title">Live AI tutor</span>
         <span class="tile-sub">Talk out loud — the tutor replies in Slovene</span>
       </button>
-      <button class="tile" type="button" data-go="replays">
-        <span class="tile-emoji">↺</span>
-        <span class="tile-title">Replays</span>
-        <span class="tile-sub">Hear back what the tutor said</span>
-      </button>
       <button class="tile" type="button" data-go="a1">
         <span class="tile-emoji">📊</span>
         <span class="tile-title">A1 Readiness</span>
@@ -42,9 +38,9 @@
     </div>
   </main>
 
-  <!-- ① PRACTICE — scenario list. Tap a scenario → its levels. -->
+  <!-- ① PRACTICE — scenario list. The two group headings ARE this screen's titles; the back button and
+       the wordmark already say where you are. Tap a scenario → its levels. -->
   <main id="practice" class="screen" hidden>
-    <h2 class="screen-title">Practice scenarios</h2>
     <div id="scenario-list" class="scenario-list"></div>
   </main>
 
@@ -214,13 +210,7 @@
     </div>
   </main>
 
-  <!-- ③ REPLAYS — play back a past live session, tutor lines from the store (free). -->
-  <main id="replays" class="screen" hidden>
-    <h2 class="screen-title">Replays</h2>
-    <div id="runs-panel" class="runs-panel"></div>
-  </main>
-
-  <!-- ④ A1 READINESS — the coverage map (mockup). The ONLY place progress is visible. -->
+  <!-- ③ A1 READINESS — the coverage map (mockup). The ONLY place progress is visible. -->
   <main id="a1" class="screen" hidden>
     <h2 class="screen-title">A1 Readiness</h2>
     <div id="a1-body" class="a1-body"></div>
