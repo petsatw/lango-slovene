@@ -15,12 +15,13 @@
 // WHAT IS STILL DIFFERENT, and it is not small:
 //   - The prompt is built ONCE, at connect. Free chat is stateless and rebuilds it every turn, so its
 //     targets re-select as the learner progresses. A live session's targets are frozen at second zero.
-//   - No evidence contract. The JSON tail that lets the server credit has no return path in a speech
-//     stream, so nothing is credited (docs/live-tutor.md). The teaching half is identical; the
-//     bookkeeping half is absent.
+//   - No evidence contract in the prompt. A speech stream has no return path for the JSON tail, and a
+//     speech model handed an output schema would try to say it out loud. Crediting instead happens
+//     after the session, from the transcript (server/live/grader.ts) — which is why `targets` leaves
+//     this file: the grader scores the same frozen set the session was taught against.
 
 import { DIALOGUES, type Dialogue, type DialogueNode } from "../dialogues";
-import { LEARNABLES } from "../learnables";
+import { LEARNABLES, type Learnable } from "../learnables";
 import * as learner from "../assets/learner";
 import { selectForWitness } from "../mastery";
 import { conversationTeachingBody } from "../prompt";
@@ -78,18 +79,22 @@ export interface LessonPrompt {
   title: string;
   /** The one string both adapters receive verbatim. */
   instructions: string;
+  /** The bounded in-play set this session is being taught against — frozen here, at connect. The grader
+   *  scores the finished session against this same set (server/live/grader.ts): a set re-selected
+   *  afterwards would be marking a different exam from the one that was sat. */
+  targets: Learnable[];
 }
 
 export function buildLessonPrompt(lessonId: string, learnerId: string): LessonPrompt {
   const d = lessonIndex().get(lessonId);
   if (!d) throw new Error(`no such lesson: ${lessonId}`);
 
-  // The witness selection, same call the free-chat turn makes: `familiar` is everything the learner has
-  // touched (the tutor's palette), `targets` is the bounded in-play set led by this lesson's material.
+  // The witness selection, same call the free-chat turn makes: `knows` is the learner model's contents
+  // (the tutor's palette), `targets` is the bounded in-play set led by this lesson's material.
   // The palette is THIS session's learner, taken from the live session rather than a global, so two
   // testers running the same lesson at the same time are given the same prompt.
   const model = learner.load(learnerId);
-  const { familiar, targets } = selectForWitness(model, 2, focusIdsFor(d));
+  const { knows, targets } = selectForWitness(model, 2, focusIdsFor(d));
 
   // The scene, built the way the rehearsal handoff builds it — the situation and what the level just
   // practised, in English. Priming only: the tutor still composes its own Slovene from the palette.
@@ -100,12 +105,12 @@ export function buildLessonPrompt(lessonId: string, learnerId: string): LessonPr
     : null;
 
   const instructions = conversationTeachingBody(
-    familiar,
+    knows,
     targets,
     undefined, // the default directive — a relaxed everyday chat, same as free chat
     scenario?.role ?? null,
     context,
   ) + SPOKEN_TAIL;
 
-  return { lessonId, title: d.title, instructions };
+  return { lessonId, title: d.title, instructions, targets };
 }

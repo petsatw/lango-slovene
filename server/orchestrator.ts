@@ -7,7 +7,13 @@ import * as store from "./assets/store";
 import * as learner from "./assets/learner";
 import * as turnlog from "./assets/turnlog";
 import * as candidates from "./assets/candidates";
-import { applyCredit, creditFromEvidence, presentObjectives, selectForWitness } from "./mastery";
+import {
+  applyCredit,
+  countsFor,
+  creditFromEvidence,
+  presentObjectives,
+  selectForWitness,
+} from "./mastery";
 import { buildSystemPrompt, buildConversationPrompt, type ScenarioContext } from "./prompt";
 import { getLearnable } from "./learnables";
 import { getScenario, freshSession, characterVoiceProfile, type Scenario } from "./scenarios";
@@ -24,20 +30,6 @@ import type {
 } from "./types";
 
 const TURN_CAP = 14; // safety stop so a session can't run forever
-
-// Post-credit durable counts for exactly the ids the model credited this turn — lets the turn log
-// show whether a verdict moved one earned production or bundled several familiar items at once.
-function countsFor(
-  model: LearnerModel,
-  progress: { id: string }[],
-): Record<string, { successes: number; attempts: number }> {
-  const out: Record<string, { successes: number; attempts: number }> = {};
-  for (const p of progress) {
-    const l = model.learnables[p.id];
-    if (l) out[p.id] = { successes: l.successes, attempts: l.attempts };
-  }
-  return out;
-}
 
 // Apply the model's per-turn verdicts to session state. Rules:
 //  - "completed"  → status completed
@@ -69,6 +61,8 @@ export async function understand(input: {
   history: ConversationTurn[];
   session?: SessionState;
   learnerId: string;
+  /** Did this session agree to its data being kept (server/assets/retention.ts). */
+  retain?: boolean;
 }): Promise<UnderstandResult> {
   const scenario = getScenario(input.session?.scenarioId);
   const session = input.session ?? freshSession(scenario);
@@ -99,6 +93,7 @@ export async function understand(input: {
 
   turnlog.record({
     path: "scenario",
+    retain: input.retain,
     scenarioId: scenario.id,
     provider: e2.name,
     model: process.env.GEMINI_MODEL,
@@ -136,6 +131,8 @@ export async function converse(input: {
   context?: ScenarioContext | null; // rehearsal→free-chat handoff: the scene + practiced objectives (English priming)
   learnerId: string;
   e2Provider?: string; // a tester naming the understand+tutor provider for THIS turn (adapters/index.ts)
+  /** Did this session agree to its data being kept (server/assets/retention.ts). */
+  retain?: boolean;
 }): Promise<ConverseResult> {
   const model = learner.load(input.learnerId);
 
@@ -149,6 +146,7 @@ export async function converse(input: {
     }
     turnlog.record({
       path: "seed",
+      retain: input.retain,
       seedId: input.seedId,
       provider: "scripted-seed",
       e2Ms: 0,
@@ -189,8 +187,8 @@ export async function converse(input: {
 
   if (!input.audioBase64 || !input.mimeType) throw new Error("converse requires audio");
   const level: 1 | 2 = input.level === 1 ? 1 : 2;
-  const { familiar, targets } = selectForWitness(model, level, input.focusLearnables ?? []);
-  const systemPrompt = buildConversationPrompt(familiar, targets, undefined, input.role, input.context);
+  const { knows, targets } = selectForWitness(model, level, input.focusLearnables ?? []);
+  const systemPrompt = buildConversationPrompt(knows, targets, undefined, input.role, input.context);
   const e2 = getE2(input.e2Provider);
   if (!e2.witness) {
     throw new Error(`E2 provider "${e2.name}" does not support free-conversation witness turns`);
@@ -209,10 +207,14 @@ export async function converse(input: {
   // off-target Slovene earns attempts; novel Slovene becomes a catalog candidate (mastery.ts).
   const credit = creditFromEvidence(model, w, targets);
   if (credit.progress.length) learner.save(input.learnerId, credit.model);
-  if (credit.candidates.length) candidates.record(credit.candidates);
+  // The candidate queue is a durable product artifact, not a session record, and a candidate is by
+  // definition unrecognised speech — a spoken name lands here as readily as a real word. A session that
+  // declined retention therefore never writes one, rather than writing one for a sweep to find later.
+  if (credit.candidates.length && input.retain !== false) candidates.record(credit.candidates);
 
   turnlog.record({
     path: "free",
+    retain: input.retain,
     level,
     provider: e2.name,
     model: process.env.GEMINI_MODEL,

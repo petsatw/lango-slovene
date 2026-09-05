@@ -11,10 +11,10 @@ import { FACTS } from "../facts";
 
 const model = learner.load(learner.DEFAULT_LEARNER_ID);
 const view = inspect(model);
-const { owned, shaky, unseen } = view.counts;
+const { mastered, attempted } = view.counts;
 
 console.log(`Learner model — threshold ${view.threshold}`);
-console.log(`  owned ${owned} · shaky ${shaky} · unseen ${unseen}`);
+console.log(`  mastered ${mastered} · attempted ${attempted}`);
 
 // What the course knows about the PERSON, beside what they can say. It decides which form of a line they
 // are shown and hear (server/facts.ts), so an operator reading a lesson back needs it in the same view.
@@ -33,10 +33,10 @@ console.log("");
 if (view.learnables.length === 0) {
   console.log("  (no learnables practised yet)");
 } else {
-  const mark = { mastered: "●", attempted: "◐", unseen: "○" } as const;
+  // Only learnables the learner has produced are listed, so a row is one of two things.
   for (const l of view.learnables) {
     console.log(
-      `  ${mark[l.status]} ${l.id.padEnd(18)} ${String(l.successes)}/${view.threshold}` +
+      `  ${l.status === "mastered" ? "●" : "◐"} ${l.id.padEnd(18)} ${String(l.successes)}/${view.threshold}` +
         `  (att ${l.attempts})  ${l.kind} "${l.sl}"`,
     );
   }

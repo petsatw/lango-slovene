@@ -13,6 +13,11 @@ Every request carries **`x-learner-id`**: whose progress it is about. The client
 the server keys the learner model by it, and a request naming none is served as `local`
 ([learnable-subsystem-spec.md](learnable-subsystem-spec.md) §2.3).
 
+A request may also carry **`x-retain: 0`** — this sitting declined the consent gate's optional box, so
+every record it writes is stamped `retain: false` and swept a few hours later, and nothing of its speech
+enters the shared content-addressed stores at all. Absent means keep, which is the default and today's
+behaviour ([retention.md](retention.md)).
+
 | Method | Path | Purpose | Returns |
 |---|---|---|---|
 | `GET` | `/` | the PWA | `public/index.html` (static) |
@@ -21,8 +26,8 @@ the server keys the learner model by it, and a request naming none is served as 
 | `POST` | `/api/turn` | one conversational turn (E2 only) | `UnderstandResult` — text fast; audio is fetched separately. Also captures the run if `runId` is sent. |
 | `POST` | `/api/converse` | one free-conversation turn (E2 only, scenario-less) | `ConverseResult` — bounded by the learner model; `level: 1\|2`. Credits the durable mastery layer. `begin: true` returns the static opening (`Začnemo?`, no model call/credit); `role` is the client-pinned free-chat role carried back each turn. Also hosts the **seed**: `{ seedId, begin? }` swaps the model for the scripted adapter (returns the next scripted line + `seedDone`). |
 | `POST` | `/api/scene` | one beat of a **spoken scene** (an `advance: "audio"` dialogue) | `{ voice, background, npc: { id, sl, en, slowSL, captionDelayMs, glossPolicy, stallHandlers[] }, spoke, done }`. `{ scenarioId }` returns the opening beat and credits nothing; `{ scenarioId, from }` means the learner spoke at `from` — the server walks the spine and plants that beat's `learnables` as **attempts**. The learner's recording is **never uploaded**: nothing inspects it, so the turn cannot be failed. See [rehearsal-dialogues.md › Tapped vs spoken](rehearsal-dialogues.md). |
-| `GET` | `/api/learner` | inspect the caller's learner model (operator) | `LearnerInspection` — derived owned/shaky/unseen + per-learnable counts. Read-only. |
-| `GET` | `/api/speak?text=&voice=&scenarioId=&objectiveId=` | stream tutor/teacher audio (E3) | `audio/mpeg`, streamed progressively. `voice=character` → the scenario character's voice; `voice=<catalog profile id>` (e.g. `shop-assistant`) → that named voice (rehearsal-dialogue speakers); otherwise the teacher voice. Cache: L1 memory → L2 disk → synthesize+persist. |
+| `GET` | `/api/learner` | inspect the caller's learner model (operator) | `LearnerInspection` — every learnable in the model with its derived status, and how the rows split (`mastered`/`attempted`). Read-only. |
+| `GET` | `/api/speak?text=&voice=&scenarioId=&objectiveId=&retain=` | stream tutor/teacher audio (E3) | `audio/mpeg`, streamed progressively. `voice=character` → the scenario character's voice; `voice=<catalog profile id>` (e.g. `shop-assistant`) → that named voice (rehearsal-dialogue speakers); otherwise the teacher voice. Cache: L1 memory → L2 disk → synthesize+persist. `retain=0` streams the clip without writing it to the disk store or the manifest — a conversational reply can name the learner, and the store is shared with every authored lesson clip ([retention.md](retention.md)). |
 | `GET` | `/api/image?scenarioId=&objectiveId=` | a story frame or scene image | `image/jpeg` from the store. `objectiveId=scene` → the full tableau. 404 with a build hint if not yet built (`npm run build:assets`). |
 | `GET` | `/api/sessions` | list past runs (newest first) | `{ sessions: [{ id, scenarioId, createdAt, status, turns, label, favorite, completed, objectives }] }` |
 | `GET` | `/api/sessions/:id` | one run's full record | `SessionRecord` (ordered turns + final objectives) |
@@ -122,7 +127,7 @@ interface ConverseResult {
 
 `E2Result` (and `UnderstandResult`) gain `learnableProgress: LearnableProgress[]`. Crediting rules
 (threshold = 5, flub decrements by 1, pre-mastery misses stall) live in `server/mastery.ts`; status is
-derived — `successes ≥ threshold` ⇒ mastered, present-but-below ⇒ attempted/shaky, absent ⇒ unseen.
+derived — `successes ≥ threshold` ⇒ mastered, present-but-below ⇒ attempted, absent from the model ⇒ unseen.
 
 ## A scenario
 

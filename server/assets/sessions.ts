@@ -9,7 +9,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { ASSET_DIR } from "./store";
-import type { ObjectiveState } from "../types";
+import type { LearnableProgress, ObjectiveState } from "../types";
 
 const SESSIONS_DIR = path.join(ASSET_DIR, "sessions");
 
@@ -24,6 +24,10 @@ export interface SessionTurn {
   userVerbatim?: string; // student turns: exactly what was heard (errors preserved)
   audioKey?: string; // store key of the clip voicing this turn (absent if not voiced)
   objectiveId?: string;
+  /** Student turns: what this turn credited to the durable learner model. The record is the run, and a
+   *  run of one mode is only comparable to a run of the other if both say what they moved
+   *  (server/scripts/runs.ts). */
+  learnableProgress?: LearnableProgress[];
 }
 
 export interface SessionRecord {
@@ -39,6 +43,12 @@ export interface SessionRecord {
   /** Which provider answered these turns. The live log has carried its provider since it shipped; a run
    *  of the other mode is only comparable to it if it says the same thing (server/scripts/runs.ts). */
   provider?: string;
+  /** Did this sitting agree to its data being kept. `false` marks the record for the retention sweep,
+   *  which empties the spoken text and leaves the run's shape and credit
+   *  (server/assets/retention.ts). Omitted = kept. */
+  retain?: boolean;
+  /** When the sweep emptied this record's text. Present only on a redacted record. */
+  redactedAt?: string;
 }
 
 // runId can originate client-side — keep it filesystem-safe and reject path traversal.
@@ -83,6 +93,7 @@ export function appendTurns(args: {
   finalObjectives: ObjectiveState[];
   complete: boolean;
   provider?: string;
+  retain?: boolean;
 }): SessionRecord {
   const ts = nowIso();
   const rec: SessionRecord = load(args.id) ?? {
@@ -98,6 +109,7 @@ export function appendTurns(args: {
   for (const t of args.turns) rec.turns.push({ ...t, index: next++ });
   rec.finalObjectives = args.finalObjectives;
   if (args.provider) rec.provider = args.provider;
+  if (args.retain === false) rec.retain = false;
   rec.status = args.complete ? "completed" : "abandoned";
   rec.updatedAt = ts;
   write(rec);

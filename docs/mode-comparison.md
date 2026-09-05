@@ -15,13 +15,13 @@ conclusion has to be read against.
 | record | `assets/live/<sessionId>.json` | `assets/sessions/<runId>.json` + `assets/turnlog/` |
 | speaker word | `user` / `tutor` | `student` / `tutor` |
 | provider | per session, in the log | per turn, `provider` on the record |
-| crediting | none | the full evidence contract |
+| crediting | one grade at teardown, from the transcript | the evidence contract, per turn |
 
 The join is the **run id**: the client mints one per sitting and sends it to both, so a live session and
 the tap turns beside it name the same sitting.
 
 ```bash
-npm run runs                  # every sitting, newest first, both modes on one line each
+npm run runs                  # every sitting, newest first, both modes with what each credited
 npm run runs -- <runId>       # one sitting with both transcripts
 npm run runs -- --json        # the same, normalised, for a scorer
 ```
@@ -30,15 +30,27 @@ npm run runs -- --json        # the same, normalised, for a scorer
 transcript. It does not rewrite either store — the two shapes stay as they are, and the normalisation
 lives in the one place that has to see both.
 
-## Only tap-to-speak moves the learner model
+## Both modes move the learner model, by different routes
 
-Crediting rides the JSON evidence contract in `buildConversationPrompt`, and a speech stream has no
-return path for it, so `server/live/prompt.ts` uses only the teaching half (`conversationTeachingBody`).
-A live session teaches and credits nothing.
+Tap-to-speak credits **per turn**: the model reports evidence in the same JSON that carries its reply,
+and `mastery.creditFromEvidence` adjudicates it before the turn returns.
 
-**So "which mode is more useful" cannot be answered from learner progress** — only one mode produces any.
-The comparison has to be scored some other way (transcripts, operator judgement), or live-mode crediting
-has to be built first. That is an open decision, not a detail.
+Live credits **once, at teardown**. A speech stream has no return path for an evidence contract, so
+`server/live/prompt.ts` sends only the teaching half and the bookkeeping happens afterwards: when the
+session ends, [server/live/grader.ts](../server/live/grader.ts) reads the finished transcript against the
+target set the prompt froze at connect and produces the same `WitnessResult` envelope — which the same
+firewall then adjudicates. Live gains credit without the app gaining a second way of granting it.
+
+So the two halves of a sitting are comparable on per-learnable progress, and `npm run runs` prints what
+each half moved. Read the difference against three asymmetries:
+
+- **Live grades against a frozen set.** Tap re-selects its targets every turn as the learner progresses;
+  a live session's are fixed at second zero.
+- **Live's evidence is lower-fidelity.** A tap record separates `userVerbatim` from the English gloss; a
+  live user line is the vendor's running hearing of continuous speech, and it can be plainly wrong about
+  Slovene. The grader reads two channels rather than one because of it (live-tutor.md).
+- **Live's SUCCESS bar is stricter**, so expect it to under-credit relative to tap until the two-channel
+  record says otherwise.
 
 ## Naming a provider
 

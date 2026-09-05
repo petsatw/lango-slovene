@@ -14,6 +14,7 @@ import { getE2, getE3, getE4 } from "./adapters/index";
 import * as store from "./assets/store";
 import * as sessions from "./assets/sessions";
 import * as learner from "./assets/learner";
+import * as retention from "./assets/retention";
 import { inspect, statusOf, applyCredit } from "./mastery";
 import { A1_MAP } from "./a1";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
@@ -52,6 +53,12 @@ function cachePut(key: string, buf: Buffer): void {
 // the seam accounts arrive on — the id stops being a session id and becomes an account id, and nothing
 // below changes (server/assets/learner.ts).
 const learnerOf = (req: express.Request) => learner.idFrom(req.get("x-learner-id"));
+
+// Whether this session agreed to its data being kept — the consent gate's second, optional checkbox.
+// It travels as a header beside the learner id because every writer needs it and a sweep cannot ask the
+// browser after the fact. Absent means keep, so any client that does not send it behaves as before
+// (server/assets/retention.ts).
+const retainOf = (req: express.Request) => retention.retainFrom(req.get("x-retain"));
 
 // Audio clips arrive as base64 JSON — allow a generous body size.
 app.use(express.json({ limit: "25mb" }));
@@ -400,6 +407,7 @@ app.post("/api/turn", async (req, res) => {
       history: Array.isArray(history) ? history : [],
       session,
       learnerId: learnerOf(req),
+      retain: retainOf(req),
     });
 
     // M6 capture (best-effort — never fail a turn because the record couldn't be written).
@@ -421,11 +429,17 @@ app.post("/api/turn", async (req, res) => {
           scenarioId: result.session.scenarioId,
           seedTurns,
           turns: [
-            { role: "student", text: result.userSaid, userVerbatim: result.userVerbatim },
+            {
+              role: "student",
+              text: result.userSaid,
+              userVerbatim: result.userVerbatim,
+              learnableProgress: result.learnableProgress,
+            },
             { role: "tutor", text: result.tutorReply, audioKey: tutorKey(result.tutorReply) },
           ],
           finalObjectives: result.session.objectives,
           complete: result.session.complete,
+          retain: retainOf(req),
         });
       } catch (capErr: any) {
         console.error("[capture] failed:", capErr?.message);
@@ -471,6 +485,7 @@ app.post("/api/converse", async (req, res) => {
             }
           : null,
       learnerId: learnerOf(req),
+      retain: retainOf(req),
       // A tester may name the provider for this turn; everyone else gets the configured one. The live
       // surface has taken a per-session provider since it shipped — this is the same affordance on the
       // other mode, so the two can be compared without a restart in between.
@@ -496,12 +511,18 @@ app.post("/api/converse", async (req, res) => {
           scenarioId: "free-chat",
           seedTurns,
           turns: [
-            { role: "student", text: result.userSaid, userVerbatim: result.userVerbatim },
+            {
+              role: "student",
+              text: result.userSaid,
+              userVerbatim: result.userVerbatim,
+              learnableProgress: result.learnableProgress,
+            },
             { role: "tutor", text: result.tutorReply, audioKey: tutorKey(result.tutorReply) },
           ],
           finalObjectives: [], // free chat has no objectives; the engine stays invisible here
           complete: false, // a free chat is never "complete" — it stays open until the learner exits
           provider: result.providers.e2, // who answered, so this run can be read against a live one
+          retain: retainOf(req),
         });
       } catch (capErr: any) {
         console.error("[converse capture] failed:", capErr?.message);
@@ -573,6 +594,15 @@ app.get("/api/speak", async (req, res) => {
   const objectiveId = req.query.objectiveId ? String(req.query.objectiveId) : undefined;
   const meta = { provider: e3.name, voiceOrModel: e3.voiceTagFor(voiceProfile), text, scenarioId: scenarioIdQ, objectiveId };
 
+  // A conversational reply is a sentence the tutor composed about THIS learner — "Živjo, Kris! Si
+  // študent?" — and persisting it would leave a permanent recording of their name in a store shared by
+  // every learner and every authored lesson clip. So a caller that declines retention asks for the
+  // clip with `retain=0` and it is streamed but never written: nothing enters a content-addressed
+  // store that a later sweep would then have to guess its way back out of. The in-memory cache still
+  // serves it for the rest of the process, and reads are untouched — an authored clip is still a hit.
+  // Authored text carries no such content and does not send the parameter.
+  const persist = String(req.query.retain ?? "") !== "0";
+
   try {
     res.setHeader("Content-Type", "audio/mpeg");
     res.setHeader("Cache-Control", "no-store");
@@ -591,13 +621,13 @@ app.get("/api/speak", async (req, res) => {
       }
       res.end();
       const buf = Buffer.concat(chunks);
-      store.put(key, "audio", buf, meta);
+      if (persist) store.put(key, "audio", buf, meta);
       cachePut(key, buf);
     } else {
       // Provider without streaming: send + persist the full buffer.
       const { audioBase64 } = await e3.synthesize({ text, voiceProfile });
       const buf = Buffer.from(audioBase64, "base64");
-      store.put(key, "audio", buf, meta);
+      if (persist) store.put(key, "audio", buf, meta);
       cachePut(key, buf);
       res.end(buf);
     }
@@ -687,6 +717,10 @@ const port = Number(process.env.PORT || 8787);
 // upgrade, which never reaches a route handler. Everything else is unchanged — same app, same port.
 const server = createServer(app);
 attachLive(server);
+
+// Records left behind by a session that declined retention are redacted here as well as on every turn
+// log write — a server that was restarted before the timer came round would otherwise never sweep them.
+retention.sweep();
 
 server.listen(port, () => {
   console.log(`▶ lango-slovenian demo on http://localhost:${port}`);

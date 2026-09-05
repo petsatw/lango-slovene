@@ -78,23 +78,83 @@ recast-don't-lecture, answer "how do you say…?", let the learner talk more).
 production prompt**: changing how the tutor teaches changes it in both places, and free chat would show
 the same change.
 
-Two things are appended or absent, both forced by the medium:
-
-- A short **spoken tail** replaces free chat's JSON evidence contract — a speech model handed an output
-  schema would try to say it out loud. It also fixes the opening on «Začnemo?», the same static line
-  free chat opens with and the one the learner already knows from the tutorial.
-- **Nothing is credited.** The evidence contract is how the server credits, and a speech stream has no
-  return path for it. The teaching half is identical; the bookkeeping half is gone.
+One thing is appended, forced by the medium: a short **spoken tail** replaces free chat's JSON evidence
+contract, because a speech model handed an output schema would try to say it out loud. It also fixes the
+opening on «Začnemo?», the same static line free chat opens with and the one the learner already knows
+from the tutorial. Crediting happens after the session instead — see below.
 
 And one difference that is not cosmetic: the prompt is built **once, at connect**. Free chat is stateless
 and rebuilds it every turn, so its targets re-select as the learner progresses. A live session's targets
-are frozen at second zero.
+are frozen at second zero, and the grader scores that same frozen set — a set re-selected afterwards
+would be marking a different exam from the one that was sat.
 
 Read the exact string before a run:
 
 ```bash
 npm run prompt:live -- restaurant-l1     # no args lists the lesson ids
 ```
+
+---
+
+## Crediting a live session — one grader, two channels
+
+The session is over before any of this runs. Nothing blocks, nothing gates the learner's turn, and no
+extra response is asked for mid-conversation; when the socket closes and the transcript is written,
+[server/live/grader.ts](../server/live/grader.ts) reads it.
+
+It reads **two accounts of what the learner said**, which fail independently:
+
+- **the ASR channel** — the learner's own transcript line, the vendor's hearing of them. Read
+  deterministically by [server/live/match.ts](../server/live/match.ts).
+- **the comprehension channel** — the tutor's reply to that line, produced from the *audio* rather than
+  from the transcript. Observed staying right in a session where the transcript went wrong.
+
+A single **grader** reads both. It is a text call over the finished transcript, not the live model, and
+it runs with a grader instruction rather than the tutor's persona: a tutor is built to accept imperfect
+input warmly, so an in-character judgement conflates rapport with correctness.
+
+| verdict | rule |
+|---|---|
+| **attempt** | either channel fires, and the line is Slovene. Granted liberally — a beginner who tried is the thing being measured. |
+| **success** | both channels fire **on the same line**, the form is judged correct, and the tutor did not recast it. |
+
+Echoing a phrase the tutor has just modelled still counts: the lessons are heard-first, and "unaided"
+means **not recast**, not "not modelled". One channel alone is never upgraded to a success.
+
+### Matching, not transcribing
+
+The targets are a closed set of at most eight known phrases, so this is **detection**, not
+transcription — open-vocabulary Slovene accuracy is not what it rests on. `match.ts` case-folds, strips
+diacritics and punctuation, then tries three things in order: the canonical surface, a **recorded
+mishearing** (`Živjo` → "Zero"), and edit distance over a same-length window. A pattern's frame is its
+literal word runs in order, so "Eno ___, prosim." lands on *Eno kavo prosim*.
+
+The same set — literal runs plus the aliases — goes to Grok as `audio.input.transcription.keyterms`
+beside `language_hint`. It costs nothing and attacks a mishearing at its source. Gemini Live documents
+no hint list, so there it reaches the vendor through the prompt alone.
+
+Grow the alias list from real sessions: a target the tutor plainly answered while the learner's own line
+read as something else is an alias waiting to be written down.
+
+```bash
+npm run test:live-match                      # the matcher, on plain inputs
+npm run probe:live-credit                    # list recorded sessions
+npm run probe:live-credit -- <sessionId>     # grade one, read-only, writes nothing
+```
+
+### What it leaves behind
+
+Credit rides the same firewall tap mode uses (`mastery.creditFromEvidence`: allowlist → produced →
+Slovene → the cited span is in the transcript → success or attempt), and the same store. Live gains
+credit, not a second way of granting it. Two records come out of it:
+
+- `assets/live/<sessionId>.json` gains `credit` — the per-learnable verdicts the session earned.
+- one `path: "live"` row in `assets/turnlog/turns.jsonl`, carrying the grader's input, the durable counts
+  after crediting, and **each channel separately**. That last part is why the row exists: how often the
+  two channels agree accrues from ordinary running, with no experiment to schedule.
+
+Nothing new is retained. The grader reads a transcript that was already written, and only the verdict
+outlives the session — no second transcription pass, and no learner audio kept to run one.
 
 ---
 
@@ -137,8 +197,12 @@ Each session writes `assets/live/<sessionId>.json`:
 ```json
 { "sessionId": "", "runId": "", "lessonId": "", "provider": "gemini|grok",
   "startedAt": "", "endedAt": "",
-  "transcripts": [{ "ts": "", "role": "user|tutor", "text": "" }], "error": null }
+  "transcripts": [{ "ts": "", "role": "user|tutor", "text": "" }], "error": null,
+  "credit": [{ "id": "zivjo", "result": "success|attempt" }] }
 ```
+
+`credit` is written by a second pass once grading finishes, so it is absent on a session that produced no
+speech, put no targets in play, credited nothing, or whose grade failed.
 
 `runId` is the **sitting** — the id the same tester's tap-to-speak turns are recorded under. It is what
 lets `npm run runs` put one mode's run next to the other's; see
@@ -174,5 +238,9 @@ endpoint stays available if a direct-from-browser mode is ever wanted.
   proves nothing about the vendors' own event streams. Expect the first real run to need a fix.
 - With a dummy key xAI answers the upgrade with **400**, not 401. Worth a second look on the first real
   connect: a 400 could equally mean a malformed model or query parameter.
+- **Expect the strict SUCCESS bar to under-credit at first.** A beginner's correct-but-accented
+  production is exactly the one most likely to garble, so requiring both channels will miss real
+  successes. The trade is deliberate — a false success corrupts the learner model, a missed one only
+  slows it — and the two-channel turnlog row is what will show whether the bar wants loosening.
 - Safari/iOS is unverified. `AudioContext({sampleRate})` has historically been ignored there — the
   resample in `live.js` covers it, but the PWA audio path as a whole has not been exercised.

@@ -86,11 +86,14 @@
        it has to ask and nothing else. -->
   <div id="consent" class="story-overlay" hidden>
     <div class="story-card consent-card">
+      <!-- Declining has to be an available answer. Without a way out, the only route past this card is
+           to agree to it, which is not consent. Closing puts the learner back where they came from. -->
+      <button id="consent-close" class="story-close" type="button" aria-label="Close">✕</button>
       <h2 class="consent-title">Before you start</h2>
       <p class="consent-body">
-        This session <b>records your voice</b> and sends the audio to a <b>third-party AI provider</b> to
-        transcribe it and answer you. Recordings and transcripts of this session are kept only while it
-        is being reviewed, and the session is not linked to any account.
+        This session <b>records your voice</b> and sends the audio to a <b>third-party AI provider</b> for
+        the audio dialogue. The data from this session are retained only while your conversation and
+        session are in progress and are used only within this app for the interactions with the tutor.
       </p>
       <p class="consent-body">
         <a id="consent-privacy" class="consent-link" href="/privacy" target="_blank" rel="noopener">Read the privacy policy</a>
@@ -98,6 +101,15 @@
       <label class="consent-check">
         <input type="checkbox" id="consent-agree" />
         <span>I understand my voice will be recorded and processed by a third-party AI provider, and I consent to this.</span>
+      </label>
+      <p class="consent-body">
+        This is a very early version of the app, and any data on how you use it can be vital in helping us
+        improve. If you do choose to opt out everything besides basic (anonymous) learning progress is
+        erased after you leave the session or after a few hours of inactivity.
+      </p>
+      <label class="consent-check">
+        <input type="checkbox" id="consent-improve" checked />
+        <span>Yes, I allow anonymous data from this session to be used to improve the app.</span>
       </label>
       <button id="consent-continue" class="consent-continue" type="button" disabled>Continue</button>
     </div>

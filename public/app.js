@@ -40,9 +40,28 @@ const learnerId = (() => {
   return minted;
 })();
 
-// Every call names the learner it is about. One wrapper, so no call site has to remember to.
+// Whether this sitting agreed to its data being kept — the consent gate's second, optional box, which
+// starts ticked. Held beside the learner id and for the same span, because it is a property of the same
+// sitting; a reload keeps the answer, closing the tab forgets it along with everything else. Unticked,
+// the server empties this session's records a few hours after it ends and never writes its speech into
+// the shared audio, gloss and candidate stores at all (server/assets/retention.ts).
+let retainSession = sessionStorage.getItem("retainSession") !== "0";
+function setRetain(on) {
+  retainSession = !!on;
+  sessionStorage.setItem("retainSession", retainSession ? "1" : "0");
+}
+
+// Every call names the learner it is about, and whether this sitting is being kept. One wrapper, so no
+// call site has to remember to.
 function api(url, opts = {}) {
-  return fetch(url, { ...opts, headers: { ...(opts.headers || {}), "x-learner-id": learnerId } });
+  return fetch(url, {
+    ...opts,
+    headers: {
+      ...(opts.headers || {}),
+      "x-learner-id": learnerId,
+      ...(retainSession ? {} : { "x-retain": "0" }),
+    },
+  });
 }
 
 const history = [];
@@ -218,6 +237,10 @@ async function playReplyStreaming(text, opts = {}) {
   if (opts.scenarioId) params.set("scenarioId", opts.scenarioId);
   if (opts.objectiveId) params.set("objectiveId", opts.objectiveId);
   if (opts.voice) params.set("voice", opts.voice);
+  // The tutor's reply is a sentence composed about this learner and can carry their name. A sitting
+  // that declined retention still hears it — it just is not written into the shared clip store, which
+  // is keyed by content and has no way to tell one learner's sentence from an authored lesson line.
+  if (!retainSession) params.set("retain", "0");
   audio.src = `/api/speak?${params.toString()}`;
   obs.state("speaking…");
 
@@ -790,7 +813,7 @@ async function toggleLive() {
   liveBubbles.clear(); // ids are per-session; a stale one would revise last session's bubble
   try {
     await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined,
-                      learnerId, runId });
+                      learnerId, runId, retain: retainSession });
     // Nothing in the protocol says the tutor has started or stopped speaking — `state` reports when the
     // vendor finished GENERATING, which is well before the audio is heard. So the surface asks the
     // playback queue instead, often enough to look like a response and cheaply enough not to matter.
@@ -876,11 +899,18 @@ onLive("error", (code) => {
 });
 
 // ---- ② Live AI tutor: the one practice surface. Consent gate → optional tutorial → either mode. ----
+/** Where declining the gate puts the learner back. Captured on the way IN, so the answer is always the
+ *  screen they actually came from — the lesson they just finished, the level they were rehearsing, or
+ *  home — rather than a guess made at the door. Those surfaces are only ever hidden, never torn down, so
+ *  showing one again returns it in the state it was left in. */
+let tutorReturnTo = "home";
+
 function openTutor(opts = {}) {
   chatFocus = opts.focus || [];
   chatRole = opts.role || null;
   chatContext = opts.context || null;
   chatLessonId = opts.lessonId || chatLessonId;
+  tutorReturnTo = currentScreen === "tutor" ? "home" : currentScreen;
   showScreen("tutor");
   openConsent();
 }
@@ -889,6 +919,9 @@ function openTutor(opts = {}) {
 // consent nobody stored is a consent that has to be asked for again. Two clicks clears it.
 function openConsent() {
   $("consent-agree").checked = false;
+  // The optional box comes back on whatever this sitting last answered, so a learner who turned it off
+  // is not quietly re-asked to turn it back on every time the gate reappears.
+  $("consent-improve").checked = retainSession;
   $("consent-continue").disabled = true;
   $("consent").hidden = false;
   $("mode-switch").hidden = true; // a session left mid-question must not come back to the answer
@@ -1807,7 +1840,10 @@ function wireSceneChips() {
 function playClipToEnd(text) {
   return new Promise((resolve) => {
     const audio = new Audio();
-    audio.src = `/api/speak?${new URLSearchParams({ text }).toString()}`; // teacher voice — the free tutor
+    // A replay speaks a captured turn back, so the same rule as the live reply applies to it.
+    const params = new URLSearchParams({ text }); // teacher voice — the free tutor
+    if (!retainSession) params.set("retain", "0");
+    audio.src = `/api/speak?${params.toString()}`;
     audio.onended = resolve;
     audio.onerror = resolve;
     audio.play().catch(resolve);
@@ -1908,7 +1944,7 @@ async function renderA1() {
 }
 
 // Drill into one competency: its descriptor, the scenarios/levels that move it forward (tap → practice
-// that level), and the learnables with their owned/shaky/unseen status.
+// that level), and the learnables with their mastered/attempted/unseen status.
 function openCompetency(id) {
   const c = a1Competencies.find((x) => x.id === id);
   if (!c) return;
@@ -1988,9 +2024,16 @@ async function init() {
 
   // Consent gate. The required acknowledgement is the only thing that gates Continue; the tutorial
   // skip never does.
+  // Leaving the gate unanswered. showScreen hides the overlay on the way out of the tutor surface, and
+  // no session has been opened yet, so there is nothing to tear down — the learner is simply put back
+  // where they were, on the close screen of the lesson that offered them the tutor in the first place.
+  $("consent-close").addEventListener("click", () => showScreen(tutorReturnTo));
   $("consent-agree").addEventListener("change", (e) => { $("consent-continue").disabled = !e.target.checked; });
   $("consent-continue").addEventListener("click", () => {
     if (!$("consent-agree").checked) return;
+    // Read the optional box HERE rather than on change: what the learner leaves it on when they press
+    // Continue is the answer, and it has to be recorded before the first call goes out.
+    setRetain($("consent-improve").checked);
     $("consent").hidden = true;
     startTutorSession();
   });

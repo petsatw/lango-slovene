@@ -28,6 +28,9 @@ interface PendingSession {
   /** The sitting this session belongs to — the same id the tap-to-speak turns are recorded under, so
    *  the two modes can be lined up afterwards (server/scripts/runs.ts). */
   runId: string | null;
+  /** Did this session agree to its data being kept. Carried from the create call to the session log,
+   *  because a sweep cannot ask the browser after the fact (server/assets/retention.ts). */
+  retain: boolean;
   expiresAt: number;
 }
 
@@ -66,6 +69,7 @@ export function create(args: {
   provider: LiveProvider;
   learnerId: string;
   runId: string | null;
+  retain: boolean;
 }): PendingSession {
   sweep();
   const s: PendingSession = {
@@ -75,6 +79,7 @@ export function create(args: {
     provider: args.provider,
     learnerId: args.learnerId,
     runId: args.runId,
+    retain: args.retain,
     // The token has to survive only the round trip from the create call to the WS open, so it expires
     // far sooner than the session it authorizes.
     expiresAt: Date.now() + 60_000,

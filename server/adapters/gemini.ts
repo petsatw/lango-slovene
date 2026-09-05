@@ -2,7 +2,14 @@
 // Clip-based (push-to-talk) via generateContent. Key is sent as a header, never in the URL.
 // NOTE: verify GEMINI_MODEL against current docs; it is env-configurable so a swap is a config change.
 
-import type { ConversationTurn, E2Adapter, E2Result, WitnessResult } from "../types";
+import type {
+  ConversationTurn,
+  E2Adapter,
+  E2Result,
+  LiveTargetReading,
+  WitnessResult,
+  WitnessTarget,
+} from "../types";
 
 const BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
@@ -93,6 +100,57 @@ const WITNESS_SCHEMA = {
   },
   required: ["reply", "transcript_verbatim", "utterance_lang", "targets", "observed"],
 };
+
+// The live GRADER schema — one row per target, facts only. The learner line is named by NUMBER rather
+// than quoted, so the server resolves it against the transcript it supplied and a reading can only point
+// at a line that was really there.
+const GRADE_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    targets: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          id: { type: "STRING" },
+          uptake: { type: "BOOLEAN" },
+          correct: { type: "BOOLEAN" },
+          recast: { type: "BOOLEAN" },
+          said_line: { type: "INTEGER" },
+          said_lang: { type: "STRING" },
+        },
+        required: ["id", "uptake", "correct", "recast", "said_line", "said_lang"],
+      },
+    },
+  },
+  required: ["targets"],
+};
+
+// The grader is NOT the tutor. It is told so in its first line, because the same model in its teaching
+// persona is built to accept imperfect input warmly — which is rapport, not marking.
+const GRADE_INSTRUCTION = [
+  "You are reading the transcript of a finished beginner Slovene lesson and reporting what happened.",
+  "You are not the tutor, you are not teaching, and you decide no scores — something else does that.",
+  "",
+  "Every line is numbered. LEARNER lines are speech-to-text and are OFTEN WRONG about Slovene: a word",
+  "the learner said clearly can arrive as an unrelated English one. TUTOR lines are what the tutor",
+  "actually said back, and the tutor heard the AUDIO rather than this transcript — so a tutor line that",
+  "answers a phrase is evidence the phrase was said even when the learner's own line does not show it.",
+  "",
+  "For each target phrase you are given, report:",
+  "  said_line — the number of the ONE LEARNER line this phrase rests on. 0 if no learner line does.",
+  "  uptake    — did the TUTOR LINE IMMEDIATELY AFTER said_line reply as though the learner had just",
+  "              produced this phrase (greeted back, served what was ordered, answered the question)?",
+  "              A tutor opening, greeting or introducing itself is not a reply to anything: uptake is",
+  "              the tutor RESPONDING to that learner line, and it is false when said_line is 0.",
+  "  correct   — reading both that learner line and the tutor's reply, was the learner's form correct",
+  "              Slovene for this phrase? Any case, gender or number that works is correct.",
+  "  recast    — did the tutor say the phrase back in a corrected form?",
+  "  said_lang — the language the WORDS of that line are in: sl, en or other. A line written in English",
+  "              words is en even when it means exactly what the Slovene target means.",
+  "",
+  "Report a row for EVERY target. A target that never came up gets false, false, false, 0, \"other\".",
+].join("\n");
 
 /** Trim a provider error body so we never echo anything sensitive and keep logs short. */
 function shortError(status: number, body: string): Error {
@@ -241,6 +299,62 @@ export class GeminiE2 implements E2Adapter {
         .filter((o: any) => o.surface),
       role: blank(parsed.role),
     };
+  }
+
+  // Text in, JSON out, once per finished live session — off the hot path by construction, because the
+  // session it reads is already over. The transcript is rendered with plain role labels: the model has
+  // to see who spoke each line, since the whole two-channel reading turns on the alternation.
+  async grade(input: {
+    transcript: ConversationTurn[];
+    targets: WitnessTarget[];
+  }): Promise<LiveTargetReading[]> {
+    const key = requireKey();
+    const conversation = input.transcript
+      .map((t, i) => `${i + 1}. ${t.role === "tutor" ? "TUTOR" : "LEARNER"}: ${t.text}`)
+      .join("\n");
+    const targets = input.targets
+      .map((t) => `- ${t.id} — «${t.sl}» (${t.kind}) = ${t.gloss}`)
+      .join("\n");
+
+    const res = await fetch(`${BASE}/${this.model}:generateContent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: GRADE_INSTRUCTION }] },
+        contents: [
+          { role: "user", parts: [{ text: `TARGET PHRASES:\n${targets}\n\nTRANSCRIPT:\n${conversation}` }] },
+        ],
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: GRADE_SCHEMA,
+          temperature: 0,
+        },
+      }),
+    });
+    if (!res.ok) throw shortError(res.status, await res.text());
+
+    const data: any = await res.json();
+    const text: string | undefined = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error("Gemini returned no text candidate");
+
+    let parsed: any;
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      throw new Error(`Gemini returned non-JSON: ${text.slice(0, 200)}`);
+    }
+
+    const rows = Array.isArray(parsed.targets) ? parsed.targets : [];
+    return rows
+      .map((r: any) => ({
+        id: String(r?.id ?? ""),
+        uptake: r?.uptake === true,
+        correct: r?.correct === true,
+        recast: r?.recast === true,
+        saidLine: Number.isInteger(r?.said_line) ? r.said_line : 0,
+        saidLang: String(r?.said_lang ?? ""),
+      }))
+      .filter((r: LiveTargetReading) => r.id);
   }
 
   // Text in, text out — the cheapest call this adapter makes. Deliberately unconstrained by the
