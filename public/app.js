@@ -25,11 +25,20 @@ const obs = {
 
 const CHAT_LEVEL = 2; // the internal free-chat ceiling — server-side only, never a learner-visible knob.
 
-// WHOSE progress this is. One id per page load, because a sitting is disposable: progress accrues
+// WHOSE progress this is. One id per TAB, because that is the shape of a sitting: progress accrues
 // normally while the learner is here — they are met where they left off five minutes ago — and nothing
-// is kept once they leave. The server keys the learner model by it (server/assets/learner.ts), and it is
-// the seam accounts arrive on: an account id would simply replace what this line mints.
-const learnerId = crypto.randomUUID ? crypto.randomUUID() : newRunId("learner");
+// is kept once they leave. sessionStorage is what draws that line: it survives a reload and a walk
+// through the app, and the browser drops it when the tab closes. A refresh keeping the learner matters
+// on a phone, where it is a gesture rather than a decision.
+// The server keys the learner model by it (server/assets/learner.ts), and it is the seam accounts
+// arrive on: an account id would simply replace what this line mints.
+const learnerId = (() => {
+  const held = sessionStorage.getItem("learnerId");
+  if (held) return held;
+  const minted = crypto.randomUUID ? crypto.randomUUID() : newRunId("learner");
+  sessionStorage.setItem("learnerId", minted);
+  return minted;
+})();
 
 // Every call names the learner it is about. One wrapper, so no call site has to remember to.
 function api(url, opts = {}) {
