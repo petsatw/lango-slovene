@@ -1,0 +1,69 @@
+{
+  "key": "0ab0ce2432f7f3f5727111f7f050a8595c2eee10f52baab62cce4a62cee9ff57",
+  "text": "Ja, ja! Še enkrat: Veš kaj? Ti govoriš slovensko, ne?",
+  "words": [
+    {
+      "text": "Ja,",
+      "start": 3.46,
+      "end": 3.639,
+      "loss": 0.5589192708333334
+    },
+    {
+      "text": "ja!",
+      "start": 3.74,
+      "end": 3.879,
+      "loss": 1.3953450520833333
+    },
+    {
+      "text": "Še",
+      "start": 4.219,
+      "end": 4.299,
+      "loss": 0.16748046875
+    },
+    {
+      "text": "enkrat:",
+      "start": 4.339,
+      "end": 4.639,
+      "loss": 0.9652971540178571
+    },
+    {
+      "text": "Veš",
+      "start": 5.039,
+      "end": 5.199,
+      "loss": 0.17881266276041666
+    },
+    {
+      "text": "kaj?",
+      "start": 5.239,
+      "end": 5.439,
+      "loss": 0.11710929870605469
+    },
+    {
+      "text": "Ti",
+      "start": 5.96,
+      "end": 6.059,
+      "loss": 0.2230224609375
+    },
+    {
+      "text": "govoriš",
+      "start": 6.099,
+      "end": 6.399,
+      "loss": 0.012699127197265625
+    },
+    {
+      "text": "slovensko,",
+      "start": 6.42,
+      "end": 6.94,
+      "loss": 0.03773994445800781
+    },
+    {
+      "text": "ne?",
+      "start": 7.039,
+      "end": 7.119,
+      "loss": 0.018697102864583332
+    }
+  ],
+  "loss": 0.28960792973356425,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:03:12.974Z"
+}

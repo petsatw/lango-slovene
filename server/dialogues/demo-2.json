@@ -27,7 +27,7 @@
     "pocasi_prosim",
     "se_enkrat"
   ],
-  "audio": "pending",
+  "audio": "ready",
   "voices": {
     "npc": "slavko",
     "client": "slavko"
@@ -109,7 +109,18 @@
       ],
       "next": [
         "n3"
-      ]
+      ],
+      "audio": {
+        "from": "n2",
+        "level": 2,
+        "kind": "span",
+        "words": [
+          2,
+          3
+        ],
+        "startMs": 1000,
+        "endMs": 1559
+      }
     },
     "n3": {
       "speaker": "npc",
@@ -165,7 +176,18 @@
       ],
       "next": [
         "n5"
-      ]
+      ],
+      "audio": {
+        "from": "n4",
+        "level": 2,
+        "kind": "span",
+        "words": [
+          1,
+          2
+        ],
+        "startMs": 719,
+        "endMs": 1879
+      }
     },
     "n5": {
       "speaker": "npc",
@@ -208,7 +230,13 @@
       ],
       "next": [
         "n6"
-      ]
+      ],
+      "audio": {
+        "from": "n2",
+        "level": 1,
+        "kind": "whole",
+        "heard": "Sem Slavko."
+      }
     },
     "n6": {
       "speaker": "npc",
@@ -287,7 +315,18 @@
       ],
       "next": [
         "n8"
-      ]
+      ],
+      "audio": {
+        "from": "n7",
+        "level": 2,
+        "kind": "span",
+        "words": [
+          4,
+          6
+        ],
+        "startMs": 3119,
+        "endMs": 3959
+      }
     },
     "n8": {
       "speaker": "npc",

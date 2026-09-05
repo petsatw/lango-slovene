@@ -1,0 +1,27 @@
+{
+  "key": "09e15fb77c0f78f61e2c3f719690052ffc8ebb944fa2829ee8eb40b249f94d0f",
+  "text": "Bravo! Se vidiva!",
+  "words": [
+    {
+      "text": "Bravo!",
+      "start": 0.099,
+      "end": 0.939,
+      "loss": 0.2669728597005208
+    },
+    {
+      "text": "Se",
+      "start": 0.979,
+      "end": 1.079,
+      "loss": 0.3212890625
+    },
+    {
+      "text": "vidiva!",
+      "start": 1.099,
+      "end": 1.759,
+      "loss": 0.12077985491071429
+    }
+  ],
+  "loss": 0.3645145191865809,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:03:13.839Z"
+}

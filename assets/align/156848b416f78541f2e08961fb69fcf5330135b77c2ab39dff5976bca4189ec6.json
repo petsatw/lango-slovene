@@ -1,0 +1,21 @@
+{
+  "key": "156848b416f78541f2e08961fb69fcf5330135b77c2ab39dff5976bca4189ec6",
+  "text": "Odlično! Adijo!",
+  "words": [
+    {
+      "text": "Odlično!",
+      "start": 0.239,
+      "end": 1.059,
+      "loss": 0.5221748352050781
+    },
+    {
+      "text": "Adijo!",
+      "start": 1.719,
+      "end": 2.119,
+      "loss": 1.3693033854166667
+    }
+  ],
+  "loss": 0.828314208984375,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:47:17.629Z"
+}

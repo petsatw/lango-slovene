@@ -1,0 +1,21 @@
+{
+  "key": "b46b05f461ba65b43d7c5206eb273e576577a82ded2756d74fdfbbc9934af941",
+  "text": "Super! Adijo!",
+  "words": [
+    {
+      "text": "Super!",
+      "start": 0.239,
+      "end": 1.1,
+      "loss": 0.7022924423217773
+    },
+    {
+      "text": "Adijo!",
+      "start": 1.159,
+      "end": 1.659,
+      "loss": 0.20274861653645834
+    }
+  ],
+  "loss": 0.42139214735764724,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:37:09.480Z"
+}

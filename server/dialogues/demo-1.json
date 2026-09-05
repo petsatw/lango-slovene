@@ -94,7 +94,12 @@
       ],
       "learnables": [
         "zivjo"
-      ]
+      ],
+      "audio": {
+        "from": "n1",
+        "level": 1,
+        "kind": "whole"
+      }
     },
     "n2": {
       "speaker": "npc",
@@ -234,7 +239,19 @@
       "learnables": [
         "sem_ime",
         "ucitelj"
-      ]
+      ],
+      "audio": {
+        "from": "n5",
+        "level": 1,
+        "kind": "span",
+        "words": [
+          1,
+          3
+        ],
+        "startMs": 659,
+        "endMs": 1379,
+        "heard": "Ti si študent."
+      }
     },
     "n6": {
       "speaker": "npc",
@@ -293,7 +310,13 @@
       ],
       "learnables": [
         "sem_ime"
-      ]
+      ],
+      "audio": {
+        "from": "n2",
+        "level": 1,
+        "kind": "whole",
+        "heard": "Sem Slavko."
+      }
     },
     "n8": {
       "speaker": "npc",
@@ -396,18 +419,19 @@
     },
     "n11": {
       "speaker": "npc",
-      "sl": "Super! Adijo!",
+      "sl": "Odlično! Adijo!",
       "en": "Great! Bye!",
-      "deliverySL": "[delighted, then warmly] Super! Adijo!",
+      "deliverySL": "[delighted, then warmly] Odlično! Adijo!",
       "glossPolicy": "after",
       "next": [
         "c7"
       ],
       "learnables": [
+        "odlicno",
         "adijo"
       ],
-      "slowSL": "Super! … Adijo!",
-      "deliverySlowSL": "[speaking very slowly and clearly] Super! … Adijo!",
+      "slowSL": "Odlično! … Adijo!",
+      "deliverySlowSL": "[speaking very slowly and clearly] Odlično! … Adijo!",
       "focusSpan": "Adijo",
       "stallHandlers": [
         {
@@ -431,7 +455,18 @@
       "next": [],
       "learnables": [
         "adijo"
-      ]
+      ],
+      "audio": {
+        "from": "n11",
+        "level": 1,
+        "kind": "span",
+        "words": [
+          1,
+          1
+        ],
+        "startMs": 1719,
+        "endMs": 2119
+      }
     }
   }
 }

@@ -1,0 +1,51 @@
+{
+  "key": "6b8fdff73c6b7fd8a86aa200f53832b64b4a8eef86e0ec64fc40b49d504fee3c",
+  "text": "Super! Veš kaj? Ti govoriš slovensko, ne?",
+  "words": [
+    {
+      "text": "Super!",
+      "start": 0.199,
+      "end": 0.579,
+      "loss": 0.2922097047170003
+    },
+    {
+      "text": "Veš",
+      "start": 0.799,
+      "end": 1.019,
+      "loss": 0.030171712239583332
+    },
+    {
+      "text": "kaj?",
+      "start": 1.039,
+      "end": 1.279,
+      "loss": 0.1434478759765625
+    },
+    {
+      "text": "Ti",
+      "start": 1.699,
+      "end": 1.819,
+      "loss": 0.2661895751953125
+    },
+    {
+      "text": "govoriš",
+      "start": 1.86,
+      "end": 2.18,
+      "loss": 0.01608412606375558
+    },
+    {
+      "text": "slovensko,",
+      "start": 2.2,
+      "end": 2.659,
+      "loss": 0.03796463012695313
+    },
+    {
+      "text": "ne?",
+      "start": 2.74,
+      "end": 2.859,
+      "loss": 0.00244140625
+    }
+  ],
+  "loss": 0.08468840761882503,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:03:12.019Z"
+}
