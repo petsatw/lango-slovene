@@ -1339,6 +1339,10 @@ function sceneFrameWait(ms) {
   });
 }
 
+/** The run controls, by the glyph the on-ramp writes them as. The prose IS the binding: an author who
+ *  writes « in a frame line is naming that chip, and no other field says so. */
+const FRAME_CHIPS = [["🐢", "scene-slower"], ["«", "scene-back"], ["»", "scene-skip"], ["✕", "scene-quit"]];
+
 async function scenePlayFrame(lines) {
   const pace = scene.pacing;
   const el = $("scene-frame");
@@ -1350,6 +1354,13 @@ async function scenePlayFrame(lines) {
   // where "move on" lives, and the on-ramp is the learner's first chance to find them. A skip button of
   // its own would teach the wrong reach on the first screen of the app.
   sceneChips({ skip: true });
+  // A control named in the prose lights up while the line naming it is on screen, so the sentence points
+  // at the real button in the corner instead of describing one. The line's own glyph is what selects it —
+  // no second field to author and keep in step, and a lesson that names no control simply lights nothing.
+  // Lit overrides the dim but not the disabling: the run has not started, so the chip is shown, not armed.
+  const litFor = (line) => {
+    for (const [glyph, id] of FRAME_CHIPS) $(id).classList.toggle("lit", line.includes(glyph));
+  };
   el.onclick = () => frameAdvance?.();
   el.innerHTML = "";
   el.appendChild(document.createElement("p"));
@@ -1369,6 +1380,7 @@ async function scenePlayFrame(lines) {
     // through the pipeline and never learner input, so markup in it is trusted — this is the line to
     // revisit if that ever stops being true.
     p.innerHTML = line;
+    litFor(line);
     p.style.opacity = "1";
     // Dwell scales with the length of the line — these are the first sentences the learner ever reads,
     // and a fixed interval either rushes the long one or strands the short one. Nothing can be re-read
@@ -1379,6 +1391,7 @@ async function scenePlayFrame(lines) {
     await sleep(FRAME_CROSSFADE_MS);
   }
   await sceneFrameWait(pace.frameHoldMs);
+  litFor("");              // the on-ramp is over; nothing is being pointed at any more
   sceneChips({});          // the beat that follows lights them again for what it actually offers
   el.onclick = null;
   el.classList.remove("shown");
@@ -1391,10 +1404,14 @@ async function scenePlayFrame(lines) {
 // particular is the difference between a line they can follow and one they can't.
 //
 // The chip is not copied or moved for this: the scrim goes UNDER the chip layer, so the thing being
-// pointed at is the actual button, in its actual place, and the learner has already practised the reach
-// by the time the scrim lifts. Tapping the lit chip itself does nothing yet — a control demonstrated
-// mid-explanation would fire against a scene that has not started.
+// pointed at is the actual button, in its actual place, and pressing it is how the step is answered —
+// the learner leaves having already made the reach, not having read about it.
 const TUTORIAL_CHIPS = { slower: "scene-slower", back: "scene-back", skip: "scene-skip", quit: "scene-quit" };
+
+// What the step asks for, and what it settles for. The second line only ever replaces the first after a
+// tap that missed, so a learner who presses the control never reads that they didn't have to.
+const TUTORIAL_HINT_CHIP = "Tap it to continue";
+const TUTORIAL_HINT_ANY = "Tap anywhere to continue";
 
 let tutorialAdvance = null;   // resolves the step the learner is looking at — also how ✕ gets out
 
@@ -1403,19 +1420,49 @@ async function scenePlayTutorial(steps) {
   const panel = $("scene-tutorial");
   const chips = $("scene-chips");
   const text = $("scene-tutorial-text");
+  const hint = $("scene-tutorial-next");
   panel.hidden = false;
   chips.classList.add("tutorial");
+  // The chip row is raised above the scrim so the learner presses the real button — which also leaves the
+  // chips' own handlers live, and any of them would fire against a scene that has not started. Every chip
+  // press is intercepted for as long as the tutorial is up, and the step decides what it meant.
+  let onChip = null;
+  const chipGuard = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onChip?.(e.target.closest(".scene-chip"));
+  };
+  chips.addEventListener("click", chipGuard, true);
   for (const step of steps) {
     if (gen !== sceneGen) break;
     const chip = $(TUTORIAL_CHIPS[step.target]);
     // A disabled chip is drawn at 25% and cannot be lit convincingly, and every chip is disabled before
     // the first beat. `lit` overrides the dim for exactly as long as it is the one being explained.
+    // The step is answered BY pressing this button, so for that long the button is genuinely live: the
+    // disabled state also takes its pointer events away, and it would tell a screen reader that the one
+    // control the learner is being asked for is unavailable. Restored when the light moves on.
+    const wasDisabled = chip.getAttribute("aria-disabled");
+    chip.setAttribute("aria-disabled", "false");
     chip.classList.add("lit");
     text.textContent = step.text;
-    await new Promise((resolve) => { tutorialAdvance = resolve; panel.onclick = resolve; });
+    hint.textContent = TUTORIAL_HINT_CHIP;
+    await new Promise((resolve) => {
+      tutorialAdvance = resolve;
+      // The step is answered by doing the thing it explains. A tap that lands anywhere else is someone
+      // who has not found the control, so the first miss only says where to aim — and every tap after it
+      // moves on regardless, because nobody may be held on a screen they cannot work out how to leave.
+      let missed = false;
+      const stray = () => { if (missed) resolve(); else { missed = true; hint.textContent = TUTORIAL_HINT_ANY; } };
+      onChip = (hit) => (hit === chip ? resolve() : stray());
+      panel.onclick = stray;
+    });
+    onChip = null;
     tutorialAdvance = null;
     chip.classList.remove("lit");
+    if (wasDisabled === null) chip.removeAttribute("aria-disabled");
+    else chip.setAttribute("aria-disabled", wasDisabled);
   }
+  chips.removeEventListener("click", chipGuard, true);
   panel.onclick = null;
   panel.hidden = true;
   chips.classList.remove("tutorial");

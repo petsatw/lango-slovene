@@ -694,6 +694,10 @@ body.in-scene header { display: none; }
 /* Unavailable, not absent — a beat with no slow clip dims the tortoise rather than removing it, so the
    cluster keeps its shape and nothing slides sideways between beats. */
 .scene-chip[aria-disabled="true"] { opacity: 0.25; pointer-events: none; }
+/* Named right now by the line on screen (the on-ramp). Full brightness and a ring, so the eye goes from
+   the glyph in the sentence to the button it means — while `pointer-events` stays with the dim above,
+   because the run has not started and a chip pressed here would fire against nothing. */
+.scene-chip.lit { opacity: 1; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.45), 0 0 18px 4px rgba(255, 255, 255, 0.22); }
 /* While the slow clip plays, the tortoise is the whole signal that this is the slow pass. */
 @keyframes scene-tortoise { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 .scene-chip.blinking { animation: scene-tortoise 1.4s ease-in-out infinite; }
