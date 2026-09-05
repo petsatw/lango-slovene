@@ -20,7 +20,7 @@ import { A1_MAP } from "./a1";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
 import { CATALOG } from "./catalog";
-import { getDialoguesForScenario, resolveNode, type Dialogue, type DialogueNode } from "./dialogues";
+import { getDialoguesForScenario, getPublishedDialogues, resolveNode, type Dialogue, type DialogueNode } from "./dialogues";
 import { getFact, factValues } from "./facts";
 import { pacingFor } from "./pacing";
 import { sceneShape } from "./scene-shape";
@@ -110,7 +110,7 @@ app.get("/api/config", (req, res) => {
     // Rehearsal layer: the predetermined branching dialogues paired with this scenario, one per
     // competency level (ascending), [] if none. Each whole tree is client-side data — the click-through
     // runs with no server turn.
-    dialogues: getDialoguesForScenario(scenario.id),
+    dialogues: getPublishedDialogues(scenario.id),
     session: freshSession(scenario),
     scenarios: SCENARIOS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, status: s.status })),
     // Has this learner produced anything yet? If not, free conversation routes them into the seed.
@@ -122,10 +122,12 @@ app.get("/api/config", (req, res) => {
 // Practice scenarios (MVP destination ①): every scenario that has authored rehearsal dialogues, with
 // its full level trees inline (each tree is client-side data — the click-through runs with no server
 // turn). Scenarios without dialogues (café, planned stubs) are omitted — this list IS the picker.
+// Draft and retired levels are not served, so a scenario whose every level is staged or archived drops
+// out of the picker exactly as an unauthored one does.
 // `started` drives the live-tutor zero-state (empty learner → seed) so the home can route without a
 // second call.
 app.get("/api/practice", (req, res) => {
-  const scenarios = SCENARIOS.map((s) => ({ s, dialogues: getDialoguesForScenario(s.id) }))
+  const scenarios = SCENARIOS.map((s) => ({ s, dialogues: getPublishedDialogues(s.id) }))
     .filter(({ dialogues }) => dialogues.length > 0)
     .map(({ s, dialogues }) => ({
       id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null,
@@ -141,7 +143,7 @@ app.get("/api/practice", (req, res) => {
   // first spoken package is a courtesy for a repo that has not declared one; it is not the contract,
   // because that would make the app's first screen a function of filename order.
   const spoken = (s: (typeof SCENARIOS)[number]) =>
-    getDialoguesForScenario(s.id).some((d) => (d.advance ?? "tap") === "audio");
+    getPublishedDialogues(s.id).some((d) => (d.advance ?? "tap") === "audio");
   const sceneScenario = SCENARIOS.find((s) => s.onboarding && spoken(s)) ?? SCENARIOS.find(spoken);
   res.json({
     scenarios,
@@ -185,7 +187,7 @@ app.post("/api/scene", (req, res) => {
   const { scenarioId, level, from, answer } = req.body ?? {};
   if (typeof scenarioId !== "string") return res.status(400).json({ error: "scenarioId is required" });
 
-  const spoken = getDialoguesForScenario(scenarioId).filter((d) => (d.advance ?? "tap") === "audio");
+  const spoken = getPublishedDialogues(scenarioId).filter((d) => (d.advance ?? "tap") === "audio");
   const scene = typeof level === "number" ? spoken.find((d) => d.level === level) : spoken[0];
   if (!scene) return res.status(404).json({ error: `No spoken scene for scenario "${scenarioId}"${typeof level === "number" ? ` level ${level}` : ""}` });
 

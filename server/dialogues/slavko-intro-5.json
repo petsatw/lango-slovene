@@ -4,6 +4,7 @@
   "level": 5,
   "levelLabel": "Basic",
   "title": "How do you say...?",
+  "status": "retired",
   "objectives": [
     {
       "label": "Ask for a word you haven't got",

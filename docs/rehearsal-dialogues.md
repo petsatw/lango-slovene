@@ -50,6 +50,8 @@ the feature is optional per scenario.
                                     // toward (roadmap 12b). Every id must resolve in the learnable
                                     // catalog; may be [] for a pure-review level. See "The catalog link".
   "audio": "pending",               // "pending" | "ready" — gates the client's play affordance
+  "status": "active",               // "active" (default, omit) | "draft" | "retired" — whether the level
+                                    // reaches the learner. See "Staging a level" below.
   "voices": { "npc": "shop-assistant", "client": "female-speaker" },  // per-speaker catalog voice profile
   "advance": "tap",                 // "tap" (default, omit) | "audio" — how the learner moves the tree.
                                     // See "Tapped vs spoken" below.
@@ -391,6 +393,26 @@ its own key and its own clip.
 > `if (scene.audio !== "ready") return` ([`public/app.js`](../public/app.js), `sceneSay`), so the scene
 > plays silent, faster, and makes no network call at all. Flip to `"ready"` only after
 > `build:dialogue-assets`.
+
+### Staging a level
+
+`status` says whether a level reaches the learner; `audio` says whether its clips are built. They answer
+different questions, and a staged level usually wants its audio built.
+
+| `status` | | |
+|---|---|---|
+| `"active"` | the default — omit it | in the app |
+| `"draft"` | written, not released | invisible to the learner |
+| `"retired"` | was released, kept for its material and its history | no longer taught |
+
+Only the app-facing endpoints filter (`getPublishedDialogues` in
+[`server/dialogues.ts`](../server/dialogues.ts)). The lints, `script:lesson`, `playthrough:lesson` and the
+asset and alignment builders read every level whatever its status — so a draft is still gated, still
+printable, and still buildable, and a retired one keeps answering for the clips it owns. A scenario whose
+every level is drafted or retired drops out of the picker exactly as an unauthored one does.
+
+The manifest keeps declaring the level either way: `surfaces.dialogue.levels[]` says the file exists,
+which stays true, and `lint:tree` goes on checking the two agree.
 
 The **intro** monologue clips are a separate build (the line builder above deliberately skips them):
 

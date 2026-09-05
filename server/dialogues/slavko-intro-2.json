@@ -4,6 +4,7 @@
   "level": 2,
   "levelLabel": "Basic",
   "title": "Do you speak Slovene?",
+  "status": "retired",
   "objectives": [
     {
       "label": "Greet him back",

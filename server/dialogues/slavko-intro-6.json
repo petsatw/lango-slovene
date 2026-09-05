@@ -4,6 +4,7 @@
   "level": 6,
   "levelLabel": "Basic",
   "title": "What's this?",
+  "status": "retired",
   "objectives": [
     {
       "label": "Say what something is",

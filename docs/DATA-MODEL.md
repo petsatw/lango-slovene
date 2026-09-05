@@ -193,6 +193,7 @@ interface Dialogue {
   title: string;
   objectives: { label: string; descriptorEN: string }[];   // DISPLAY ONLY — no crediting
   audio: "pending" | "ready";                               // gates the client's play buttons (cost gate)
+  status?: "draft" | "active" | "retired";                  // reaches the learner? absent → "active"
   voices: Record<DialogueSpeaker, string>;                  // per-speaker catalog voice profile id
   root: string;             // must be a baker node
   nodes: Record<string, DialogueNode>;

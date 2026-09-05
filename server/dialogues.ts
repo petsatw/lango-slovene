@@ -22,6 +22,14 @@ import { PACING, DEFAULT_PACING, pacingFor } from "./pacing";
 export type DialogueSpeaker = "npc" | "client";
 export type DialogueAudioState = "pending" | "ready";
 
+/** Whether a level reaches the learner. The authoring tools (lints, script/playthrough, the asset and
+ *  alignment builders) always see EVERY level; this gates only the app-facing endpoints.
+ *  - `"active"` (the default, and every level authored before this existed): in the app.
+ *  - `"draft"`: written but not released — staged for work, invisible to the learner.
+ *  - `"retired"`: was released, kept for its material and its history, no longer taught.
+ *  Distinct from `audio`, which reports whether the clips are BUILT, not whether the lesson ships. */
+export type DialogueStatus = "draft" | "active" | "retired";
+
 /** How the learner moves a tree forward.
  *  - `"tap"` (the default, and every dialogue shipped before this existed): the learner PICKS a client
  *    line. Pure rehearsal — no mic, no server turn, no crediting.
@@ -309,6 +317,8 @@ export interface Dialogue {
   /** Short human label for the level (e.g. "Survival", "Basic A1", "Full A1"). */
   levelLabel: string;
   title: string;
+  /** Whether this level reaches the learner. Absent → "active". See DialogueStatus. */
+  status?: DialogueStatus;
   /** What this level demonstrates — display only, drives the level's objective list. */
   objectives: DialogueObjective[];
   /** The catalog learnable ids this level INTRODUCES — the concrete "what was just introduced" set that
@@ -497,6 +507,8 @@ export function validateDialogue(file: string, raw: any): Dialogue {
       fail(file, `introduces: learnable "${id}" is not in the catalog`);
   }
   if (raw.audio !== "pending" && raw.audio !== "ready") fail(file, `"audio" must be "pending" | "ready"`);
+  if (raw.status !== undefined && !["draft", "active", "retired"].includes(raw.status))
+    fail(file, `"status" must be "draft" | "active" | "retired"`);
   if (!raw.voices || typeof raw.voices !== "object") fail(file, `"voices" must be an object`);
   asProfile(file, raw.voices, "npc", "voices");
   asProfile(file, raw.voices, "client", "voices");
@@ -669,7 +681,15 @@ export function loadDialogues(): Record<string, Dialogue[]> {
 
 export const DIALOGUES: Record<string, Dialogue[]> = loadDialogues();
 
-/** The rehearsal dialogues paired with a scenario (ascending by level), or [] if none is authored. */
+/** EVERY rehearsal dialogue paired with a scenario (ascending by level), whatever its status, or [] if
+ *  none is authored. This is the authoring view — lints, script/playthrough and the builders use it, so
+ *  a staged or retired level is still checked, still printable, and still buildable. */
 export function getDialoguesForScenario(scenarioId: string): Dialogue[] {
   return DIALOGUES[scenarioId] ?? [];
+}
+
+/** The levels of a scenario the LEARNER may reach. The app-facing endpoints serve this view, so a draft
+ *  or retired level is neither listed nor openable by hand-typed level number. */
+export function getPublishedDialogues(scenarioId: string): Dialogue[] {
+  return getDialoguesForScenario(scenarioId).filter((d) => (d.status ?? "active") === "active");
 }
