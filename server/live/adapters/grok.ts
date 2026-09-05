@@ -36,7 +36,7 @@ export class GrokAdapter implements LiveAdapter {
 
   constructor(private cb: LiveCallbacks) {}
 
-  connect(_sessionId: string, instructions: string): Promise<void> {
+  connect(_sessionId: string, instructions: string, keyterms: string[] = []): Promise<void> {
     // Same vendor account as E4 image generation, which already has a key under GROK_API_KEY. A
     // dedicated XAI_API_KEY wins if it is set — a separate key is how you meter voice apart from
     // images — but a single-key setup should not have to duplicate itself to turn the tutor on.
@@ -57,7 +57,7 @@ export class GrokAdapter implements LiveAdapter {
         reject(err);
       };
 
-      ws.on("open", () => this.sendSessionUpdate(instructions));
+      ws.on("open", () => this.sendSessionUpdate(instructions, keyterms));
 
       ws.on("message", (raw, isBinary) => {
         if (isBinary) return; // we asked for JSON transport; binary here would be unexpected
@@ -85,7 +85,7 @@ export class GrokAdapter implements LiveAdapter {
           // instruction carries the lesson either way, but transcription quality is what we score.
           if (!this.ready && !this.hintDropped) {
             this.hintDropped = true;
-            this.sendSessionUpdate(instructions);
+            this.sendSessionUpdate(instructions, keyterms);
             return;
           }
           if (!this.ready) return fail("vendor_setup", new Error("session.update rejected"));
@@ -109,9 +109,13 @@ export class GrokAdapter implements LiveAdapter {
     });
   }
 
-  private sendSessionUpdate(instructions: string): void {
+  private sendSessionUpdate(instructions: string, keyterms: string[]): void {
     const transcription: Record<string, unknown> = {};
     if (!this.hintDropped) transcription.language_hint = "sl";
+    // The closed set this session is scored on — up to 100 terms of ≤50 chars, per docs.x.ai. It costs
+    // nothing and it attacks a mishearing at its source rather than after it, which is where the
+    // grader's alias list has to work instead.
+    if (keyterms.length) transcription.keyterms = keyterms.slice(0, 100);
     this.send({
       type: "session.update",
       session: {

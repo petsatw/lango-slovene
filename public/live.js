@@ -212,14 +212,20 @@ function stopPlayback() {
 
 // ---- session ----
 
-export async function startLive({ lessonId, accessCode, provider, learnerId, runId }) {
+export async function startLive({ lessonId, accessCode, provider, learnerId, runId, retain = true }) {
   if (ws) return; // one live session per tab, by construction
 
   // `learnerId` is whose palette the session's prompt is built from; `runId` is the sitting, and it is
-  // what lines this session up with the tap-to-speak turns of the same sitting afterwards.
+  // what lines this session up with the tap-to-speak turns of the same sitting afterwards. `retain` is
+  // the consent gate's optional box: the session log is stamped with it at create, because the sweep
+  // that later empties the transcript cannot ask the browser (server/assets/retention.ts).
   const res = await fetch("/v1/live/sessions", {
     method: "POST",
-    headers: { "Content-Type": "application/json", "x-learner-id": learnerId },
+    headers: {
+      "Content-Type": "application/json",
+      "x-learner-id": learnerId,
+      ...(retain ? {} : { "x-retain": "0" }),
+    },
     body: JSON.stringify({ lessonId, accessCode, provider, runId }),
   });
   const data = await res.json().catch(() => ({}));

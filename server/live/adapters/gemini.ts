@@ -38,7 +38,10 @@ export class GeminiAdapter implements LiveAdapter {
 
   constructor(private cb: LiveCallbacks) {}
 
-  connect(_sessionId: string, instructions: string): Promise<void> {
+  // `keyterms` is unused here: `inputAudioTranscription` takes no hint list in the Live API reference,
+  // so the closed target set reaches this vendor only through the prompt. Grading works the same either
+  // way — the matcher's alias list is what carries a mishearing that the vendor was never warned about.
+  connect(_sessionId: string, instructions: string, _keyterms: string[] = []): Promise<void> {
     const key = process.env.GEMINI_API_KEY;
     if (!key) return Promise.reject(new Error("GEMINI_API_KEY is not set"));
 

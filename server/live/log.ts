@@ -10,6 +10,7 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { ASSET_DIR } from "../assets/store";
+import type { LearnableProgress } from "../types";
 import type { LiveProvider } from "./types";
 
 export interface LiveTranscript {
@@ -29,6 +30,17 @@ export interface LiveSessionLog {
   endedAt: string;
   transcripts: LiveTranscript[];
   error: string | null;
+  /** What the session credited — the per-learnable verdicts the grader's evidence earned through the
+   *  shared firewall (server/live/grader.ts), the same verdicts a tap turn records on its student turn.
+   *  Written by a second pass once grading finishes, so it is absent on a session that put no targets in
+   *  play, produced no speech, credited nothing, or whose grade failed. */
+  credit?: LearnableProgress[];
+  /** Did this session agree to its data being kept. `false` marks the log for the retention sweep,
+   *  which empties the transcript text and leaves the shape and the credit
+   *  (server/assets/retention.ts). Omitted = kept. */
+  retain?: boolean;
+  /** When the sweep emptied this log's transcripts. Present only on a redacted log. */
+  redactedAt?: string;
 }
 
 function dir(): string {

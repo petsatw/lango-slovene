@@ -58,8 +58,8 @@ export interface LearnableProgress {
   result: LearnableResult;
 }
 
-/** Per-learnable durable counts. Status is DERIVED, never stored: absent ⇒ unseen; successes ≥ threshold
- *  ⇒ mastered; otherwise attempted (shaky/due). */
+/** Per-learnable durable counts. Status is DERIVED, never stored: absent from the model ⇒ unseen;
+ *  successes ≥ threshold ⇒ mastered; otherwise attempted. */
 export interface LearnableMastery {
   attempts: number; // rises on every swing (success or fail)
   successes: number; // rises only on a successful production; mastery measures this
@@ -83,7 +83,8 @@ export interface LearnerModel {
 }
 
 // ---- Free conversation: the WITNESS contract (model = blind linguistic reporter, server owns credit) ----
-// The server hands the model a bounded in-play TARGET set + a FAMILIAR palette; the model holds the
+// The server hands the model a bounded in-play TARGET set + the palette of what the learner already
+// says; the model holds the
 // conversation in-bounds and reports linguistic EVIDENCE (what the learner said, in which language,
 // whether each target was produced correctly). The model knows nothing about counts/thresholds/credit.
 // All crediting is deterministic and server-side (see mastery.creditFromEvidence).
@@ -127,6 +128,28 @@ export interface WitnessResult {
   role?: string | null;
 }
 
+/** The live grader's reading of ONE target across a finished spoken session (MODEL → SERVER). Facts
+ *  only, same discipline as the witness contract: the verdict rule and all crediting are the server's
+ *  (server/live/grader.ts). The grader reads a transcript, not audio, and it is not the tutor — a tutor
+ *  is built to accept imperfect input warmly, which is the opposite of what marking wants. */
+export interface LiveTargetReading {
+  id: string;
+  /** Did the tutor's REPLY to the cited line answer as though the learner had produced this target — the
+   *  comprehension channel. It is evidence the tutor HEARD the phrase even where the transcript does
+   *  not show it. */
+  uptake: boolean;
+  /** Was the learner's form correct Slovene for this target. */
+  correct: boolean;
+  /** Did the tutor say the phrase back in a corrected form. A recast is help, and help is not unaided. */
+  recast: boolean;
+  /** Which numbered transcript line the reading rests on; 0 when the target never came up. An index
+   *  rather than a quote: the server resolves it against the transcript it supplied, so a reading can
+   *  only ever point at a line that was really there. */
+  saidLine: number;
+  /** The language the words of that line are IN: "sl" | "en" | "other". */
+  saidLang: string;
+}
+
 /** E2 — audio understanding + in-character tutoring (one model, one hop). */
 export interface E2Result {
   /** EXACTLY what the student said, as the model heard it — unsanitized, errors/code-switching preserved. */
@@ -167,6 +190,13 @@ export interface E2Adapter {
    *  reveal translation on a LIVE transcript, where there is no JSON turn to carry a gloss back.
    *  Optional so adapters without a text path can omit it. */
   gloss?(sl: string): Promise<string>;
+  /** Read a FINISHED spoken session against a closed target set and report per-target linguistic facts.
+   *  Text only — the whole conversation in order, both roles — and it decides no credit. Optional so
+   *  adapters without a text path can omit it. */
+  grade?(input: {
+    transcript: ConversationTurn[];
+    targets: WitnessTarget[];
+  }): Promise<LiveTargetReading[]>;
   /** Cheap credential/endpoint check used by `npm run probe:e2`. Must NOT log the key. */
   ping(): Promise<string>;
 }

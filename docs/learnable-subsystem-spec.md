@@ -153,9 +153,9 @@ interface LearnerModel {
 }
 ```
 
-- **Status is derived, never stored** (US-16 small & swappable): `unseen` = absent; `mastered` =
-  `successes ≥ THRESHOLD`; `attempted` (a.k.a. shaky/due) = present and below threshold. Inspection
-  (US-17) maps these to owned / shaky / unseen.
+- **Status is derived, never stored** (US-16 small & swappable): `unseen` = absent from the model;
+  `mastered` = `successes ≥ THRESHOLD`; `attempted` = present and below threshold. These three names are
+  the only ones — inspection and the A1 screen both report them as they are.
 - **THRESHOLD = 5**, a single tunable constant (`server/mastery.ts`).
 
 ### 2.4 The E2 verdict (schema change)
@@ -281,13 +281,14 @@ The same crediting machine with a scenario-less prompt:
 
 - `POST /api/converse` (audio + history + `level: 1 | 2`). No scenario, no objectives, no scene.
 - `buildConversationPrompt(model, level, catalog)`:
-  - **familiar** = every learnable in the model (attempted + mastered).
-  - **working set** = familiar-but-not-mastered — the tutor steers these toward mastery (the bulk of the
+  - **knows** = every learnable in the model, which is every one the learner has tried to produce. It
+    reaches the prompt under the heading THE LEARNER KNOWS.
+  - **working set** = the not-yet-mastered ones — the tutor steers these toward mastery (the bulk of the
     mode).
   - **new items**: level 1 → none (only what I've seen); level 2 → 1–2 **un-attempted catalog** items
     (preferring `core`, by `rank`) — new *to the learner*, still the starter pack. **No generation.**
-  - policy: casual, warm, Slovene-only, short turns, recast errors, stay **within familiar + the 1–2 new
-    items** (the tutor's vocabulary is bounded by the learner model, US-12).
+  - policy: casual, warm, Slovene-only, short turns, recast errors, stay **within what they know + the
+    1–2 new items** (the tutor's vocabulary is bounded by the learner model, US-12).
 - Returns `learnableProgress` only; `applyCredit` runs identically (counting happens wherever the tutor
   assesses live input — Part 2 "Where counting happens"). `objectiveProgress` is empty.
 - **Level 3 (edge-finding) is OUT** (tutor-leads, roadmap 5). New-item *creation* is OUT (off-latency
@@ -297,7 +298,8 @@ The same crediting machine with a scenario-less prompt:
 ### 3.6 Operator inspection (US-17, minimal)
 
 - `GET /api/learner` → `{ threshold, learnables: [{ id, kind, sl, gloss, attempts, successes, status }],
-  counts: { owned, shaky, unseen } }` (status derived). Read-only, bills nothing.
+  counts: { mastered, attempted } }` (status derived; the counts are over the model). Read-only, bills
+  nothing.
 - `npm run learner` → the same, printed. (A new probe-style script.)
 
 ---
@@ -380,7 +382,7 @@ and a Slovene reply; manual: `npm run dev`, free-chat one turn, confirm the dots
 ARCHITECTURE, and stories Part 6.
 *Verify:* **live** — seed a temp learner model with `kava` mastered, boot café, confirm `order_coffee`'s
 presentation no longer pushes `kava` (F1 step 4 / US-6); `GET /api/learner` returns the derived
-owned/shaky/unseen counts; `npm run learner` prints them.
+mastered/attempted counts; `npm run learner` prints them.
 
 **Final.** Full real-stack pass: `npm run probe:e2`, `npm run test:mastery`, `npm run test:learnable`
 (+`--live`), `npm run probe:converse`, `npm run dev` smoke (café turn + free chat). Report what is

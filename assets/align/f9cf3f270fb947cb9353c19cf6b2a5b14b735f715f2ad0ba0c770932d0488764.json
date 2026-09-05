@@ -1,0 +1,27 @@
+{
+  "key": "f9cf3f270fb947cb9353c19cf6b2a5b14b735f715f2ad0ba0c770932d0488764",
+  "text": "Reci: Počasi, prosim.",
+  "words": [
+    {
+      "text": "Reci:",
+      "start": 0.119,
+      "end": 0.699,
+      "loss": 2.907421875
+    },
+    {
+      "text": "Počasi,",
+      "start": 0.719,
+      "end": 1.5,
+      "loss": 0.9438650948660714
+    },
+    {
+      "text": "prosim.",
+      "start": 1.519,
+      "end": 1.879,
+      "loss": 0.48704310825892855
+    }
+  ],
+  "loss": 1.1747814360119047,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:03:11.070Z"
+}

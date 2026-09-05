@@ -63,6 +63,20 @@ export function applyCredit(
   return { ...model, learnables, updatedAt: model.updatedAt };
 }
 
+/** The durable counts, after crediting, for exactly the ids credited — what the turn log records so a
+ *  verdict can be read against the state it produced. */
+export function countsFor(
+  model: LearnerModel,
+  progress: { id: string }[],
+): Record<string, { successes: number; attempts: number }> {
+  const out: Record<string, { successes: number; attempts: number }> = {};
+  for (const p of progress) {
+    const l = model.learnables[p.id];
+    if (l) out[p.id] = { successes: l.successes, attempts: l.attempts };
+  }
+  return out;
+}
+
 /** What the prompt needs to know about one objective this turn — which learnable to steer toward, the
  *  effective target line, the predictable error to watch for, and whether the whole group is mastered
  *  (light review). Objectives with no `learnables` produce `null` and the prompt falls back to today's
@@ -129,11 +143,15 @@ export function presentObjectives(
 }
 
 /** Operator inspection (US-17, spec §3.6) — a read-only, derived view of the learner model: every
- *  learnable the learner has touched, with its derived status, plus owned/shaky/unseen counts. Includes
- *  unseen items only in the totals (not the rows) so the view scales with what's been practised. */
+ *  learnable the learner has touched, with its derived status, and how those rows split.
+ *
+ *  The counts are over the MODEL, not the catalog. A total for everything the learner has not produced
+ *  would be the catalog's size minus these, which measures the catalog rather than the learner and moves
+ *  every time an item is authored. The bounded per-competency version of that question is the A1
+ *  Readiness screen (/api/a1), which asks it of a curated list where the answer means something. */
 export interface LearnerInspection {
   threshold: number;
-  counts: { owned: number; shaky: number; unseen: number };
+  counts: { mastered: number; attempted: number };
   learnables: Array<{
     id: string;
     kind: string;
@@ -161,19 +179,20 @@ export function inspect(model: LearnerModel, threshold = THRESHOLD): LearnerInsp
     })
     .sort((a, b) => b.successes - a.successes || a.id.localeCompare(b.id));
 
-  const owned = rows.filter((r) => r.status === "mastered").length;
-  const shaky = rows.filter((r) => r.status === "attempted").length;
-  const unseen = Object.keys(LEARNABLES).filter((id) => !model.learnables[id]).length;
-  return { threshold, counts: { owned, shaky, unseen }, learnables: rows };
+  const mastered = rows.filter((r) => r.status === "mastered").length;
+  const attempted = rows.filter((r) => r.status === "attempted").length;
+  return { threshold, counts: { mastered, attempted }, learnables: rows };
 }
 
-/** Free-conversation selection (spec §3.5). `familiar` = every learnable the learner has touched
- *  (attempted + mastered); `working` = the familiar-but-not-mastered ones to steer toward mastery;
+/** Free-conversation selection (spec §3.5). `knows` = every learnable in the learner model, which is
+ *  every one they have tried to produce; `working` = the not-yet-mastered ones to steer toward mastery;
  *  `newItems` = 1–2 UN-attempted catalog items (preferring core, by rank) introduced only at level 2 —
  *  the tiny edge expansion, still from the existing starter pack (no generation). A learner with no
  *  history is bootstrapped with new items regardless of level, so the mode is usable from zero. */
 export interface ConversationSelection {
-  familiar: Learnable[];
+  /** The tutor's palette. It reaches the prompt under the heading THE LEARNER KNOWS (server/prompt.ts),
+   *  which is what it is: the words the learner has put in their own mouth at least once. */
+  knows: Learnable[];
   working: Learnable[];
   newItems: Learnable[];
 }
@@ -183,12 +202,12 @@ export function selectForConversation(
   level: 1 | 2,
   threshold = THRESHOLD,
 ): ConversationSelection {
-  const familiar = Object.keys(model.learnables)
+  const knows = Object.keys(model.learnables)
     .map((id) => LEARNABLES[id])
     .filter(Boolean) as Learnable[];
-  const working = familiar.filter((l) => !isMastered(model.learnables[l.id], threshold));
+  const working = knows.filter((l) => !isMastered(model.learnables[l.id], threshold));
 
-  const introduce = level >= 2 || familiar.length === 0;
+  const introduce = level >= 2 || knows.length === 0;
   let newItems: Learnable[] = [];
   if (introduce) {
     const unattempted = Object.values(LEARNABLES).filter((l) => !model.learnables[l.id]);
@@ -196,19 +215,20 @@ export function selectForConversation(
       .sort((a, b) => Number(!!b.core) - Number(!!a.core) || (a.rank ?? 1e9) - (b.rank ?? 1e9))
       .slice(0, 2);
   }
-  return { familiar, working, newItems };
+  return { knows, working, newItems };
 }
 
 // ---- Free-conversation WITNESS selection + crediting (the model↔server handoff) ----
-// The server, not the model, picks the bounded in-play TARGET set and hands the model the FAMILIAR
-// palette so the chat stays natural. The model reports evidence; crediting is deterministic here.
+// The server, not the model, picks the bounded in-play TARGET set and hands the model the palette of
+// what the learner already says, so the chat stays natural. The model reports evidence; crediting is
+// deterministic here.
 
 /** Max in-play targets the model reports on per turn — bounds the prompt + schema as the catalog grows. */
 export const WITNESS_TARGET_CAP = 8;
 
 export interface WitnessSelection {
-  /** Everything the learner has touched (attempted + mastered) — the tutor's conversational palette. */
-  familiar: Learnable[];
+  /** Everything in the learner model — the tutor's conversational palette. */
+  knows: Learnable[];
   /** The bounded in-play set to drive THIS turn — the not-yet-mastered items (closest to mastery first)
    *  plus any freshly-introduced ones. Only these can earn a success. */
   targets: Learnable[];
@@ -220,7 +240,7 @@ export function selectForWitness(
   focusIds: string[] = [],
   threshold = THRESHOLD,
 ): WitnessSelection {
-  const { familiar, working, newItems } = selectForConversation(model, level, threshold);
+  const { knows, working, newItems } = selectForConversation(model, level, threshold);
   const orderedWorking = [...working].sort(
     (a, b) =>
       (model.learnables[b.id]?.successes ?? 0) - (model.learnables[a.id]?.successes ?? 0) ||
@@ -242,7 +262,7 @@ export function selectForWitness(
       targets.push(l);
     }
   }
-  return { familiar, targets: targets.slice(0, WITNESS_TARGET_CAP) };
+  return { knows, targets: targets.slice(0, WITNESS_TARGET_CAP) };
 }
 
 /** Normalize a Slovene surface for catalog lookup: lowercase, drop punctuation, collapse whitespace. */
@@ -306,10 +326,10 @@ export function creditFromEvidence(
     const l = findLearnableBySurface(o.surface);
     if (l && !targetIds.has(l.id) && !seen.has(l.id)) {
       // Correct reuse of a MASTERED item is a no-op — observed carries no correctness signal, so we must
-      // not let natural reuse trip the flub-decrement and erode mastery. Only shaky items take an attempt.
+      // not let natural reuse trip the flub-decrement and erode mastery. Only unmastered items take an attempt.
       if (isMastered(model.learnables[l.id], threshold)) continue;
       seen.add(l.id);
-      progress.push({ id: l.id, result: "attempt" }); // off-target shaky Slovene → attempt only
+      progress.push({ id: l.id, result: "attempt" }); // off-target unmastered Slovene → attempt only
     } else if (!l) {
       candidates.push({ surface: o.surface, gloss: o.gloss ?? "" });
     }

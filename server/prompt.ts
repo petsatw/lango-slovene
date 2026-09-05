@@ -155,14 +155,14 @@ export interface ScenarioContext {
  *  The consequence to hold on to: this is one string with two callers, so the live tutor cannot drift
  *  from the production prompt by accident. Changing how the tutor teaches changes it in both places. */
 export function conversationTeachingBody(
-  familiar: Learnable[],
+  knows: Learnable[],
   targets: Learnable[],
   directive: string = DEFAULT_DIRECTIVE,
   role?: string | null,
   context?: ScenarioContext | null,
 ): string {
-  const knows = familiar.length
-    ? familiar.map((l) => `  "${l.sl}" — ${l.gloss}`)
+  const palette = knows.length
+    ? knows.map((l) => `  "${l.sl}" — ${l.gloss}`)
     : ['  (nothing yet — keep to the simplest greetings and today’s targets)'];
 
   const targetLine = (l: Learnable) =>
@@ -232,7 +232,7 @@ export function conversationTeachingBody(
     "- Gently steer so they get a natural opening to say each of TODAY’S TARGETS themselves.",
     "",
     "THE LEARNER KNOWS  (your palette — lean on these so the conversation flows naturally)",
-    ...knows,
+    ...palette,
     "",
     "TODAY’S TARGETS  (warmly draw the learner toward saying each one)",
     ...targetBlock,
@@ -240,14 +240,14 @@ export function conversationTeachingBody(
 }
 
 export function buildConversationPrompt(
-  familiar: Learnable[],
+  knows: Learnable[],
   targets: Learnable[],
   directive: string = DEFAULT_DIRECTIVE,
   role?: string | null,
   context?: ScenarioContext | null,
 ): string {
   return [
-    conversationTeachingBody(familiar, targets, directive, role, context),
+    conversationTeachingBody(knows, targets, directive, role, context),
     "",
     "After you reply, jot down what the learner did this turn so their progress can be tracked:",
     "- transcript_verbatim: exactly what the learner said, word for word, in whatever language(s) — keep",

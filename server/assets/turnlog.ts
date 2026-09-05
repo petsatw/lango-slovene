@@ -13,6 +13,7 @@
 import { appendFileSync, mkdirSync, readdirSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { ASSET_DIR } from "./store";
+import * as retention from "./retention";
 
 const DIR = process.env.TURNLOG_DIR || path.join(ASSET_DIR, "turnlog");
 const MEDIA_DIR = path.join(DIR, "media");
@@ -34,7 +35,10 @@ const EXT: Record<string, string> = {
 };
 
 export interface TurnLogInput {
-  path: "free" | "seed" | "scenario";
+  path: "free" | "seed" | "scenario" | "live";
+  /** Did this session agree to its data being kept. `false` marks the row for the retention sweep,
+   *  which empties its text and leaves the credit (server/assets/retention.ts). Omitted = kept. */
+  retain?: boolean;
   level?: 1 | 2;
   scenarioId?: string;
   seedId?: string;
@@ -70,6 +74,25 @@ export interface TurnLogInput {
     observed: Array<{ surface: string; gloss: string }>;
     candidates: Array<{ surface: string; gloss: string }>;
   };
+  // Live-session grading (server/live/grader.ts). One row per session rather than per turn, and it
+  // records the two evidence channels SEPARATELY — the transcript's own hearing and the tutor's uptake —
+  // so how often they agree accrues from ordinary running, with no experiment to schedule.
+  live?: {
+    sessionId: string;
+    lessonId: string;
+    liveProvider: string;
+    channels: Array<{
+      id: string;
+      asr: boolean;
+      asrVia: string | null;
+      uptake: boolean;
+      correct: boolean;
+      recast: boolean;
+      said: string;
+      saidLang: string;
+      verdict: string;
+    }>;
+  };
   // Post-credit durable counts for exactly the ids credited this turn — so the log shows whether the
   // verdict bundled multiple items or moved one earned production.
   creditedCounts?: Record<string, { successes: number; attempts: number }>;
@@ -100,12 +123,15 @@ export function record(input: TurnLogInput): void {
   try {
     mkdirSync(DIR, { recursive: true });
     sweepMedia();
+    retention.sweep();
 
     const ts = new Date().toISOString();
     const id = `${Date.now().toString(36)}-${(seq++).toString(36)}`;
 
+    // A recording of a voice is identifying on its own, so a session that declined retention leaves no
+    // clip at all rather than one waiting on the media TTL.
     let audioRef: { file: string; mimeType: string; bytes: number } | undefined;
-    if (input.audio?.base64 && MEDIA_TTL_MS > 0) {
+    if (input.audio?.base64 && MEDIA_TTL_MS > 0 && input.retain !== false) {
       try {
         mkdirSync(MEDIA_DIR, { recursive: true });
         const ext = EXT[input.audio.mimeType] ?? "bin";
@@ -125,6 +151,7 @@ export function record(input: TurnLogInput): void {
       id,
       ts,
       path: input.path,
+      ...(input.retain === false ? { retain: false } : {}),
       level: input.level,
       scenarioId: input.scenarioId,
       seedId: input.seedId,
@@ -138,6 +165,7 @@ export function record(input: TurnLogInput): void {
       },
       output: input.output,
       witness: input.witness,
+      live: input.live,
       creditedCounts: input.creditedCounts,
     };
 

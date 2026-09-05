@@ -46,7 +46,14 @@ function saveCache(cache: Record<string, string>): void {
   writeFileSync(cachePath(), JSON.stringify(cache, null, 2));
 }
 
-export async function glossOf(sl: string): Promise<{ gloss: string; source: GlossSource }> {
+export async function glossOf(
+  sl: string,
+  /** Whether an answer from the model may be REMEMBERED. The cache is keyed by content and shared by
+   *  every learner, so an entry a sweep found later could not be told apart from a catalog-derived one
+   *  it must never touch — a session that declined retention therefore reads it and writes nothing
+   *  (server/assets/retention.ts). Catalog hits are free and unaffected either way. */
+  retain = true,
+): Promise<{ gloss: string; source: GlossSource }> {
   const key = norm(sl);
   if (!key) return { gloss: "", source: "catalog" };
 
@@ -63,7 +70,7 @@ export async function glossOf(sl: string): Promise<{ gloss: string; source: Glos
   const e2 = getE2();
   if (!e2.gloss) throw new Error(`E2 provider "${e2.name}" cannot translate`);
   const gloss = await e2.gloss(sl);
-  if (gloss) {
+  if (gloss && retain) {
     cache[key] = gloss;
     saveCache(cache);
   }

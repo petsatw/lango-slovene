@@ -27,8 +27,31 @@ interface Run {
   provider: string | null;
   startedAt: string;
   endedAt: string | null;
-  lines: { role: "user" | "tutor"; text: string }[];
+  /** What was SAID. For a learner's line that is the Slovene they attempted, errors preserved — the
+   *  English is carried alongside, never in its place, because the Slovene is the thing being judged. */
+  lines: { role: "user" | "tutor"; text: string; gloss?: string }[];
+  /** What the run moved in the learner model — one entry per learnable, successes first. Live earns it
+   *  from the grader at teardown, tap from the evidence contract per turn; both arrive at the same
+   *  durable counts, which is what makes the two halves of a sitting comparable at all. */
+  credit: { id: string; successes: number; attempts: number }[];
   error?: string | null;
+}
+
+/** Verdicts → per-learnable counts, in the shape both stores are read into. */
+function tally(progress: { id: string; result: string }[]): Run["credit"] {
+  const by = new Map<string, { id: string; successes: number; attempts: number }>();
+  for (const p of progress) {
+    const e = by.get(p.id) ?? { id: p.id, successes: 0, attempts: 0 };
+    e.attempts += 1;
+    if (p.result === "success") e.successes += 1;
+    by.set(p.id, e);
+  }
+  return [...by.values()].sort((a, b) => b.successes - a.successes || a.id.localeCompare(b.id));
+}
+
+function creditLine(credit: Run["credit"]): string {
+  if (!credit.length) return "—";
+  return credit.map((c) => `${c.id} ${c.successes}✓/${c.attempts}`).join("  ");
 }
 
 function liveRuns(): Run[] {
@@ -45,6 +68,7 @@ function liveRuns(): Run[] {
       startedAt: log.startedAt,
       endedAt: log.endedAt,
       lines: log.transcripts.map((t) => ({ role: t.role, text: t.text })),
+      credit: tally(log.credit ?? []),
       error: log.error,
     }));
 }
@@ -58,8 +82,14 @@ function tapRuns(): Run[] {
     startedAt: rec.createdAt,
     endedAt: rec.updatedAt,
     // "student" and "user" are the two stores' words for the same speaker — one of the differences this
-    // normalisation exists to remove.
-    lines: rec.turns.map((t) => ({ role: t.role === "student" ? ("user" as const) : ("tutor" as const), text: t.text })),
+    // normalisation exists to remove. `text` on a student turn is the ENGLISH gloss and `userVerbatim` is
+    // what they actually produced, so the two swap places here to match how the live log reads.
+    lines: rec.turns.map((t) =>
+      t.role === "student"
+        ? { role: "user" as const, text: t.userVerbatim ?? t.text, gloss: t.userVerbatim ? t.text : undefined }
+        : { role: "tutor" as const, text: t.text },
+    ),
+    credit: tally(rec.turns.flatMap((t) => t.learnableProgress ?? [])),
   }));
 }
 
@@ -97,9 +127,12 @@ if (asJson) {
           ` lines=${String(r.lines.length).padStart(3)}  ${r.startedAt.slice(0, 16).replace("T", " ")}  ${mins}m` +
           (r.error ? `  error=${r.error}` : ""),
       );
+      console.log(`       credit  ${creditLine(r.credit)}`);
       // The transcript is the comparison — but only when a sitting was asked for by name, since printing
       // every line of every sitting is how a list stops being readable.
-      if (only) for (const l of r.lines) console.log(`      ${l.role === "user" ? "·" : "»"} ${l.text}`);
+      if (only)
+        for (const l of r.lines)
+          console.log(`      ${l.role === "user" ? "·" : "»"} ${l.text}${l.gloss ? `   (≈ ${l.gloss})` : ""}`);
     }
   }
   console.log();

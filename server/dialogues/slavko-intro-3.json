@@ -4,6 +4,7 @@
   "level": 3,
   "levelLabel": "Basic",
   "title": "Where are you from?",
+  "status": "retired",
   "objectives": [
     {
       "label": "Say where you're from",

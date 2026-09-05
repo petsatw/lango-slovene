@@ -16,7 +16,8 @@
     <p class="tagline">Learn Slovenian in real-life situations</p>
   </header>
 
-  <!-- HOME — the four learner destinations. One tap to each; everything else is one level in. -->
+  <!-- HOME — the three learner destinations, stacked full width. One tap to each; everything else is
+       one level in. -->
   <main id="home" class="home">
     <div class="tiles">
       <button class="tile" type="button" data-go="practice">
@@ -29,11 +30,6 @@
         <span class="tile-title">Live AI tutor</span>
         <span class="tile-sub">Talk out loud — the tutor replies in Slovene</span>
       </button>
-      <button class="tile" type="button" data-go="replays">
-        <span class="tile-emoji">↺</span>
-        <span class="tile-title">Replays</span>
-        <span class="tile-sub">Hear back what the tutor said</span>
-      </button>
       <button class="tile" type="button" data-go="a1">
         <span class="tile-emoji">📊</span>
         <span class="tile-title">A1 Readiness</span>
@@ -42,9 +38,9 @@
     </div>
   </main>
 
-  <!-- ① PRACTICE — scenario list. Tap a scenario → its levels. -->
+  <!-- ① PRACTICE — scenario list. The two group headings ARE this screen's titles; the back button and
+       the wordmark already say where you are. Tap a scenario → its levels. -->
   <main id="practice" class="screen" hidden>
-    <h2 class="screen-title">Practice scenarios</h2>
     <div id="scenario-list" class="scenario-list"></div>
   </main>
 
@@ -86,11 +82,14 @@
        it has to ask and nothing else. -->
   <div id="consent" class="story-overlay" hidden>
     <div class="story-card consent-card">
+      <!-- Declining has to be an available answer. Without a way out, the only route past this card is
+           to agree to it, which is not consent. Closing puts the learner back where they came from. -->
+      <button id="consent-close" class="story-close" type="button" aria-label="Close">✕</button>
       <h2 class="consent-title">Before you start</h2>
       <p class="consent-body">
-        This session <b>records your voice</b> and sends the audio to a <b>third-party AI provider</b> to
-        transcribe it and answer you. Recordings and transcripts of this session are kept only while it
-        is being reviewed, and the session is not linked to any account.
+        This session <b>records your voice</b> and sends the audio to a <b>third-party AI provider</b> for
+        the audio dialogue. The data from this session are retained only while your conversation and
+        session are in progress and are used only within this app for the interactions with the tutor.
       </p>
       <p class="consent-body">
         <a id="consent-privacy" class="consent-link" href="/privacy" target="_blank" rel="noopener">Read the privacy policy</a>
@@ -98,6 +97,15 @@
       <label class="consent-check">
         <input type="checkbox" id="consent-agree" />
         <span>I understand my voice will be recorded and processed by a third-party AI provider, and I consent to this.</span>
+      </label>
+      <p class="consent-body">
+        This is a very early version of the app, and any data on how you use it can be vital in helping us
+        improve. If you do choose to opt out everything besides basic (anonymous) learning progress is
+        erased after you leave the session or after a few hours of inactivity.
+      </p>
+      <label class="consent-check">
+        <input type="checkbox" id="consent-improve" checked />
+        <span>Yes, I allow anonymous data from this session to be used to improve the app.</span>
       </label>
       <button id="consent-continue" class="consent-continue" type="button" disabled>Continue</button>
     </div>
@@ -173,7 +181,7 @@
          the learner is being shown is the actual button they will press. -->
     <div id="scene-tutorial" class="scene-tutorial" hidden>
       <p id="scene-tutorial-text" class="scene-tutorial-text"></p>
-      <p class="scene-tutorial-next">Tap to continue</p>
+      <p id="scene-tutorial-next" class="scene-tutorial-next"></p>
     </div>
     <!-- The close: his last line stays up, unglossed. No counts, no badges, nothing that reads as a
          measure. ONE door, not two — the phrases and both ways of taking them further live behind a
@@ -202,13 +210,7 @@
     </div>
   </main>
 
-  <!-- ③ REPLAYS — play back a past live session, tutor lines from the store (free). -->
-  <main id="replays" class="screen" hidden>
-    <h2 class="screen-title">Replays</h2>
-    <div id="runs-panel" class="runs-panel"></div>
-  </main>
-
-  <!-- ④ A1 READINESS — the coverage map (mockup). The ONLY place progress is visible. -->
+  <!-- ③ A1 READINESS — the coverage map (mockup). The ONLY place progress is visible. -->
   <main id="a1" class="screen" hidden>
     <h2 class="screen-title">A1 Readiness</h2>
     <div id="a1-body" class="a1-body"></div>

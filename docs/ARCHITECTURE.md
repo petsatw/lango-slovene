@@ -156,8 +156,8 @@ per-**learnable** verdict, and the server folds it into the learner model (`asse
 independent of objective/scene status. See [State and persistence](#state-and-persistence) and
 [learnable-subsystem-spec.md](learnable-subsystem-spec.md).
 
-Because the prompt is rebuilt from this state every turn, the model always knows what's left and what's
-shaky. The turn policy it's held to (in [`server/prompt.ts`](../server/prompt.ts)) is the
+Because the prompt is rebuilt from this state every turn, the model always knows what's left and what is
+still only attempted. The turn policy it's held to (in [`server/prompt.ts`](../server/prompt.ts)) is the
 [teaching model](#the-teaching-model) below.
 
 ## The teaching model
@@ -312,5 +312,6 @@ decision-tree exchanges at ascending competency levels, with pregenerated per-sp
 | [live-tutor.md](live-tutor.md) | the **continuous-speech** surface (Go live): the WebSocket contract, the shared lesson prompt, the spend ceilings, and the Gemini/Grok bake-off | running or extending the live tutor; adding a realtime vendor |
 | [mode-comparison.md](mode-comparison.md) | the two speaking modes side by side: what each leaves behind, how a sitting is read across both (`npm run runs`), and which comparisons the asymmetries rule out | scoring a tester round; choosing between the modes |
 | [free-conversation.md](free-conversation.md) | the **governing ethos** of free conversation: how it threads natural flow + laser mastery focus (situation-first selection, honor-the-topic/hold-the-level, the focus-set/credit firewall, the seed) | designing/building free conversation; deciding what the mode should and shouldn't do |
+| [retention.md](retention.md) | what a session leaves behind: every point where PII lands, the consent gate's optional box, and the two mechanisms (redact on a timer / never write) | adding a writer; answering "what is kept, and for how long" |
 | [SECRETS.md](SECRETS.md) | API-key hygiene and the key-isolation boundary | handling credentials |
 | [research/](research/) | the expert-panel research the pedagogy rests on | understanding *why* a teaching rule exists |

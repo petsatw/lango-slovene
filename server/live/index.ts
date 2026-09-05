@@ -15,10 +15,14 @@ import { getLiveAdapter, providerReady } from "./adapters/index";
 import { buildLessonPrompt, lessonExists } from "./prompt";
 import * as registry from "./registry";
 import * as learner from "../assets/learner";
+import * as retention from "../assets/retention";
 import * as liveLog from "./log";
 import { glossOf } from "./gloss";
+import { creditSession } from "./grader";
+import { keytermsFor } from "./match";
 import type { LiveState, LiveErrorCode } from "./types";
 import type { LiveTranscript } from "./log";
+import type { Learnable } from "../learnables";
 
 const WS_PATH = /^\/v1\/live\/sessions\/([0-9a-f-]{36})$/;
 
@@ -44,6 +48,7 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
     provider,
     learnerId: learner.idFrom(req.get("x-learner-id")),
     runId: typeof runId === "string" && runId.trim() ? runId : null,
+    retain: retention.retainFrom(req.get("x-retain")),
   });
   const host = req.get("host");
   const scheme = req.protocol === "https" || req.get("x-forwarded-proto") === "https" ? "wss" : "ws";
@@ -60,7 +65,7 @@ liveRouter.get("/api/gloss", async (req, res) => {
   const sl = String(req.query.sl ?? "").slice(0, 500);
   if (!sl.trim()) return res.status(400).json({ error: "sl required" });
   try {
-    const { gloss, source } = await glossOf(sl);
+    const { gloss, source } = await glossOf(sl, retention.retainFrom(req.get("x-retain")));
     res.json({ sl, gloss, source });
   } catch (err: any) {
     console.error("[gloss] failed:", err?.message);
@@ -92,13 +97,16 @@ export function attachLive(server: HttpServer): void {
 }
 
 function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & object): void {
-  const { sessionId, lessonId, provider, learnerId, runId } = pending;
+  const { sessionId, lessonId, provider, learnerId, runId, retain } = pending;
   const startedAt = new Date().toISOString();
   const transcripts: LiveTranscript[] = [];
   /** id → the entry in `transcripts`, so a revision overwrites rather than appends. */
   const byId = new Map<string, LiveTranscript>();
   let failure: string | null = null;
   let done = false;
+  // The prompt and the set it was built from, filled in below and read again by the grader at teardown.
+  let instructions = "";
+  let targets: Learnable[] = [];
 
   registry.markActive(sessionId);
 
@@ -157,22 +165,31 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
     clearTimeout(ttl);
     adapter.close();
     registry.markEnded(sessionId);
+    const log = {
+      sessionId,
+      runId,
+      lessonId,
+      provider,
+      startedAt,
+      endedAt: new Date().toISOString(),
+      transcripts,
+      error: failure,
+      ...(retain ? {} : { retain: false }),
+    };
     try {
-      liveLog.write({
-        sessionId,
-        runId,
-        lessonId,
-        provider,
-        startedAt,
-        endedAt: new Date().toISOString(),
-        transcripts,
-        error: failure,
-      });
+      liveLog.write(log);
     } catch (err: any) {
       console.error("[live] session log failed:", err?.message);
     }
     sendJson({ type: "state", status: "ended" });
     if (ws.readyState === WebSocket.OPEN) ws.close();
+
+    // Crediting reads the transcript that was just written and moves the learner model. It starts only
+    // once the socket is closed and the learner is gone: assessment is never on the hot path, and a
+    // grade that fails is a session with no credit, not a session that hung.
+    void creditSession({ learnerId, instructions, targets, log }).catch((err: any) =>
+      console.error("[live] credit failed:", err?.message),
+    );
   }
 
   ws.on("message", (data, isBinary) => {
@@ -195,9 +212,10 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
   // The prompt is built here, per session, from the lesson and the CURRENT learner model — a session
   // opened after a mastery run sees the wider palette the learner earned. Built ONCE: unlike free chat,
   // which rebuilds every turn, a live session's targets are fixed for its whole length.
-  let instructions: string;
   try {
-    instructions = buildLessonPrompt(lessonId, learnerId).instructions;
+    const built = buildLessonPrompt(lessonId, learnerId);
+    instructions = built.instructions;
+    targets = built.targets;
   } catch (err: any) {
     console.error("[live] prompt build failed:", err?.message);
     failure = "vendor_setup";
@@ -205,7 +223,7 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
     return;
   }
 
-  adapter.connect(sessionId, instructions).catch((err: any) => {
+  adapter.connect(sessionId, instructions, keytermsFor(targets)).catch((err: any) => {
     console.error(`[live/${provider}] connect failed:`, err?.message);
     failure = failure || "vendor_connect";
     finish("vendor_connect");

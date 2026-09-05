@@ -32,12 +32,6 @@
         "When it's your turn, the words appear — say them out loud, then press <b>continue</b>.",
         "Let's go!"
       ],
-      "tutorial": [
-        {
-          "target": "slower",
-          "text": "Tap the tortoise to hear a line slowly."
-        }
-      ],
       "objectives": [
         {
           "label": "Open and close the conversation",
@@ -98,7 +92,12 @@
           ],
           "learnables": [
             "zivjo"
-          ]
+          ],
+          "audio": {
+            "from": "n1",
+            "level": 1,
+            "kind": "whole"
+          }
         },
         "n2": {
           "speaker": "npc",
@@ -238,7 +237,19 @@
           "learnables": [
             "sem_ime",
             "ucitelj"
-          ]
+          ],
+          "audio": {
+            "from": "n5",
+            "level": 1,
+            "kind": "span",
+            "words": [
+              1,
+              3
+            ],
+            "startMs": 659,
+            "endMs": 1379,
+            "heard": "Ti si študent."
+          }
         },
         "n6": {
           "speaker": "npc",
@@ -297,7 +308,13 @@
           ],
           "learnables": [
             "sem_ime"
-          ]
+          ],
+          "audio": {
+            "from": "n2",
+            "level": 1,
+            "kind": "whole",
+            "heard": "Sem Slavko."
+          }
         },
         "n8": {
           "speaker": "npc",
@@ -400,18 +417,19 @@
         },
         "n11": {
           "speaker": "npc",
-          "sl": "Super! Adijo!",
+          "sl": "Odlično! Adijo!",
           "en": "Great! Bye!",
-          "deliverySL": "[delighted, then warmly] Super! Adijo!",
+          "deliverySL": "[delighted, then warmly] Odlično! Adijo!",
           "glossPolicy": "after",
           "next": [
             "c7"
           ],
           "learnables": [
+            "odlicno",
             "adijo"
           ],
-          "slowSL": "Super! … Adijo!",
-          "deliverySlowSL": "[speaking very slowly and clearly] Super! … Adijo!",
+          "slowSL": "Odlično! … Adijo!",
+          "deliverySlowSL": "[speaking very slowly and clearly] Odlično! … Adijo!",
           "focusSpan": "Adijo",
           "stallHandlers": [
             {
@@ -435,7 +453,18 @@
           "next": [],
           "learnables": [
             "adijo"
-          ]
+          ],
+          "audio": {
+            "from": "n11",
+            "level": 1,
+            "kind": "span",
+            "words": [
+              1,
+              1
+            ],
+            "startMs": 1719,
+            "endMs": 2119
+          }
         }
       },
       "catalog": {
@@ -470,6 +499,403 @@
       "practice": {
         "scenarioId": "library",
         "level": 1
+      }
+    },
+    {
+      "level": 2,
+      "levelLabel": "Basic",
+      "title": "Too fast, Slavko",
+      "frameEN": [
+        "Slavko talks too fast — today that's the point. You get three ways to stop him: <b>I don't understand</b> · <b>slowly, please</b> · <b>say it again</b>."
+      ],
+      "tutorial": [
+        {
+          "target": "slower",
+          "text": "The app also has ways to help, tap this button to hear a line again, slowly."
+        },
+        {
+          "target": "back",
+          "text": "Tap « to hear the line before this one again."
+        },
+        {
+          "target": "skip",
+          "text": "Tap » to interrupt whatever is happening and move on to the next line."
+        }
+      ],
+      "objectives": [
+        {
+          "label": "Stop him when you're lost",
+          "descriptorEN": "Tell Slavko you don't understand him."
+        },
+        {
+          "label": "Ask him to slow down",
+          "descriptorEN": "Ask Slavko to speak slowly."
+        },
+        {
+          "label": "Ask him to say it again",
+          "descriptorEN": "Ask Slavko to repeat what he just said."
+        },
+        {
+          "label": "Swap the word, keep the frame",
+          "descriptorEN": "Make two different requests out of one 'please' frame, on the very same sentence: one gets you it again exactly as it was, the other gets you it slowly enough to follow."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Živjo, živjo! Jaz sem Slavko, sem učitelj, in ti, kdo si ti?",
+          "en": "Hi, hi! I'm Slavko, I'm the teacher, and you, who are you?",
+          "deliverySL": "[speaking very fast, all in one breath] Živjo, živjo! Jaz sem Slavko, sem učitelj, in ti, kdo si ti?",
+          "glossPolicy": "held",
+          "focusSpan": "kdo si ti",
+          "learnables": [
+            "zivjo",
+            "sem_ime",
+            "ucitelj",
+            "kdo"
+          ],
+          "next": [
+            "n2"
+          ]
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Ojoj. Reci: Ne razumem.",
+          "en": "Oops. Say: I don't understand.",
+          "deliverySL": "[catching himself, slowing right down] Ojoj. Reci: Ne razumem.",
+          "slowSL": "Ojoj. … Reci: … Ne razumem.",
+          "deliverySlowSL": "[speaking very slowly and clearly, pausing between phrases] Ojoj. … Reci: … Ne razumem.",
+          "glossPolicy": "after",
+          "focusSpan": "Ne razumem",
+          "learnables": [
+            "ne_razumem"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Tell him you don't understand."
+            }
+          ],
+          "next": [
+            "c1"
+          ]
+        },
+        "c1": {
+          "speaker": "client",
+          "sl": "Ne razumem.",
+          "en": "I don't understand.",
+          "glossPolicy": "after",
+          "focusSpan": "Ne razumem",
+          "learnables": [
+            "ne_razumem"
+          ],
+          "next": [
+            "n3"
+          ],
+          "audio": {
+            "from": "n2",
+            "level": 2,
+            "kind": "span",
+            "words": [
+              2,
+              3
+            ],
+            "startMs": 1000,
+            "endMs": 1559
+          }
+        },
+        "n3": {
+          "speaker": "npc",
+          "sl": "Super! Ne razumem — tako je! Ja, jaz sem prehiter.",
+          "en": "Great! \"I don't understand\" — that's right! Yes, I'm too fast.",
+          "deliverySL": "[delighted, then sheepishly] Super! Ne razumem — tako je! Ja, jaz sem prehiter.",
+          "glossPolicy": "after",
+          "focusSpan": "Ne razumem",
+          "learnables": [
+            "ne_razumem",
+            "ja"
+          ],
+          "next": [
+            "n4"
+          ]
+        },
+        "n4": {
+          "speaker": "npc",
+          "sl": "Reci: Počasi, prosim.",
+          "en": "Say: Slowly, please.",
+          "deliverySL": "[warmly, encouraging] Reci: Počasi, prosim.",
+          "slowSL": "Reci: … Počasi, … prosim.",
+          "deliverySlowSL": "[speaking very slowly and clearly, pausing between phrases] Reci: … Počasi, … prosim.",
+          "glossPolicy": "after",
+          "focusSpan": "Počasi, prosim",
+          "learnables": [
+            "pocasi_prosim"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask him to slow down."
+            }
+          ],
+          "next": [
+            "c2"
+          ]
+        },
+        "c2": {
+          "speaker": "client",
+          "sl": "Počasi, prosim.",
+          "en": "Slowly, please.",
+          "glossPolicy": "after",
+          "focusSpan": "Počasi, prosim",
+          "learnables": [
+            "pocasi_prosim"
+          ],
+          "next": [
+            "n5"
+          ],
+          "audio": {
+            "from": "n4",
+            "level": 2,
+            "kind": "span",
+            "words": [
+              1,
+              2
+            ],
+            "startMs": 719,
+            "endMs": 1879
+          }
+        },
+        "n5": {
+          "speaker": "npc",
+          "sl": "Ja! Jaz sem Slavko. In ti? Kdo si ti?",
+          "en": "Yes! I'm Slavko. And you? Who are you?",
+          "deliverySL": "[pleased, then speaking slowly and clearly, pausing between phrases] Ja! Jaz sem Slavko. In ti? Kdo si ti?",
+          "slowSL": "Ja! … Jaz sem Slavko. … In ti? … Kdo si ti?",
+          "deliverySlowSL": "[speaking very slowly and clearly, pausing between phrases] Ja! … Jaz sem Slavko. … In ti? … Kdo si ti?",
+          "glossPolicy": "after",
+          "focusSpan": "Kdo si ti",
+          "learnables": [
+            "ja",
+            "sem_ime",
+            "kdo"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Tell him your name."
+            }
+          ],
+          "next": [
+            "c3"
+          ]
+        },
+        "c3": {
+          "speaker": "client",
+          "sl": "Sem ___.",
+          "en": "I'm ___. (your name)",
+          "glossPolicy": "after",
+          "focusSpan": "Sem ___",
+          "learnables": [
+            "sem_ime"
+          ],
+          "next": [
+            "n6"
+          ],
+          "audio": {
+            "from": "n2",
+            "level": 1,
+            "kind": "whole",
+            "heard": "Sem Slavko."
+          }
+        },
+        "n6": {
+          "speaker": "npc",
+          "sl": "Super! Veš kaj? Ti govoriš slovensko, ne?",
+          "en": "Great! You know what? You speak Slovene, right?",
+          "deliverySL": "[bubbling over, speaking very fast, all in one breath] Super! Veš kaj? Ti govoriš slovensko, ne?",
+          "glossPolicy": "held",
+          "focusSpan": "Ti govoriš slovensko",
+          "learnables": [
+            "kaj",
+            "govorim_lang"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "You didn't catch that — tell him."
+            }
+          ],
+          "next": [
+            "c4"
+          ]
+        },
+        "c4": {
+          "speaker": "client",
+          "sl": "Ne razumem.",
+          "en": "I don't understand.",
+          "glossPolicy": "tap",
+          "focusSpan": "Ne razumem",
+          "learnables": [
+            "ne_razumem"
+          ],
+          "next": [
+            "n7"
+          ]
+        },
+        "n7": {
+          "speaker": "npc",
+          "sl": "Ojoj! Ne razumeš. Reci: Še enkrat, prosim.",
+          "en": "Oops! You don't understand. Say: Once more, please.",
+          "deliverySL": "[wincing, then gently handing it over] Ojoj! Ne razumeš. Reci: Še enkrat, prosim.",
+          "slowSL": "Ojoj! … Ne razumeš. … Reci: … Še enkrat, … prosim.",
+          "deliverySlowSL": "[speaking very slowly and clearly, pausing between phrases] Ojoj! … Ne razumeš. … Reci: … Še enkrat, … prosim.",
+          "glossPolicy": "after",
+          "focusSpan": "Še enkrat, prosim",
+          "learnables": [
+            "razumem",
+            "se_enkrat"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "respeak"
+            },
+            {
+              "kind": "soften",
+              "label": "Ask him to say it again."
+            }
+          ],
+          "next": [
+            "c5"
+          ]
+        },
+        "c5": {
+          "speaker": "client",
+          "sl": "Še enkrat, prosim.",
+          "en": "Once more, please.",
+          "glossPolicy": "after",
+          "focusSpan": "Še enkrat, prosim",
+          "learnables": [
+            "se_enkrat"
+          ],
+          "next": [
+            "n8"
+          ],
+          "audio": {
+            "from": "n7",
+            "level": 2,
+            "kind": "span",
+            "words": [
+              4,
+              6
+            ],
+            "startMs": 3119,
+            "endMs": 3959
+          }
+        },
+        "n8": {
+          "speaker": "npc",
+          "sl": "Ja, ja! Še enkrat: Veš kaj? Ti govoriš slovensko, ne?",
+          "en": "Yes, yes! Once more: You know what? You speak Slovene, right?",
+          "deliverySL": "[obligingly — then exactly as fast as before, all in one breath] Ja, ja! Še enkrat: Veš kaj? Ti govoriš slovensko, ne?",
+          "glossPolicy": "held",
+          "focusSpan": "Še enkrat",
+          "learnables": [
+            "ja",
+            "se_enkrat",
+            "kaj",
+            "govorim_lang"
+          ],
+          "stallHandlers": [
+            {
+              "kind": "pulse"
+            },
+            {
+              "kind": "soften",
+              "label": "Same speed as before — ask him to slow down."
+            }
+          ],
+          "next": [
+            "c6"
+          ]
+        },
+        "c6": {
+          "speaker": "client",
+          "sl": "Počasi, prosim.",
+          "en": "Slowly, please.",
+          "glossPolicy": "tap",
+          "focusSpan": "Počasi, prosim",
+          "learnables": [
+            "pocasi_prosim"
+          ],
+          "next": [
+            "n9"
+          ]
+        },
+        "n9": {
+          "speaker": "npc",
+          "sl": "Ja! Počasi. Veš kaj? Ti govoriš slovensko!",
+          "en": "Yes! Slowly. You know what? You speak Slovene!",
+          "deliverySL": "[gladly, speaking very slowly and clearly, pausing between phrases] Ja! Počasi. Veš kaj? Ti govoriš slovensko!",
+          "glossPolicy": "after",
+          "focusSpan": "Ti govoriš slovensko",
+          "learnables": [
+            "ja",
+            "kaj",
+            "govorim_lang"
+          ],
+          "next": [
+            "n10"
+          ]
+        },
+        "n10": {
+          "speaker": "npc",
+          "sl": "Bravo! Se vidiva!",
+          "en": "Bravo! See you!",
+          "deliverySL": "[warmly, delighted] Bravo! Se vidiva!",
+          "glossPolicy": "after",
+          "focusSpan": "Se vidiva",
+          "learnables": [],
+          "next": []
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "zivjo",
+          "sem_ime",
+          "ucitelj",
+          "kdo",
+          "ja",
+          "kaj",
+          "ne_razumem",
+          "pocasi_prosim",
+          "se_enkrat"
+        ],
+        "new": []
       }
     }
   ],

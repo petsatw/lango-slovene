@@ -389,7 +389,8 @@
         "bil_sem",
         "sel_sem",
         "delo",
-        "hcerka"
+        "hcerka",
+        "student"
       ],
       "scenarios": [
         {
@@ -902,7 +903,9 @@
         "september",
         "sola",
         "tecaj",
-        "prijava"
+        "prijava",
+        "ucitelj",
+        "student"
       ],
       "scenarios": [
         {
@@ -946,7 +949,8 @@
         "dela_3sg",
         "delo",
         "iscemo",
-        "prijava"
+        "prijava",
+        "ucitelj"
       ],
       "scenarios": []
     },

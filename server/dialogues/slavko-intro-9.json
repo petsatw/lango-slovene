@@ -4,6 +4,7 @@
   "level": 9,
   "levelLabel": "Basic",
   "title": "Ask me",
+  "status": "retired",
   "objectives": [
     {
       "label": "Ask when, and ask where",

@@ -35,8 +35,11 @@ export interface LiveCallbacks {
 export interface LiveAdapter {
   readonly provider: LiveProvider;
   /** Open the vendor socket and configure it with the lesson prompt. Resolves once the vendor has
-   *  acknowledged setup — audio sent before that is dropped by both vendors, so callers wait. */
-  connect(sessionId: string, instructions: string): Promise<void>;
+   *  acknowledged setup — audio sent before that is dropped by both vendors, so callers wait.
+   *
+   *  `keyterms` are the phrases this session is scored on (server/live/match.ts): a vendor whose
+   *  transcriber takes a hint list is biased toward them, and one that does not simply ignores them. */
+  connect(sessionId: string, instructions: string, keyterms?: string[]): Promise<void>;
   /** Learner speech, PCM16 LE mono 16 kHz. Safe to call before connect resolves; buffered internally. */
   sendPcm16(bytes: Buffer): void;
   close(): void;

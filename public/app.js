@@ -1,5 +1,5 @@
-// MVP front-end. Four learner destinations behind a home shell:
-//   ① Practice scenarios  ② Live AI tutor  ③ Replays  ④ A1 Readiness
+// MVP front-end. Three learner destinations behind a home shell:
+//   ① Practice scenarios  ② Live AI tutor  ③ A1 Readiness
 // The live tutor is the single production surface (push-to-talk → /api/converse). Rehearsal trees are
 // exposure only (no mic, no credit). The "engine" stays invisible everywhere except A1 Readiness.
 
@@ -25,15 +25,43 @@ const obs = {
 
 const CHAT_LEVEL = 2; // the internal free-chat ceiling — server-side only, never a learner-visible knob.
 
-// WHOSE progress this is. One id per page load, because a sitting is disposable: progress accrues
+// WHOSE progress this is. One id per TAB, because that is the shape of a sitting: progress accrues
 // normally while the learner is here — they are met where they left off five minutes ago — and nothing
-// is kept once they leave. The server keys the learner model by it (server/assets/learner.ts), and it is
-// the seam accounts arrive on: an account id would simply replace what this line mints.
-const learnerId = crypto.randomUUID ? crypto.randomUUID() : newRunId("learner");
+// is kept once they leave. sessionStorage is what draws that line: it survives a reload and a walk
+// through the app, and the browser drops it when the tab closes. A refresh keeping the learner matters
+// on a phone, where it is a gesture rather than a decision.
+// The server keys the learner model by it (server/assets/learner.ts), and it is the seam accounts
+// arrive on: an account id would simply replace what this line mints.
+const learnerId = (() => {
+  const held = sessionStorage.getItem("learnerId");
+  if (held) return held;
+  const minted = crypto.randomUUID ? crypto.randomUUID() : newRunId("learner");
+  sessionStorage.setItem("learnerId", minted);
+  return minted;
+})();
 
-// Every call names the learner it is about. One wrapper, so no call site has to remember to.
+// Whether this sitting agreed to its data being kept — the consent gate's second, optional box, which
+// starts ticked. Held beside the learner id and for the same span, because it is a property of the same
+// sitting; a reload keeps the answer, closing the tab forgets it along with everything else. Unticked,
+// the server empties this session's records a few hours after it ends and never writes its speech into
+// the shared audio, gloss and candidate stores at all (server/assets/retention.ts).
+let retainSession = sessionStorage.getItem("retainSession") !== "0";
+function setRetain(on) {
+  retainSession = !!on;
+  sessionStorage.setItem("retainSession", retainSession ? "1" : "0");
+}
+
+// Every call names the learner it is about, and whether this sitting is being kept. One wrapper, so no
+// call site has to remember to.
 function api(url, opts = {}) {
-  return fetch(url, { ...opts, headers: { ...(opts.headers || {}), "x-learner-id": learnerId } });
+  return fetch(url, {
+    ...opts,
+    headers: {
+      ...(opts.headers || {}),
+      "x-learner-id": learnerId,
+      ...(retainSession ? {} : { "x-retain": "0" }),
+    },
+  });
 }
 
 const history = [];
@@ -51,7 +79,7 @@ let chatLessonId = null;     // go-live: which lesson's plan the realtime tutor 
 let runId = null;            // THIS sitting on the practice surface — both modes record under it (npm run runs)
 
 // ---- Screen router — one screen visible at a time; the tree + obs are overlays on top. ----
-const SCREENS = ["home", "practice", "levels", "tutor", "replays", "a1", "scene"];
+const SCREENS = ["home", "practice", "levels", "tutor", "a1", "scene"];
 let currentScreen = "home";
 
 function showScreen(id) {
@@ -72,7 +100,6 @@ function showScreen(id) {
 
 function openHome() { stopAllAudio(); showScreen("home"); }
 function openPractice() { showScreen("practice"); loadPractice(); }
-function openReplays() { showScreen("replays"); loadRuns(); }
 function openA1() { showScreen("a1"); renderA1(); }
 
 function stopAllAudio() { stopDialogueAudio(); }
@@ -209,6 +236,10 @@ async function playReplyStreaming(text, opts = {}) {
   if (opts.scenarioId) params.set("scenarioId", opts.scenarioId);
   if (opts.objectiveId) params.set("objectiveId", opts.objectiveId);
   if (opts.voice) params.set("voice", opts.voice);
+  // The tutor's reply is a sentence composed about this learner and can carry their name. A sitting
+  // that declined retention still hears it — it just is not written into the shared clip store, which
+  // is keyed by content and has no way to tell one learner's sentence from an authored lesson line.
+  if (!retainSession) params.set("retain", "0");
   audio.src = `/api/speak?${params.toString()}`;
   obs.state("speaking…");
 
@@ -306,7 +337,7 @@ async function loadPractice() {
     el.innerHTML = "";
     // Two groups, because they are two different things to do: the spoken lessons are the course, the
     // rehearsal trees are conversations to read through.
-    for (const [heading, mode] of [["Practice!", "spoken"], ["Example Conversations", "rehearsal"]]) {
+    for (const [heading, mode] of [["Practice:", "spoken"], ["Example Conversations:", "rehearsal"]]) {
       const group = scenarios.filter((s) => s.mode === mode);
       if (!group.length) continue;
       const h = document.createElement("p");
@@ -781,7 +812,7 @@ async function toggleLive() {
   liveBubbles.clear(); // ids are per-session; a stale one would revise last session's bubble
   try {
     await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined,
-                      learnerId, runId });
+                      learnerId, runId, retain: retainSession });
     // Nothing in the protocol says the tutor has started or stopped speaking — `state` reports when the
     // vendor finished GENERATING, which is well before the audio is heard. So the surface asks the
     // playback queue instead, often enough to look like a response and cheaply enough not to matter.
@@ -867,11 +898,18 @@ onLive("error", (code) => {
 });
 
 // ---- ② Live AI tutor: the one practice surface. Consent gate → optional tutorial → either mode. ----
+/** Where declining the gate puts the learner back. Captured on the way IN, so the answer is always the
+ *  screen they actually came from — the lesson they just finished, the level they were rehearsing, or
+ *  home — rather than a guess made at the door. Those surfaces are only ever hidden, never torn down, so
+ *  showing one again returns it in the state it was left in. */
+let tutorReturnTo = "home";
+
 function openTutor(opts = {}) {
   chatFocus = opts.focus || [];
   chatRole = opts.role || null;
   chatContext = opts.context || null;
   chatLessonId = opts.lessonId || chatLessonId;
+  tutorReturnTo = currentScreen === "tutor" ? "home" : currentScreen;
   showScreen("tutor");
   openConsent();
 }
@@ -880,6 +918,9 @@ function openTutor(opts = {}) {
 // consent nobody stored is a consent that has to be asked for again. Two clicks clears it.
 function openConsent() {
   $("consent-agree").checked = false;
+  // The optional box comes back on whatever this sitting last answered, so a learner who turned it off
+  // is not quietly re-asked to turn it back on every time the gate reappears.
+  $("consent-improve").checked = retainSession;
   $("consent-continue").disabled = true;
   $("consent").hidden = false;
   $("mode-switch").hidden = true; // a session left mid-question must not come back to the answer
@@ -900,7 +941,6 @@ function startTutorSession() {
   runId = newRunId("practice"); // one record per sitting, and the id both modes are logged under
   $("play-fallback").hidden = true;
   $("practice-talk").disabled = false;
-  $("mode-toggle").hidden = false; // a replay may have borrowed the surface and hidden it
   obs.state("idle");
   renderPractice();
 }
@@ -1297,6 +1337,10 @@ function sceneFrameWait(ms) {
   });
 }
 
+/** The run controls, by the glyph the on-ramp writes them as. The prose IS the binding: an author who
+ *  writes « in a frame line is naming that chip, and no other field says so. */
+const FRAME_CHIPS = [["🐢", "scene-slower"], ["«", "scene-back"], ["»", "scene-skip"], ["✕", "scene-quit"]];
+
 async function scenePlayFrame(lines) {
   const pace = scene.pacing;
   const el = $("scene-frame");
@@ -1308,6 +1352,13 @@ async function scenePlayFrame(lines) {
   // where "move on" lives, and the on-ramp is the learner's first chance to find them. A skip button of
   // its own would teach the wrong reach on the first screen of the app.
   sceneChips({ skip: true });
+  // A control named in the prose lights up while the line naming it is on screen, so the sentence points
+  // at the real button in the corner instead of describing one. The line's own glyph is what selects it —
+  // no second field to author and keep in step, and a lesson that names no control simply lights nothing.
+  // Lit overrides the dim but not the disabling: the run has not started, so the chip is shown, not armed.
+  const litFor = (line) => {
+    for (const [glyph, id] of FRAME_CHIPS) $(id).classList.toggle("lit", line.includes(glyph));
+  };
   el.onclick = () => frameAdvance?.();
   el.innerHTML = "";
   el.appendChild(document.createElement("p"));
@@ -1327,6 +1378,7 @@ async function scenePlayFrame(lines) {
     // through the pipeline and never learner input, so markup in it is trusted — this is the line to
     // revisit if that ever stops being true.
     p.innerHTML = line;
+    litFor(line);
     p.style.opacity = "1";
     // Dwell scales with the length of the line — these are the first sentences the learner ever reads,
     // and a fixed interval either rushes the long one or strands the short one. Nothing can be re-read
@@ -1337,6 +1389,7 @@ async function scenePlayFrame(lines) {
     await sleep(FRAME_CROSSFADE_MS);
   }
   await sceneFrameWait(pace.frameHoldMs);
+  litFor("");              // the on-ramp is over; nothing is being pointed at any more
   sceneChips({});          // the beat that follows lights them again for what it actually offers
   el.onclick = null;
   el.classList.remove("shown");
@@ -1349,10 +1402,14 @@ async function scenePlayFrame(lines) {
 // particular is the difference between a line they can follow and one they can't.
 //
 // The chip is not copied or moved for this: the scrim goes UNDER the chip layer, so the thing being
-// pointed at is the actual button, in its actual place, and the learner has already practised the reach
-// by the time the scrim lifts. Tapping the lit chip itself does nothing yet — a control demonstrated
-// mid-explanation would fire against a scene that has not started.
+// pointed at is the actual button, in its actual place, and pressing it is how the step is answered —
+// the learner leaves having already made the reach, not having read about it.
 const TUTORIAL_CHIPS = { slower: "scene-slower", back: "scene-back", skip: "scene-skip", quit: "scene-quit" };
+
+// What the step asks for, and what it settles for. The second line only ever replaces the first after a
+// tap that missed, so a learner who presses the control never reads that they didn't have to.
+const TUTORIAL_HINT_CHIP = "Tap it to continue";
+const TUTORIAL_HINT_ANY = "Tap anywhere to continue";
 
 let tutorialAdvance = null;   // resolves the step the learner is looking at — also how ✕ gets out
 
@@ -1361,19 +1418,49 @@ async function scenePlayTutorial(steps) {
   const panel = $("scene-tutorial");
   const chips = $("scene-chips");
   const text = $("scene-tutorial-text");
+  const hint = $("scene-tutorial-next");
   panel.hidden = false;
   chips.classList.add("tutorial");
+  // The chip row is raised above the scrim so the learner presses the real button — which also leaves the
+  // chips' own handlers live, and any of them would fire against a scene that has not started. Every chip
+  // press is intercepted for as long as the tutorial is up, and the step decides what it meant.
+  let onChip = null;
+  const chipGuard = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onChip?.(e.target.closest(".scene-chip"));
+  };
+  chips.addEventListener("click", chipGuard, true);
   for (const step of steps) {
     if (gen !== sceneGen) break;
     const chip = $(TUTORIAL_CHIPS[step.target]);
     // A disabled chip is drawn at 25% and cannot be lit convincingly, and every chip is disabled before
     // the first beat. `lit` overrides the dim for exactly as long as it is the one being explained.
+    // The step is answered BY pressing this button, so for that long the button is genuinely live: the
+    // disabled state also takes its pointer events away, and it would tell a screen reader that the one
+    // control the learner is being asked for is unavailable. Restored when the light moves on.
+    const wasDisabled = chip.getAttribute("aria-disabled");
+    chip.setAttribute("aria-disabled", "false");
     chip.classList.add("lit");
     text.textContent = step.text;
-    await new Promise((resolve) => { tutorialAdvance = resolve; panel.onclick = resolve; });
+    hint.textContent = TUTORIAL_HINT_CHIP;
+    await new Promise((resolve) => {
+      tutorialAdvance = resolve;
+      // The step is answered by doing the thing it explains. A tap that lands anywhere else is someone
+      // who has not found the control, so the first miss only says where to aim — and every tap after it
+      // moves on regardless, because nobody may be held on a screen they cannot work out how to leave.
+      let missed = false;
+      const stray = () => { if (missed) resolve(); else { missed = true; hint.textContent = TUTORIAL_HINT_ANY; } };
+      onChip = (hit) => (hit === chip ? resolve() : stray());
+      panel.onclick = stray;
+    });
+    onChip = null;
     tutorialAdvance = null;
     chip.classList.remove("lit");
+    if (wasDisabled === null) chip.removeAttribute("aria-disabled");
+    else chip.setAttribute("aria-disabled", wasDisabled);
   }
+  chips.removeEventListener("click", chipGuard, true);
   panel.onclick = null;
   panel.hidden = true;
   chips.classList.remove("tutorial");
@@ -1794,82 +1881,7 @@ function wireSceneChips() {
   $("scene-quit").addEventListener("click", () => { sceneCancel(); openHome(); });
 }
 
-// ---- ③ Replays: play back a captured live session turn-by-turn, free (audio served from the store) ----
-function playClipToEnd(text) {
-  return new Promise((resolve) => {
-    const audio = new Audio();
-    audio.src = `/api/speak?${new URLSearchParams({ text }).toString()}`; // teacher voice — the free tutor
-    audio.onended = resolve;
-    audio.onerror = resolve;
-    audio.play().catch(resolve);
-  });
-}
-
-function fmtWhen(iso) {
-  try { return new Date(iso).toLocaleString(); } catch { return iso; }
-}
-
-async function loadRuns() {
-  const panel = $("runs-panel");
-  panel.innerHTML = "<p class='muted'>Loading…</p>";
-  try {
-    const { sessions } = await (await api("/api/sessions")).json();
-    if (!sessions.length) { panel.innerHTML = "<p class='muted'>No sessions yet. Talk to the tutor, then come back to hear it.</p>"; return; }
-    panel.innerHTML = "";
-    for (const s of sessions) {
-      const row = document.createElement("div");
-      row.className = "run-row";
-      const star = s.favorite ? "★" : "☆";
-      const name = s.label || s.id;
-      row.innerHTML =
-        `<button class="run-play" type="button" title="Replay this session">▶</button>` +
-        `<span class="run-name">${name}</span>` +
-        `<span class="run-meta">${s.turns} turns · ${fmtWhen(s.createdAt)}</span>` +
-        `<button class="run-fav" type="button" title="Favorite">${star}</button>`;
-      row.querySelector(".run-play").addEventListener("click", () => replayRun(s.id));
-      row.querySelector(".run-fav").addEventListener("click", () => toggleFavorite(s.id, !s.favorite));
-      panel.appendChild(row);
-    }
-  } catch (err) {
-    panel.innerHTML = `<p class='muted'>Failed: ${err.message}</p>`;
-  }
-}
-
-async function toggleFavorite(id, favorite) {
-  await api(`/api/sessions/${encodeURIComponent(id)}/meta`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ favorite }),
-  });
-  loadRuns();
-}
-
-// Turn-based static replay: step the record in order, playing tutor turns from the store (free) and
-// showing the student lines. Renders into the live transcript so it reads like the original chat.
-async function replayRun(id) {
-  const rec = await (await api(`/api/sessions/${encodeURIComponent(id)}`)).json();
-  if (rec.error) { obs.error(rec.error); return; }
-  showScreen("tutor");
-  // A replay borrows the surface as a reading room: no mic, no session, so nothing that offers one.
-  $("practice-talk").disabled = true;
-  $("mode-toggle").hidden = true;
-  $("practice-hint").textContent = "";
-  $("live-state").textContent = "";
-  $("transcript").innerHTML = "";
-  obs.state(`replaying ${rec.id}…`);
-  for (const t of rec.turns) {
-    if (t.role === "tutor") {
-      addBubble("tutor", t.text);
-      await playClipToEnd(t.text);
-    } else {
-      addBubble("user", t.userVerbatim || t.text, t.text && t.userVerbatim ? `≈ ${t.text}` : "");
-      await new Promise((r) => setTimeout(r, 700)); // a beat to read the student line
-    }
-  }
-  obs.state("idle");
-}
-
-// ---- ④ A1 Readiness — the coverage map (the only place progress is visible). A hand-authored
+// ---- ③ A1 Readiness — the coverage map (the only place progress is visible). A hand-authored
 // competency → scenarios mapping; progress read from the durable learner model. List → drill-down. ----
 let a1Competencies = [];
 
@@ -1899,7 +1911,7 @@ async function renderA1() {
 }
 
 // Drill into one competency: its descriptor, the scenarios/levels that move it forward (tap → practice
-// that level), and the learnables with their owned/shaky/unseen status.
+// that level), and the learnables with their mastered/attempted/unseen status.
 function openCompetency(id) {
   const c = a1Competencies.find((x) => x.id === id);
   if (!c) return;
@@ -1962,7 +1974,6 @@ async function init() {
       const go = t.dataset.go;
       if (go === "practice") openPractice();
       else if (go === "tutor") openTutor();
-      else if (go === "replays") openReplays();
       else if (go === "a1") openA1();
     }),
   );
@@ -1979,9 +1990,16 @@ async function init() {
 
   // Consent gate. The required acknowledgement is the only thing that gates Continue; the tutorial
   // skip never does.
+  // Leaving the gate unanswered. showScreen hides the overlay on the way out of the tutor surface, and
+  // no session has been opened yet, so there is nothing to tear down — the learner is simply put back
+  // where they were, on the close screen of the lesson that offered them the tutor in the first place.
+  $("consent-close").addEventListener("click", () => showScreen(tutorReturnTo));
   $("consent-agree").addEventListener("change", (e) => { $("consent-continue").disabled = !e.target.checked; });
   $("consent-continue").addEventListener("click", () => {
     if (!$("consent-agree").checked) return;
+    // Read the optional box HERE rather than on change: what the learner leaves it on when they press
+    // Continue is the answer, and it has to be recorded before the first call goes out.
+    setRetain($("consent-improve").checked);
     $("consent").hidden = true;
     startTutorSession();
   });

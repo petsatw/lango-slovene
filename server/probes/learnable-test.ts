@@ -130,7 +130,7 @@ console.log("presentObjective:");
 // ---- unit: selectForWitness focus set — the rehearsal→free-chat handoff bias (roadmap 12b) ---------
 console.log("selectForWitness (focus set):");
 {
-  // A learner who has touched `kava` once — so `familiar` is non-empty and level-1 adds no generic edge,
+  // A learner who has touched `kava` once — so the model is non-empty and level-1 adds no generic edge,
   // isolating the focus behaviour. voda/caj are UNSEEN (never touched).
   const model = credit(fresh(), "kava", "attempt", 1);
 
