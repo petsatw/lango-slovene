@@ -1170,6 +1170,7 @@ function sceneCancel() {
   // An on-ramp dwell and a tutorial step are waits like any other — leaving either pending hangs the run.
   frameAdvance?.();
   tutorialAdvance?.();
+  sceneFrameReady?.();
   sceneUnlockTap?.(false);   // answered as "not tapped", so the abandoned line does not play on its own
   $("scene-slower").classList.remove("blinking");
   const pending = scenePendingSay;
@@ -1431,6 +1432,9 @@ const FRAME_CROSSFADE_MS = 300;
 // resolves whichever one is running — the line's own dwell, the hold after the last line, or the fade —
 // and the learner never taps into a wait that ignores them.
 let frameAdvance = null;
+// Resolves the press that ends the on-ramp and starts the lesson. Also how ✕ gets out of that wait.
+let sceneFrameReady = null;
+
 function sceneFrameWait(ms) {
   return new Promise((resolve) => {
     const done = () => { clearTimeout(timer); if (frameAdvance === done) frameAdvance = null; resolve(); };
@@ -1490,7 +1494,17 @@ async function scenePlayFrame(lines) {
     p.style.opacity = "0";
     await sleep(FRAME_CROSSFADE_MS);
   }
-  await sceneFrameWait(pace.frameHoldMs);
+  // The on-ramp ends on a PRESS, not a timer. Two things want that, and one of them is not optional: the
+  // learner decides when the lesson starts, AND a browser will not let the page make a sound until it has
+  // been touched. The scene opens by ITSELF for a new learner, so before this press nothing has asked
+  // them to touch anything — and the character's first line is refused and plays silent.
+  //
+  // It is answered on the talk button, already the one fixed object in the run, and it is NOT a turn:
+  // no backchannel, no step, nothing credited. `advance` resolves this and returns.
+  sceneSetPhase("ready", "Continue");
+  el.onclick = () => sceneFrameReady?.();
+  await new Promise((resolve) => { sceneFrameReady = () => { sceneFrameReady = null; resolve(); }; });
+  sceneSetPhase("speaking", "");
   litFor("");              // the on-ramp is over; nothing is being pointed at any more
   sceneChips({});          // the beat that follows lights them again for what it actually offers
   el.onclick = null;
@@ -1926,6 +1940,10 @@ function wireSceneAdvance() {
 
   const advance = async (e) => {
     e.preventDefault();
+    // The on-ramp's closing "Ready?" is answered HERE and goes no further: it starts the lesson, it is
+    // not a turn. Nothing is acknowledged, because the learner has not said anything yet — a "Mhm." on
+    // this press would be the character agreeing with silence.
+    if (sceneFrameReady) { sceneFrameReady(); return; }
     // The tap that unlocks sound is answered HERE and goes no further: it is not a turn, it is the
     // permission the browser withheld, and the line it belongs to has not been spoken yet.
     if (sceneUnlockTap) { sceneUnlockTap(true); return; }
@@ -1963,6 +1981,7 @@ function wireSceneChips() {
     // During the on-ramp `»` is what it says it is — skip ahead — and what lies ahead is the next
     // English line, not the next beat. The frame owns the chip while it is up.
     if (frameAdvance) { frameAdvance(); return; }
+    if (sceneFrameReady) { sceneFrameReady(); return; }   // on "Ready?", what lies ahead IS the lesson
     const from = scene.node?.id;
     // A beat that asks the learner about themselves has no "next line" to skip to that would be honest —
     // the line after it is said in the form of the answer they have not given.
