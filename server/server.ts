@@ -20,7 +20,7 @@ import { A1_MAP } from "./a1";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
 import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
 import { CATALOG } from "./catalog";
-import { getDialoguesForScenario, getPublishedDialogues, resolveNode, type Dialogue, type DialogueNode } from "./dialogues";
+import { getDialoguesForScenario, getPublishedDialogues, resolveNode, nodeForms, type Dialogue, type DialogueNode } from "./dialogues";
 import { getFact, factValues } from "./facts";
 import { pacingFor } from "./pacing";
 import { sceneShape } from "./scene-shape";
@@ -290,6 +290,29 @@ app.post("/api/scene", (req, res) => {
     return { ...rows };
   };
 
+  // Every clip this level can play, sent once with the opening line so the client can hold them ALL
+  // before the first one is spoken. A spoken scene whose audio has not arrived does not stall: the
+  // <audio> errors, the renderer's await resolves instantly, and the lesson plays fully captioned,
+  // silent, and far too fast, every clip-length pause collapsed to zero. Nothing throws, so it looks
+  // like a working lesson — which is how it reached alpha testers as "the scene races past".
+  //
+  // BOTH forms of a line that varies on a learner fact are listed. The run resolves a form from facts
+  // the learner may not have answered yet (the beat that asks comes mid-run), so listing only today's
+  // form would leave the other to be fetched at the moment it is spoken — the exact failure this
+  // removes. Client lines are never listed: those are the learner's own and nothing synthesizes them.
+  const clipTexts = () => {
+    const texts = new Set<string>();
+    for (const raw of Object.values(scene.nodes)) {
+      if (raw.speaker !== "npc") continue;
+      for (const { node } of nodeForms(raw)) {
+        texts.add(node.sl);
+        if (node.slowSL) texts.add(node.slowSL);
+      }
+    }
+    if (backchannel) texts.add(backchannel);
+    return [...texts];
+  };
+
   // Everything the close screen shows, built in one place and sent twice: with the opening line, so the
   // run always holds a complete close even if it is left early, and again on the beat that ends it.
   //
@@ -314,7 +337,7 @@ app.post("/api/scene", (req, res) => {
       return res.json({ voice: scene.voices.npc, background: scene.background ?? null, backchannel,
                         pacing, frameEN: scene.frameEN ?? [], tutorial: scene.tutorial ?? [],
                         npc: shape(scene.root), done: false,
-                        audio: scene.audio,
+                        audio: scene.audio, clips: clipTexts(),
                         level: scene.level, title: scene.title,
                         ...closeScreen() });
     }

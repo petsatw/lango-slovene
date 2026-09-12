@@ -1113,7 +1113,11 @@ function sceneSay(text) {
     scenePendingSay?.();
     const params = new URLSearchParams({ text });
     if (scene.voice) params.set("voice", scene.voice);
-    const audio = new Audio(`/api/speak?${params.toString()}`);
+    // The bytes the preloader already holds, where it has them. Going back to /api/speak here would undo
+    // the wait the run just did — the response is `no-store`, so there is no browser cache to hit. A line
+    // the preload never saw, or could not fetch, still falls back to a live request.
+    const src = scenePreload?.clips.get(text);
+    const audio = new Audio(src ?? `/api/speak?${params.toString()}`);
     dialogueAudio = audio;
     const done = () => {
       if (dialogueAudio === audio) dialogueAudio = null;
@@ -1143,6 +1147,75 @@ function sceneCancel() {
   scenePendingSay = null;
   stopDialogueAudio();
   pending?.();
+}
+
+// ---- The level's audio, in hand before the first line is spoken --------------------------------
+// A clip that has not arrived does not stall the run: /api/speak is still in flight (or 502s), the
+// <audio> fires `onerror`, and `sceneSay` resolves instantly — so the lesson plays fully captioned,
+// completely silent, and much too fast, every clip-length pause collapsed to zero. Nothing errors,
+// which is why it reads as a working lesson rather than a broken one, and why it reached alpha testers
+// on the deploy as "the scene races past".
+//
+// So the whole level is fetched up front and the first spoken line waits for it. The elements are
+// RETAINED rather than merely requested: /api/speak sends `Cache-Control: no-store`, so a throwaway
+// warm-up fetch would be re-requested at play time and buy nothing. `sceneSay` plays these very objects.
+let scenePreload = null;   // { clips: Map<text, HTMLAudioElement>, ready: Promise, settled: boolean }
+
+function scenePreloadClips(texts) {
+  const clips = new Map();                   // text → object URL holding the clip's actual bytes
+  const abort = new AbortController();
+  const pre = { clips, abort, ready: null, settled: false };
+  // The BYTES, not a primed <audio>. `preload="auto"` is advisory: measured on this lesson the browser
+  // buffered all 24 clips and fired `canplaythrough` for every one, then evicted two of them before the
+  // run reached them ~35s in — so those two went back to the network at the moment they were needed,
+  // which is the failure this path exists to remove. A blob cannot be evicted.
+  const each = texts.map(async (text) => {
+    const params = new URLSearchParams({ text });
+    if (scene.voice) params.set("voice", scene.voice);
+    try {
+      const res = await fetch(`/api/speak?${params.toString()}`, { signal: abort.signal });
+      if (!res.ok) return;                   // no entry → `sceneSay` falls back to a live request
+      clips.set(text, URL.createObjectURL(await res.blob()));
+    } catch {
+      // A clip that cannot be fetched leaves no entry and does NOT fail the wait. Holding the run open
+      // for the one clip that is never going to arrive is worse than a lesson with one silent line.
+    }
+  });
+  pre.ready = Promise.all(each).then(() => { pre.settled = true; });
+  scenePreload = pre;
+}
+
+// Hold the run until the clips are in. The on-ramp and the tutorial have been covering the fetch, so on
+// a warm connection this returns at once and nothing is shown; the label appears only where there is a
+// real wait, so a learner who was never kept waiting never reads the word.
+async function sceneAwaitClips() {
+  const pre = scenePreload;
+  if (!pre || pre.settled) return;
+  const btn = $("scene-talk");
+  let waiting = true;
+  // The speaking meter cannot stand in for this: it means "sound is happening", and none is. So a wait
+  // long enough to notice puts the reason on the button, and a wait nobody felt shows nothing at all.
+  const show = setTimeout(() => {
+    if (!waiting) return;
+    btn.classList.add("loading");
+    sceneSetPhase("speaking", "Loading…");
+  }, 250);
+  await pre.ready;
+  waiting = false;
+  clearTimeout(show);
+  btn.classList.remove("loading");
+  sceneSetPhase("speaking", "");
+}
+
+// The clips belong to the run that asked for them. Releasing the sources stops whatever is still in
+// flight, so a lesson left mid-load does not go on downloading into a screen nobody is looking at.
+// Deliberately NOT called by `sceneCancel`: skip and back cancel the beat while the run carries on, and
+// they are about to play these very clips.
+function sceneReleaseClips() {
+  if (!scenePreload) return;
+  scenePreload.abort.abort();                // whatever is still in flight stops here
+  for (const url of scenePreload.clips.values()) URL.revokeObjectURL(url);
+  scenePreload = null;
 }
 
 // Which run controls this beat offers. Set on every beat, so a node with no slow clip, the first line
@@ -1613,6 +1686,10 @@ async function sceneStep(from, ack, answer) {
   scene.voice = data.voice;
   if (data.audio) scene.audio = data.audio;
   if (data.level) scene.level = data.level;
+  // The opening response carries every clip the level can play. Start fetching them now, so the on-ramp
+  // and the tutorial are cover for the download rather than time spent before it. A level that declares
+  // its audio unbuilt plays silent by design — asking for clips nobody built would be a wall of 502s.
+  if (data.clips?.length && scene.audio === "ready") scenePreloadClips(data.clips);
   // The close screen's material, all of it sent once with the opening line — the close is reached by a
   // beat that has no payload of its own.
   // ANY new close-screen field must be captured HERE. `sceneFinish` reads only `scene`, so a field left
@@ -1632,6 +1709,10 @@ async function sceneStep(from, ack, answer) {
   // After the on-ramp and before the first line: the learner knows what this is, and has not yet been
   // given anything to miss.
   if (data.tutorial?.length) await scenePlayTutorial(data.tutorial);
+  if (gen !== sceneGen) return;
+  // Not a word of Slovene is spoken before its audio is in hand. On every later step this has long since
+  // settled and costs nothing — the gate is the opening, where the clips were asked for.
+  await sceneAwaitClips();
   if (gen !== sceneGen) return;
   if (data.npc) await scenePlayBeat(data.npc);
   else sceneFinish();
@@ -1670,6 +1751,7 @@ function sceneFinish() {
   $("scene-deeper-speak").onclick = () => {
     const h = scene.handoff;
     sceneCancel();
+    sceneReleaseClips();
     openTutor(h ? { focus: h.focus, role: h.role, context: h.context, lessonId: h.lessonId } : {});
   };
   $("scene-close").hidden = false;
@@ -1680,6 +1762,7 @@ function sceneFinish() {
 // is fetched rather than held, because the scene is the one surface that can be opened without it.
 async function openPracticeDialogue(target) {
   sceneCancel();
+  sceneReleaseClips();
   try {
     const { scenarios } = await (await api("/api/practice")).json();
     const s = scenarios.find((x) => x.id === target.scenarioId);
@@ -1774,6 +1857,9 @@ async function openScene(scenarioId, level = null) {
   // Whatever the previous run was doing stops here — a beat still awaiting a clip would otherwise play
   // on over the lesson that replaced it.
   sceneCancel();
+  // The last lesson's clips are not this one's. Released here rather than in `sceneCancel`, which also
+  // runs on skip and back — mid-run, moments before those clips are played.
+  sceneReleaseClips();
   scene = { scenarioId, level, voice: null, audio: null, node: null, stalls: [], armed: false,
             choosing: false, backchannel: null, pacing: null, nextLevel: null, keyPhrases: null,
             trail: [], trailAt: -1 };
@@ -1790,6 +1876,7 @@ async function openScene(scenarioId, level = null) {
   $("scene-gloss").classList.remove("shown");
   $("scene-prompt").classList.remove("shown");
   // The button is on screen from the first frame, anchored, showing that it is not yet the learner's.
+  $("scene-talk").classList.remove("loading");   // a lesson left mid-wait must not hand its state on
   sceneSetPhase("speaking", "");
   sceneChips({});
   try {
@@ -1878,7 +1965,7 @@ function wireSceneChips() {
   });
 
   // Leave: the same exit as "Done" on the close screen.
-  $("scene-quit").addEventListener("click", () => { sceneCancel(); openHome(); });
+  $("scene-quit").addEventListener("click", () => { sceneCancel(); sceneReleaseClips(); openHome(); });
 }
 
 // ---- ③ A1 Readiness — the coverage map (the only place progress is visible). A hand-authored
