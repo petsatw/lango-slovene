@@ -792,6 +792,11 @@ body.in-scene header { display: none; }
 .scene-talk.speaking { cursor: default; border-color: rgba(255, 255, 255, 0.28); background: rgba(255, 255, 255, 0.05); }
 .scene-talk.speaking .scene-bars { display: flex; }
 .scene-talk.speaking .scene-talk-label { display: none; }
+/* Loading: the lesson's clips are not in yet. The meter would be a lie — it says "sound is happening"
+   and there is none — so the button carries the one word that is true instead. Same specificity as the
+   speaking rules above and placed after them, which is what lets it win. */
+.scene-talk.loading .scene-bars { display: none; }
+.scene-talk.loading .scene-talk-label { display: block; }
 @media (prefers-reduced-motion: reduce) {
   .scene-bars i { animation-duration: 2s; }
 }
