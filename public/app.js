@@ -1127,7 +1127,35 @@ function sceneSay(text) {
     scenePendingSay = done;
     audio.onended = done;
     audio.onerror = done;
-    audio.play().catch(done);
+    // A browser will not let a page make sound until the person has touched it, and the scene opens by
+    // ITSELF on a fresh visit — demo L1's on-ramp is six timed lines and no tutorial, so not one gesture
+    // happens between the page loading and Slavko's first word. The browser refuses that line with
+    // NotAllowedError, and swallowing it is what left "Živjo!" captioned in silence while every later
+    // line played: pressing Continue had by then granted the activation, and it lasts the session.
+    // So a refusal is not "this clip is done" — it is the run asking for one tap, and then speaking.
+    audio.play().catch((err) => {
+      if (err?.name !== "NotAllowedError") { done(); return; }
+      sceneAskForTap().then((tapped) => {
+        if (!tapped) { done(); return; }   // they left instead — the beat is over, not waiting
+        sceneSetPhase("speaking");
+        audio.play().catch(done);
+      });
+    });
+  });
+}
+
+// Resolves the tap that buys the page permission to make sound. Also how ✕ gets out of that wait, which
+// is why it carries the answer: a cancelled wait must not go on to play into a lesson nobody is in.
+let sceneUnlockTap = null;
+
+// Asked for on the one button the learner already presses, with the line's caption already on screen —
+// so what they are agreeing to is visible: press, and he says it.
+function sceneAskForTap() {
+  return new Promise((resolve) => {
+    const btn = $("scene-talk");
+    sceneUnlockTap = (tapped) => { sceneUnlockTap = null; resolve(tapped !== false); };
+    btn.classList.remove("loading");
+    sceneSetPhase("ready", "Tap to start");
   });
 }
 
@@ -1142,6 +1170,7 @@ function sceneCancel() {
   // An on-ramp dwell and a tutorial step are waits like any other — leaving either pending hangs the run.
   frameAdvance?.();
   tutorialAdvance?.();
+  sceneUnlockTap?.(false);   // answered as "not tapped", so the abandoned line does not play on its own
   $("scene-slower").classList.remove("blinking");
   const pending = scenePendingSay;
   scenePendingSay = null;
@@ -1897,6 +1926,9 @@ function wireSceneAdvance() {
 
   const advance = async (e) => {
     e.preventDefault();
+    // The tap that unlocks sound is answered HERE and goes no further: it is not a turn, it is the
+    // permission the browser withheld, and the line it belongs to has not been spoken yet.
+    if (sceneUnlockTap) { sceneUnlockTap(true); return; }
     // A beat offering a choice answers through its own options; this button is off screen there, and the
     // guard keeps a keyboard activation from advancing it without an answer.
     if (!scene.armed || scene.choosing) return;
