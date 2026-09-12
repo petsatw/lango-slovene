@@ -48,9 +48,8 @@
     "Hi.",
     "Ready to learn Slovene?",
     "You're about to meet Slavko. He'll be your teacher.",
-    "He speaks first. Just listen, and press <b>continue</b>.",
-    "When it's your turn, the words appear — say them out loud, then press <b>continue</b>.",
-    "Let's go!"
+    "Listen, then say it out loud. Press <b>continue</b> to move on.",
+    "Ready?"
   ],
   "practice": {
     "scenarioId": "library",
