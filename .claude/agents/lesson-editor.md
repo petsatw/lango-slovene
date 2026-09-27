@@ -91,7 +91,7 @@ someone he has already met, does not re-introduce himself to someone mid-convers
 a language he obviously speaks, and does not talk like a textbook. He may quote a line *for* the learner
 or guess at theirs aloud — both are what a helpful local does.
 
-**A delivery tag is invisible to the learner.** `(brightly, as if meeting again)` is authoring metadata.
+**A delivery tag is invisible to the learner.** `[toplo]` is authoring metadata.
 If a beat's meaning depends on a stage direction, or on an English caption explaining what is happening,
 that beat does not work — the fix is the beat, not a better caption.
 

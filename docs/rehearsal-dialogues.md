@@ -59,7 +59,7 @@ the feature is optional per scenario.
   "root": "b1",                     // must be an npc node
   "nodes": {
     "b1":  { "speaker": "npc",  "sl": "Dober dan, izvolite?", "en": "Good day, what can I get you?",
-             "deliverySL": "[hesitant and a little apathetic] Dober dan, izvolite?",  // optional; see below
+             "deliverySL": "[toplo] Dober dan, izvolite?",  // optional; see below
              "next": ["c1a", "c1b"] },
     "c1a": { "speaker": "client", "sl": "Dober dan. En kruh, prosim.", "en": "…", "next": ["b2"] },
     // … a client node's `next` is the single npc response; an npc node's `next` is its client choices;
@@ -69,10 +69,12 @@ the feature is optional per scenario.
 ```
 
 - **`sl`** is both the on-screen caption **and** the audio cache key.
-- **`deliverySL`** (optional) is the same line **with inline [eleven_v3 audio tags](https://elevenlabs.io/blog/v3-audiotags)**
-  (e.g. `[hesitant]`, `[apologetic]`, `[warmly]`). When present it is what gets **synthesized**, while
+- **`deliverySL`** (optional) is the same line **with an inline [eleven_v3 audio tag](https://elevenlabs.io/blog/v3-audiotags)**
+  (e.g. `[toplo] Dober dan.`). When present it is what gets **synthesized**, while
   `sl` stays the caption and the key — so delivery direction steers the voice without ever showing on
   screen or changing the cache key. Absent → the clean `sl` is synthesized plainly.
+  - **The tag is written in Slovene** — see [the delivery vocabulary](#the-delivery-vocabulary) below.
+    English inside the prompt pulls the accent toward English.
   - **Delivery collides on shared lines (author around it).** Because the tag is *not* in the key, two nodes
     with the same `sl` in the same voice profile are **one clip** — the first built wins, and any different
     `deliverySL` on the others is never heard. So a character's delivery only lands on lines whose `sl` is
@@ -91,6 +93,48 @@ the feature is optional per scenario.
   eleven_v3 down. Two authored slow lines came back at 1.00× and 0.92× the duration of their natural
   clips — one identical, one *faster*. Slower speech has to be **directed**, and the direction must not
   reach the screen. Without it, `slowSL` is synthesized as written and the "slow" clip will not be slow.
+  The direction is **always the same one**, byte-identical on every slow clip in the app:
+
+  ```
+  [počasi in razločno, potrpežljivo]
+  ```
+
+  *Slowly and distinctly, patiently.* `počasi in razločno` is what a Slovene says to someone on a bad
+  phone line, and `razločno` is the word that actually lengthens the syllables — `počasi` alone directs
+  less than you would expect. Nothing about the beat changes it; a slow clip that wants a different tone
+  wants a different beat.
+
+#### The delivery vocabulary
+
+Delivery tags are written **in Slovene**. English tags steer the accent: the voice carries the English into
+its reading of the Slovene, and the drift is audible. The tag never reaches the screen, so writing it in
+Slovene costs the reader nothing.
+
+A Slovene stage direction is a **bare `-o` adverb**, one or two of them, lowercase, no terminal
+punctuation, at the very start of the line: `[toplo] Dober dan.` Never a finite verb and never an
+imperative — `[govori počasi]` is a speakable sentence and the voice will say it out loud. Never mid-line.
+
+**The default is `[toplo]`** (*warmly*), and it carries essentially every npc line. Reach past it only when
+a line has a **distinct** change of tone or cadence the listener needs to hear — a character who has
+stopped caring, a secret, a sudden delight. Used on every third line, a tone change stops being one.
+
+| Intent | Tag | |
+|---|---|---|
+| **the default — warm** | `[toplo]` | warmly |
+| delighted | `[veselo]` | cheerfully |
+| teasing, playful | `[nagajivo]` | playfully |
+| conspiratorial, hushed | `[zaupno, tiho]` | confidentially, quietly |
+| hesitant, searching for the word | `[oklevajoče]` | hesitantly |
+| jaded, stopped caring | `[naveličano]` | wearily |
+| brisk | `[poslovno]` | businesslike |
+| excited, fast | `[navdušeno, hitro]` | enthusiastically, fast |
+| sheepish | `[v zadregi]` | embarrassed |
+| matter-of-fact | `[stvarno]` | plainly |
+
+The list is **closed**, and small on purpose. eleven_v3's tag handling is trained mostly on English, so a
+Slovene tag may steer less per line; a fixed vocabulary makes each tag's behaviour something we learn once
+instead of re-guessing per line. A line that wants a tone not on this list is telling you the list needs
+one more entry — add it here, deliberately, rather than freehanding it into a node.
 - **`learnables`** (optional, on **any** node) is the catalog ids the line **is made of** — what the
   per-line difficulty band counts (dialogue-difficulty-model.md §3), which is why an npc line carries them
   too. On a **client** node it doubles as the ids that beat expects the learner to **produce**, the
@@ -481,9 +525,9 @@ same `kruh` the learner has been building all along.
 - **Spine:** an `npc` node → **2 client-reply choices** → each client node's single `next` is the npc's
   response → branches **re-converge** onto shared later nodes so the tree stays finite. `root` **must be an
   `npc` node**; every path ends at `next: []`.
-- **`deliverySL`:** optional, **npc lines only** — the same line with **one** eleven_v3 delivery tag matching
-  the character (the restaurant waiter uses a warm `[warmly] …`; the bakery uses `[hesitant]`). **Client
-  lines carry no `deliverySL`** — a client line is a line the learner will say, not a performance to
+- **`deliverySL`:** optional, **npc lines only** — the same line with **one** Slovene delivery tag from
+  [the delivery vocabulary](#the-delivery-vocabulary), `[toplo]` unless the line has a distinct change of
+  tone. **Client lines carry no `deliverySL`** — a client line is a line the learner will say, not a performance to
   direct. (In a **spoken** scene client lines are not synthesized at all. Nothing in this app records or
   plays back the learner's own voice; where the close screen offers to play a phrase, it is replaying the
   character's clip — see [keyphrase-span-playback.md](keyphrase-span-playback.md).)

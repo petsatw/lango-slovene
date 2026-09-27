@@ -390,7 +390,7 @@ Every brief carries, identically:
   > - A spoken level is a linear spine; `next[0]` is the path. A "branch" lives in the slot, not the tree.
   >   `lint:tree` errors on any node off that spine — it would never be played and would still bill for a
   >   clip.
-  > - **The learner meets sound and one caption.** A delivery tag (`[brightly, as if meeting again]`) is
+  > - **The learner meets sound and one caption.** A delivery tag (`[toplo]`) is
   >   authoring metadata that reaches the synthesiser and stops there, and the caption glosses what is
   >   said. So a beat carries its meaning in the words, the voice, and the silence around them — a scene
   >   that changes frame says so in Slovene the learner already owns, or it happens in a lesson that has
@@ -656,7 +656,8 @@ situation, register, voices, and that level's node map (`speaker` + `intentEN` +
 
 For an `"audio"` scene the dispatch also names which nodes are marked for `slowSL` — LS writes the chunking
 (where a native would actually break the phrase, a language judgment) **and a `deliverySlowSL`**, because a
-` … ` separator alone does not slow the voice down. Tell LS the register, that client nodes are what the
+` … ` separator alone does not slow the voice down. Every `deliverySlowSL` carries the **same** direction,
+byte-identical: `[počasi in razločno, potrpežljivo]`. Tell LS the register, that client nodes are what the
 **learner** will say aloud, and that a client node's `en` is shown to the learner as their prompt.
 
 ### 4 — Routing read (C)
