@@ -4,6 +4,7 @@
 //   npm run test:live-match
 
 import { keytermsFor, matchTarget, normalise, segmentsOf, variantsOf } from "../live/match";
+import { readTarget } from "../live/grader";
 import { LEARNABLES } from "../learnables";
 import type { Learnable } from "../learnables";
 
@@ -83,6 +84,32 @@ check("carries the literal runs and the mishearing", terms, [
   "Rada bi",
 ]);
 check("within the vendor's ceiling", terms.every((t) => t.length <= 50) && terms.length <= 100, true);
+
+console.log("\nthe verdict rule (readTarget)");
+{
+  const ts = (role: "user" | "tutor", text: string) => ({ ts: "", role, text });
+  const transcript = [
+    ts("tutor", "Dober dan."),
+    ts("user", "Kilo krompirja, prosim."),
+    ts("tutor", "Prosim, kilo krompirja. Še kaj?"),
+    ts("user", "Potatoes please"),
+    ts("tutor", "Krompir? Kilo?"),
+  ];
+  const reading = (saidLine: number, over: Partial<{ uptake: boolean; correct: boolean; recast: boolean; saidLang: string }> = {}) =>
+    ({ id: "krompir", saidLine, uptake: true, correct: true, recast: false, saidLang: "sl", ...over });
+
+  // The matcher cannot see `krompir` in "krompirja"; the grader can, and the tutor served it.
+  check("an inflected form the grader cites and the tutor took up is a success",
+    readTarget(transcript, null, reading(2)).verdict, "success");
+  check("its span is the learner's own line", readTarget(transcript, null, reading(2)).said, "Kilo krompirja, prosim.");
+  check("a recast is help, not a success", readTarget(transcript, null, reading(2, { recast: true })).verdict, "attempt");
+  check("an incorrect form is an attempt", readTarget(transcript, null, reading(2, { correct: false })).verdict, "attempt");
+  check("no uptake is not a success", readTarget(transcript, null, reading(2, { uptake: false })).verdict, "none");
+  check("an English line earns nothing", readTarget(transcript, null, reading(4, { saidLang: "en" })).verdict, "none");
+  check("a cited tutor line earns nothing", readTarget(transcript, null, reading(3)).verdict, "none");
+  check("the matcher alone still grants an attempt",
+    readTarget(transcript, { line: 2, text: "Kilo krompirja, prosim." }, reading(0, { uptake: false, correct: false })).verdict, "attempt");
+}
 
 console.log(failures ? `\n❌ ${failures} failed\n` : "\n✅ all passed\n");
 process.exit(failures ? 1 : 0);

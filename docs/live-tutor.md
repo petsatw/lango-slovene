@@ -145,10 +145,14 @@ input warmly, so an in-character judgement conflates rapport with correctness.
 | verdict | rule |
 |---|---|
 | **attempt** | either channel fires, and the line is Slovene. Granted liberally — a beginner who tried is the thing being measured. |
-| **success** | both channels fire **on the same line**, the form is judged correct, and the tutor did not recast it. |
+| **success** | the grader cites the learner line that carries the target, the line is Slovene, the form is correct in whatever inflection the sentence needs, the tutor's reply to that line took it up, and the tutor did not recast it. |
 
-Echoing a phrase the tutor has just modelled still counts: the lessons are heard-first, and "unaided"
-means **not recast**, not "not modelled". One channel alone is never upgraded to a success.
+The grader decides success and marks conservatively: a target counts only on the learner's own line, and
+"unsure" is "not produced". The matcher is not required for a success — it compares text, so it cannot see
+`krompir` in *Kilo krompirja*, and a production the tutor understood is credit due. It is logged beside
+every verdict as a second opinion, and it can grant an attempt on its own. Echoing a phrase the tutor has
+just modelled still counts: the lessons are heard-first, and "unaided" means **not recast**, not "not
+modelled". The rule is `readTarget` in [server/live/grader.ts](../server/live/grader.ts).
 
 ### Matching, not transcribing
 
