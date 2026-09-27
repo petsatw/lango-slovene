@@ -107,8 +107,12 @@ interface Learnable {
   predictableError?: string;         // the one predictable beginner error, surfaced by presentation
 }
 
-// assets/learner.json — one durable, local, single-learner model (path: LEARNER_PATH)
-interface LearnableMastery { attempts: number; successes: number; } // status is DERIVED, never stored
+// assets/learners/<id>.json — one durable model per learner id (LEARNERS_DIR; LEARNER_STORE=file → LEARNER_PATH)
+interface LearnableMastery {        // status is DERIVED, never stored
+  attempts: number; successes: number;
+  firstProducedAt?: string; lastProducedAt?: string; // ISO; two different days = in
+  lastAttemptAt?: string;
+}
 interface LearnerModel { learnables: Record<string, LearnableMastery>; updatedAt: string; }
 
 // The per-learnable verdict E2 returns (separate from objective_progress) — drives durable mastery:

@@ -63,6 +63,12 @@ export interface LearnableProgress {
 export interface LearnableMastery {
   attempts: number; // rises on every swing (success or fail)
   successes: number; // rises only on a successful production; mastery measures this
+  /** When the learner first and last produced it successfully, and last swung at it at all (ISO). What
+   *  the day-aware rules read: produced on two different days = it survived sleep (mastery.ts). Absent on
+   *  a model written before production was dated. */
+  firstProducedAt?: string;
+  lastProducedAt?: string;
+  lastAttemptAt?: string;
 }
 
 /** The whole learner model — one durable, local, single-learner model (assets/learner.json).

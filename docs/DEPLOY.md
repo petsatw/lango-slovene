@@ -88,9 +88,12 @@ git add -f assets/audio assets/align    # content-addressed dialogue clips + the
 git commit -m "chore(assets): ship <scenario> audio"
 ```
 
-Commit `assets/audio` and `assets/align` only. Keep `assets/sessions/`, `assets/turnlog/`, `assets/live/`
-and `assets/learner.json` out — they hold learner PII and have no place in the deploy. Images stay out too (scene backgrounds that the app
+Commit `assets/audio` and `assets/align` only. Keep `assets/sessions/`, `assets/turnlog/`, `assets/live/`,
+`assets/learners/` and `assets/learner.json` out — they hold learner data and have no place in the deploy. Images stay out too (scene backgrounds that the app
 uses live under `public/backgrounds/` and ship there).
+
+Learner progress lives at `LEARNERS_DIR` (default `assets/learners/`). A host whose disk is replaced on
+every deploy loses it with each release; point `LEARNERS_DIR` at a persistent volume to keep it.
 
 `assets/align` is word-level timings for clips that already exist, and it is **not needed at runtime** — a Key
 Phrases span carries its milliseconds in the dialogue JSON. It ships so `lint:keyphrase-audio` can run on a fresh

@@ -232,17 +232,19 @@ confusion — so, precisely:
   *right now* — lives in the browser and the conversation history is per-page-load. Reload and the
   *scene-layer dots* start fresh. This is one of **two layers**: the ephemeral scene layer (objective
   dots, 14-turn cap) and a **durable mastery layer** (below) that does carry forward.
-  - **The learner model** — the mastery layer, held under a **learner id** the client mints per page
-    load and sends as `x-learner-id`. Per **learnable** (vocabulary · chunk · pattern, in
-    `server/catalog/learnables.json`) it counts `attempts`/`successes`; a learnable is *mastered* at a
-    threshold (5) of successful productions, credited per-learnable from the same E2 verdict, with a flub
-    decrementing it. It carries across the whole sitting — the scene dots reset, this does not — and the
-    default store keeps it in memory, so it ends with the sitting. `LEARNER_STORE=file` holds one model on
-    disk at `assets/learner.json` instead, which is what dev and the probes use. Accounts arrive by making
-    the id an account id and the store durable. Mechanism:
+  - **The learner model** — the mastery layer, held under a **learner id** the client mints once per
+    browser and sends as `x-learner-id`. Per **learnable** (vocabulary · chunk · pattern, in
+    `server/catalog/learnables.json`) it counts `attempts`/`successes` and dates the productions; a
+    learnable is *mastered* at a threshold (5) of successful productions, credited per-learnable from the
+    same E2 verdict, with a flub decrementing it, and *in* once produced on two different days. The
+    default store keeps one file per learner at `assets/learners/<id>.json`, so it carries across days —
+    the scene dots reset, this does not. `LEARNER_STORE=file` holds one shared model at
+    `assets/learner.json` instead, which is what dev and the probes use. Accounts arrive by making the id
+    an account id. Mechanism:
     [learnable-subsystem-spec.md](learnable-subsystem-spec.md) §2.3; subsystem design:
-    [learnable-subsystem.md](learnable-subsystem.md). (Steering/selection over this model — *what* to
-    practise next — is still roadmap 5.)
+    [learnable-subsystem.md](learnable-subsystem.md). A scene with a live surface schedules its lines
+    from this model ([live-tutor.md](live-tutor.md#a-scene-with-its-own-harness)); general steering over
+    it — *what* to practise next — is still roadmap 5.
 - **Durable (on disk).**
   - **Session records.** Every *run* is captured to `assets/sessions/<id>.json`, written incrementally
     on each turn — so even an abandoned run (browser/server killed mid-session) leaves its partial
