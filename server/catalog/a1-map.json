@@ -71,7 +71,13 @@
         "trije_stirje",
         "dve_osebi",
         "stevilo_enote_desetice",
-        "stevilo_enaindvajset"
+        "stevilo_enaindvajset",
+        "kilo_prosim",
+        "pol_kila_prosim",
+        "dvesto_gramov_prosim",
+        "kos",
+        "sop",
+        "pest"
       ],
       "scenarios": [
         {
@@ -194,7 +200,11 @@
         "veselim_se",
         "iscemo",
         "oddam",
-        "prepovedano"
+        "prepovedano",
+        "kilo_prosim",
+        "pol_kila_prosim",
+        "dvesto_gramov_prosim",
+        "imate_danes"
       ],
       "scenarios": [
         {
@@ -291,7 +301,10 @@
         "hvala_za",
         "veselim_se",
         "pozor",
-        "vikanje"
+        "vikanje",
+        "kaj_pomeni",
+        "kaj_to_pomeni",
+        "ne_hvala"
       ],
       "scenarios": [
         {
@@ -548,7 +561,29 @@
         "je_3sg",
         "pije_3sg",
         "kuha_3sg",
-        "kuhanje"
+        "kuhanje",
+        "krompir",
+        "paradiznik",
+        "cebula",
+        "korenje",
+        "paprika",
+        "zelje",
+        "kumara",
+        "cesen",
+        "bucka",
+        "radic",
+        "rdeca_pesa",
+        "por",
+        "strocji_fizol",
+        "jabolko",
+        "banana",
+        "hruska",
+        "jagoda",
+        "pomaranca",
+        "mandarina",
+        "je_sladko",
+        "je_kislo",
+        "je_zrelo"
       ],
       "scenarios": [
         {
@@ -777,7 +812,28 @@
         "informacije",
         "vozovnica",
         "rezervacija",
-        "prijava"
+        "prijava",
+        "imate_danes",
+        "kaj_se_imate_danes",
+        "kilo_prosim",
+        "pol_kila_prosim",
+        "dvesto_gramov_prosim",
+        "majhne_prosim",
+        "velike_prosim",
+        "ne_hvala",
+        "ja_se_prosim",
+        "to_je_vse",
+        "je_sladko",
+        "je_kislo",
+        "je_zrelo",
+        "je_domace",
+        "lahko_poskusim",
+        "je_to_vse_za_danes",
+        "ste_tu_vsak_dan",
+        "kdaj_ste_tu",
+        "kos",
+        "sop",
+        "pest"
       ],
       "scenarios": [
         {
