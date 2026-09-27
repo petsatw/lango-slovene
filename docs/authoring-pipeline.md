@@ -95,7 +95,7 @@ is gitignored, a worklist to be folded into the a1-map and spent.
       "objectives": [ { "label", "descriptorEN" } ],
       "needs?": ["gender"],          // learner facts an EARLIER lesson already asked for
       "root": "n1",
-      "nodes": { "n1": { "speaker": "npc", "sl": "…", "en": "…", "deliverySL?": "[warmly] …", "next": ["c1a","c1b"],
+      "nodes": { "n1": { "speaker": "npc", "sl": "…", "en": "…", "deliverySL?": "[toplo] …", "next": ["c1a","c1b"],
                          "choice?": { "fact": "gender" },   // npc: this beat ASKS the learner for one fact
                          "variesBy?": "gender",             // this line's wording depends on that fact
                          "variants?": { "f": { "sl": "…", "en": "…", "focusSpan": "…" } } } },
