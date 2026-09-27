@@ -12,6 +12,10 @@
 // body in server/prompt.ts. One string, two callers: the live tutor cannot drift from the production
 // prompt without the drift showing up in free chat too.
 //
+// A SCENE is the exception, by design: a scenario with a `live` surface brings its own harness — the
+// scene's Slovene instructions to the tutor — and the app appends the day's scheduled lines and the shape
+// of the lesson (scenePrompt below). Opened by the scenario id.
+//
 // WHAT IS STILL DIFFERENT, and it is not small:
 //   - The prompt is built ONCE, at connect. Free chat is stateless and rebuilds it every turn, so its
 //     targets re-select as the learner progresses. A live session's targets are frozen at second zero.
@@ -23,9 +27,9 @@
 import { DIALOGUES, type Dialogue, type DialogueNode } from "../dialogues";
 import { LEARNABLES, type Learnable } from "../learnables";
 import * as learner from "../assets/learner";
-import { selectForWitness } from "../mastery";
+import { selectForScene, selectForWitness, type SceneSelection } from "../mastery";
 import { conversationTeachingBody } from "../prompt";
-import { getScenario } from "../scenarios";
+import { getScenario, harnessText, SCENARIOS, type LiveSurface, type Scenario } from "../scenarios";
 
 /** Every dialogue by id — the live session addresses a lesson the same way the rehearsal player does. */
 function lessonIndex(): Map<string, Dialogue> {
@@ -35,7 +39,7 @@ function lessonIndex(): Map<string, Dialogue> {
 }
 
 export function lessonExists(lessonId: string): boolean {
-  return lessonIndex().has(lessonId);
+  return lessonIndex().has(lessonId) || !!liveScene(lessonId);
 }
 
 /** Every node of a lesson, root included — root is authored as an array of opening nodes. */
@@ -64,28 +68,88 @@ function focusIdsFor(d: Dialogue): string[] {
 // cannot know: that this is speech rather than a request, and how to open. The opening is the free-chat
 // opening — "Začnemo?" is a static line there, and the learner already knows it from the tutorial, so a
 // live session starts on the same word rather than on whatever the vendor improvises.
-const SPOKEN_TAIL = [
-  "",
-  "",
+const SPOKEN_MEDIUM = [
   "THIS IS A LIVE SPOKEN CONVERSATION. Everything you produce is heard, not read. Never describe what",
   "you are doing, never read out labels or field names, never output JSON or any other structured text —",
   "just talk. The learner can interrupt you at any moment; when they do, stop and listen.",
+].join("\n");
+
+const SPOKEN_TAIL = [
+  "",
+  "",
+  SPOKEN_MEDIUM,
   "",
   "OPEN with the single Slovene word «Začnemo?» and then wait for them to answer.",
 ].join("\n");
+
+/** A scenario whose `live` surface makes it a scene the tutor plays from its own harness. */
+function liveScene(id: string): (Scenario & { surfaces: { live: LiveSurface } }) | undefined {
+  const s = SCENARIOS.find((x) => x.id === id && x.status === "active");
+  return s?.surfaces?.live ? (s as Scenario & { surfaces: { live: LiveSurface } }) : undefined;
+}
+
+/** The scene's own harness, then the lesson the app runs through it: today's scheduled lines, and the
+ *  shape of the lesson up to its closing line. The harness says who the tutor is and what the scene
+ *  holds; the app says which lines the learner practises and when the lesson is over. */
+function scenePrompt(harness: string, sel: SceneSelection, close: string): string {
+  const lines = (ls: Learnable[]) => ls.map((l) => `  «${l.sl}» — ${l.gloss}`);
+  return [
+    harness,
+    "",
+    "---",
+    "",
+    "THE LESSON. The person in front of you is learning to buy at a stall like yours. Below are the",
+    "buyer's lines they are practising today. Give them a natural opening to say each one — by what you",
+    "sell, what you ask, and how you answer.",
+    "",
+    ...(sel.review.length
+      ? ["FIRST — lines they said on an earlier day. Make an opening for each of these before anything new:",
+         ...lines(sel.review), ""]
+      : []),
+    "EVERY VISIT:",
+    ...lines(sel.core),
+    "",
+    ...(sel.fresh.length ? ["NEW TODAY:", ...lines(sel.fresh), ""] : []),
+    "HOW THE LESSON RUNS",
+    "- Open with «Dober dan.» and wait for the buyer.",
+    "- Stay at this stall: its goods, its prices, the lines above. No praise, no grammar, no words from",
+    "  outside the stall, and no English — not even when asked.",
+    "- Once one purchase is finished and the buyer has said each of today's lines, begin a second, shorter",
+    "  purchase in which each of today's lines comes up once more.",
+    `- Then end the lesson by saying «${close}» Say it once, and only there.`,
+    "- After that the buyer may keep talking as long as they like. Stay who you are, at the stall, in Slovene.",
+    "",
+    SPOKEN_MEDIUM,
+  ].join("\n");
+}
 
 export interface LessonPrompt {
   lessonId: string;
   title: string;
   /** The one string both adapters receive verbatim. */
   instructions: string;
-  /** The bounded in-play set this session is being taught against — frozen here, at connect. The grader
-   *  scores the finished session against this same set (server/live/grader.ts): a set re-selected
-   *  afterwards would be marking a different exam from the one that was sat. */
+  /** What the grader scores the finished session against (server/live/grader.ts) — frozen here, at
+   *  connect: a set re-selected afterwards would be marking a different exam from the one that was sat.
+   *  For a lesson it is the bounded in-play set the tutor steers toward. For a scene it is the whole
+   *  card: the day's schedule decides what the tutor steers toward, and anything on the card the learner
+   *  actually says is credit due. */
   targets: Learnable[];
 }
 
 export function buildLessonPrompt(lessonId: string, learnerId: string): LessonPrompt {
+  const scene = liveScene(lessonId);
+  if (scene) {
+    const live = scene.surfaces.live;
+    const sel = selectForScene(learner.load(learnerId), live);
+    const card = [...new Set([...live.core, ...live.bank, ...(live.stock ?? [])])];
+    return {
+      lessonId,
+      title: scene.name ?? scene.title,
+      instructions: scenePrompt(harnessText(live), sel, live.close),
+      targets: card.map((id) => LEARNABLES[id]!),
+    };
+  }
+
   const d = lessonIndex().get(lessonId);
   if (!d) throw new Error(`no such lesson: ${lessonId}`);
 

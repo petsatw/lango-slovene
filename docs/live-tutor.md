@@ -94,6 +94,35 @@ Read the exact string before a run:
 npm run prompt:live -- restaurant-l1     # no args lists the lesson ids
 ```
 
+### A scene with its own harness
+
+A scenario may declare a `live` surface: the tutor plays that scene from the scene's **harness**, its own
+Slovene instructions to the tutor (who she is, what the stall holds, what she says). Open it by the
+scenario id — `/?lesson=trznica`.
+
+```json
+"surfaces": { "live": { "harness": "trznica.md", "close": "Jutri imamo še več.",
+                        "core": ["dober_dan", …], "bank": ["je_sladko", …], "stock": ["krompir", …] } }
+```
+
+The harness replaces the shared body for that session. The app appends what it owns:
+
+- **the day's lines**, from `mastery.selectForScene` over the learner's dated production — bank lines
+  said on an earlier day and not yet in, first; every `core` line; then up to three bank lines, unseen
+  before the least produced. These are what the tutor steers toward. The grader scores the **whole
+  card** — core, bank and `stock` (the goods the lines are filled with) — so anything on it the learner
+  says is credited, scheduled today or not;
+- **how the lesson runs** — open on «Dober dan.», stay at the stall, no praise, grammar or English; once
+  a purchase is done and each line said, a second shorter purchase where each comes up once more; then
+  the `close` line, said once.
+
+The close line ends the lesson, not the session. The learner can keep talking; everything they say is
+credited once, when the socket closes, like any live session.
+
+```bash
+npm run prompt:live -- trznica
+```
+
 ---
 
 ## Crediting a live session — one grader, two channels

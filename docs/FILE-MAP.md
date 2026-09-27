@@ -84,6 +84,8 @@ Field-level detail and examples are in [DATA-MODEL.md › The catalog](DATA-MODE
 
 `bakery.json` · `butcher.json` · `cafe.json` · `lekarna.json` — one JSON per scenario, referencing
 assets by catalog id. Full shape in [DATA-MODEL.md › A scenario](DATA-MODEL.md#a-scenario).
+`harness/<name>.md` — a live scene's Slovene instructions to the tutor, named by the scenario's
+`surfaces.live.harness` ([live-tutor.md](live-tutor.md#a-scene-with-its-own-harness)).
 
 ### Rehearsal dialogues — `server/dialogues/` (data, not code)
 
