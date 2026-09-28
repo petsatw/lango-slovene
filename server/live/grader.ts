@@ -7,11 +7,15 @@
 //   the comprehension channel — the tutor's NEXT line, which was produced from the AUDIO rather than
 //                               from that transcript. It stays right when the transcript goes wrong.
 //
-// The verdict rule over the two:
+// The grader — a conservative marker reading the whole transcript — decides success; the matcher is a
+// second opinion that is logged, and that can grant an attempt on its own:
 //   ATTEMPT — either channel fires. Granted liberally; a beginner who tried is the thing being measured.
-//   SUCCESS — both channels fire, the form is judged correct, and the tutor did not recast it. One
-//             channel alone is never upgraded. Echoing a phrase the tutor has just modelled still
-//             counts: the lessons are heard-first, and "unaided" means NOT RECAST, not "not modelled".
+//   SUCCESS — the grader cites the learner line that carries the target, that line is Slovene, the form
+//             is correct in whatever inflection the sentence needs, the tutor's reply took it up, and the
+//             tutor did not recast it. The matcher is not required: it compares text, so "kilo krompirja"
+//             never matches "krompir", and a correct production the tutor understood is credit due.
+//             Echoing a phrase the tutor has just modelled still counts: the lessons are heard-first,
+//             and "unaided" means NOT RECAST, not "not modelled".
 //
 // Crediting itself stays where it belongs. The grader emits the same `WitnessResult` envelope tap mode
 // emits and `mastery.creditFromEvidence` adjudicates it — so live mode gains credit without the app
@@ -73,6 +77,33 @@ function citedLine(transcripts: LiveTranscript[], n: number): string | null {
   return entry.text.trim() || null;
 }
 
+/** One target's verdict from the two channels. Pure, so the rule is tested on plain inputs.
+ *
+ *  The span the credit rests on is taken FROM the transcript, never from the model: the line the grader
+ *  cited, once that line is confirmed to be a learner line, or else the line the matcher fired on. That
+ *  keeps the firewall's span check meaningful when the canonical Slovene is nowhere in the text — under
+ *  a mishearing, or an inflection ("kilo krompirja" for `krompir`). */
+export function readTarget(
+  transcripts: LiveTranscript[],
+  asrHit: { line: number; text: string } | null,
+  read: LiveTargetReading | undefined,
+): { said: string | null; saidLang: string; verdict: "success" | "attempt" | "none" } {
+  const cited = read ? citedLine(transcripts, read.saidLine) : null;
+  // The matcher IS language evidence for a line it fired on — it compared it against known Slovene.
+  // Anywhere else the grader's label decides, which is where an English answer has to be caught.
+  const citedLang = cited ? (asrHit?.line === read!.saidLine ? "sl" : read!.saidLang ?? "") : "";
+  const useCited = !!cited && citedLang === "sl";
+  const said = useCited ? cited : (asrHit?.text ?? cited);
+  const saidLang = useCited || asrHit ? "sl" : citedLang;
+
+  // Success is about ONE production: the cited line, taken up by the tutor's reply to it. Uptake is read
+  // off the reply to that same line, so the tutor's own opening greeting is never evidence the learner
+  // greeted it back.
+  const success = useCited && read!.uptake === true && read!.correct === true && read!.recast !== true;
+  const fired = success || ((!!asrHit || read?.uptake === true) && !!said && saidLang === "sl");
+  return { said, saidLang, verdict: !fired ? "none" : success ? "success" : "attempt" };
+}
+
 /** Read a finished session against the target set it was opened with. Returns null when there is
  *  nothing to grade — no learner speech, or a lesson that put no targets in play. */
 export async function gradeSession(
@@ -101,41 +132,23 @@ export async function gradeSession(
       .map((l) => ({ ...l, match: matchTarget(l.text, target) }))
       .find((l) => l.match.matched);
     const read = byId.get(target.id);
-    const uptake = read?.uptake === true;
-
-    // The span the credit rests on is taken FROM the transcript, never from the model: the line the
-    // matcher fired on, or — for a target only the tutor's answer evidences — the line the grader
-    // pointed at, once that line is confirmed to exist. This is what keeps the firewall's span check
-    // meaningful under a mishearing, where the canonical Slovene is nowhere in the text.
-    const said = asrHit?.text ?? (read ? citedLine(transcripts, read.saidLine) : null);
-
-    // The matcher IS the language evidence for a span it fired on: it compared the line against a known
-    // Slovene surface and its recorded mishearings. Only comprehension-only credit is left to the
-    // model's language label — that is where the learner answering in English has to be caught, and the
-    // firewall drops anything that is not Slovene either way.
-    const saidLang = asrHit ? "sl" : (read?.saidLang ?? "");
-    const fired = (!!asrHit || uptake) && !!said && saidLang === "sl";
-
-    // Two channels agreeing means agreeing about ONE production. A matcher hit on line 1 and a tutor
-    // uptake read off line 5 are two separate observations, and adding them up is how the tutor's own
-    // opening greeting turns into evidence the learner greeted it back.
-    const sameLine = !!asrHit && read?.saidLine === asrHit.line;
-    const success = sameLine && uptake && read?.correct === true && read?.recast !== true;
+    const { said, saidLang, verdict } = readTarget(transcripts, asrHit ?? null, read);
 
     channels.push({
       id: target.id,
       asr: !!asrHit,
       asrVia: asrHit?.match.via ?? null,
-      uptake,
+      uptake: read?.uptake === true,
       saidLine: read?.saidLine ?? 0,
       correct: read?.correct === true,
       recast: read?.recast === true,
       said: said ?? "",
       saidLang,
-      verdict: !fired ? "none" : success ? "success" : "attempt",
+      verdict,
     });
 
-    if (!fired) continue;
+    if (verdict === "none") continue;
+    const success = verdict === "success";
     evidence.push({
       id: target.id,
       produced: true,

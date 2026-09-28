@@ -34,22 +34,28 @@ export function statusOf(m: LearnableMastery | undefined, threshold = THRESHOLD)
  *   - every verdict raises attempts (entry into the model = first attempt; exposure does not enter).
  *   - "success" raises successes (climbs past threshold).
  *   - "attempt" on an already-mastered learnable is a FLUB → decrement successes by 1 (clamp ≥ 0).
- *   - "attempt" on a not-yet-mastered learnable STALLS (no penalty before mastery). */
+ *   - "attempt" on a not-yet-mastered learnable STALLS (no penalty before mastery).
+ *   - every verdict is dated `now`; a success also dates the production. */
 export function applyCredit(
   model: LearnerModel,
   progress: LearnableProgress[],
   threshold = THRESHOLD,
+  now: Date = new Date(),
 ): LearnerModel {
   const learnables: Record<string, LearnableMastery> = {};
   for (const [id, m] of Object.entries(model.learnables)) learnables[id] = { ...m };
+  const at = now.toISOString();
 
   for (const p of progress) {
     if (!p?.id) continue;
     const entry = learnables[p.id] ?? { attempts: 0, successes: 0 };
     const wasMastered = entry.successes >= threshold;
     entry.attempts += 1;
+    entry.lastAttemptAt = at;
     if (p.result === "success") {
       entry.successes += 1;
+      entry.firstProducedAt ??= at;
+      entry.lastProducedAt = at;
     } else if (wasMastered) {
       entry.successes = Math.max(0, entry.successes - 1); // flub → decrement
     } // else: pre-mastery miss → stall (no change)
@@ -263,6 +269,68 @@ export function selectForWitness(
     }
   }
   return { knows, targets: targets.slice(0, WITNESS_TARGET_CAP) };
+}
+
+// ---- A scene's card: which of its lines this session practises ----
+// A scene (a scenario's `live` surface) names its CORE lines, practised every visit, and its BANK, the
+// rest of the buyer's lines. The server picks the day's bank lines from the learner's dated production;
+// the tutor only plays the scene so those lines have somewhere to be said.
+
+/** A calendar day in Ljubljana — the learner's night, wherever the server runs. */
+export function dayOf(iso: string): string {
+  return new Date(iso).toLocaleDateString("sv-SE", { timeZone: "Europe/Ljubljana" });
+}
+
+/** IN — produced successfully on two different days: it survived a night's sleep. */
+export function isIn(m: LearnableMastery | undefined): boolean {
+  return !!m?.firstProducedAt && !!m.lastProducedAt && dayOf(m.firstProducedAt) !== dayOf(m.lastProducedAt);
+}
+
+/** Most bank lines brought back, and most brought in, per session. */
+export const BANK_PER_SESSION = 3;
+
+export interface SceneCard {
+  core: string[];
+  bank: string[];
+}
+
+export interface SceneSelection {
+  /** Bank lines produced on an earlier day and not yet in — said once more before anything new. */
+  review: Learnable[];
+  core: Learnable[];
+  /** Bank lines this session brings in: unseen first, then the least produced. */
+  fresh: Learnable[];
+}
+
+export function selectForScene(model: LearnerModel, card: SceneCard, now: Date = new Date()): SceneSelection {
+  const today = dayOf(now.toISOString());
+  const m = (id: string) => model.learnables[id];
+  const resolve = (ids: string[]) => ids.map((id) => LEARNABLES[id]).filter(Boolean) as Learnable[];
+  const bank = resolve(card.bank);
+
+  const review = bank
+    .filter((l) => {
+      const e = m(l.id);
+      return !!e?.firstProducedAt && !isIn(e) && dayOf(e.lastProducedAt!) < today;
+    })
+    .sort((a, b) => m(a.id)!.lastProducedAt!.localeCompare(m(b.id)!.lastProducedAt!))
+    .slice(0, BANK_PER_SESSION);
+
+  // Already said today, or already in, is not new work. When the bank has nothing else left, the
+  // longest-rested `in` lines come round again, so the whole card keeps rotating.
+  const taken = new Set(review.map((l) => l.id));
+  const saidToday = (id: string) => !!m(id)?.lastProducedAt && dayOf(m(id)!.lastProducedAt!) === today;
+  const open = bank.filter((l) => !taken.has(l.id) && !isIn(m(l.id)) && !saidToday(l.id));
+  open.sort((a, b) => (m(a.id)?.successes ?? 0) - (m(b.id)?.successes ?? 0));
+  const rested = bank
+    .filter((l) => isIn(m(l.id)) && !saidToday(l.id))
+    .sort((a, b) => m(a.id)!.lastProducedAt!.localeCompare(m(b.id)!.lastProducedAt!));
+
+  return {
+    review,
+    core: resolve(card.core),
+    fresh: [...open, ...rested].slice(0, BANK_PER_SESSION),
+  };
 }
 
 /** Normalize a Slovene surface for catalog lookup: lowercase, drop punctuation, collapse whitespace. */

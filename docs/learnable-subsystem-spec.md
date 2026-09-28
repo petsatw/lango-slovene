@@ -124,19 +124,28 @@ interface Objective {
 ### 2.3 The learner model
 
 Held under a **learner id** by `server/assets/learner.ts` — `load(id)` / `save(id, model)` /
-`setFact(id, …)`. The client mints one id per page load and sends it as `x-learner-id` on every request;
-a request naming none is served as `local`, the operator at their own machine.
+`setFact(id, …)`. The client mints one id per browser, keeps it in `localStorage`, and sends it as
+`x-learner-id` on every request; a request naming none is served as `local`, the operator at their own
+machine.
 
-Two stores behind that one interface, chosen by `LEARNER_STORE`:
+Three stores behind that one interface, chosen by `LEARNER_STORE`:
 
 | store | what it holds | used by |
 |---|---|---|
-| `memory` (default) | one model per id, dropped after `LEARNER_TTL_MIN` (180) without a write | the deploy, and the tester rounds |
+| `dir` (default) | one model per id at `LEARNERS_DIR/<id>.json` (default `assets/learners/`) | the deploy, and the tester rounds |
+| `memory` | one model per id, dropped after `LEARNER_TTL_MIN` (180) without a write | a sitting that should keep nothing |
 | `file` | one model at `LEARNER_PATH` (default `assets/learner.json`), every id reading the same file | single-operator dev, the probes, `npm run learner` |
 
-So progress accrues normally **within** a sitting — the learner is met where they left off five minutes
-ago — and nothing is kept between sittings. The id is the seam accounts arrive on: it becomes an account
-id and the store becomes durable, and no caller moves.
+So a learner who comes back tomorrow is met where they left off yesterday — which the day-aware rules
+need (§ Dated production). The id is the seam accounts arrive on: it becomes an account id, and no caller
+moves.
+
+### Dated production
+
+Each learnable's counts carry three dates: `firstProducedAt` and `lastProducedAt` (successes) and
+`lastAttemptAt` (any verdict), stamped by `applyCredit`. A learnable produced on two different Ljubljana
+calendar days is **in** — it survived sleep (`mastery.isIn`). A scene's schedule reads these
+(`mastery.selectForScene`, [live-tutor.md](live-tutor.md#a-scene-with-its-own-harness)).
 
 Facts (name, gender — `server/facts.ts`) live in the same model, so a lesson that varies on a fact asks
 for it again in each new sitting.

@@ -25,24 +25,21 @@ const obs = {
 
 const CHAT_LEVEL = 2; // the internal free-chat ceiling — server-side only, never a learner-visible knob.
 
-// WHOSE progress this is. One id per TAB, because that is the shape of a sitting: progress accrues
-// normally while the learner is here — they are met where they left off five minutes ago — and nothing
-// is kept once they leave. sessionStorage is what draws that line: it survives a reload and a walk
-// through the app, and the browser drops it when the tab closes. A refresh keeping the learner matters
-// on a phone, where it is a gesture rather than a decision.
+// WHOSE progress this is. One id per BROWSER, kept in localStorage, so the learner who comes back
+// tomorrow is the same learner: a line counts as learned only once it is said again after a night's
+// sleep, and that needs yesterday's progress to still be theirs.
 // The server keys the learner model by it (server/assets/learner.ts), and it is the seam accounts
 // arrive on: an account id would simply replace what this line mints.
 const learnerId = (() => {
-  const held = sessionStorage.getItem("learnerId");
+  const held = localStorage.getItem("learnerId");
   if (held) return held;
   const minted = crypto.randomUUID ? crypto.randomUUID() : newRunId("learner");
-  sessionStorage.setItem("learnerId", minted);
+  localStorage.setItem("learnerId", minted);
   return minted;
 })();
 
 // Whether this sitting agreed to its data being kept — the consent gate's second, optional box, which
-// starts ticked. Held beside the learner id and for the same span, because it is a property of the same
-// sitting; a reload keeps the answer, closing the tab forgets it along with everything else. Unticked,
+// starts ticked. Held for one sitting: a reload keeps the answer, closing the tab forgets it. Unticked,
 // the server empties this session's records a few hours after it ends and never writes its speech into
 // the shared audio, gloss and candidate stores at all (server/assets/retention.ts).
 let retainSession = sessionStorage.getItem("retainSession") !== "0";

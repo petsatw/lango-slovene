@@ -1,10 +1,10 @@
 # Rehearsal dialogues — the click-through decision tree
 
 A **rehearsal dialogue** is a fully pre-authored, branching **decision-tree** conversation paired with a
-scenario. The learner clicks through it — pick your line, hear it, read the English — to *see the shape*
-of a real exchange before producing it live. It is **rehearsal / comprehensible input, not assessment**:
-no microphone, no server turn, no model in the loop, and **no mastery credit**. The live mic tutor stays
-the only place mastery is earned.
+scenario — in its tapped form (a **tap tree**), a real exchange as it happens in life. The learner picks
+their line and **says it aloud**, mirroring the person they are playing, then hears the character answer.
+It is **rehearsal, not assessment**: no microphone, no server turn, no model in the loop, and **no mastery
+credit**. The live mic tutor stays the only place mastery is earned.
 
 This complements the two existing conversation surfaces (the scenario turn loop and free chat) with a
 third, lighter one. The division of labour — and the direction the [roadmap](ROADMAP.md#the-pieces) set —
@@ -473,8 +473,9 @@ like operator-supplied backgrounds), so the clips ship as git-tracked assets und
 
 ## Authoring
 
-Rehearsal dialogues are authored by the **`create-dialogue`** skill — the `dialogue` surface of the shared
-authoring engine (**docs/authoring-pipeline.md**). It mirrors create-scenario's shape for the branching-tree
+Tap trees are authored by the **`create-tap-tree`** skill, from the operator's situation map with outcomes
+(the library is the worked example); spoken lessons by the **`create-dialogue`** skill. Both are the
+`dialogue` surface of the shared authoring engine (**docs/authoring-pipeline.md**). create-dialogue mirrors create-scenario's shape for the branching-tree
 surface: the orchestrator specs the tree (situation, per-level objectives mapped to
 [CEFR/Slovenian A1](https://centerslo.si/izpiti/izpiti-iz-znanja-slovenscine/izpit-na-vstopni-ravni)
 competencies — see docs/a1-taxonomy.md — sizing, register), the **`slovenian-author`** agent (dialogue mode)
@@ -512,12 +513,10 @@ to grow the catalog. Because a word is minted once and referenced by id (step 1'
 dedup), the catalog stays coherent as dialogues multiply — every later dialogue that uses *kruh* credits the
 same `kruh` the learner has been building all along.
 
-> **Adopted direction (not yet implemented) — see [dialogue-difficulty-model.md](dialogue-difficulty-model.md).**
 > Difficulty (`levelLabel`) is a **computed band** (basic/intermediate/advanced) derived from A1-density
-> *after* authoring — the author aims, the classifier labels. `lint:a1` **classifies** difficulty, reading a
-> **catalog A1 tag** (a superset over the narrow `a1-map` core). Trees may offer **more than two client
-> choices**, with a context carried in the choice text or a **parenthetical**, and a scroll indicator when >1
-> option. The template + sizing below describe the 2-choice implementation.
+> *after* authoring — the author aims, the classifier labels ([dialogue-difficulty-model.md](dialogue-difficulty-model.md)).
+> A fork may offer **more than two client choices**, and a client choice may carry a **`context`**
+> parenthetical naming the situation it selects ("the book isn't on the shelf") — the library uses both.
 
 ### The tree template + sizing (calibrated to bakery/restaurant)
 
@@ -586,7 +585,7 @@ same `kruh` the learner has been building all along.
 1. **Pick the situation + register + role + voices.** Choose or add the `npc`/`client` voice profiles (a new
    voice = one `server/catalog/voices.json` profile + one `PROFILE_ENV` row in the E3 adapter + the id in
    `.env` — see [SECRETS.md](SECRETS.md)).
-2. **Run `create-dialogue`** — spec the levels (label, title, objectives, sizing), author via the agents,
+2. **Run `create-tap-tree`** (tap trees) or **`create-dialogue`** (spoken lessons) — spec the levels (label, title, objectives, sizing), author via the agents,
    reconcile, pass the four gates, present PR-style, get approval.
 3. **Confirm the A1 candidates** the reconcile emitted; fold them into `server/catalog/a1-map.json`; re-run
    `lint:a1`.

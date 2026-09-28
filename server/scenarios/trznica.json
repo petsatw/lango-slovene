@@ -1,0 +1,131 @@
+{
+  "id": "trznica",
+  "name": "Market stall",
+  "title": "At a farm stall (tržnica)",
+  "status": "active",
+  "character": "Metka, a seller at a farm stall on a Slovene market",
+  "role": "prodajalka Metka na kmečki tržnici",
+  "setup": "You are Metka, a seller at a farm stall on a Slovene market. A foreigner learning Slovene has come to buy vegetables and fruit.",
+  "opening": "Dober dan.",
+  "register": {
+    "form": "vi",
+    "variety": "pogovorni"
+  },
+  "surfaces": {
+    "live": {
+      "harness": "trznica.md",
+      "close": "Jutri imamo še več.",
+      "core": [
+        "dober_dan",
+        "imate_danes",
+        "kilo_prosim",
+        "koliko_stane",
+        "ja_se_prosim",
+        "ne_hvala",
+        "to_je_vse",
+        "hvala",
+        "ponovite_prosim",
+        "pocasi_prosim",
+        "ne_razumem"
+      ],
+      "bank": [
+        "hvala_nasvidenje",
+        "nasvidenje",
+        "en_masacc",
+        "eno_femacc",
+        "se_enkrat",
+        "pol_kila_prosim",
+        "dvesto_gramov_prosim",
+        "majhne_prosim",
+        "velike_prosim",
+        "kaj_se_imate_danes",
+        "je_sladko",
+        "je_kislo",
+        "je_zrelo",
+        "je_domace",
+        "lahko_poskusim",
+        "kaj_pomeni",
+        "kaj_to_pomeni",
+        "kako_se_rece",
+        "ste_tu_vsak_dan",
+        "kdaj_ste_tu",
+        "je_to_vse_za_danes"
+      ],
+      "stock": [
+        "krompir",
+        "paradiznik",
+        "cebula",
+        "solata",
+        "korenje",
+        "paprika",
+        "zelje",
+        "kumara",
+        "cesen",
+        "bucka",
+        "radic",
+        "rdeca_pesa",
+        "por",
+        "strocji_fizol",
+        "jabolko",
+        "banana",
+        "hruska",
+        "jagoda",
+        "pomaranca",
+        "mandarina",
+        "kos",
+        "sop",
+        "pest"
+      ]
+    },
+    "dialogue": {
+      "voices": {
+        "npc": "shop-assistant",
+        "client": "slavko"
+      },
+      "levels": [
+        {
+          "level": 1,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 2,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 3,
+          "levelLabel": "Intermediate"
+        },
+        {
+          "level": 4,
+          "levelLabel": "Intermediate"
+        },
+        {
+          "level": 5,
+          "levelLabel": "Intermediate"
+        },
+        {
+          "level": 6,
+          "levelLabel": "Intermediate"
+        },
+        {
+          "level": 7,
+          "levelLabel": "Intermediate"
+        },
+        {
+          "level": 8,
+          "levelLabel": "Advanced"
+        },
+        {
+          "level": 9,
+          "levelLabel": "Intermediate"
+        },
+        {
+          "level": 10,
+          "levelLabel": "Intermediate"
+        }
+      ]
+    },
+    "a1": true
+  },
+  "objectives": []
+}

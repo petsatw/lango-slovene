@@ -3279,5 +3279,284 @@
     "gloss": "student (man / woman)",
     "predictableError": "choosing the form by who you are talking to instead of by your own gender — a woman says 'Sem študentka', a man 'Sem študent'.",
     "a1": true
+  },
+  "imate_danes": {
+    "kind": "pattern",
+    "sl": "Imate danes ___?",
+    "gloss": "do you have ___ today?",
+    "a1": true,
+    "core": true
+  },
+  "kaj_se_imate_danes": {
+    "kind": "chunk",
+    "sl": "Kaj še imate danes?",
+    "gloss": "what else do you have today?",
+    "a1": true
+  },
+  "kilo_prosim": {
+    "kind": "pattern",
+    "sl": "Kilo ___, prosim.",
+    "gloss": "a kilo of ___, please",
+    "predictableError": "the nominative after a quantity — \"kilo krompir\" for \"kilo krompirja\"; the goods take the genitive",
+    "a1": true,
+    "core": true
+  },
+  "pol_kila_prosim": {
+    "kind": "pattern",
+    "sl": "Pol kila ___, prosim.",
+    "gloss": "half a kilo of ___, please",
+    "predictableError": "the nominative after a quantity — \"kilo krompir\" for \"kilo krompirja\"; the goods take the genitive",
+    "a1": true
+  },
+  "dvesto_gramov_prosim": {
+    "kind": "pattern",
+    "sl": "Dvesto gramov ___, prosim.",
+    "gloss": "two hundred grams of ___, please",
+    "predictableError": "the nominative after a quantity — \"kilo krompir\" for \"kilo krompirja\"; the goods take the genitive",
+    "a1": true
+  },
+  "majhne_prosim": {
+    "kind": "chunk",
+    "sl": "Majhne, prosim.",
+    "gloss": "small ones, please",
+    "a1": true
+  },
+  "velike_prosim": {
+    "kind": "chunk",
+    "sl": "Velike, prosim.",
+    "gloss": "large ones, please",
+    "a1": true
+  },
+  "ne_hvala": {
+    "kind": "chunk",
+    "sl": "Ne, hvala.",
+    "gloss": "no, thanks",
+    "a1": true,
+    "core": true
+  },
+  "ja_se_prosim": {
+    "kind": "pattern",
+    "sl": "Ja, še ___, prosim.",
+    "gloss": "yes, also ___, please",
+    "a1": true
+  },
+  "to_je_vse": {
+    "kind": "chunk",
+    "sl": "To je vse.",
+    "gloss": "that is all",
+    "a1": true
+  },
+  "je_sladko": {
+    "kind": "chunk",
+    "sl": "Je sladko?",
+    "gloss": "is it sweet?",
+    "a1": true
+  },
+  "je_kislo": {
+    "kind": "chunk",
+    "sl": "Je kislo?",
+    "gloss": "is it sour?",
+    "a1": true
+  },
+  "je_zrelo": {
+    "kind": "chunk",
+    "sl": "Je zrelo?",
+    "gloss": "is it ripe?",
+    "a1": true
+  },
+  "je_domace": {
+    "kind": "chunk",
+    "sl": "Je domače?",
+    "gloss": "is it local?",
+    "a1": true
+  },
+  "lahko_poskusim": {
+    "kind": "chunk",
+    "sl": "Lahko poskusim?",
+    "gloss": "can I try some?",
+    "a1": true
+  },
+  "ste_tu_vsak_dan": {
+    "kind": "chunk",
+    "sl": "Ste tu vsak dan?",
+    "gloss": "are you here every day?",
+    "a1": true
+  },
+  "kdaj_ste_tu": {
+    "kind": "chunk",
+    "sl": "Kdaj ste tu?",
+    "gloss": "when are you here?",
+    "a1": true
+  },
+  "je_to_vse_za_danes": {
+    "kind": "chunk",
+    "sl": "Je to vse za danes?",
+    "gloss": "is that all for today?",
+    "a1": true
+  },
+  "kaj_pomeni": {
+    "kind": "pattern",
+    "sl": "Kaj pomeni ___?",
+    "gloss": "what does ___ mean?",
+    "a1": true
+  },
+  "kaj_to_pomeni": {
+    "kind": "chunk",
+    "sl": "Kaj to pomeni?",
+    "gloss": "what does that mean?",
+    "a1": true
+  },
+  "krompir": {
+    "kind": "vocabulary",
+    "sl": "krompir",
+    "gloss": "potatoes",
+    "a1": true
+  },
+  "paradiznik": {
+    "kind": "vocabulary",
+    "sl": "paradižnik",
+    "gloss": "tomato",
+    "a1": true
+  },
+  "cebula": {
+    "kind": "vocabulary",
+    "sl": "čebula",
+    "gloss": "onion",
+    "a1": true
+  },
+  "korenje": {
+    "kind": "vocabulary",
+    "sl": "korenje",
+    "gloss": "carrots",
+    "a1": true
+  },
+  "paprika": {
+    "kind": "vocabulary",
+    "sl": "paprika",
+    "gloss": "pepper",
+    "a1": true
+  },
+  "zelje": {
+    "kind": "vocabulary",
+    "sl": "zelje",
+    "gloss": "cabbage",
+    "a1": true
+  },
+  "kumara": {
+    "kind": "vocabulary",
+    "sl": "kumara",
+    "gloss": "cucumber",
+    "a1": true
+  },
+  "cesen": {
+    "kind": "vocabulary",
+    "sl": "česen",
+    "gloss": "garlic",
+    "a1": true
+  },
+  "bucka": {
+    "kind": "vocabulary",
+    "sl": "bučka",
+    "gloss": "zucchini",
+    "a1": true
+  },
+  "radic": {
+    "kind": "vocabulary",
+    "sl": "radič",
+    "gloss": "radicchio",
+    "a1": true
+  },
+  "rdeca_pesa": {
+    "kind": "vocabulary",
+    "sl": "rdeča pesa",
+    "gloss": "beetroot",
+    "a1": true
+  },
+  "por": {
+    "kind": "vocabulary",
+    "sl": "por",
+    "gloss": "leek",
+    "a1": true
+  },
+  "strocji_fizol": {
+    "kind": "vocabulary",
+    "sl": "stročji fižol",
+    "gloss": "green beans",
+    "a1": true
+  },
+  "jabolko": {
+    "kind": "vocabulary",
+    "sl": "jabolko",
+    "gloss": "apple",
+    "a1": true
+  },
+  "banana": {
+    "kind": "vocabulary",
+    "sl": "banana",
+    "gloss": "banana",
+    "a1": true
+  },
+  "hruska": {
+    "kind": "vocabulary",
+    "sl": "hruška",
+    "gloss": "pear",
+    "a1": true
+  },
+  "jagoda": {
+    "kind": "vocabulary",
+    "sl": "jagoda",
+    "gloss": "strawberry",
+    "a1": true
+  },
+  "pomaranca": {
+    "kind": "vocabulary",
+    "sl": "pomaranča",
+    "gloss": "orange",
+    "a1": true
+  },
+  "mandarina": {
+    "kind": "vocabulary",
+    "sl": "mandarina",
+    "gloss": "mandarin",
+    "a1": true
+  },
+  "kos": {
+    "kind": "vocabulary",
+    "sl": "kos",
+    "gloss": "piece",
+    "a1": true
+  },
+  "sop": {
+    "kind": "vocabulary",
+    "sl": "šop",
+    "gloss": "bunch",
+    "a1": true
+  },
+  "pest": {
+    "kind": "vocabulary",
+    "sl": "pest",
+    "gloss": "handful",
+    "a1": true
+  },
+  "pa_do_jutri": {
+    "kind": "chunk",
+    "sl": "Pa do jutri.",
+    "gloss": "See you tomorrow.",
+    "predictableError": "Says *Vidim vas jutri* (a word-for-word 'I'll see you tomorrow'), which Slovenes don't use as a goodbye. The goodbye is *Pa do jutri* or *Se vidimo jutri*.",
+    "a1": true
+  },
+  "skoda": {
+    "kind": "vocabulary",
+    "sl": "škoda",
+    "gloss": "pity / what a shame (a standalone reaction)",
+    "predictableError": "reaching for 'žal' or 'žal mi je' as the reaction; the one-word 'what a shame' is 'Škoda.'",
+    "a1": true
+  },
+  "blitva": {
+    "kind": "vocabulary",
+    "sl": "blitva",
+    "gloss": "chard (fem.)",
+    "predictableError": "echoing the accusative 'blitvo' heard in her list when asking about it; asked about on its own, it is the nominative 'blitva'",
+    "a1": true
   }
 }

@@ -1,0 +1,4172 @@
+{
+  "scenario": {
+    "id": "trznica",
+    "name": "Market stall",
+    "title": "At a farm stall (tržnica)",
+    "status": "active",
+    "character": "Metka, a seller at a farm stall on a Slovene market",
+    "role": "prodajalka Metka na kmečki tržnici",
+    "setup": "You are Metka, a seller at a farm stall on a Slovene market. A foreigner learning Slovene has come to buy vegetables and fruit.",
+    "opening": "Dober dan.",
+    "register": {
+      "form": "vi",
+      "variety": "pogovorni"
+    }
+  },
+  "dialogueVoices": {
+    "npc": "shop-assistant",
+    "client": "slavko"
+  },
+  "levels": [
+    {
+      "level": 1,
+      "levelLabel": "basic",
+      "title": "Prvi nakup",
+      "objectives": [
+        {
+          "label": "Dober dan.",
+          "descriptorEN": "Greet the seller."
+        },
+        {
+          "label": "En / Eno ___, prosim.",
+          "descriptorEN": "Ask for one of something — en for masculine, eno for feminine."
+        },
+        {
+          "label": "Hvala, nasvidenje.",
+          "descriptorEN": "Thank her and say goodbye."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Dober dan! Kaj bo?",
+          "en": "Good day! What'll it be?",
+          "deliverySL": "[toplo] Dober dan! Kaj bo?",
+          "next": [
+            "c1a",
+            "c1b",
+            "c1c"
+          ],
+          "learnables": [
+            "dober_dan",
+            "kaj"
+          ]
+        },
+        "c1a": {
+          "speaker": "client",
+          "sl": "Dober dan. Eno solato, prosim.",
+          "en": "Good day. One lettuce, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "eno_femacc",
+            "solata"
+          ]
+        },
+        "c1b": {
+          "speaker": "client",
+          "sl": "Dober dan. Eno papriko, prosim.",
+          "en": "Good day. One pepper, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "eno_femacc",
+            "paprika"
+          ]
+        },
+        "c1c": {
+          "speaker": "client",
+          "sl": "Dober dan. En por, prosim.",
+          "en": "Good day. One leek, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "en_masacc",
+            "por"
+          ]
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Izvolite. Kaj pa še?",
+          "en": "Here you are. What else?",
+          "deliverySL": "[toplo] Izvolite. Kaj pa še?",
+          "next": [
+            "c2a",
+            "c2b",
+            "c2c"
+          ],
+          "learnables": [
+            "izvolite",
+            "pa",
+            "kaj"
+          ]
+        },
+        "c2a": {
+          "speaker": "client",
+          "sl": "Eno kumaro, prosim.",
+          "en": "One cucumber, please.",
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "eno_femacc",
+            "kumara"
+          ]
+        },
+        "c2b": {
+          "speaker": "client",
+          "sl": "Eno bučko, prosim.",
+          "en": "One courgette, please.",
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "eno_femacc",
+            "bucka"
+          ]
+        },
+        "c2c": {
+          "speaker": "client",
+          "sl": "En radič, prosim.",
+          "en": "One radicchio, please.",
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "en_masacc",
+            "radic"
+          ]
+        },
+        "n3": {
+          "speaker": "npc",
+          "sl": "Tako. To bo dva evra petdeset.",
+          "en": "There you go. That'll be two euros fifty.",
+          "deliverySL": "[toplo] Tako. To bo dva evra petdeset.",
+          "next": [
+            "c3a",
+            "c3b",
+            "c3c"
+          ],
+          "learnables": [
+            "evro",
+            "stevilo_dva",
+            "stevilo_petdeset"
+          ]
+        },
+        "c3a": {
+          "speaker": "client",
+          "sl": "Hvala.",
+          "en": "Thank you.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala"
+          ]
+        },
+        "c3b": {
+          "speaker": "client",
+          "sl": "Hvala, nasvidenje.",
+          "en": "Thanks, goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala_nasvidenje"
+          ]
+        },
+        "c3c": {
+          "speaker": "client",
+          "sl": "Nasvidenje.",
+          "en": "Goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "nasvidenje"
+          ]
+        },
+        "nBye": {
+          "speaker": "npc",
+          "sl": "Hvala vam, lep dan še naprej.",
+          "en": "Thank you, have a nice day.",
+          "deliverySL": "[toplo] Hvala vam, lep dan še naprej.",
+          "next": [],
+          "learnables": [
+            "hvala",
+            "lep"
+          ]
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "bucka",
+          "dober_dan",
+          "en_masacc",
+          "eno_femacc",
+          "hvala",
+          "hvala_nasvidenje",
+          "kumara",
+          "nasvidenje",
+          "paprika",
+          "por",
+          "radic",
+          "solata"
+        ],
+        "new": []
+      }
+    },
+    {
+      "level": 2,
+      "levelLabel": "basic",
+      "title": "Koliko stane?",
+      "objectives": [
+        {
+          "label": "Koliko stane?",
+          "descriptorEN": "Ask the price."
+        },
+        {
+          "label": "Počasi, prosim.",
+          "descriptorEN": "When you don't catch it: slower, again, repeat, or say you don't understand."
+        },
+        {
+          "label": "Ne, hvala. To je vse.",
+          "descriptorEN": "Answer 'anything else?' — one more item, or that's all."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Dober dan! Sadje je danes čisto sveže. Kaj vam dam?",
+          "en": "Good day! The fruit is really fresh today. What can I get you?",
+          "deliverySL": "[toplo] Dober dan! Sadje je danes čisto sveže. Kaj vam dam?",
+          "next": [
+            "c1a",
+            "c1b"
+          ],
+          "learnables": [
+            "dober_dan",
+            "danes",
+            "kaj"
+          ]
+        },
+        "c1a": {
+          "speaker": "client",
+          "sl": "Dober dan. Eno hruško, prosim.",
+          "en": "Good day. One pear, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "eno_femacc",
+            "hruska"
+          ]
+        },
+        "c1b": {
+          "speaker": "client",
+          "sl": "Dober dan. Eno banano, prosim.",
+          "en": "Good day. One banana, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "eno_femacc",
+            "banana"
+          ]
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Izvolite.",
+          "en": "Here you are.",
+          "deliverySL": "[toplo] Izvolite.",
+          "next": [
+            "c2a",
+            "c2b"
+          ],
+          "learnables": [
+            "izvolite"
+          ]
+        },
+        "c2a": {
+          "speaker": "client",
+          "sl": "Koliko stane?",
+          "en": "How much is it?",
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "koliko_stane"
+          ]
+        },
+        "c2b": {
+          "speaker": "client",
+          "sl": "Hvala. Koliko stane?",
+          "en": "Thanks. How much is it?",
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "hvala",
+            "koliko_stane"
+          ]
+        },
+        "n3": {
+          "speaker": "npc",
+          "sl": "Šestdeset centov bo.",
+          "en": "That'll be sixty cents.",
+          "deliverySL": "[poslovno] Šestdeset centov bo.",
+          "next": [
+            "c3a",
+            "c3b",
+            "c3c",
+            "c3d"
+          ],
+          "learnables": [
+            "cent",
+            "stevilo_sestdeset"
+          ]
+        },
+        "c3a": {
+          "speaker": "client",
+          "sl": "Počasi, prosim.",
+          "en": "Slowly, please.",
+          "context": "he didn't catch the price",
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "pocasi_prosim"
+          ]
+        },
+        "c3b": {
+          "speaker": "client",
+          "sl": "Ponovite, prosim.",
+          "en": "Please repeat that.",
+          "context": "he didn't catch the price",
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "ponovite_prosim"
+          ]
+        },
+        "c3c": {
+          "speaker": "client",
+          "sl": "Še enkrat, prosim.",
+          "en": "Once more, please.",
+          "context": "he didn't catch the price",
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "se_enkrat"
+          ]
+        },
+        "c3d": {
+          "speaker": "client",
+          "sl": "Ne razumem.",
+          "en": "I don't understand.",
+          "context": "he didn't catch the price",
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "ne_razumem"
+          ]
+        },
+        "n4": {
+          "speaker": "npc",
+          "sl": "Šestdeset centov. Bo še kaj?",
+          "en": "Sixty cents. Anything else?",
+          "deliverySL": "[toplo] Šestdeset centov. Bo še kaj?",
+          "next": [
+            "c4a",
+            "c4b"
+          ],
+          "learnables": [
+            "cent",
+            "kaj",
+            "stevilo_sestdeset"
+          ]
+        },
+        "c4a": {
+          "speaker": "client",
+          "sl": "Ja, eno mandarino, prosim.",
+          "en": "Yes, one mandarin, please.",
+          "next": [
+            "n5a"
+          ],
+          "learnables": [
+            "eno_femacc",
+            "mandarina",
+            "ja"
+          ]
+        },
+        "c4b": {
+          "speaker": "client",
+          "sl": "Ne, hvala. To je vse.",
+          "en": "No, thanks. That's all.",
+          "next": [
+            "n5b"
+          ],
+          "learnables": [
+            "ne_hvala",
+            "to_je_vse"
+          ]
+        },
+        "n5a": {
+          "speaker": "npc",
+          "sl": "Izvolite. Skupaj bo devetdeset centov.",
+          "en": "Here you are. That's ninety cents altogether.",
+          "deliverySL": "[toplo] Izvolite. Skupaj bo devetdeset centov.",
+          "next": [
+            "cz1",
+            "cz2"
+          ],
+          "learnables": [
+            "izvolite",
+            "cent",
+            "stevilo_devetdeset"
+          ]
+        },
+        "n5b": {
+          "speaker": "npc",
+          "sl": "V redu, potem pa šestdeset centov.",
+          "en": "All right, sixty cents then.",
+          "deliverySL": "[toplo] V redu, potem pa šestdeset centov.",
+          "next": [
+            "cz1",
+            "cz2"
+          ],
+          "learnables": [
+            "v_redu",
+            "cent",
+            "potem",
+            "pa",
+            "stevilo_sestdeset"
+          ]
+        },
+        "cz1": {
+          "speaker": "client",
+          "sl": "Hvala.",
+          "en": "Thank you.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala"
+          ]
+        },
+        "cz2": {
+          "speaker": "client",
+          "sl": "Hvala, nasvidenje.",
+          "en": "Thanks, goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala_nasvidenje"
+          ]
+        },
+        "nBye": {
+          "speaker": "npc",
+          "sl": "Hvala vam, nasvidenje! Pa še kaj pridite.",
+          "en": "Thank you, goodbye! Do come again.",
+          "deliverySL": "[toplo] Hvala vam, nasvidenje! Pa še kaj pridite.",
+          "next": [],
+          "learnables": [
+            "hvala",
+            "nasvidenje",
+            "pa",
+            "kaj"
+          ]
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "banana",
+          "dober_dan",
+          "eno_femacc",
+          "hruska",
+          "hvala",
+          "hvala_nasvidenje",
+          "ja",
+          "koliko_stane",
+          "mandarina",
+          "ne_hvala",
+          "ne_razumem",
+          "pocasi_prosim",
+          "ponovite_prosim",
+          "se_enkrat",
+          "to_je_vse"
+        ],
+        "new": []
+      }
+    },
+    {
+      "level": 3,
+      "levelLabel": "basic",
+      "title": "Kilo ali pol kila?",
+      "objectives": [
+        {
+          "label": "Kilo ___, prosim.",
+          "descriptorEN": "Order by weight — a kilo, half a kilo, two hundred grams — with the vegetable in the genitive."
+        },
+        {
+          "label": "To je vse.",
+          "descriptorEN": "Say that's all and ask the price."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Dober dan, kaj boste danes? Krompir in paradižnik sta domača.",
+          "en": "Good day, what'll you have today? The potatoes and tomatoes are home-grown.",
+          "deliverySL": "[toplo] Dober dan, kaj boste danes? Krompir in paradižnik sta domača.",
+          "next": [
+            "c1a",
+            "c1b"
+          ],
+          "learnables": [
+            "dober_dan",
+            "krompir",
+            "paradiznik",
+            "danes",
+            "in",
+            "kaj"
+          ]
+        },
+        "c1a": {
+          "speaker": "client",
+          "sl": "Dober dan. Kilo krompirja, prosim.",
+          "en": "Good day. A kilo of potatoes, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "kilo_prosim",
+            "krompir"
+          ]
+        },
+        "c1b": {
+          "speaker": "client",
+          "sl": "Dober dan. Pol kila paradižnika, prosim.",
+          "en": "Good day. Half a kilo of tomatoes, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "pol_kila_prosim",
+            "paradiznik"
+          ]
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Tako, izvolite. Bo še kaj?",
+          "en": "There you go, here you are. Anything else?",
+          "deliverySL": "[toplo] Tako, izvolite. Bo še kaj?",
+          "next": [
+            "c2a",
+            "c2b"
+          ],
+          "learnables": [
+            "izvolite",
+            "kaj"
+          ]
+        },
+        "c2a": {
+          "speaker": "client",
+          "sl": "Dvesto gramov čebule, prosim.",
+          "en": "Two hundred grams of onions, please.",
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "dvesto_gramov_prosim",
+            "cebula"
+          ]
+        },
+        "c2b": {
+          "speaker": "client",
+          "sl": "Korenje, prosim.",
+          "en": "Carrots, please.",
+          "next": [
+            "n2b"
+          ],
+          "learnables": [
+            "korenje",
+            "prosim"
+          ]
+        },
+        "n2b": {
+          "speaker": "npc",
+          "sl": "Koliko želite? Kilo korenja?",
+          "en": "How much would you like? A kilo of carrots?",
+          "deliverySL": "[toplo] Koliko želite? Kilo korenja?",
+          "next": [
+            "c2b1",
+            "c2b2"
+          ],
+          "learnables": [
+            "koliko",
+            "kilo_prosim",
+            "korenje"
+          ]
+        },
+        "c2b1": {
+          "speaker": "client",
+          "sl": "Kilo, prosim.",
+          "en": "A kilo, please.",
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "kilo_prosim"
+          ]
+        },
+        "c2b2": {
+          "speaker": "client",
+          "sl": "Pol kila, prosim.",
+          "en": "Half a kilo, please.",
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "pol_kila_prosim"
+          ]
+        },
+        "n3": {
+          "speaker": "npc",
+          "sl": "Tukaj imate. Še kaj drugega?",
+          "en": "Here you are. Anything else?",
+          "deliverySL": "[toplo] Tukaj imate. Še kaj drugega?",
+          "next": [
+            "c3a",
+            "c3b"
+          ],
+          "learnables": [
+            "tukaj_imate",
+            "kaj"
+          ]
+        },
+        "c3a": {
+          "speaker": "client",
+          "sl": "Ne, hvala. To je vse.",
+          "en": "No, thanks. That's all.",
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "ne_hvala",
+            "to_je_vse"
+          ]
+        },
+        "c3b": {
+          "speaker": "client",
+          "sl": "To je vse. Koliko stane?",
+          "en": "That's all. How much is it?",
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "koliko_stane",
+            "to_je_vse"
+          ]
+        },
+        "n4": {
+          "speaker": "npc",
+          "sl": "To bo tri dvajset.",
+          "en": "That'll be three twenty.",
+          "deliverySL": "[poslovno] To bo tri dvajset.",
+          "next": [
+            "c4a",
+            "c4b"
+          ],
+          "learnables": [
+            "stevilo_tri",
+            "stevilo_dvajset"
+          ]
+        },
+        "c4a": {
+          "speaker": "client",
+          "sl": "Počasi, prosim.",
+          "en": "Slowly, please.",
+          "context": "he didn't catch the price",
+          "next": [
+            "n5"
+          ],
+          "learnables": [
+            "pocasi_prosim"
+          ]
+        },
+        "c4b": {
+          "speaker": "client",
+          "sl": "Hvala, nasvidenje.",
+          "en": "Thanks, goodbye.",
+          "context": "he caught the price",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala_nasvidenje"
+          ]
+        },
+        "n5": {
+          "speaker": "npc",
+          "sl": "Tri evre in dvajset centov.",
+          "en": "Three euros and twenty cents.",
+          "deliverySL": "[toplo] Tri evre in dvajset centov.",
+          "next": [
+            "c5a",
+            "c5b"
+          ],
+          "learnables": [
+            "evro",
+            "cent",
+            "in",
+            "stevilo_tri",
+            "stevilo_dvajset"
+          ]
+        },
+        "c5a": {
+          "speaker": "client",
+          "sl": "Hvala.",
+          "en": "Thank you.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala"
+          ]
+        },
+        "c5b": {
+          "speaker": "client",
+          "sl": "Nasvidenje.",
+          "en": "Goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "nasvidenje"
+          ]
+        },
+        "nBye": {
+          "speaker": "npc",
+          "sl": "Hvala vam, pa se vidiva!",
+          "en": "Thank you, see you!",
+          "deliverySL": "[toplo] Hvala vam, pa se vidiva!",
+          "next": [],
+          "learnables": [
+            "hvala",
+            "pa"
+          ]
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "cebula",
+          "dober_dan",
+          "dvesto_gramov_prosim",
+          "hvala",
+          "hvala_nasvidenje",
+          "kilo_prosim",
+          "koliko_stane",
+          "korenje",
+          "krompir",
+          "nasvidenje",
+          "ne_hvala",
+          "paradiznik",
+          "pocasi_prosim",
+          "pol_kila_prosim",
+          "prosim",
+          "to_je_vse"
+        ],
+        "new": []
+      }
+    },
+    {
+      "level": 4,
+      "levelLabel": "basic",
+      "title": "En šop, prosim.",
+      "objectives": [
+        {
+          "label": "En kos / En šop / Eno pest",
+          "descriptorEN": "Ask by the unit — a piece, a bunch, a handful."
+        },
+        {
+          "label": "Majhne ali velike?",
+          "descriptorEN": "Answer when she asks which size: small ones or large ones."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Dober dan! Danes imam mlado korenje, prvo letos, v šopih.",
+          "en": "Good day! Today I've got young carrots, the first of the year, in bunches.",
+          "deliverySL": "[veselo] Dober dan! Danes imam mlado korenje, prvo letos, v šopih.",
+          "next": [
+            "c1a",
+            "c1b"
+          ],
+          "learnables": [
+            "dober_dan",
+            "korenje",
+            "sop",
+            "imam",
+            "danes"
+          ]
+        },
+        "c1a": {
+          "speaker": "client",
+          "sl": "Dober dan. En šop korenja, prosim.",
+          "en": "Good day. A bunch of carrots, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "en_masacc",
+            "korenje",
+            "sop"
+          ]
+        },
+        "c1b": {
+          "speaker": "client",
+          "sl": "Dober dan. Bučko, prosim.",
+          "en": "Good day. A courgette, please.",
+          "next": [
+            "n1b"
+          ],
+          "learnables": [
+            "dober_dan",
+            "bucka",
+            "prosim"
+          ]
+        },
+        "n1b": {
+          "speaker": "npc",
+          "sl": "En kos ali kilo?",
+          "en": "One piece or a kilo?",
+          "deliverySL": "[toplo] En kos ali kilo?",
+          "next": [
+            "c1b1",
+            "c1b2"
+          ],
+          "learnables": [
+            "kilo_prosim",
+            "en_masacc",
+            "kos"
+          ]
+        },
+        "c1b1": {
+          "speaker": "client",
+          "sl": "En kos, prosim.",
+          "en": "One piece, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "en_masacc",
+            "kos"
+          ]
+        },
+        "c1b2": {
+          "speaker": "client",
+          "sl": "Kilo, prosim.",
+          "en": "A kilo, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "kilo_prosim"
+          ]
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Izvolite. Bo še kaj?",
+          "en": "Here you are. Anything else?",
+          "deliverySL": "[toplo] Izvolite. Bo še kaj?",
+          "next": [
+            "c2a",
+            "c2b"
+          ],
+          "learnables": [
+            "izvolite",
+            "kaj"
+          ]
+        },
+        "c2a": {
+          "speaker": "client",
+          "sl": "Eno pest radiča, prosim.",
+          "en": "A handful of radicchio, please.",
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "eno_femacc",
+            "radic",
+            "pest"
+          ]
+        },
+        "c2b": {
+          "speaker": "client",
+          "sl": "Paprike, prosim.",
+          "en": "Peppers, please.",
+          "next": [
+            "n3b"
+          ],
+          "learnables": [
+            "paprika",
+            "prosim"
+          ]
+        },
+        "n3": {
+          "speaker": "npc",
+          "sl": "Izvolite. Danes imam tudi lep krompir. Bi ga vzeli?",
+          "en": "Here you are. I've got nice potatoes today too. Would you like some?",
+          "deliverySL": "[toplo] Izvolite. Danes imam tudi lep krompir. Bi ga vzeli?",
+          "next": [
+            "c3a",
+            "c3b"
+          ],
+          "learnables": [
+            "krompir",
+            "izvolite",
+            "imam",
+            "danes",
+            "tudi",
+            "lep"
+          ]
+        },
+        "c3a": {
+          "speaker": "client",
+          "sl": "Ja, kilo krompirja, prosim.",
+          "en": "Yes, a kilo of potatoes, please.",
+          "next": [
+            "n3b"
+          ],
+          "learnables": [
+            "kilo_prosim",
+            "krompir",
+            "ja"
+          ]
+        },
+        "c3b": {
+          "speaker": "client",
+          "sl": "Ne, hvala. To je vse.",
+          "en": "No, thanks. That's all.",
+          "next": [
+            "n5"
+          ],
+          "learnables": [
+            "ne_hvala",
+            "to_je_vse"
+          ]
+        },
+        "n3b": {
+          "speaker": "npc",
+          "sl": "Hočete majhne ali velike?",
+          "en": "Do you want small ones or large ones?",
+          "deliverySL": "[toplo] Hočete majhne ali velike?",
+          "next": [
+            "c4a",
+            "c4b"
+          ],
+          "learnables": [
+            "majhne_prosim",
+            "velike_prosim"
+          ]
+        },
+        "c4a": {
+          "speaker": "client",
+          "sl": "Majhne, prosim.",
+          "en": "Small ones, please.",
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "majhne_prosim"
+          ]
+        },
+        "c4b": {
+          "speaker": "client",
+          "sl": "Velike, prosim.",
+          "en": "Large ones, please.",
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "velike_prosim"
+          ]
+        },
+        "n4": {
+          "speaker": "npc",
+          "sl": "Malo počakajte, zdaj stehtam. Še kaj drugega?",
+          "en": "Wait a moment, I'll weigh them now. Anything else?",
+          "deliverySL": "[toplo] Malo počakajte, zdaj stehtam. Še kaj drugega?",
+          "next": [
+            "c5a",
+            "c5b"
+          ],
+          "learnables": [
+            "kaj",
+            "zdaj"
+          ]
+        },
+        "c5a": {
+          "speaker": "client",
+          "sl": "Ne, hvala. Koliko stane?",
+          "en": "No, thanks. How much is it?",
+          "next": [
+            "n5"
+          ],
+          "learnables": [
+            "koliko_stane",
+            "ne_hvala"
+          ]
+        },
+        "c5b": {
+          "speaker": "client",
+          "sl": "To je vse, hvala.",
+          "en": "That's all, thanks.",
+          "next": [
+            "n5"
+          ],
+          "learnables": [
+            "hvala",
+            "to_je_vse"
+          ]
+        },
+        "n5": {
+          "speaker": "npc",
+          "sl": "To bo pet evrov dvajset.",
+          "en": "That'll be five euros twenty.",
+          "deliverySL": "[toplo] To bo pet evrov dvajset.",
+          "next": [
+            "cz1",
+            "cz2"
+          ],
+          "learnables": [
+            "evro",
+            "stevilo_pet",
+            "stevilo_dvajset"
+          ]
+        },
+        "cz1": {
+          "speaker": "client",
+          "sl": "Hvala lepa, nasvidenje.",
+          "en": "Thank you very much, goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala_lepa",
+            "nasvidenje"
+          ]
+        },
+        "cz2": {
+          "speaker": "client",
+          "sl": "Nasvidenje.",
+          "en": "Goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "nasvidenje"
+          ]
+        },
+        "nBye": {
+          "speaker": "npc",
+          "sl": "Hvala vam, nasvidenje, pa dober tek!",
+          "en": "Thank you, goodbye, and enjoy your meal!",
+          "deliverySL": "[toplo] Hvala vam, nasvidenje, pa dober tek!",
+          "next": [],
+          "learnables": [
+            "hvala",
+            "nasvidenje",
+            "pa"
+          ]
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "bucka",
+          "dober_dan",
+          "en_masacc",
+          "eno_femacc",
+          "hvala",
+          "hvala_lepa",
+          "ja",
+          "kilo_prosim",
+          "koliko_stane",
+          "korenje",
+          "kos",
+          "krompir",
+          "majhne_prosim",
+          "nasvidenje",
+          "ne_hvala",
+          "paprika",
+          "pest",
+          "prosim",
+          "radic",
+          "sop",
+          "to_je_vse",
+          "velike_prosim"
+        ],
+        "new": []
+      }
+    },
+    {
+      "level": 5,
+      "levelLabel": "intermediate",
+      "title": "Imate danes …?",
+      "objectives": [
+        {
+          "label": "Imate danes ___?",
+          "descriptorEN": "Ask whether she has something today — the goods take the accusative."
+        },
+        {
+          "label": "Kaj še imate danes?",
+          "descriptorEN": "When she's out of it, ask what else she has and choose from her list."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Dobro jutro! Danes je pa gneča. Kaj iščete?",
+          "en": "Good morning! It's busy today. What are you looking for?",
+          "deliverySL": "[toplo] Dobro jutro! Danes je pa gneča. Kaj iščete?",
+          "next": [
+            "c1a",
+            "c1b"
+          ],
+          "learnables": [
+            "danes",
+            "pa",
+            "kaj"
+          ]
+        },
+        "c1a": {
+          "speaker": "client",
+          "sl": "Dober dan. Imate danes jagode?",
+          "en": "Good day. Do you have strawberries today?",
+          "context": "she has them",
+          "next": [
+            "n2ok"
+          ],
+          "learnables": [
+            "dober_dan",
+            "imate_danes",
+            "jagoda"
+          ]
+        },
+        "c1b": {
+          "speaker": "client",
+          "sl": "Dober dan. Imate danes jagode?",
+          "en": "Good day. Do you have strawberries today?",
+          "context": "she's out of them today",
+          "next": [
+            "n2no"
+          ],
+          "learnables": [
+            "dober_dan",
+            "imate_danes",
+            "jagoda"
+          ]
+        },
+        "n2ok": {
+          "speaker": "npc",
+          "sl": "Ja, imam! Danes so res lepe. Koliko jih boste?",
+          "en": "Yes, I have! They're really lovely today. How many would you like?",
+          "deliverySL": "[toplo] Ja, imam! Danes so res lepe. Koliko jih boste?",
+          "next": [
+            "c2a",
+            "c2b"
+          ],
+          "learnables": [
+            "koliko",
+            "imam",
+            "danes",
+            "ja",
+            "lep"
+          ]
+        },
+        "c2a": {
+          "speaker": "client",
+          "sl": "Pol kila, prosim.",
+          "en": "Half a kilo, please.",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "pol_kila_prosim"
+          ]
+        },
+        "c2b": {
+          "speaker": "client",
+          "sl": "Kilo jagod, prosim.",
+          "en": "A kilo of strawberries, please.",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "kilo_prosim",
+            "jagoda"
+          ]
+        },
+        "n2no": {
+          "speaker": "npc",
+          "sl": "Ne, danes žal nimam.",
+          "en": "No, sorry, I don't have them today.",
+          "deliverySL": "[toplo] Ne, danes žal nimam.",
+          "next": [
+            "c3a",
+            "c3b"
+          ],
+          "learnables": [
+            "nimam",
+            "zal",
+            "danes",
+            "ne"
+          ]
+        },
+        "c3a": {
+          "speaker": "client",
+          "sl": "Imate danes česen?",
+          "en": "Do you have garlic today?",
+          "next": [
+            "n3garlic"
+          ],
+          "learnables": [
+            "imate_danes",
+            "cesen"
+          ]
+        },
+        "c3b": {
+          "speaker": "client",
+          "sl": "Kaj še imate danes?",
+          "en": "What else do you have today?",
+          "next": [
+            "n3list"
+          ],
+          "learnables": [
+            "kaj_se_imate_danes"
+          ]
+        },
+        "n3garlic": {
+          "speaker": "npc",
+          "sl": "Ja, česen imam, domač. Koliko ga boste?",
+          "en": "Yes, I have garlic, home-grown. How much would you like?",
+          "deliverySL": "[toplo] Ja, česen imam, domač. Koliko ga boste?",
+          "next": [
+            "c4a",
+            "c4b"
+          ],
+          "learnables": [
+            "koliko",
+            "cesen",
+            "imam",
+            "ja"
+          ]
+        },
+        "c4a": {
+          "speaker": "client",
+          "sl": "Dvesto gramov česna, prosim.",
+          "en": "Two hundred grams of garlic, please.",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "dvesto_gramov_prosim",
+            "cesen"
+          ]
+        },
+        "c4b": {
+          "speaker": "client",
+          "sl": "Eno glavo, prosim.",
+          "en": "One head, please.",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "eno_femacc",
+            "glava"
+          ]
+        },
+        "n3list": {
+          "speaker": "npc",
+          "sl": "Imam krompir, paradižnik, čebulo, solato, korenje, papriko …",
+          "en": "I have potatoes, tomatoes, onions, lettuce, carrots, peppers …",
+          "deliverySL": "[navdušeno, hitro] Imam krompir, paradižnik, čebulo, solato, korenje, papriko …",
+          "next": [
+            "c5a",
+            "c5b"
+          ],
+          "learnables": [
+            "krompir",
+            "paradiznik",
+            "cebula",
+            "solata",
+            "korenje",
+            "paprika",
+            "imam"
+          ]
+        },
+        "c5a": {
+          "speaker": "client",
+          "sl": "Počasi, prosim.",
+          "en": "Slowly, please.",
+          "context": "her list went by too fast",
+          "next": [
+            "n3slow"
+          ],
+          "learnables": [
+            "pocasi_prosim"
+          ]
+        },
+        "c5b": {
+          "speaker": "client",
+          "sl": "Kilo paradižnika, prosim.",
+          "en": "A kilo of tomatoes, please.",
+          "context": "he caught it",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "kilo_prosim",
+            "paradiznik"
+          ]
+        },
+        "n3slow": {
+          "speaker": "npc",
+          "sl": "Seveda. Imam krompir, čebulo in solato.",
+          "en": "Of course. I have potatoes, onions and lettuce.",
+          "deliverySL": "[toplo] Seveda. Imam krompir, čebulo in solato.",
+          "next": [
+            "c6a",
+            "c6b"
+          ],
+          "learnables": [
+            "krompir",
+            "cebula",
+            "solata",
+            "seveda",
+            "imam",
+            "in"
+          ]
+        },
+        "c6a": {
+          "speaker": "client",
+          "sl": "Pol kila čebule, prosim.",
+          "en": "Half a kilo of onions, please.",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "pol_kila_prosim",
+            "cebula"
+          ]
+        },
+        "c6b": {
+          "speaker": "client",
+          "sl": "Eno solato, prosim.",
+          "en": "One lettuce, please.",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "eno_femacc",
+            "solata"
+          ]
+        },
+        "nMore": {
+          "speaker": "npc",
+          "sl": "Izvolite. Bo še kaj drugega?",
+          "en": "Here you are. Anything else?",
+          "deliverySL": "[toplo] Izvolite. Bo še kaj drugega?",
+          "next": [
+            "c7a",
+            "c7b"
+          ],
+          "learnables": [
+            "izvolite",
+            "kaj"
+          ]
+        },
+        "c7a": {
+          "speaker": "client",
+          "sl": "Ne, hvala. To je vse.",
+          "en": "No, thanks. That's all.",
+          "next": [
+            "nPrice"
+          ],
+          "learnables": [
+            "ne_hvala",
+            "to_je_vse"
+          ]
+        },
+        "c7b": {
+          "speaker": "client",
+          "sl": "To je vse. Koliko stane?",
+          "en": "That's all. How much is it?",
+          "next": [
+            "nPrice"
+          ],
+          "learnables": [
+            "koliko_stane",
+            "to_je_vse"
+          ]
+        },
+        "nPrice": {
+          "speaker": "npc",
+          "sl": "To bo tri evre dvajset.",
+          "en": "That'll be three euros twenty.",
+          "deliverySL": "[toplo] To bo tri evre dvajset.",
+          "next": [
+            "cz1",
+            "cz2"
+          ],
+          "learnables": [
+            "evro",
+            "stevilo_tri",
+            "stevilo_dvajset"
+          ]
+        },
+        "cz1": {
+          "speaker": "client",
+          "sl": "Hvala, nasvidenje.",
+          "en": "Thanks, goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala_nasvidenje"
+          ]
+        },
+        "cz2": {
+          "speaker": "client",
+          "sl": "Hvala.",
+          "en": "Thank you.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala"
+          ]
+        },
+        "nBye": {
+          "speaker": "npc",
+          "sl": "Hvala, pa lepo bodite!",
+          "en": "Thanks, and take care!",
+          "deliverySL": "[toplo] Hvala, pa lepo bodite!",
+          "next": [],
+          "learnables": [
+            "hvala",
+            "pa",
+            "lep"
+          ]
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "cebula",
+          "cesen",
+          "dober_dan",
+          "dvesto_gramov_prosim",
+          "eno_femacc",
+          "glava",
+          "hvala",
+          "hvala_nasvidenje",
+          "imate_danes",
+          "jagoda",
+          "kaj_se_imate_danes",
+          "kilo_prosim",
+          "koliko_stane",
+          "ne_hvala",
+          "paradiznik",
+          "pocasi_prosim",
+          "pol_kila_prosim",
+          "solata",
+          "to_je_vse"
+        ],
+        "new": []
+      }
+    },
+    {
+      "level": 6,
+      "levelLabel": "intermediate",
+      "title": "Še kaj?",
+      "objectives": [
+        {
+          "label": "Ja, še ___, prosim.",
+          "descriptorEN": "Keep adding to the order — with a weight inside it and plural genitives (hrušk)."
+        },
+        {
+          "label": "Ja, prosim. / Ne, hvala.",
+          "descriptorEN": "Accept or decline her suggestions, and answer whether you have a bag."
+        },
+        {
+          "label": "Pol kila, prosim.",
+          "descriptorEN": "When the total is more than you wanted, change to a smaller amount."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "O, dober dan! Kaj bo pa danes?",
+          "en": "Oh, good day! What's it going to be today?",
+          "deliverySL": "[veselo] O, dober dan! Kaj bo pa danes?",
+          "next": [
+            "c1a",
+            "c1b"
+          ],
+          "learnables": [
+            "dober_dan",
+            "danes",
+            "pa",
+            "kaj"
+          ]
+        },
+        "c1a": {
+          "speaker": "client",
+          "sl": "Dober dan. Kilo paradižnika, prosim.",
+          "en": "Good day. A kilo of tomatoes, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "kilo_prosim",
+            "paradiznik"
+          ]
+        },
+        "c1b": {
+          "speaker": "client",
+          "sl": "Dober dan. Kilo krompirja, prosim.",
+          "en": "Good day. A kilo of potatoes, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "kilo_prosim",
+            "krompir"
+          ]
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Izvolite. Za solato ali za juho?",
+          "en": "Here you are. For a salad or for a soup?",
+          "deliverySL": "[toplo] Izvolite. Za solato ali za juho?",
+          "next": [
+            "c2a",
+            "c2b"
+          ],
+          "learnables": [
+            "solata",
+            "izvolite",
+            "juha"
+          ]
+        },
+        "c2a": {
+          "speaker": "client",
+          "sl": "Za solato.",
+          "en": "For a salad.",
+          "next": [
+            "n3sal"
+          ],
+          "learnables": [
+            "solata"
+          ]
+        },
+        "c2b": {
+          "speaker": "client",
+          "sl": "Za juho.",
+          "en": "For a soup.",
+          "next": [
+            "n3soup"
+          ],
+          "learnables": [
+            "juha"
+          ]
+        },
+        "n3sal": {
+          "speaker": "npc",
+          "sl": "Za solato imam danes tudi lepo rdečo peso.",
+          "en": "For a salad I've also got lovely beetroot today.",
+          "deliverySL": "[toplo] Za solato imam danes tudi lepo rdečo peso.",
+          "next": [
+            "c3s1",
+            "c3s2"
+          ],
+          "learnables": [
+            "solata",
+            "rdeca_pesa",
+            "imam",
+            "danes",
+            "tudi",
+            "lep"
+          ]
+        },
+        "c3s1": {
+          "speaker": "client",
+          "sl": "Ja, še pol kila rdeče pese, prosim.",
+          "en": "Yes, half a kilo of beetroot as well, please.",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "pol_kila_prosim",
+            "ja_se_prosim",
+            "rdeca_pesa"
+          ]
+        },
+        "c3s2": {
+          "speaker": "client",
+          "sl": "Ne, hvala.",
+          "en": "No, thanks.",
+          "context": "he doesn't need any",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "ne_hvala"
+          ]
+        },
+        "n3soup": {
+          "speaker": "npc",
+          "sl": "Za juho je zdaj zelje odlično.",
+          "en": "For a soup, the cabbage is excellent right now.",
+          "deliverySL": "[toplo] Za juho je zdaj zelje odlično.",
+          "next": [
+            "c3j1",
+            "c3j2"
+          ],
+          "learnables": [
+            "zelje",
+            "odlicno",
+            "juha",
+            "zdaj"
+          ]
+        },
+        "c3j1": {
+          "speaker": "client",
+          "sl": "Ja, še eno glavo zelja, prosim.",
+          "en": "Yes, a head of cabbage as well, please.",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "ja_se_prosim",
+            "eno_femacc",
+            "zelje",
+            "glava"
+          ]
+        },
+        "c3j2": {
+          "speaker": "client",
+          "sl": "Ne, hvala.",
+          "en": "No, thanks.",
+          "context": "he doesn't need any",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "ne_hvala"
+          ]
+        },
+        "nMore": {
+          "speaker": "npc",
+          "sl": "Še kaj?",
+          "en": "Anything else?",
+          "deliverySL": "[toplo] Še kaj?",
+          "next": [
+            "c4a",
+            "c4b"
+          ],
+          "learnables": [
+            "kaj"
+          ]
+        },
+        "c4a": {
+          "speaker": "client",
+          "sl": "Ja, še dvesto gramov stročjega fižola, prosim.",
+          "en": "Yes, two hundred grams of green beans as well, please.",
+          "next": [
+            "nMore2"
+          ],
+          "learnables": [
+            "dvesto_gramov_prosim",
+            "ja_se_prosim",
+            "strocji_fizol"
+          ]
+        },
+        "c4b": {
+          "speaker": "client",
+          "sl": "Ja, še kilo hrušk, prosim.",
+          "en": "Yes, a kilo of pears as well, please.",
+          "next": [
+            "nPears"
+          ],
+          "learnables": [
+            "kilo_prosim",
+            "ja_se_prosim",
+            "hruska"
+          ]
+        },
+        "nPears": {
+          "speaker": "npc",
+          "sl": "Hočete majhne ali velike?",
+          "en": "Do you want small ones or large ones?",
+          "deliverySL": "[toplo] Hočete majhne ali velike?",
+          "next": [
+            "c5a",
+            "c5b"
+          ],
+          "learnables": [
+            "majhne_prosim",
+            "velike_prosim"
+          ]
+        },
+        "c5a": {
+          "speaker": "client",
+          "sl": "Velike, prosim.",
+          "en": "Large ones, please.",
+          "next": [
+            "nOffer"
+          ],
+          "learnables": [
+            "velike_prosim"
+          ]
+        },
+        "c5b": {
+          "speaker": "client",
+          "sl": "Majhne, prosim.",
+          "en": "Small ones, please.",
+          "next": [
+            "nOffer"
+          ],
+          "learnables": [
+            "majhne_prosim"
+          ]
+        },
+        "nOffer": {
+          "speaker": "npc",
+          "sl": "Glejte, te so boljše. Naj vam dam lepe?",
+          "en": "Look, these ones are better. Shall I give you the nice ones?",
+          "deliverySL": "[zaupno, tiho] Glejte, te so boljše. Naj vam dam lepe?",
+          "next": [
+            "c6a",
+            "c6b"
+          ],
+          "learnables": [
+            "lep"
+          ]
+        },
+        "c6a": {
+          "speaker": "client",
+          "sl": "Ja, prosim.",
+          "en": "Yes, please.",
+          "next": [
+            "nMore2"
+          ],
+          "learnables": [
+            "ja",
+            "prosim"
+          ]
+        },
+        "c6b": {
+          "speaker": "client",
+          "sl": "Ne, hvala.",
+          "en": "No, thanks.",
+          "context": "the ones he has are fine",
+          "next": [
+            "nMore2"
+          ],
+          "learnables": [
+            "ne_hvala"
+          ]
+        },
+        "nMore2": {
+          "speaker": "npc",
+          "sl": "Bo še kaj drugega?",
+          "en": "Will there be anything else?",
+          "deliverySL": "[toplo] Bo še kaj drugega?",
+          "next": [
+            "c7a",
+            "c7b"
+          ],
+          "learnables": [
+            "kaj"
+          ]
+        },
+        "c7a": {
+          "speaker": "client",
+          "sl": "Ne, hvala. To je vse.",
+          "en": "No, thanks. That's all.",
+          "next": [
+            "nBag"
+          ],
+          "learnables": [
+            "ne_hvala",
+            "to_je_vse"
+          ]
+        },
+        "c7b": {
+          "speaker": "client",
+          "sl": "To je vse. Koliko stane?",
+          "en": "That's all. How much is it?",
+          "next": [
+            "nBag"
+          ],
+          "learnables": [
+            "koliko_stane",
+            "to_je_vse"
+          ]
+        },
+        "nBag": {
+          "speaker": "npc",
+          "sl": "Imate vrečko?",
+          "en": "Do you have a bag?",
+          "deliverySL": "[toplo] Imate vrečko?",
+          "next": [
+            "c8a",
+            "c8b"
+          ],
+          "learnables": []
+        },
+        "c8a": {
+          "speaker": "client",
+          "sl": "Ja.",
+          "en": "Yes.",
+          "context": "he brought one",
+          "next": [
+            "nPrice"
+          ],
+          "learnables": [
+            "ja"
+          ]
+        },
+        "c8b": {
+          "speaker": "client",
+          "sl": "Ne.",
+          "en": "No.",
+          "context": "he forgot it",
+          "next": [
+            "nPrice"
+          ],
+          "learnables": [
+            "ne"
+          ]
+        },
+        "nPrice": {
+          "speaker": "npc",
+          "sl": "Dobro. Skupaj bo deset evrov petdeset.",
+          "en": "Fine. Altogether that's ten euros fifty.",
+          "deliverySL": "[toplo] Dobro. Skupaj bo deset evrov petdeset.",
+          "next": [
+            "c9a",
+            "c9b"
+          ],
+          "learnables": [
+            "evro",
+            "stevilo_deset",
+            "stevilo_petdeset"
+          ]
+        },
+        "c9a": {
+          "speaker": "client",
+          "sl": "Potem pa tega samo pol kila, prosim.",
+          "en": "Then just half a kilo of this, please. (points at one of the bags)",
+          "context": "it's more than he wanted to spend",
+          "next": [
+            "nLess"
+          ],
+          "learnables": [
+            "pol_kila_prosim",
+            "potem",
+            "pa"
+          ]
+        },
+        "c9b": {
+          "speaker": "client",
+          "sl": "Izvolite.",
+          "en": "Here you are. (pays)",
+          "context": "the price is fine",
+          "next": [
+            "nPaid"
+          ],
+          "learnables": [
+            "izvolite"
+          ]
+        },
+        "nLess": {
+          "speaker": "npc",
+          "sl": "Ni problema. Potem je devet evrov.",
+          "en": "No problem. Then it's nine euros.",
+          "deliverySL": "[toplo] Ni problema. Potem je devet evrov.",
+          "next": [
+            "cz1",
+            "cz2"
+          ],
+          "learnables": [
+            "evro",
+            "potem",
+            "stevilo_devet"
+          ]
+        },
+        "nPaid": {
+          "speaker": "npc",
+          "sl": "Hvala. Izvolite, štiri evre petdeset nazaj.",
+          "en": "Thank you. Here you are, four euros fifty change.",
+          "deliverySL": "[toplo] Hvala. Izvolite, štiri evre petdeset nazaj.",
+          "next": [
+            "cz1",
+            "cz2"
+          ],
+          "learnables": [
+            "hvala",
+            "izvolite",
+            "evro",
+            "stevilo_stiri",
+            "stevilo_petdeset"
+          ]
+        },
+        "cz1": {
+          "speaker": "client",
+          "sl": "Hvala, nasvidenje.",
+          "en": "Thanks, goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala_nasvidenje"
+          ]
+        },
+        "cz2": {
+          "speaker": "client",
+          "sl": "Hvala lepa. Nasvidenje.",
+          "en": "Thank you very much. Goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala_lepa",
+            "nasvidenje"
+          ]
+        },
+        "nBye": {
+          "speaker": "npc",
+          "sl": "Hvala vam, pa uživajte!",
+          "en": "Thank you, and enjoy!",
+          "deliverySL": "[toplo] Hvala vam, pa uživajte!",
+          "next": [],
+          "learnables": [
+            "hvala",
+            "pa"
+          ]
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "dober_dan",
+          "dvesto_gramov_prosim",
+          "eno_femacc",
+          "glava",
+          "hruska",
+          "hvala_lepa",
+          "hvala_nasvidenje",
+          "izvolite",
+          "ja",
+          "ja_se_prosim",
+          "juha",
+          "kilo_prosim",
+          "koliko_stane",
+          "krompir",
+          "majhne_prosim",
+          "nasvidenje",
+          "ne",
+          "ne_hvala",
+          "pa",
+          "paradiznik",
+          "pol_kila_prosim",
+          "potem",
+          "prosim",
+          "rdeca_pesa",
+          "solata",
+          "strocji_fizol",
+          "to_je_vse",
+          "velike_prosim",
+          "zelje"
+        ],
+        "new": []
+      }
+    },
+    {
+      "level": 7,
+      "levelLabel": "intermediate",
+      "title": "Je sladko?",
+      "objectives": [
+        {
+          "label": "Je sladko?",
+          "descriptorEN": "Ask about the goods — sweet, sour, ripe, home-grown."
+        },
+        {
+          "label": "Lahko poskusim?",
+          "descriptorEN": "Ask to try some before you buy."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Dober dan! Imam že nova jabolka, kar poglejte.",
+          "en": "Good day! I've got the new apples in, have a look.",
+          "deliverySL": "[toplo] Dober dan! Imam že nova jabolka, kar poglejte.",
+          "next": [
+            "c1a",
+            "c1b",
+            "c1c"
+          ],
+          "learnables": [
+            "dober_dan",
+            "jabolko",
+            "imam"
+          ]
+        },
+        "c1a": {
+          "speaker": "client",
+          "sl": "Dober dan. So sladka?",
+          "en": "Good day. Are they sweet?",
+          "context": "they're a sweet variety",
+          "next": [
+            "n2sweet"
+          ],
+          "learnables": [
+            "dober_dan",
+            "je_sladko"
+          ]
+        },
+        "c1b": {
+          "speaker": "client",
+          "sl": "Dober dan. So sladka?",
+          "en": "Good day. Are they sweet?",
+          "context": "they're a sour variety",
+          "next": [
+            "n2sour"
+          ],
+          "learnables": [
+            "dober_dan",
+            "je_sladko"
+          ]
+        },
+        "c1c": {
+          "speaker": "client",
+          "sl": "Dober dan. Lahko poskusim?",
+          "en": "Good day. Can I try one?",
+          "next": [
+            "n2try"
+          ],
+          "learnables": [
+            "dober_dan",
+            "lahko_poskusim"
+          ]
+        },
+        "n2sweet": {
+          "speaker": "npc",
+          "sl": "Ja, sladka so. Koliko jih boste?",
+          "en": "Yes, they're sweet. How many will you have?",
+          "deliverySL": "[toplo] Ja, sladka so. Koliko jih boste?",
+          "next": [
+            "c2a",
+            "c2b"
+          ],
+          "learnables": [
+            "koliko",
+            "ja"
+          ]
+        },
+        "c2a": {
+          "speaker": "client",
+          "sl": "Kilo, prosim.",
+          "en": "A kilo, please.",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "kilo_prosim"
+          ]
+        },
+        "c2b": {
+          "speaker": "client",
+          "sl": "Pol kila jabolk, prosim.",
+          "en": "Half a kilo of apples, please.",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "pol_kila_prosim",
+            "jabolko"
+          ]
+        },
+        "n2sour": {
+          "speaker": "npc",
+          "sl": "Ne, ta so bolj kisla. Hočete sladka ali kisla?",
+          "en": "No, these are more on the sour side. Do you want sweet ones or sour ones?",
+          "deliverySL": "[stvarno] Ne, ta so bolj kisla. Hočete sladka ali kisla?",
+          "next": [
+            "c3a",
+            "c3b"
+          ],
+          "learnables": [
+            "ne"
+          ]
+        },
+        "c3a": {
+          "speaker": "client",
+          "sl": "Sladka, prosim.",
+          "en": "Sweet ones, please.",
+          "next": [
+            "n3other"
+          ],
+          "learnables": [
+            "prosim"
+          ]
+        },
+        "c3b": {
+          "speaker": "client",
+          "sl": "Ne, hvala.",
+          "en": "No, thanks.",
+          "context": "he'll skip the apples",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "ne_hvala"
+          ]
+        },
+        "n3other": {
+          "speaker": "npc",
+          "sl": "Potem pa vzemite tale, ta so sladka. Koliko jih vzamete?",
+          "en": "Then take these ones, these are sweet. How many are you taking?",
+          "deliverySL": "[toplo] Potem pa vzemite tale, ta so sladka. Koliko jih vzamete?",
+          "next": [
+            "c2a",
+            "c2b"
+          ],
+          "learnables": [
+            "koliko",
+            "potem",
+            "pa"
+          ]
+        },
+        "n2try": {
+          "speaker": "npc",
+          "sl": "Seveda, poskusite.",
+          "en": "Of course, try one.",
+          "deliverySL": "[toplo] Seveda, poskusite.",
+          "next": [
+            "c4a",
+            "c4b"
+          ],
+          "learnables": [
+            "seveda"
+          ]
+        },
+        "c4a": {
+          "speaker": "client",
+          "sl": "Mm, odlično. Je domače?",
+          "en": "Mm, excellent. Is it home-grown?",
+          "next": [
+            "n4home"
+          ],
+          "learnables": [
+            "je_domace",
+            "odlicno"
+          ]
+        },
+        "c4b": {
+          "speaker": "client",
+          "sl": "Ne, hvala.",
+          "en": "No, thanks.",
+          "context": "he doesn't like the taste",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "ne_hvala"
+          ]
+        },
+        "n4home": {
+          "speaker": "npc",
+          "sl": "Ja, to je domače, z Barja. Koliko želite?",
+          "en": "Yes, it's home-grown, from the Barje. How much would you like?",
+          "deliverySL": "[toplo] Ja, to je domače, z Barja. Koliko želite?",
+          "next": [
+            "c2a",
+            "c2b"
+          ],
+          "learnables": [
+            "koliko",
+            "ja"
+          ]
+        },
+        "nMore": {
+          "speaker": "npc",
+          "sl": "Bi še kaj drugega?",
+          "en": "Would you like something else?",
+          "deliverySL": "[toplo] Bi še kaj drugega?",
+          "next": [
+            "c5a",
+            "c5b"
+          ],
+          "learnables": [
+            "kaj"
+          ]
+        },
+        "c5a": {
+          "speaker": "client",
+          "sl": "Ja, še pomaranče, prosim. So zrele?",
+          "en": "Yes, oranges too, please. Are they ripe?",
+          "next": [
+            "n5ripe"
+          ],
+          "learnables": [
+            "ja_se_prosim",
+            "je_zrelo",
+            "pomaranca"
+          ]
+        },
+        "c5b": {
+          "speaker": "client",
+          "sl": "Ja, še pomaranče, prosim. So kisle?",
+          "en": "Yes, oranges too, please. Are they sour?",
+          "next": [
+            "n5sour"
+          ],
+          "learnables": [
+            "ja_se_prosim",
+            "je_kislo",
+            "pomaranca"
+          ]
+        },
+        "n5ripe": {
+          "speaker": "npc",
+          "sl": "Ja, zrele in sočne. Koliko jih boste?",
+          "en": "Yes, ripe and juicy. How many will you have?",
+          "deliverySL": "[toplo] Ja, zrele in sočne. Koliko jih boste?",
+          "next": [
+            "c6a",
+            "c6b"
+          ],
+          "learnables": [
+            "koliko",
+            "in",
+            "ja"
+          ]
+        },
+        "n5sour": {
+          "speaker": "npc",
+          "sl": "Kje pa, sladke so! Koliko vam jih dam?",
+          "en": "Not at all, they're sweet! How many shall I give you?",
+          "deliverySL": "[veselo] Kje pa, sladke so! Koliko vam jih dam?",
+          "next": [
+            "c6a",
+            "c6b"
+          ],
+          "learnables": [
+            "koliko",
+            "pa"
+          ]
+        },
+        "c6a": {
+          "speaker": "client",
+          "sl": "Kilo pomaranč, prosim.",
+          "en": "A kilo of oranges, please.",
+          "next": [
+            "nPrice"
+          ],
+          "learnables": [
+            "kilo_prosim",
+            "pomaranca"
+          ]
+        },
+        "c6b": {
+          "speaker": "client",
+          "sl": "Dvesto gramov, prosim.",
+          "en": "Two hundred grams, please.",
+          "next": [
+            "nPrice"
+          ],
+          "learnables": [
+            "dvesto_gramov_prosim"
+          ]
+        },
+        "nPrice": {
+          "speaker": "npc",
+          "sl": "Tako, stehtano je. To bo dva evra osemdeset.",
+          "en": "There, it's weighed. That'll be two euros eighty.",
+          "deliverySL": "[toplo] Tako, stehtano je. To bo dva evra osemdeset.",
+          "next": [
+            "cz1",
+            "cz2"
+          ],
+          "learnables": [
+            "evro",
+            "stevilo_dva",
+            "stevilo_osemdeset"
+          ]
+        },
+        "cz1": {
+          "speaker": "client",
+          "sl": "Hvala, nasvidenje.",
+          "en": "Thanks, goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala_nasvidenje"
+          ]
+        },
+        "cz2": {
+          "speaker": "client",
+          "sl": "Izvolite. Nasvidenje.",
+          "en": "Here you are. Goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "nasvidenje",
+            "izvolite"
+          ]
+        },
+        "nBye": {
+          "speaker": "npc",
+          "sl": "Hvala vam. Pa dober tek!",
+          "en": "Thank you. Enjoy them!",
+          "deliverySL": "[toplo] Hvala vam. Pa dober tek!",
+          "next": [],
+          "learnables": [
+            "hvala",
+            "pa"
+          ]
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "dober_dan",
+          "dvesto_gramov_prosim",
+          "hvala_nasvidenje",
+          "izvolite",
+          "ja_se_prosim",
+          "jabolko",
+          "je_domace",
+          "je_kislo",
+          "je_sladko",
+          "je_zrelo",
+          "kilo_prosim",
+          "lahko_poskusim",
+          "nasvidenje",
+          "ne_hvala",
+          "odlicno",
+          "pol_kila_prosim",
+          "pomaranca",
+          "prosim"
+        ],
+        "new": []
+      }
+    },
+    {
+      "level": 8,
+      "levelLabel": "advanced",
+      "title": "Kaj to pomeni?",
+      "objectives": [
+        {
+          "label": "Kaj pomeni ___?",
+          "descriptorEN": "Ask what a word she used means."
+        },
+        {
+          "label": "Kaj to pomeni?",
+          "descriptorEN": "Ask what something she said means."
+        },
+        {
+          "label": "Kako se reče ___?",
+          "descriptorEN": "Ask the Slovene word for something."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Dober dan! Danes pa sonce, kar prijetno je na tržnici. Kaj bo za vas?",
+          "en": "Good day! Sunshine today — it's really nice at the market. What'll it be for you?",
+          "deliverySL": "[toplo] Dober dan! Danes pa sonce, kar prijetno je na tržnici. Kaj bo za vas?",
+          "next": [
+            "c1a",
+            "c1b"
+          ],
+          "learnables": [
+            "dober_dan",
+            "danes",
+            "pa",
+            "kaj",
+            "trznica"
+          ]
+        },
+        "c1a": {
+          "speaker": "client",
+          "sl": "Dober dan. Imate danes krompir?",
+          "en": "Good day. Do you have potatoes today?",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "imate_danes",
+            "krompir"
+          ]
+        },
+        "c1b": {
+          "speaker": "client",
+          "sl": "Dober dan. Krompir, prosim.",
+          "en": "Good day. Potatoes, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "krompir",
+            "prosim"
+          ]
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Seveda. Poglejte, kako lep je — to je domače, z Barja.",
+          "en": "Of course. Look how nice they are — it's home-grown, from the Barje.",
+          "deliverySL": "[toplo] Seveda. Poglejte, kako lep je — to je domače, z Barja.",
+          "next": [
+            "c2a",
+            "c2b"
+          ],
+          "learnables": [
+            "seveda",
+            "kako",
+            "lep"
+          ]
+        },
+        "c2a": {
+          "speaker": "client",
+          "sl": "Kaj pomeni Barje?",
+          "en": "What does 'Barje' mean?",
+          "context": "he doesn't know the word",
+          "next": [
+            "n3barje"
+          ],
+          "learnables": [
+            "kaj_pomeni"
+          ]
+        },
+        "c2b": {
+          "speaker": "client",
+          "sl": "Odlično. Kilo, prosim.",
+          "en": "Great. A kilo, please.",
+          "context": "he understood",
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "kilo_prosim",
+            "odlicno"
+          ]
+        },
+        "n3barje": {
+          "speaker": "npc",
+          "sl": "Barje je tu blizu, južno od Ljubljane. Tam je naša kmetija. Bo kilo?",
+          "en": "The Barje is close by, south of Ljubljana. Our farm is there. A kilo, then?",
+          "deliverySL": "[toplo] Barje je tu blizu, južno od Ljubljane. Tam je naša kmetija. Bo kilo?",
+          "next": [
+            "c3a",
+            "c3b"
+          ],
+          "learnables": [
+            "kilo_prosim"
+          ]
+        },
+        "c3a": {
+          "speaker": "client",
+          "sl": "Aha. Ja, kilo, prosim.",
+          "en": "Aha. Yes, a kilo, please.",
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "kilo_prosim",
+            "ja"
+          ]
+        },
+        "c3b": {
+          "speaker": "client",
+          "sl": "Pol kila, prosim.",
+          "en": "Half a kilo, please.",
+          "next": [
+            "n4"
+          ],
+          "learnables": [
+            "pol_kila_prosim"
+          ]
+        },
+        "n4": {
+          "speaker": "npc",
+          "sl": "Izvolite. Pa še malo paradižnika? Za danes ali za čez teden?",
+          "en": "Here you are. And some tomatoes too? For today or for next week?",
+          "deliverySL": "[toplo] Izvolite. Pa še malo paradižnika? Za danes ali za čez teden?",
+          "next": [
+            "c4a",
+            "c4b"
+          ],
+          "learnables": [
+            "paradiznik",
+            "izvolite",
+            "danes",
+            "pa"
+          ]
+        },
+        "c4a": {
+          "speaker": "client",
+          "sl": "Kaj to pomeni?",
+          "en": "What does that mean?",
+          "context": "he doesn't follow",
+          "next": [
+            "n5explain"
+          ],
+          "learnables": [
+            "kaj_to_pomeni"
+          ]
+        },
+        "c4b": {
+          "speaker": "client",
+          "sl": "Za danes, prosim.",
+          "en": "For today, please.",
+          "context": "he understood",
+          "next": [
+            "n6"
+          ],
+          "learnables": [
+            "danes",
+            "prosim"
+          ]
+        },
+        "n5explain": {
+          "speaker": "npc",
+          "sl": "Zreli so za danes, trdi pa za čez teden. Poglejte — tile ali tisti?",
+          "en": "Ripe ones are for today, firm ones for next week. Look — these or those?",
+          "deliverySL": "[toplo] Zreli so za danes, trdi pa za čez teden. Poglejte — tile ali tisti?",
+          "next": [
+            "c5a",
+            "c5b"
+          ],
+          "learnables": [
+            "danes",
+            "pa"
+          ]
+        },
+        "c5a": {
+          "speaker": "client",
+          "sl": "Za danes. Zrele, prosim.",
+          "en": "For today. Ripe ones, please.",
+          "next": [
+            "n6"
+          ],
+          "learnables": [
+            "danes",
+            "prosim"
+          ]
+        },
+        "c5b": {
+          "speaker": "client",
+          "sl": "Ponovite, prosim.",
+          "en": "Please say that again.",
+          "context": "still not clear",
+          "next": [
+            "n5b"
+          ],
+          "learnables": [
+            "ponovite_prosim"
+          ]
+        },
+        "n5b": {
+          "speaker": "npc",
+          "sl": "Tile so zreli — za danes. Tisti — za čez teden.",
+          "en": "These are ripe — for today. Those — for next week.",
+          "deliverySL": "[toplo] Tile so zreli — za danes. Tisti — za čez teden.",
+          "next": [
+            "c5a"
+          ],
+          "learnables": [
+            "danes"
+          ]
+        },
+        "n6": {
+          "speaker": "npc",
+          "sl": "Tako, stehtano. Bi še kaj?",
+          "en": "There, weighed. Would you like anything else?",
+          "deliverySL": "[toplo] Tako, stehtano. Bi še kaj?",
+          "next": [
+            "c6a",
+            "c6b"
+          ],
+          "learnables": [
+            "kaj"
+          ]
+        },
+        "c6a": {
+          "speaker": "client",
+          "sl": "Kako se reče temu?",
+          "en": "(pointing at the leeks) What's this called?",
+          "context": "he wants the word",
+          "next": [
+            "n7word"
+          ],
+          "learnables": [
+            "kako_se_rece"
+          ]
+        },
+        "c6b": {
+          "speaker": "client",
+          "sl": "Ne, hvala. To je vse.",
+          "en": "No, thanks. That's all.",
+          "next": [
+            "nPrice"
+          ],
+          "learnables": [
+            "ne_hvala",
+            "to_je_vse"
+          ]
+        },
+        "n7word": {
+          "speaker": "npc",
+          "sl": "To je por. Por! Lepo, da sprašujete.",
+          "en": "That's a leek — 'por'. Por! Nice that you ask.",
+          "deliverySL": "[veselo] To je por. Por! Lepo, da sprašujete.",
+          "next": [
+            "c7a",
+            "c7b"
+          ],
+          "learnables": [
+            "por",
+            "lep"
+          ]
+        },
+        "c7a": {
+          "speaker": "client",
+          "sl": "Por. Ja, en por, prosim.",
+          "en": "Por. Yes, one leek, please.",
+          "next": [
+            "nMore"
+          ],
+          "learnables": [
+            "en_masacc",
+            "por",
+            "ja"
+          ]
+        },
+        "c7b": {
+          "speaker": "client",
+          "sl": "Hvala. To je vse.",
+          "en": "Thanks. That's all.",
+          "next": [
+            "nPrice"
+          ],
+          "learnables": [
+            "hvala",
+            "to_je_vse"
+          ]
+        },
+        "nMore": {
+          "speaker": "npc",
+          "sl": "Izvolite, en por. Še kaj drugega?",
+          "en": "Here you are, one leek. Anything else?",
+          "deliverySL": "[toplo] Izvolite, en por. Še kaj drugega?",
+          "next": [
+            "c8a"
+          ],
+          "learnables": [
+            "en_masacc",
+            "por",
+            "izvolite",
+            "kaj"
+          ]
+        },
+        "c8a": {
+          "speaker": "client",
+          "sl": "Ne, hvala. Koliko stane?",
+          "en": "No, thanks. How much is it?",
+          "next": [
+            "nPrice"
+          ],
+          "learnables": [
+            "koliko_stane",
+            "ne_hvala"
+          ]
+        },
+        "nPrice": {
+          "speaker": "npc",
+          "sl": "Da vidim … skupaj bo štiri evre dvajset. Pa naj vam tekne!",
+          "en": "Let me see … that's four euros twenty altogether. Enjoy it!",
+          "deliverySL": "[toplo] Da vidim … skupaj bo štiri evre dvajset. Pa naj vam tekne!",
+          "next": [
+            "cz1",
+            "cz2"
+          ],
+          "learnables": [
+            "evro",
+            "pa",
+            "stevilo_stiri",
+            "stevilo_dvajset"
+          ]
+        },
+        "cz1": {
+          "speaker": "client",
+          "sl": "Hvala, nasvidenje.",
+          "en": "Thank you, goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala_nasvidenje"
+          ]
+        },
+        "cz2": {
+          "speaker": "client",
+          "sl": "Izvolite. Hvala.",
+          "en": "Here you are. Thanks.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala",
+            "izvolite"
+          ]
+        },
+        "nBye": {
+          "speaker": "npc",
+          "sl": "Hvala vam! Pa kako lepo že govorite slovensko. Se vidiva prihodnjič!",
+          "en": "Thank you! And how nicely you already speak Slovene. See you next time!",
+          "deliverySL": "[toplo] Hvala vam! Pa kako lepo že govorite slovensko. Se vidiva prihodnjič!",
+          "next": [],
+          "learnables": [
+            "hvala",
+            "pa",
+            "kako",
+            "lep"
+          ]
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "danes",
+          "dober_dan",
+          "en_masacc",
+          "hvala",
+          "hvala_nasvidenje",
+          "imate_danes",
+          "izvolite",
+          "ja",
+          "kaj_pomeni",
+          "kaj_to_pomeni",
+          "kako_se_rece",
+          "kilo_prosim",
+          "koliko_stane",
+          "krompir",
+          "ne_hvala",
+          "odlicno",
+          "pol_kila_prosim",
+          "ponovite_prosim",
+          "por",
+          "prosim",
+          "to_je_vse"
+        ],
+        "new": []
+      }
+    },
+    {
+      "level": 9,
+      "levelLabel": "advanced",
+      "title": "Klepet pri stojnici",
+      "objectives": [
+        {
+          "label": "Ste tu vsak dan?",
+          "descriptorEN": "Ask about her — is she here every day, when is she here."
+        },
+        {
+          "label": "Je to vse za danes?",
+          "descriptorEN": "Ask whether that's all she has today."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Dober dan! Kar poglejte, kaj je še ostalo.",
+          "en": "Good day! Have a look at what's still left.",
+          "deliverySL": "[toplo] Dober dan! Kar poglejte, kaj je še ostalo.",
+          "next": [
+            "c1a",
+            "c1b"
+          ],
+          "learnables": [
+            "dober_dan",
+            "kaj"
+          ]
+        },
+        "c1a": {
+          "speaker": "client",
+          "sl": "Dober dan. Pol kila jagod, prosim.",
+          "en": "Good day. Half a kilo of strawberries, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "pol_kila_prosim",
+            "jagoda"
+          ]
+        },
+        "c1b": {
+          "speaker": "client",
+          "sl": "Dober dan. Eno solato, prosim.",
+          "en": "Good day. One lettuce, please.",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "eno_femacc",
+            "solata"
+          ]
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Tukaj imate. Še kaj?",
+          "en": "Here you go. Anything else?",
+          "deliverySL": "[toplo] Tukaj imate. Še kaj?",
+          "next": [
+            "c2a",
+            "c2b"
+          ],
+          "learnables": [
+            "tukaj_imate",
+            "kaj"
+          ]
+        },
+        "c2a": {
+          "speaker": "client",
+          "sl": "Ne, hvala. Koliko stane?",
+          "en": "No, thanks. How much is it?",
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "koliko_stane",
+            "ne_hvala"
+          ]
+        },
+        "c2b": {
+          "speaker": "client",
+          "sl": "To je vse, hvala.",
+          "en": "That's all, thanks.",
+          "next": [
+            "n3"
+          ],
+          "learnables": [
+            "hvala",
+            "to_je_vse"
+          ]
+        },
+        "n3": {
+          "speaker": "npc",
+          "sl": "To bo dva evra petdeset.",
+          "en": "That'll be two euros fifty.",
+          "deliverySL": "[toplo] To bo dva evra petdeset.",
+          "next": [
+            "c3a",
+            "c3b",
+            "c3c"
+          ],
+          "learnables": [
+            "evro",
+            "stevilo_dva",
+            "stevilo_petdeset"
+          ]
+        },
+        "c3a": {
+          "speaker": "client",
+          "sl": "Izvolite. Ste tu vsak dan?",
+          "en": "Here you are. Are you here every day?",
+          "context": "she comes every day",
+          "next": [
+            "n4daily"
+          ],
+          "learnables": [
+            "ste_tu_vsak_dan",
+            "izvolite"
+          ]
+        },
+        "c3b": {
+          "speaker": "client",
+          "sl": "Izvolite. Ste tu vsak dan?",
+          "en": "Here you are. Are you here every day?",
+          "context": "she only comes in the mornings",
+          "next": [
+            "n4morn"
+          ],
+          "learnables": [
+            "ste_tu_vsak_dan",
+            "izvolite"
+          ]
+        },
+        "c3c": {
+          "speaker": "client",
+          "sl": "Izvolite. Je to vse za danes?",
+          "en": "Here you are. Is that all for today?",
+          "next": [
+            "n4all"
+          ],
+          "learnables": [
+            "je_to_vse_za_danes",
+            "izvolite"
+          ]
+        },
+        "n4daily": {
+          "speaker": "npc",
+          "sl": "Ja, vsak dan. Razen v nedeljo.",
+          "en": "Yes, every day. Except Sunday.",
+          "deliverySL": "[toplo] Ja, vsak dan. Razen v nedeljo.",
+          "next": [
+            "cz1",
+            "cz2"
+          ],
+          "learnables": [
+            "ja",
+            "nedelja"
+          ]
+        },
+        "n4morn": {
+          "speaker": "npc",
+          "sl": "Ne cel dan, samo zjutraj.",
+          "en": "Not all day — only in the mornings.",
+          "deliverySL": "[toplo] Ne cel dan, samo zjutraj.",
+          "next": [
+            "c5a",
+            "c5b"
+          ],
+          "learnables": [
+            "zjutraj",
+            "ne"
+          ]
+        },
+        "c5a": {
+          "speaker": "client",
+          "sl": "Do kdaj ste tu?",
+          "en": "Until when are you here?",
+          "next": [
+            "n5noon"
+          ],
+          "learnables": [
+            "kdaj_ste_tu"
+          ]
+        },
+        "c5b": {
+          "speaker": "client",
+          "sl": "Aha, razumem.",
+          "en": "Oh, I see.",
+          "next": [
+            "nSee"
+          ],
+          "learnables": [
+            "razumem"
+          ]
+        },
+        "n5noon": {
+          "speaker": "npc",
+          "sl": "Do poldneva. Potem pospravim.",
+          "en": "Until noon. Then I pack up.",
+          "deliverySL": "[toplo] Do poldneva. Potem pospravim.",
+          "next": [
+            "cz1",
+            "cz2"
+          ],
+          "learnables": [
+            "potem"
+          ]
+        },
+        "n4all": {
+          "speaker": "npc",
+          "sl": "Ja, danes je šlo vse. Jutri imamo še več.",
+          "en": "Yes, everything sold today. Tomorrow we'll have more.",
+          "deliverySL": "[veselo] Ja, danes je šlo vse. Jutri imamo še več.",
+          "next": [
+            "cz1",
+            "cz2"
+          ],
+          "learnables": [
+            "danes",
+            "jutri",
+            "ja"
+          ]
+        },
+        "nSee": {
+          "speaker": "npc",
+          "sl": "Potem pa pridite zgodaj. Zjutraj je najlepše.",
+          "en": "Then come early. The mornings are the best.",
+          "deliverySL": "[toplo] Potem pa pridite zgodaj. Zjutraj je najlepše.",
+          "next": [
+            "cz1",
+            "cz2"
+          ],
+          "learnables": [
+            "zjutraj",
+            "potem",
+            "pa"
+          ]
+        },
+        "cz1": {
+          "speaker": "client",
+          "sl": "Hvala. Nasvidenje.",
+          "en": "Thank you. Goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala",
+            "nasvidenje"
+          ]
+        },
+        "cz2": {
+          "speaker": "client",
+          "sl": "Hvala, pa do jutri.",
+          "en": "Thanks, see you tomorrow.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala",
+            "pa_do_jutri"
+          ]
+        },
+        "nBye": {
+          "speaker": "npc",
+          "sl": "Srečno, pa se še kaj oglasite!",
+          "en": "All the best, and do drop by again!",
+          "deliverySL": "[toplo] Srečno, pa se še kaj oglasite!",
+          "next": [],
+          "learnables": [
+            "pa",
+            "kaj"
+          ]
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "dober_dan",
+          "eno_femacc",
+          "hvala",
+          "izvolite",
+          "jagoda",
+          "je_to_vse_za_danes",
+          "kdaj_ste_tu",
+          "koliko_stane",
+          "nasvidenje",
+          "ne_hvala",
+          "pol_kila_prosim",
+          "razumem",
+          "solata",
+          "ste_tu_vsak_dan",
+          "to_je_vse"
+        ],
+        "new": [
+          {
+            "id": "pa_do_jutri",
+            "kind": "chunk",
+            "sl": "Pa do jutri.",
+            "gloss": "See you tomorrow.",
+            "predictableError": "Says *Vidim vas jutri* (a word-for-word 'I'll see you tomorrow'), which Slovenes don't use as a goodbye. The goodbye is *Pa do jutri* or *Se vidimo jutri*.",
+            "a1": true
+          }
+        ]
+      }
+    },
+    {
+      "level": 10,
+      "levelLabel": "advanced",
+      "title": "Cel nakup",
+      "objectives": [
+        {
+          "label": "Cel nakup",
+          "descriptorEN": "A whole visit with the complications stacked up — out of stock, a sour fruit, a repair, a price surprise — and a chat at the end."
+        }
+      ],
+      "root": "n1",
+      "nodes": {
+        "n1": {
+          "speaker": "npc",
+          "sl": "Dober dan! Kdo je pa na vrsti? Vi? Kaj vam dam danes?",
+          "en": "Good day! Who's next? You? What can I get you today?",
+          "deliverySL": "[toplo] Dober dan! Kdo je pa na vrsti? Vi? Kaj vam dam danes?",
+          "next": [
+            "c1a",
+            "c1b"
+          ],
+          "learnables": [
+            "dober_dan",
+            "danes",
+            "pa",
+            "kaj"
+          ]
+        },
+        "c1a": {
+          "speaker": "client",
+          "sl": "Dober dan. Imate danes jagode?",
+          "en": "Good day. Do you have strawberries today?",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "imate_danes",
+            "jagoda"
+          ]
+        },
+        "c1b": {
+          "speaker": "client",
+          "sl": "Dober dan. Imate danes česen?",
+          "en": "Good day. Do you have garlic today?",
+          "next": [
+            "n2"
+          ],
+          "learnables": [
+            "dober_dan",
+            "imate_danes",
+            "cesen"
+          ]
+        },
+        "n2": {
+          "speaker": "npc",
+          "sl": "Žal, tega danes nimam.",
+          "en": "Sorry, I don't have that today.",
+          "deliverySL": "[toplo] Žal, tega danes nimam.",
+          "next": [
+            "c2a",
+            "c2b"
+          ],
+          "learnables": [
+            "nimam",
+            "zal",
+            "danes"
+          ]
+        },
+        "c2a": {
+          "speaker": "client",
+          "sl": "Kaj še imate danes?",
+          "en": "What else do you have today?",
+          "next": [
+            "n3list"
+          ],
+          "learnables": [
+            "kaj_se_imate_danes"
+          ]
+        },
+        "c2b": {
+          "speaker": "client",
+          "sl": "Škoda. Kaj še imate danes?",
+          "en": "Pity. What else do you have today?",
+          "next": [
+            "n3list"
+          ],
+          "learnables": [
+            "kaj_se_imate_danes",
+            "skoda"
+          ]
+        },
+        "n3list": {
+          "speaker": "npc",
+          "sl": "Imam krompir, paradižnik, papriko, čebulo, blitvo … vse domače!",
+          "en": "I've got potatoes, tomatoes, peppers, onions, chard … all home-grown!",
+          "deliverySL": "[navdušeno, hitro] Imam krompir, paradižnik, papriko, čebulo, blitvo … vse domače!",
+          "next": [
+            "c3a",
+            "c3b",
+            "c3c"
+          ],
+          "learnables": [
+            "krompir",
+            "paradiznik",
+            "cebula",
+            "paprika",
+            "imam",
+            "blitva"
+          ]
+        },
+        "c3a": {
+          "speaker": "client",
+          "sl": "Počasi, prosim.",
+          "en": "Slowly, please.",
+          "context": "it went by too fast",
+          "next": [
+            "n3slow"
+          ],
+          "learnables": [
+            "pocasi_prosim"
+          ]
+        },
+        "c3b": {
+          "speaker": "client",
+          "sl": "Še enkrat, prosim.",
+          "en": "Once more, please.",
+          "context": "it went by too fast",
+          "next": [
+            "n3slow"
+          ],
+          "learnables": [
+            "se_enkrat"
+          ]
+        },
+        "c3c": {
+          "speaker": "client",
+          "sl": "Kaj pomeni blitva?",
+          "en": "What does 'blitva' mean?",
+          "context": "one word is new to him",
+          "next": [
+            "n3word"
+          ],
+          "learnables": [
+            "kaj_pomeni",
+            "blitva"
+          ]
+        },
+        "n3slow": {
+          "speaker": "npc",
+          "sl": "Seveda. Imam … krompir … paradižnik … papriko … čebulo.",
+          "en": "Of course. I've got … potatoes … tomatoes … peppers … onions.",
+          "deliverySL": "[toplo] Seveda. Imam … krompir … paradižnik … papriko … čebulo.",
+          "next": [
+            "c4a",
+            "c4b"
+          ],
+          "learnables": [
+            "krompir",
+            "paradiznik",
+            "cebula",
+            "paprika",
+            "seveda",
+            "imam"
+          ]
+        },
+        "n3word": {
+          "speaker": "npc",
+          "sl": "Blitva? Tole zeleno tukaj, glejte. Za juho je dobra.",
+          "en": "Chard? This green stuff here, look. It's good for soup.",
+          "deliverySL": "[toplo] Blitva? Tole zeleno tukaj, glejte. Za juho je dobra.",
+          "next": [
+            "c4a",
+            "c4b"
+          ],
+          "learnables": [
+            "tukaj",
+            "juha",
+            "blitva"
+          ]
+        },
+        "c4a": {
+          "speaker": "client",
+          "sl": "Kilo paradižnika, prosim.",
+          "en": "A kilo of tomatoes, please.",
+          "next": [
+            "n4size"
+          ],
+          "learnables": [
+            "kilo_prosim",
+            "paradiznik"
+          ]
+        },
+        "c4b": {
+          "speaker": "client",
+          "sl": "Kilo paprike, prosim.",
+          "en": "A kilo of peppers, please.",
+          "next": [
+            "n4size"
+          ],
+          "learnables": [
+            "kilo_prosim",
+            "paprika"
+          ]
+        },
+        "n4size": {
+          "speaker": "npc",
+          "sl": "Kakšne pa — majhne ali velike?",
+          "en": "Which ones — small or large?",
+          "deliverySL": "[toplo] Kakšne pa — majhne ali velike?",
+          "next": [
+            "c5a",
+            "c5b"
+          ],
+          "learnables": [
+            "majhne_prosim",
+            "velike_prosim",
+            "pa"
+          ]
+        },
+        "c5a": {
+          "speaker": "client",
+          "sl": "Velike, prosim.",
+          "en": "Large ones, please.",
+          "next": [
+            "n5"
+          ],
+          "learnables": [
+            "velike_prosim"
+          ]
+        },
+        "c5b": {
+          "speaker": "client",
+          "sl": "Majhne, prosim.",
+          "en": "Small ones, please.",
+          "next": [
+            "n5"
+          ],
+          "learnables": [
+            "majhne_prosim"
+          ]
+        },
+        "n5": {
+          "speaker": "npc",
+          "sl": "Samo trenutek, da stehtam … Tako. Še kaj?",
+          "en": "Just a moment while I weigh them … There. Anything else?",
+          "deliverySL": "[toplo] Samo trenutek, da stehtam … Tako. Še kaj?",
+          "next": [
+            "c6a",
+            "c6b"
+          ],
+          "learnables": [
+            "kaj"
+          ]
+        },
+        "c6a": {
+          "speaker": "client",
+          "sl": "Ja, še eno solato, prosim.",
+          "en": "Yes, one lettuce too, please.",
+          "next": [
+            "n6"
+          ],
+          "learnables": [
+            "ja_se_prosim",
+            "eno_femacc",
+            "solata"
+          ]
+        },
+        "c6b": {
+          "speaker": "client",
+          "sl": "Ja, še en šop korenja, prosim.",
+          "en": "Yes, a bunch of carrots too, please.",
+          "next": [
+            "n6"
+          ],
+          "learnables": [
+            "ja_se_prosim",
+            "en_masacc",
+            "korenje",
+            "sop"
+          ]
+        },
+        "n6": {
+          "speaker": "npc",
+          "sl": "Izvolite. Bo še kaj drugega?",
+          "en": "Here you are. Will there be anything else?",
+          "deliverySL": "[toplo] Izvolite. Bo še kaj drugega?",
+          "next": [
+            "c7a",
+            "c7b",
+            "c7c"
+          ],
+          "learnables": [
+            "izvolite",
+            "kaj"
+          ]
+        },
+        "c7a": {
+          "speaker": "client",
+          "sl": "Ja, še jabolka, prosim. So sladka?",
+          "en": "Yes, some apples too, please. Are they sweet?",
+          "next": [
+            "n7sour"
+          ],
+          "learnables": [
+            "ja_se_prosim",
+            "je_sladko",
+            "jabolko"
+          ]
+        },
+        "c7b": {
+          "speaker": "client",
+          "sl": "Lahko poskusim jabolko?",
+          "en": "Can I try an apple?",
+          "next": [
+            "n7try"
+          ],
+          "learnables": [
+            "lahko_poskusim",
+            "jabolko"
+          ]
+        },
+        "n7sour": {
+          "speaker": "npc",
+          "sl": "Ne, ta so bolj kisla. Hruške so pa sladke.",
+          "en": "No, these are more sour. The pears are sweet, though.",
+          "deliverySL": "[stvarno] Ne, ta so bolj kisla. Hruške so pa sladke.",
+          "next": [
+            "c8a",
+            "c8b"
+          ],
+          "learnables": [
+            "hruska",
+            "pa",
+            "ne"
+          ]
+        },
+        "n7try": {
+          "speaker": "npc",
+          "sl": "Seveda, poskusite. … Ja, malo kisla so, ta so bolj za štrudelj. Hruške so pa sladke.",
+          "en": "Of course, try one. … Yes, they're a bit sour, these are more for strudel. The pears are sweet, though.",
+          "deliverySL": "[toplo] Seveda, poskusite. … Ja, malo kisla so, ta so bolj za štrudelj. Hruške so pa sladke.",
+          "next": [
+            "c8a",
+            "c8b"
+          ],
+          "learnables": [
+            "hruska",
+            "seveda",
+            "pa",
+            "ja"
+          ]
+        },
+        "c8a": {
+          "speaker": "client",
+          "sl": "So zrele?",
+          "en": "Are they ripe?",
+          "next": [
+            "n8"
+          ],
+          "learnables": [
+            "je_zrelo"
+          ]
+        },
+        "c8b": {
+          "speaker": "client",
+          "sl": "So domače?",
+          "en": "Are they home-grown?",
+          "next": [
+            "n8"
+          ],
+          "learnables": [
+            "je_domace"
+          ]
+        },
+        "n8": {
+          "speaker": "npc",
+          "sl": "Ja, zrele so, pa domače, z Barja. Koliko vam jih dam?",
+          "en": "Yes, they're ripe, and home-grown, from the Barje. How many shall I give you?",
+          "deliverySL": "[toplo] Ja, zrele so, pa domače, z Barja. Koliko vam jih dam?",
+          "next": [
+            "c9a",
+            "c9b"
+          ],
+          "learnables": [
+            "koliko",
+            "pa",
+            "ja"
+          ]
+        },
+        "c9a": {
+          "speaker": "client",
+          "sl": "Kilo hrušk, prosim.",
+          "en": "A kilo of pears, please.",
+          "next": [
+            "nTotal"
+          ],
+          "learnables": [
+            "kilo_prosim",
+            "hruska"
+          ]
+        },
+        "c9b": {
+          "speaker": "client",
+          "sl": "Dvesto gramov, prosim. To je vse.",
+          "en": "Two hundred grams, please. That's all.",
+          "next": [
+            "nTotal"
+          ],
+          "learnables": [
+            "to_je_vse",
+            "dvesto_gramov_prosim"
+          ]
+        },
+        "nTotal": {
+          "speaker": "npc",
+          "sl": "Tako, to bo skupaj štirinajst osemdeset.",
+          "en": "Right, that'll be fourteen eighty altogether.",
+          "deliverySL": "[poslovno] Tako, to bo skupaj štirinajst osemdeset.",
+          "next": [
+            "c10a",
+            "c10b"
+          ],
+          "learnables": [
+            "stevilo_stirinajst",
+            "stevilo_osemdeset"
+          ]
+        },
+        "c10a": {
+          "speaker": "client",
+          "sl": "Koliko? Ponovite, prosim.",
+          "en": "How much? Please repeat that.",
+          "context": "he can't believe the number",
+          "next": [
+            "n10again"
+          ],
+          "learnables": [
+            "koliko",
+            "ponovite_prosim"
+          ]
+        },
+        "c10b": {
+          "speaker": "client",
+          "sl": "Izvolite.",
+          "en": "Here you are.",
+          "context": "that's fine",
+          "next": [
+            "nBag"
+          ],
+          "learnables": [
+            "izvolite"
+          ]
+        },
+        "n10again": {
+          "speaker": "npc",
+          "sl": "Štirinajst evrov osemdeset. Tole je najdražje, glejte.",
+          "en": "Fourteen euros eighty. This is the most expensive, look.",
+          "deliverySL": "[toplo] Štirinajst evrov osemdeset. Tole je najdražje, glejte.",
+          "next": [
+            "c11a",
+            "c11b"
+          ],
+          "learnables": [
+            "evro",
+            "stevilo_stirinajst",
+            "stevilo_osemdeset"
+          ]
+        },
+        "c11a": {
+          "speaker": "client",
+          "sl": "Potem pa pol kila, prosim.",
+          "en": "Then half a kilo, please.",
+          "context": "more than he wanted to spend",
+          "next": [
+            "n11less"
+          ],
+          "learnables": [
+            "pol_kila_prosim",
+            "potem",
+            "pa"
+          ]
+        },
+        "c11b": {
+          "speaker": "client",
+          "sl": "V redu. Izvolite.",
+          "en": "Alright. Here you are.",
+          "context": "he pays it anyway",
+          "next": [
+            "nBag"
+          ],
+          "learnables": [
+            "izvolite",
+            "v_redu"
+          ]
+        },
+        "n11less": {
+          "speaker": "npc",
+          "sl": "Ni problema, malo vzamem ven. Zdaj je dvanajst petdeset.",
+          "en": "No problem, I'll take some out. Now it's twelve fifty.",
+          "deliverySL": "[toplo] Ni problema, malo vzamem ven. Zdaj je dvanajst petdeset.",
+          "next": [
+            "c12"
+          ],
+          "learnables": [
+            "zdaj",
+            "stevilo_dvanajst",
+            "stevilo_petdeset"
+          ]
+        },
+        "c12": {
+          "speaker": "client",
+          "sl": "Izvolite.",
+          "en": "Here you are.",
+          "next": [
+            "nBag"
+          ],
+          "learnables": [
+            "izvolite"
+          ]
+        },
+        "nBag": {
+          "speaker": "npc",
+          "sl": "Imate vrečko?",
+          "en": "Do you have a bag?",
+          "deliverySL": "[toplo] Imate vrečko?",
+          "next": [
+            "c13a",
+            "c13b"
+          ],
+          "learnables": []
+        },
+        "c13a": {
+          "speaker": "client",
+          "sl": "Ja, imam, hvala. Ste tu vsak dan?",
+          "en": "Yes, I do, thanks. Are you here every day?",
+          "next": [
+            "n13"
+          ],
+          "learnables": [
+            "hvala",
+            "ste_tu_vsak_dan",
+            "imam",
+            "ja"
+          ]
+        },
+        "c13b": {
+          "speaker": "client",
+          "sl": "Ne. Je to vse za danes?",
+          "en": "No. Is that all for today?",
+          "next": [
+            "n13b"
+          ],
+          "learnables": [
+            "je_to_vse_za_danes",
+            "ne"
+          ]
+        },
+        "n13": {
+          "speaker": "npc",
+          "sl": "Ne vsak dan — od torka do sobote.",
+          "en": "Not every day — Tuesday to Saturday.",
+          "deliverySL": "[toplo] Ne vsak dan — od torka do sobote.",
+          "next": [
+            "c14a",
+            "c14b"
+          ],
+          "learnables": [
+            "ne",
+            "torek",
+            "sobota"
+          ]
+        },
+        "c14a": {
+          "speaker": "client",
+          "sl": "Kdaj ste tu?",
+          "en": "When are you here?",
+          "next": [
+            "n14"
+          ],
+          "learnables": [
+            "kdaj_ste_tu"
+          ]
+        },
+        "c14b": {
+          "speaker": "client",
+          "sl": "V redu. Hvala, nasvidenje.",
+          "en": "Alright. Thanks, goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala_nasvidenje",
+            "v_redu"
+          ]
+        },
+        "n14": {
+          "speaker": "npc",
+          "sl": "Zjutraj, od sedmih do poldneva. Pridite zgodaj, takrat je vse še sveže.",
+          "en": "In the mornings, from seven till noon. Come early, everything's still fresh then.",
+          "deliverySL": "[toplo] Zjutraj, od sedmih do poldneva. Pridite zgodaj, takrat je vse še sveže.",
+          "next": [
+            "cz1",
+            "cz2"
+          ],
+          "learnables": [
+            "zjutraj"
+          ]
+        },
+        "n13b": {
+          "speaker": "npc",
+          "sl": "Izvolite, eno vrečko vam dam. Ja, sobota je, vse je šlo. Jutri … a ne, jutri nas ni. V torek bo spet polno.",
+          "en": "Here, I'll give you a bag. Yes, it's Saturday, everything's gone. Tomorrow … oh no, we're not here tomorrow. On Tuesday it'll be full again.",
+          "deliverySL": "[toplo] Izvolite, eno vrečko vam dam. Ja, sobota je, vse je šlo. Jutri … a ne, jutri nas ni. V torek bo spet polno.",
+          "next": [
+            "cz1",
+            "cz2"
+          ],
+          "learnables": [
+            "eno_femacc",
+            "izvolite",
+            "jutri",
+            "ja",
+            "ne",
+            "torek",
+            "sobota"
+          ]
+        },
+        "cz1": {
+          "speaker": "client",
+          "sl": "Hvala, nasvidenje.",
+          "en": "Thanks, goodbye.",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala_nasvidenje"
+          ]
+        },
+        "cz2": {
+          "speaker": "client",
+          "sl": "Hvala lepa. Nasvidenje v torek!",
+          "en": "Thank you very much. See you on Tuesday!",
+          "next": [
+            "nBye"
+          ],
+          "learnables": [
+            "hvala_lepa",
+            "nasvidenje",
+            "torek"
+          ]
+        },
+        "nBye": {
+          "speaker": "npc",
+          "sl": "Hvala vam! Lep vikend, pa se vidimo.",
+          "en": "Thank you! Have a nice weekend, and see you.",
+          "deliverySL": "[toplo] Hvala vam! Lep vikend, pa se vidimo.",
+          "next": [],
+          "learnables": [
+            "hvala",
+            "pa",
+            "lep"
+          ]
+        },
+        "c7c": {
+          "speaker": "client",
+          "sl": "Ne, hvala. Koliko stane?",
+          "en": "No, thanks. How much is it?",
+          "next": [
+            "nTotal"
+          ],
+          "learnables": [
+            "koliko_stane",
+            "ne_hvala"
+          ]
+        }
+      },
+      "catalog": {
+        "reuse": [
+          "cesen",
+          "dober_dan",
+          "dvesto_gramov_prosim",
+          "en_masacc",
+          "eno_femacc",
+          "hruska",
+          "hvala",
+          "hvala_lepa",
+          "hvala_nasvidenje",
+          "imam",
+          "imate_danes",
+          "izvolite",
+          "ja",
+          "ja_se_prosim",
+          "jabolko",
+          "jagoda",
+          "je_domace",
+          "je_sladko",
+          "je_to_vse_za_danes",
+          "je_zrelo",
+          "kaj_pomeni",
+          "kaj_se_imate_danes",
+          "kdaj_ste_tu",
+          "kilo_prosim",
+          "koliko",
+          "koliko_stane",
+          "korenje",
+          "lahko_poskusim",
+          "majhne_prosim",
+          "nasvidenje",
+          "ne",
+          "ne_hvala",
+          "pa",
+          "paprika",
+          "paradiznik",
+          "pocasi_prosim",
+          "pol_kila_prosim",
+          "ponovite_prosim",
+          "potem",
+          "se_enkrat",
+          "solata",
+          "sop",
+          "ste_tu_vsak_dan",
+          "to_je_vse",
+          "torek",
+          "v_redu",
+          "velike_prosim"
+        ],
+        "new": [
+          {
+            "id": "skoda",
+            "kind": "vocabulary",
+            "sl": "škoda",
+            "gloss": "pity / what a shame (a standalone reaction)",
+            "predictableError": "reaching for 'žal' or 'žal mi je' as the reaction; the one-word 'what a shame' is 'Škoda.'",
+            "a1": true
+          },
+          {
+            "id": "blitva",
+            "kind": "vocabulary",
+            "sl": "blitva",
+            "gloss": "chard (fem.)",
+            "predictableError": "echoing the accusative 'blitvo' heard in her list when asking about it; asked about on its own, it is the nominative 'blitva'",
+            "a1": true
+          }
+        ]
+      }
+    }
+  ],
+  "criticFixes": [
+    {
+      "level": 3,
+      "nodeId": "n1",
+      "field": "sl",
+      "oldExact": "Dober dan! Krompir in paradižnik sta danes čisto sveža. Kaj vam dam?",
+      "newExact": "Dober dan, kaj boste danes? Krompir in paradižnik sta domača."
+    },
+    {
+      "level": 3,
+      "nodeId": "n1",
+      "field": "deliverySL",
+      "oldExact": "[toplo] Dober dan! Krompir in paradižnik sta danes čisto sveža. Kaj vam dam?",
+      "newExact": "[toplo] Dober dan, kaj boste danes? Krompir in paradižnik sta domača."
+    },
+    {
+      "level": 3,
+      "nodeId": "n1",
+      "field": "en",
+      "oldExact": "Good day! The potatoes and tomatoes are really fresh today. What can I get you?",
+      "newExact": "Good day, what'll you have today? The potatoes and tomatoes are home-grown."
+    },
+    {
+      "level": 4,
+      "nodeId": "n1",
+      "field": "sl",
+      "oldExact": "Dober dan! Danes imam mlado korenje, čisto sveže, v šopih.",
+      "newExact": "Dober dan! Danes imam mlado korenje, prvo letos, v šopih."
+    },
+    {
+      "level": 4,
+      "nodeId": "n1",
+      "field": "deliverySL",
+      "oldExact": "[veselo] Dober dan! Danes imam mlado korenje, čisto sveže, v šopih.",
+      "newExact": "[veselo] Dober dan! Danes imam mlado korenje, prvo letos, v šopih."
+    },
+    {
+      "level": 4,
+      "nodeId": "n1",
+      "field": "en",
+      "oldExact": "Good day! Today I've got young carrots, really fresh, in bunches.",
+      "newExact": "Good day! Today I've got young carrots, the first of the year, in bunches."
+    },
+    {
+      "level": 10,
+      "nodeId": "n1",
+      "field": "sl",
+      "oldExact": "Dober dan! Danes je pa gneča. Kaj vam dam?",
+      "newExact": "Dober dan! Kdo je pa na vrsti? Vi? Kaj vam dam danes?"
+    },
+    {
+      "level": 10,
+      "nodeId": "n1",
+      "field": "deliverySL",
+      "oldExact": "[toplo] Dober dan! Danes je pa gneča. Kaj vam dam?",
+      "newExact": "[toplo] Dober dan! Kdo je pa na vrsti? Vi? Kaj vam dam danes?"
+    },
+    {
+      "level": 10,
+      "nodeId": "n1",
+      "field": "en",
+      "oldExact": "Good day! It's busy today. What can I get you?",
+      "newExact": "Good day! Who's next? You? What can I get you today?"
+    },
+    {
+      "level": 5,
+      "nodeId": "nBye",
+      "field": "sl",
+      "oldExact": "Hvala vam, pa se spet vidiva!",
+      "newExact": "Hvala, pa lepo bodite!"
+    },
+    {
+      "level": 5,
+      "nodeId": "nBye",
+      "field": "deliverySL",
+      "oldExact": "[toplo] Hvala vam, pa se spet vidiva!",
+      "newExact": "[toplo] Hvala, pa lepo bodite!"
+    },
+    {
+      "level": 5,
+      "nodeId": "nBye",
+      "field": "en",
+      "oldExact": "Thank you, see you again!",
+      "newExact": "Thanks, and take care!"
+    },
+    {
+      "level": 6,
+      "nodeId": "nBye",
+      "field": "sl",
+      "oldExact": "Hvala vam, pa se vidimo spet!",
+      "newExact": "Hvala vam, pa uživajte!"
+    },
+    {
+      "level": 6,
+      "nodeId": "nBye",
+      "field": "deliverySL",
+      "oldExact": "[toplo] Hvala vam, pa se vidimo spet!",
+      "newExact": "[toplo] Hvala vam, pa uživajte!"
+    },
+    {
+      "level": 6,
+      "nodeId": "nBye",
+      "field": "en",
+      "oldExact": "Thank you, and see you again!",
+      "newExact": "Thank you, and enjoy!"
+    },
+    {
+      "level": 7,
+      "nodeId": "c1a",
+      "field": "sl",
+      "oldExact": "Dober dan. Je sladko?",
+      "newExact": "Dober dan. So sladka?"
+    },
+    {
+      "level": 7,
+      "nodeId": "c1a",
+      "field": "en",
+      "oldExact": "Good day. Is it sweet?",
+      "newExact": "Good day. Are they sweet?"
+    },
+    {
+      "level": 7,
+      "nodeId": "c1b",
+      "field": "sl",
+      "oldExact": "Dober dan. Je sladko?",
+      "newExact": "Dober dan. So sladka?"
+    },
+    {
+      "level": 7,
+      "nodeId": "c1b",
+      "field": "en",
+      "oldExact": "Good day. Is it sweet?",
+      "newExact": "Good day. Are they sweet?"
+    },
+    {
+      "level": 7,
+      "nodeId": "n2sweet",
+      "field": "sl",
+      "oldExact": "Ja, sladko. Koliko jih boste?",
+      "newExact": "Ja, sladka so. Koliko jih boste?"
+    },
+    {
+      "level": 7,
+      "nodeId": "n2sweet",
+      "field": "deliverySL",
+      "oldExact": "[toplo] Ja, sladko. Koliko jih boste?",
+      "newExact": "[toplo] Ja, sladka so. Koliko jih boste?"
+    },
+    {
+      "level": 7,
+      "nodeId": "n2sweet",
+      "field": "en",
+      "oldExact": "Yes, sweet. How many will you have?",
+      "newExact": "Yes, they're sweet. How many will you have?"
+    },
+    {
+      "level": 7,
+      "nodeId": "n2sour",
+      "field": "sl",
+      "oldExact": "Ne, bolj kislo. Hočete sladko ali bolj kislo?",
+      "newExact": "Ne, ta so bolj kisla. Hočete sladka ali kisla?"
+    },
+    {
+      "level": 7,
+      "nodeId": "n2sour",
+      "field": "deliverySL",
+      "oldExact": "[stvarno] Ne, bolj kislo. Hočete sladko ali bolj kislo?",
+      "newExact": "[stvarno] Ne, ta so bolj kisla. Hočete sladka ali kisla?"
+    },
+    {
+      "level": 7,
+      "nodeId": "n2sour",
+      "field": "en",
+      "oldExact": "No, more on the sour side. Do you want sweet or more sour?",
+      "newExact": "No, these are more on the sour side. Do you want sweet ones or sour ones?"
+    },
+    {
+      "level": 7,
+      "nodeId": "c3a",
+      "field": "sl",
+      "oldExact": "Sladko, prosim.",
+      "newExact": "Sladka, prosim."
+    },
+    {
+      "level": 7,
+      "nodeId": "c3a",
+      "field": "en",
+      "oldExact": "Sweet, please.",
+      "newExact": "Sweet ones, please."
+    },
+    {
+      "level": 7,
+      "nodeId": "c3b",
+      "field": "context",
+      "oldExact": "he only wanted sweet ones",
+      "newExact": "he'll skip the apples"
+    },
+    {
+      "level": 8,
+      "nodeId": "c1b",
+      "field": "sl",
+      "oldExact": "Dober dan. Kilo krompirja, prosim.",
+      "newExact": "Dober dan. Krompir, prosim."
+    },
+    {
+      "level": 8,
+      "nodeId": "c1b",
+      "field": "en",
+      "oldExact": "Good day. A kilo of potatoes, please.",
+      "newExact": "Good day. Potatoes, please."
+    },
+    {
+      "level": 9,
+      "nodeId": "n4morn",
+      "field": "sl",
+      "oldExact": "Ne, samo zjutraj.",
+      "newExact": "Ne cel dan, samo zjutraj."
+    },
+    {
+      "level": 9,
+      "nodeId": "n4morn",
+      "field": "deliverySL",
+      "oldExact": "[toplo] Ne, samo zjutraj.",
+      "newExact": "[toplo] Ne cel dan, samo zjutraj."
+    },
+    {
+      "level": 9,
+      "nodeId": "n4morn",
+      "field": "en",
+      "oldExact": "No, only in the mornings.",
+      "newExact": "Not all day — only in the mornings."
+    },
+    {
+      "level": 1,
+      "nodeId": "n1",
+      "field": "sl",
+      "oldExact": "Dober dan, izvolite?",
+      "newExact": "Dober dan! Kaj bo?"
+    },
+    {
+      "level": 1,
+      "nodeId": "n1",
+      "field": "en",
+      "oldExact": "Good day, what would you like?",
+      "newExact": "Good day! What'll it be?"
+    },
+    {
+      "level": 1,
+      "nodeId": "n1",
+      "field": "deliverySL",
+      "oldExact": "[toplo] Dober dan, izvolite?",
+      "newExact": "[toplo] Dober dan! Kaj bo?"
+    },
+    {
+      "level": 1,
+      "nodeId": "n2",
+      "field": "sl",
+      "oldExact": "Izvolite. Še kaj?",
+      "newExact": "Izvolite. Kaj pa še?"
+    },
+    {
+      "level": 1,
+      "nodeId": "n2",
+      "field": "en",
+      "oldExact": "Here you are. Anything else?",
+      "newExact": "Here you are. What else?"
+    },
+    {
+      "level": 1,
+      "nodeId": "n2",
+      "field": "deliverySL",
+      "oldExact": "[toplo] Izvolite. Še kaj?",
+      "newExact": "[toplo] Izvolite. Kaj pa še?"
+    },
+    {
+      "level": 9,
+      "nodeId": "n2",
+      "field": "sl",
+      "oldExact": "Izvolite. Še kaj?",
+      "newExact": "Tukaj imate. Še kaj?"
+    },
+    {
+      "level": 9,
+      "nodeId": "n2",
+      "field": "en",
+      "oldExact": "Here you are. Anything else?",
+      "newExact": "Here you go. Anything else?"
+    },
+    {
+      "level": 9,
+      "nodeId": "n2",
+      "field": "deliverySL",
+      "oldExact": "[toplo] Izvolite. Še kaj?",
+      "newExact": "[toplo] Tukaj imate. Še kaj?"
+    }
+  ],
+  "a1Candidates": [
+    {
+      "learnableId": "pa_do_jutri",
+      "competencyId": "personal_relations"
+    },
+    {
+      "learnableId": "skoda",
+      "competencyId": "pragmatics"
+    },
+    {
+      "learnableId": "blitva",
+      "competencyId": "food_drink"
+    }
+  ]
+}

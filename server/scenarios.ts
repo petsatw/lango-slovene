@@ -5,7 +5,7 @@
 // NOTE: the data dir is server/scenarios/ (a sibling directory to this file). `from "./scenarios"`
 // still resolves to THIS file — the dir has no index, so there is no import collision.
 
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -65,8 +65,27 @@ export interface DialogueSurface {
  *  legacy scenarios that predate the manifest simply omit it. Today only `dialogue` is materialized;
  *  `a1: true` marks that this package's levels are referenced by the A1 coverage map. Future surfaces
  *  (guided-live, visual) slot in here without touching the loader. */
+/** The `live` surface: the tutor plays this scene in a live session, directed by its own harness.
+ *  The harness is the scene's authored Slovene instructions to the tutor — who she is, what she sells,
+ *  what she says. The app adds the day's scheduled lines and how the lesson runs (server/live/prompt.ts);
+ *  the card is what that schedule is drawn from (mastery.selectForScene). */
+export interface LiveSurface {
+  /** Filename under server/scenarios/harness/. */
+  harness: string;
+  /** The Slovene line the tutor ends the lesson on. The conversation carries on after it. */
+  close: string;
+  /** Learnable ids practised every visit. */
+  core: string[];
+  /** Learnable ids scheduled a few at a time. */
+  bank: string[];
+  /** Learnable ids the scene's lines are filled with (the goods on the stall) — never scheduled, and
+   *  credited whenever the learner says them. */
+  stock?: string[];
+}
+
 export interface ScenarioSurfaces {
   dialogue?: DialogueSurface;
+  live?: LiveSurface;
   a1?: boolean;
 }
 
@@ -119,6 +138,12 @@ export interface Scenario {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SCENARIOS_DIR = path.join(__dirname, "scenarios");
+const HARNESS_DIR = path.join(SCENARIOS_DIR, "harness");
+
+/** A live surface's harness text, as authored. */
+export function harnessText(live: LiveSurface): string {
+  return readFileSync(path.join(HARNESS_DIR, live.harness), "utf8").trim();
+}
 
 function fail(file: string, msg: string): never {
   throw new Error(`Invalid scenario "${file}": ${msg}`);
@@ -223,6 +248,22 @@ export function validateScenario(file: string, raw: any): Scenario {
         if (seen.has(lv.level)) fail(file, `surfaces.dialogue.levels: duplicate level ${lv.level}`);
         seen.add(lv.level);
         asString(file, lv, "levelLabel");
+      }
+    }
+    const live = raw.surfaces.live;
+    if (live !== undefined) {
+      if (typeof live !== "object" || Array.isArray(live)) fail(file, `surfaces.live must be an object`);
+      const harness = asString(file, live, "harness");
+      if (!existsSync(path.join(HARNESS_DIR, harness)))
+        fail(file, `surfaces.live.harness: no file "${harness}" in server/scenarios/harness/`);
+      asString(file, live, "close");
+      for (const key of ["core", "bank", "stock"] as const) {
+        if (key === "stock" && live.stock === undefined) continue;
+        if (!Array.isArray(live[key]) || !live[key].length) fail(file, `surfaces.live.${key} must be a non-empty array`);
+        for (const id of live[key]) {
+          if (typeof id !== "string" || !LEARNABLES[id])
+            fail(file, `surfaces.live.${key}: learnable "${id}" is not in the learnable catalog`);
+        }
       }
     }
     if (raw.surfaces.a1 !== undefined && typeof raw.surfaces.a1 !== "boolean")

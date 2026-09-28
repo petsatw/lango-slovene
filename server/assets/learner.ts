@@ -1,12 +1,13 @@
 // The LEARNER MODEL — per-learnable counts and per-fact answers, held under a LEARNER ID.
 //
-// The id is the seam accounts arrive on. Today the client mints one per sitting at the consent gate and
-// the default store keeps it in memory: progress accrues normally through a session — the learner is met
-// where they left off five minutes ago — and is gone when the session ends. When accounts exist, the id
-// becomes an account id and the store becomes durable. That is the whole change; no caller moves.
+// The id is the seam accounts arrive on. The client mints one per browser and keeps it, and the default
+// store keeps that learner's model on disk, so progress survives closing the tab and sleeping on it —
+// which the mastery rules need, because a line counts as learned only once it is produced again on a
+// later day (mastery.ts). When accounts exist, the id becomes an account id. No caller moves.
 //
-// Two stores:
-//   - memory (the default) — one model per id, dropped after LEARNER_TTL_MIN without a write.
+// Three stores:
+//   - dir (the default) — one model per id on disk, at LEARNERS_DIR/<id>.json (default assets/learners/).
+//   - memory (LEARNER_STORE=memory) — one model per id, dropped after LEARNER_TTL_MIN without a write.
 //   - file (LEARNER_STORE=file) — one model on disk at LEARNER_PATH (default assets/learner.json). It is
 //     the operator's own, held for a single machine, so every id reads and writes the same file. This is
 //     what `npm run learner` shows and what the probes point at a temp path.
@@ -59,24 +60,36 @@ function learnerPath(): string {
   return process.env.LEARNER_PATH || path.join(ASSET_DIR, "learner.json");
 }
 
+function readFile(p: string): LearnerModel {
+  if (!existsSync(p)) return emptyModel();
+  try {
+    return shape(JSON.parse(readFileSync(p, "utf8")));
+  } catch {
+    // A corrupt/half-written file should not brick the turn loop — start fresh (it gets rewritten).
+    return emptyModel();
+  }
+}
+
+function writeFile(p: string, model: LearnerModel): LearnerModel {
+  mkdirSync(path.dirname(p), { recursive: true });
+  const out = shape({ ...model, updatedAt: new Date().toISOString() });
+  writeFileSync(p, JSON.stringify(out, null, 2));
+  return out;
+}
+
 const fileStore: LearnerStore = {
-  read() {
-    const p = learnerPath();
-    if (!existsSync(p)) return emptyModel();
-    try {
-      return shape(JSON.parse(readFileSync(p, "utf8")));
-    } catch {
-      // A corrupt/half-written file should not brick the turn loop — start fresh (it gets rewritten).
-      return emptyModel();
-    }
-  },
-  write(_id, model) {
-    const p = learnerPath();
-    mkdirSync(path.dirname(p), { recursive: true });
-    const out = shape({ ...model, updatedAt: new Date().toISOString() });
-    writeFileSync(p, JSON.stringify(out, null, 2));
-    return out;
-  },
+  read: () => readFile(learnerPath()),
+  write: (_id, model) => writeFile(learnerPath(), model),
+};
+
+/** `idFrom` has already bounded the id to filename-safe characters, so it is the filename. */
+function learnersPath(id: string): string {
+  return path.join(process.env.LEARNERS_DIR || path.join(ASSET_DIR, "learners"), `${id}.json`);
+}
+
+const dirStore: LearnerStore = {
+  read: (id) => readFile(learnersPath(id)),
+  write: (id, model) => writeFile(learnersPath(id), model),
 };
 
 const held = new Map<string, { model: LearnerModel; touchedAt: number }>();
@@ -95,7 +108,8 @@ const memoryStore: LearnerStore = {
 };
 
 function store(): LearnerStore {
-  return (process.env.LEARNER_STORE || "memory").toLowerCase() === "file" ? fileStore : memoryStore;
+  const kind = (process.env.LEARNER_STORE || "dir").toLowerCase();
+  return kind === "file" ? fileStore : kind === "memory" ? memoryStore : dirStore;
 }
 
 export function load(id: string): LearnerModel {

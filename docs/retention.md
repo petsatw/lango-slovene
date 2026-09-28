@@ -20,7 +20,7 @@ export or deletion. It is one switch, answered once, at the start of a sitting.
 ## Where PII lands
 
 Read out of the writers and out of real session files. **Structured credit is not PII**: a learnable id
-with `{attempts, successes}` against a random per-tab learner id names nobody.
+with `{attempts, successes}` against a random per-browser learner id names nobody.
 
 | # | where | field(s) | why it is PII | unticked |
 |---|---|---|---|---|

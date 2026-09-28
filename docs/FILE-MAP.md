@@ -41,7 +41,7 @@ The client holds the live `SessionState` in memory and talks only to `/api`. Key
 | `server/adapters/dialogue-scripted.ts` | the **dialogue-tree adapter** — one step of an authored tree in either input mode: `advanceDialogue` picks the client line (tapped choice, or `next[0]` when spoken), returns the attempts to plant, never judges the audio. Pure; the caller credits |
 | `server/adapters/seed-scripted.ts` | the **seed adapter** — a static-dialogue stand-in for the model: `scriptedSeedTurn` returns the next scripted line + attempts; `converse` uses it when `seedId` is set |
 | `server/mastery.ts` | the durable mastery-layer pure rules: `applyCredit` (threshold/flub), `presentObjectives`, free-conv selection, `inspect` |
-| `server/assets/learner.ts` | the durable **learner model** store — `assets/learner.json` (`LEARNER_PATH`), `load`/`save` |
+| `server/assets/learner.ts` | the durable **learner model** store — one file per learner in `assets/learners/` (`LEARNERS_DIR`), or the shared `assets/learner.json` (`LEARNER_PATH`); `load`/`save` |
 | `server/types.ts` | shared types + the **adapter contracts** (`E2Adapter`, `E3Adapter`, `ImageAdapter`) |
 
 ### Adapters — `server/adapters/` (the swap point)
@@ -84,6 +84,8 @@ Field-level detail and examples are in [DATA-MODEL.md › The catalog](DATA-MODE
 
 `bakery.json` · `butcher.json` · `cafe.json` · `lekarna.json` — one JSON per scenario, referencing
 assets by catalog id. Full shape in [DATA-MODEL.md › A scenario](DATA-MODEL.md#a-scenario).
+`harness/<name>.md` — a live scene's Slovene instructions to the tutor, named by the scenario's
+`surfaces.live.harness` ([live-tutor.md](live-tutor.md#a-scene-with-its-own-harness)).
 
 ### Rehearsal dialogues — `server/dialogues/` (data, not code)
 
