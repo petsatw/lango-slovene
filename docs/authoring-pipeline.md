@@ -67,7 +67,11 @@ must interpret), and **the reconcile owns id assignment** (authors propose provi
 
 ## The dialogue surface, end to end
 
-Skill: **`.claude/skills/create-dialogue/SKILL.md`** (the J-lane orchestrator). Agents:
+Tap trees: **`.claude/skills/create-tap-tree/SKILL.md`** — the operator's situation map, transcribed into
+trees; `slovenian-author` (tap-tree mode) finishes the Slovene and the delivery, `scenario-critic` (tap-tree
+mode) checks it, then the same reconcile and gates as below.
+
+Spoken lessons: **`.claude/skills/create-dialogue/SKILL.md`** (the J-lane orchestrator). Agents:
 **`lesson-designer`** (×3, blind to each other — each proposes a different way to teach the given
 objective), **`learning-designer`** (picks which of the three gets built, and what to take from the
 others), **`slovenian-author`** (dialogue mode — writes the Slovene per node + the catalog delta) and

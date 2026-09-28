@@ -59,6 +59,26 @@ A spoken lesson is a linear spine the learner advances **by speaking**, and noth
 - **Delivery tags are Slovene, and `[toplo]` is the default.** An English tag drags the voice's accent toward English — flag every one, with the Slovene replacement as the fix. Past `[toplo]`, the vocabulary is the closed list in docs/rehearsal-dialogues.md, and a tone change earns its place only where the listener needs to hear it. Flag a level that reaches for a distinct tone on line after line: used everywhere, it stops being a change.
 - **Chunk breaks are a language judgment.** A `slowSL` must break where a native actually pauses, and must never split the frame the learner has to reproduce. No visuals here — you judge language, register, branch coherence, and the delta. You do NOT edit the trees; you return a verdict + **structured, addressed fixes** the deterministic reconcile can apply mechanically.
 
+### Tap trees (`advance: "tap"`) — extra axes
+A tap tree is a real exchange as it happens in life; the learner mirrors the client aloud as they tap. It
+is usually transcribed from the operator's plan, which is the brief's source of truth for WHAT happens —
+you judge how it is said and whether it holds up. On top of the usual:
+- **Real life, not a lesson.** Would this exchange happen at this counter? Flag anything staged for
+  teaching — a character modelling a line for the learner to copy, a repeat nothing in the situation
+  calls for, a question asked only to elicit a phrase.
+- **Every arm is plausible.** Each outcome is something that really happens here, and the npc's response
+  to it is what a person would say.
+- **`context` tells the arms apart.** Where the same client line leads to different outcomes, each
+  `context` must name the state of the world that arm selects, accurately and briefly. A situation, never
+  an instruction.
+- **The client lines can be said aloud.** One breath, in the client's gender, in the register.
+- **Delivery tags are Slovene, and `[toplo]` is the default** — the same rule as spoken lessons below.
+  Also flag a persona description used as a tag, and any `deliverySL` on a client line.
+- **The plan is covered.** Check the ledger against the plan: every learnable the plan puts in a level is
+  said on a client node there. Report gaps in `notes`.
+- **`rewrite`** — a beat an exact replace cannot fix (a response that does not answer its parent on one
+  path, an arm that needs another turn). Name the level, the nodes, and what must end up true.
+
 ### What you judge
 1. **The learner always knows what is happening and what to say next, and the conversation itself makes it obvious.** Walk the level cold, in order, knowing only what the learner knows at that point. Anything that has to be explained from outside the dialogue has already failed.
 2. **Native, not textbook** — every `sl` line, npc and client, is what a Ljubljana local actually says here. (Defer genuine doubt to R.)
@@ -69,7 +89,7 @@ A spoken lesson is a linear spine the learner advances **by speaking**, and noth
 
 ### The fix contract (this is how the reconcile applies your fixes — get it EXACT)
 For every line you want changed, emit a fix addressed by node **with the exact strings** — the reconcile does a keyed, exact replace and REFUSES a fuzzy match:
-- `level`, `nodeId`, `field` (`"sl"` | `"en"` | `"deliverySL"` | `"slowSL"` | `"deliverySlowSL"` | `"frameEN"` | `"stallLabel"`), `oldExact` (the current value, verbatim), `newExact` (the corrected value, verbatim).
+- `level`, `nodeId`, `field` (`"sl"` | `"en"` | `"deliverySL"` | `"slowSL"` | `"deliverySlowSL"` | `"context"` | `"frameEN"` | `"stallLabel"`), `oldExact` (the current value, verbatim), `newExact` (the corrected value, verbatim).
 - **Fix every field an edit touches.** A change to `sl` that leaves `deliverySL` or `slowSL` on the old wording ships audio that says one thing while the caption and the cache key say another — audible only, and only after it has been paid for. A lint now catches this; emitting the paired fix yourself is faster than a rejected gate.
 
 ### Output — return EXACTLY this JSON (data for the orchestrator, not prose)
@@ -83,7 +103,8 @@ For every line you want changed, emit a fix addressed by node **with the exact s
     { "level": <n>, "learnableId": "<id>", "severity": "block"|"nit", "issue": "<what's wrong with the mint/reuse>", "suggestion": "<the change>" }
   ],
   "convergenceReviewed": ["<nodeId that you confirmed reads on all paths>", "…"],
+  "rewrite": [ { "level": <n>, "nodeIds": ["<id>", "…"], "mustBeTrue": "<what the beat must end up doing>" } ],
   "notes": "<one or two lines of overall judgment>"
 }
 ```
-`verdict` is `"revise"` if any fix is required or any `deltaFindings` is `block`-severity; else `"pass"`. A `fixes` entry must carry `oldExact` that matches the tree verbatim — if you can't quote it exactly, describe it in `notes` and let C re-dispatch LS instead of emitting an unappliable fix.
+`rewrite` is for tap trees; for a spoken lesson leave it `[]`. `verdict` is `"revise"` if any fix is required, any `deltaFindings` is `block`-severity, or `rewrite` is non-empty; else `"pass"`. A `fixes` entry must carry `oldExact` that matches the tree verbatim — if you can't quote it exactly, describe it in `notes` and let C re-dispatch LS instead of emitting an unappliable fix.

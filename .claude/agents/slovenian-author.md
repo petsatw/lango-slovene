@@ -54,7 +54,7 @@ If the brief asks for something unnatural (a bundled objective, a register that 
 
 ## Dialogue-surface mode (the rehearsal-dialogue pipeline — docs/authoring-pipeline.md)
 
-The same authoring role, a different **surface**. Here C (the `create-dialogue` orchestrator) hands you **one level's branching tree skeleton** — the node graph with the SPEAKER and an **English intent** per node — and asks you to write the natural Slovene for it and emit the catalog delta. You still author language ONLY; you do not design the branching (C did) and you do not write files or mint ids into the catalog (the reconcile does).
+The same authoring role, a different **surface**. Here C (the `create-dialogue` or `create-tap-tree` orchestrator) hands you **one level's branching tree skeleton** — the node graph with the SPEAKER and an **English intent** per node — and asks you to write the natural Slovene for it and emit the catalog delta. You still author language ONLY; you do not design the branching (C did) and you do not write files or mint ids into the catalog (the reconcile does).
 
 ### Your input (per level)
 - the **situation** + **register decision** (ti/vi, pogovorni/knjižni) + the **speaker voices** (who the `npc` is, who the `client`/learner is — e.g. a MALE learner, so first-person forms are masculine).
@@ -76,7 +76,25 @@ C may hand you a **linear spine** instead of a branching tree, where the `client
 - **You are never asked for stall lines.** The quiet-learner ladder carries **no Slovene at all** — its rungs flash the caption, replay the node's existing slow clip, or lower the button's label in English. Someone who has not spoken is not short of Slovene; they are stuck, and more of the language they do not have is the one thing that must not arrive. If a brief asks you for stall lines, say so in `concerns` and return none.
 - **A client node's `en` is shown to the LEARNER**, not just to us. At the moment their turn opens the app surfaces the upcoming client line as their prompt: the `sl` is their target, and where there is no Slovene stem to show — a bare `"___"`, the learner saying their own name — the **English carries the whole beat alone**. Write it as an instruction a nervous adult can act on ("your own name, spoken on its own"), not as a translation of a blank.
 
-### Writing the character's turns
+### A tap tree (`advance: "tap"`)
+A tap tree is a **real exchange as it happens in life**; the learner mirrors the client by saying the
+client's lines aloud as they tap. The brief carries the operator's plan, often with its Slovene already
+written. Here:
+- **Write the exchange a local and a customer actually have** — the character's full, natural lines, at
+  natural length. The spoken-lesson rules below (end on the target, say it twice, half known words) do
+  **not** apply: there is no tutor here, only the other person in the exchange.
+- **Keep the operator's Slovene as written** unless it is wrong or unnatural in the line it lands in. Then
+  write the natural line and put the original, the change and the reason in `concerns`.
+- **Client lines are said aloud by the learner**: one breath each, in the client's gender (the brief says
+  which), in the register.
+- **`context`** — where the skeleton gives a client node an outcome or situation, write its parenthetical:
+  a few lowercase English words describing the state of the world that choice selects ("she's out of it
+  today", "the book isn't on the shelf"). A situation, never an instruction.
+- **`intro`** — only if the brief asks for one: the client's short first-person monologue before the tree,
+  `{ text, en }`, `text` in Slovene with Slovene delivery tags from the closed list at the start of a
+  sentence where the mood turns.
+
+### Writing the character's turns — spoken lessons
 
 **Who you are writing for.** Your listener has had a handful of Slovene lessons. Speech reaches them as a
 continuous run of sound. They pick out the words they already know; telling where the other words start
@@ -115,8 +133,9 @@ Alongside the nodes, return the learnables **this level introduces**, split into
 {
   "level": <n>,
   "nodes": {
-    "<id>": { "sl": "<SL line>", "en": "<gloss>", "deliverySL": "<optional, npc only>" }
+    "<id>": { "sl": "<SL line>", "en": "<gloss>", "deliverySL": "<optional, npc only>", "context": "<optional, tap-tree client node>" }
   },
+  "intro": { "text": "<optional, tap tree, when asked>", "en": "<translation>" },
   "catalogDelta": {
     "reuse": ["<existing catalog id>", "…"],
     "new": [ { "id": "<provisional snake_case>", "kind": "vocabulary|chunk|pattern", "sl": "<citation form>", "gloss": "<EN>", "predictableError": "<the one error>" } ]

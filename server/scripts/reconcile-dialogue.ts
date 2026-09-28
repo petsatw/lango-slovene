@@ -73,7 +73,7 @@ function die(msg: string): never {
 //              tutorial? /* [{target,text}] — the run controls this level teaches, before its first line */,
 //              practice? /* {scenarioId,level} — the rehearsal dialogue "Go Deeper › Reading/Listening" opens */,
 //              catalog: { reuse:[id…], new:[{id,kind,sl,gloss,predictableError?,core?,a1?,rank?}…] } } ],
-//   criticFixes?: [ { level, nodeId, field:"sl"|"en"|"deliverySL", oldExact, newExact } ],
+//   criticFixes?: [ { level, nodeId, field:"sl"|"en"|"deliverySL"|"slowSL"|"deliverySlowSL"|"context", oldExact, newExact } ],
 //   a1Candidates?: [ { learnableId, competencyId, note? } ]
 // }
 
@@ -224,7 +224,7 @@ for (const lvl of input.levels) {
 // Every authored TEXT field on a node. The slow pair belongs here for the same reason the natural pair
 // does: it is language the critic reviews and may need to correct. Omitting them made a legitimate fix
 // ("this slow line splits the phrase where no native pauses") halt the whole run instead of applying.
-const FIX_FIELDS = new Set(["sl", "en", "deliverySL", "slowSL", "deliverySlowSL"]);
+const FIX_FIELDS = new Set(["sl", "en", "deliverySL", "slowSL", "deliverySlowSL", "context"]);
 let fixesApplied = 0;
 for (const fix of input.criticFixes ?? []) {
   const lvl = input.levels.find((l: any) => l.level === fix.level);

@@ -1,9 +1,12 @@
 ---
 name: create-dialogue
-description: Author a rehearsal-dialogue package for a lango-slovenian scenario — the branching npc/client trees (N levels), their catalog learnables, and the scenario manifest — take it through an independent critic and the four deterministic gates, and present it PR-style for approval. Audio and the approval itself belong to the operator. Use when the user wants to add or extend a scenario's click-through rehearsal dialogue (café, bakery, pharmacy, …) or says "create a dialogue", "author the rehearsal trees", "add levels to <scenario>". This is the `dialogue` surface of the authoring engine (see docs/authoring-pipeline.md); it mirrors create-scenario's author→critic→reconcile→gated-generation shape for the branching-tree surface the MVP practices.
+description: Author a lango-slovenian scenario's SPOKEN lessons (`advance: "audio"`) — the linear scenes the learner advances by speaking, their catalog learnables, and the scenario manifest — designed three ways, chosen, written, read as a conversation, critiqued, taken through the deterministic gates, and presented PR-style for approval. Audio and the approval itself belong to the operator. Use when the user wants to add or extend a scenario's spoken lessons or says "create a spoken lesson", "add a lesson to <scenario>". This is the spoken half of the `dialogue` surface (see docs/authoring-pipeline.md). Tap trees (`advance: "tap"`) are the create-tap-tree skill.
 ---
 
-# create-dialogue — the rehearsal-dialogue orchestrator (the `dialogue` surface)
+# create-dialogue — the spoken-lesson orchestrator (the `dialogue` surface, `advance: "audio"`)
+
+This skill authors **spoken lessons**. Tap trees — real exchanges the learner mirrors as they tap — are
+authored by **`create-tap-tree`**.
 
 You are **C, the Creator/Orchestrator** for the rehearsal-dialogue surface. This skill IS the operating
 procedure. You assemble each stage's brief from what the stage before it returned, dispatch the subagents,
@@ -227,26 +230,24 @@ dispatching 2a.
 heard first, with a filler in it, on the full ladder. A person swap costs a rung of the ladder; it does not
 cost the lesson its new shape.
 
-**The advance mode picks the shape of the package** (docs/rehearsal-dialogues.md › Tapped vs spoken):
+**The shape of a spoken package** (docs/rehearsal-dialogues.md › Tapped vs spoken):
 
-| | `advance: "tap"` — a rehearsal tree | `advance: "audio"` — a spoken scene |
-|---|---|---|
-| Shape | branching: npc → **≥2 client choices** → re-convergence, sized per the template | a **linear spine**, `next[0]` at every fork; extra entries are alternates a surface previews |
-| Client nodes | canned lines the learner **picks** | what the learner is expected to **say**; each carries `learnables` (the attempt allowlist, possibly `[]`) |
-| Band denominator | **every** node — a worked example is read end to end | **client nodes only** — the band is what the learner must produce |
-| Arc | a real transaction: greeting → core exchange → closing | whatever the situation genuinely is; a relationship opener is as valid as an errand |
-| Extra node fields | — | `slowSL` + `deliverySlowSL`, `glossPolicy`, `stallHandlers`, `focusSpan` |
-| Timing | the learner's own finger | a **pacing profile** (`server/catalog/pacing.json`) — see 2c |
+| | `advance: "audio"` — a spoken scene |
+|---|---|
+| Shape | a **linear spine**, `next[0]` at every fork; extra entries are alternates a surface previews |
+| Client nodes | what the learner is expected to **say**; each carries `learnables` (the attempt allowlist, possibly `[]`) |
+| Band denominator | **client nodes only** — the band is what the learner must produce |
+| Arc | whatever the situation genuinely is; a relationship opener is as valid as an errand |
+| Extra node fields | `slowSL` + `deliverySlowSL`, `glossPolicy`, `stallHandlers`, `focusSpan` |
+| Timing | a **pacing profile** (`server/catalog/pacing.json`) — see 2c |
 
-Set `dialogueAdvance` in the reconcile input to match. Absent ⇒ `"tap"`.
+Set `dialogueAdvance: "audio"` in the reconcile input.
 
 ### The audio-only brief — Writing for the ear
 
 **Quote this verbatim, first, into every content brief for an `advance: "audio"` level** — ahead of the
 stage's own instructions, before anything else the brief carries. It goes to the three `lesson-designer`s
-(2a), the `learning-designer` (2b), `slovenian-author` (3) and `scenario-critic` (5). **A tapped tree never
-carries it** — a rehearsal tree is read as much as heard, and this standard would rule out situations that
-are perfectly good tapped.
+(2a), the `learning-designer` (2b), `slovenian-author` (3) and `scenario-critic` (5).
 
 It is stated as properties of a spoken lesson rather than as instructions, so the same words serve a role
 that chooses the scene, a role that writes the lines, and a role that rules on them.
@@ -361,7 +362,7 @@ Every brief carries, identically:
   >
   > **Storytelling exists to enhance the learning. If it distracts from it, it is the wrong path.**
 
-- **What the format can do — both modes.** Quoted verbatim into every brief:
+- **What the format can do.** Quoted verbatim into every brief:
 
   > - `glossPolicy` says when the learner sees a node's English: `"tap"` (click to reveal), `"after"` (it
   >   follows the Slovene on its own), or `"held"` (the situation carries the meaning here).
@@ -372,9 +373,7 @@ Every brief carries, identically:
   >   sentence, then again alone, is one node, and counts once toward length and the split. Where the
   >   phrase already stands alone or carries one or two words of company, it is heard once and moves on.
 
-- **What the format can do — `advance: "audio"` only.** Quote this block **only when the level is
-  spoken**; a tapped tree has none of these fields and a brief that carries them invites a design that
-  cannot be built:
+- **What a spoken scene can do.** Quoted verbatim into every brief:
 
   > - `slowSL` belongs to a node and can only re-say **that node's own line**. A beat that wants the target
   >   re-modelled slowly must carry the target in its own line.
@@ -561,8 +560,8 @@ free to change. After stage 3 the run only goes forward; a problem found later i
 **Checks:**
 
 - **The graph is well-formed for its advance mode** (stage 1's table), against the template in
-  docs/rehearsal-dialogues.md: `root` is an `npc` node, every path ends at `next: []`, and a tapped tree's
-  branches re-converge onto shared later nodes.
+  docs/rehearsal-dialogues.md: `root` is an `npc` node, every path ends at `next: []`, and the spine is
+  `next[0]` throughout.
 - **Every objective is demonstrated on a reachable path**, and the objectives are distinct across the
   scenario's levels.
 - **The count clears the floor** (2a › Sizing). **Below the floor goes back to 2b.** Sitting *exactly* on
@@ -693,9 +692,6 @@ lines and the findings — and carry it into stage 5.
 of it would be C steering content. Nothing is re-dispatched here: the report goes to the critic at stage 5,
 and if what it found is bad enough to need a rewrite, the critic says so and the editor does it at 5b.
 
-A **tapped** tree skips this stage. Its student reads as much as listens, and the tool prints one arm of a
-branching tree — a partial page the reader would judge as if it were the whole lesson.
-
 ### 5 — Independent critique (J → critic)
 
 Dispatch **`scenario-critic`** (dialogue mode) over ALL levels' trees + deltas at once. For a spoken level
@@ -785,7 +781,7 @@ critic's fixes onto what is there:
 
 - the `scenario` header
 - `dialogueVoices`
-- `dialogueAdvance` (omit for `"tap"`)
+- `dialogueAdvance: "audio"`
 - `dialoguePacing` (spoken scenes; omit to keep whatever the file already carries)
 - `levels` — each with `levelLabel`, `title`, optional `background`, `frameEN`, optional `tutorial`,
   `objectives:[{label,descriptorEN}]`, `root`, `nodes` (LS's `sl/en/deliverySL/slowSL/deliverySlowSL` plus
