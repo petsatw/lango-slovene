@@ -3537,5 +3537,26 @@
     "sl": "pest",
     "gloss": "handful",
     "a1": true
+  },
+  "pa_do_jutri": {
+    "kind": "chunk",
+    "sl": "Pa do jutri.",
+    "gloss": "See you tomorrow.",
+    "predictableError": "Says *Vidim vas jutri* (a word-for-word 'I'll see you tomorrow'), which Slovenes don't use as a goodbye. The goodbye is *Pa do jutri* or *Se vidimo jutri*.",
+    "a1": true
+  },
+  "skoda": {
+    "kind": "vocabulary",
+    "sl": "škoda",
+    "gloss": "pity / what a shame (a standalone reaction)",
+    "predictableError": "reaching for 'žal' or 'žal mi je' as the reaction; the one-word 'what a shame' is 'Škoda.'",
+    "a1": true
+  },
+  "blitva": {
+    "kind": "vocabulary",
+    "sl": "blitva",
+    "gloss": "chard (fem.)",
+    "predictableError": "echoing the accusative 'blitvo' heard in her list when asking about it; asked about on its own, it is the nominative 'blitva'",
+    "a1": true
   }
 }

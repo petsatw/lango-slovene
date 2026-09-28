@@ -1,0 +1,292 @@
+{
+  "id": "trznica-l9",
+  "scenarioId": "trznica",
+  "level": 9,
+  "levelLabel": "Intermediate",
+  "title": "Klepet pri stojnici",
+  "objectives": [
+    {
+      "label": "Ste tu vsak dan?",
+      "descriptorEN": "Ask about her — is she here every day, when is she here."
+    },
+    {
+      "label": "Je to vse za danes?",
+      "descriptorEN": "Ask whether that's all she has today."
+    }
+  ],
+  "introduces": [
+    "je_to_vse_za_danes",
+    "kdaj_ste_tu",
+    "pa_do_jutri",
+    "razumem",
+    "ste_tu_vsak_dan"
+  ],
+  "audio": "ready",
+  "voices": {
+    "npc": "shop-assistant",
+    "client": "slavko"
+  },
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Dober dan! Kar poglejte, kaj je še ostalo.",
+      "en": "Good day! Have a look at what's still left.",
+      "deliverySL": "[toplo] Dober dan! Kar poglejte, kaj je še ostalo.",
+      "next": [
+        "c1a",
+        "c1b"
+      ],
+      "learnables": [
+        "dober_dan",
+        "kaj"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Dober dan. Pol kila jagod, prosim.",
+      "en": "Good day. Half a kilo of strawberries, please.",
+      "next": [
+        "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "pol_kila_prosim",
+        "jagoda"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Dober dan. Eno solato, prosim.",
+      "en": "Good day. One lettuce, please.",
+      "next": [
+        "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "eno_femacc",
+        "solata"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Tukaj imate. Še kaj?",
+      "en": "Here you go. Anything else?",
+      "deliverySL": "[toplo] Tukaj imate. Še kaj?",
+      "next": [
+        "c2a",
+        "c2b"
+      ],
+      "learnables": [
+        "tukaj_imate",
+        "kaj"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Ne, hvala. Koliko stane?",
+      "en": "No, thanks. How much is it?",
+      "next": [
+        "n3"
+      ],
+      "learnables": [
+        "koliko_stane",
+        "ne_hvala"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "To je vse, hvala.",
+      "en": "That's all, thanks.",
+      "next": [
+        "n3"
+      ],
+      "learnables": [
+        "hvala",
+        "to_je_vse"
+      ]
+    },
+    "n3": {
+      "speaker": "npc",
+      "sl": "To bo dva evra petdeset.",
+      "en": "That'll be two euros fifty.",
+      "deliverySL": "[toplo] To bo dva evra petdeset.",
+      "next": [
+        "c3a",
+        "c3b",
+        "c3c"
+      ],
+      "learnables": [
+        "evro",
+        "stevilo_dva",
+        "stevilo_petdeset"
+      ]
+    },
+    "c3a": {
+      "speaker": "client",
+      "sl": "Izvolite. Ste tu vsak dan?",
+      "en": "Here you are. Are you here every day?",
+      "context": "she comes every day",
+      "next": [
+        "n4daily"
+      ],
+      "learnables": [
+        "ste_tu_vsak_dan",
+        "izvolite"
+      ]
+    },
+    "c3b": {
+      "speaker": "client",
+      "sl": "Izvolite. Ste tu vsak dan?",
+      "en": "Here you are. Are you here every day?",
+      "context": "she only comes in the mornings",
+      "next": [
+        "n4morn"
+      ],
+      "learnables": [
+        "ste_tu_vsak_dan",
+        "izvolite"
+      ]
+    },
+    "c3c": {
+      "speaker": "client",
+      "sl": "Izvolite. Je to vse za danes?",
+      "en": "Here you are. Is that all for today?",
+      "next": [
+        "n4all"
+      ],
+      "learnables": [
+        "je_to_vse_za_danes",
+        "izvolite"
+      ]
+    },
+    "n4daily": {
+      "speaker": "npc",
+      "sl": "Ja, vsak dan. Razen v nedeljo.",
+      "en": "Yes, every day. Except Sunday.",
+      "deliverySL": "[toplo] Ja, vsak dan. Razen v nedeljo.",
+      "next": [
+        "cz1",
+        "cz2"
+      ],
+      "learnables": [
+        "ja",
+        "nedelja"
+      ]
+    },
+    "n4morn": {
+      "speaker": "npc",
+      "sl": "Ne cel dan, samo zjutraj.",
+      "en": "Not all day — only in the mornings.",
+      "deliverySL": "[toplo] Ne cel dan, samo zjutraj.",
+      "next": [
+        "c5a",
+        "c5b"
+      ],
+      "learnables": [
+        "zjutraj",
+        "ne"
+      ]
+    },
+    "c5a": {
+      "speaker": "client",
+      "sl": "Do kdaj ste tu?",
+      "en": "Until when are you here?",
+      "next": [
+        "n5noon"
+      ],
+      "learnables": [
+        "kdaj_ste_tu"
+      ]
+    },
+    "c5b": {
+      "speaker": "client",
+      "sl": "Aha, razumem.",
+      "en": "Oh, I see.",
+      "next": [
+        "nSee"
+      ],
+      "learnables": [
+        "razumem"
+      ]
+    },
+    "n5noon": {
+      "speaker": "npc",
+      "sl": "Do poldneva. Potem pospravim.",
+      "en": "Until noon. Then I pack up.",
+      "deliverySL": "[toplo] Do poldneva. Potem pospravim.",
+      "next": [
+        "cz1",
+        "cz2"
+      ],
+      "learnables": [
+        "potem"
+      ]
+    },
+    "n4all": {
+      "speaker": "npc",
+      "sl": "Ja, danes je šlo vse. Jutri imamo še več.",
+      "en": "Yes, everything sold today. Tomorrow we'll have more.",
+      "deliverySL": "[veselo] Ja, danes je šlo vse. Jutri imamo še več.",
+      "next": [
+        "cz1",
+        "cz2"
+      ],
+      "learnables": [
+        "danes",
+        "jutri",
+        "ja"
+      ]
+    },
+    "nSee": {
+      "speaker": "npc",
+      "sl": "Potem pa pridite zgodaj. Zjutraj je najlepše.",
+      "en": "Then come early. The mornings are the best.",
+      "deliverySL": "[toplo] Potem pa pridite zgodaj. Zjutraj je najlepše.",
+      "next": [
+        "cz1",
+        "cz2"
+      ],
+      "learnables": [
+        "zjutraj",
+        "potem",
+        "pa"
+      ]
+    },
+    "cz1": {
+      "speaker": "client",
+      "sl": "Hvala. Nasvidenje.",
+      "en": "Thank you. Goodbye.",
+      "next": [
+        "nBye"
+      ],
+      "learnables": [
+        "hvala",
+        "nasvidenje"
+      ]
+    },
+    "cz2": {
+      "speaker": "client",
+      "sl": "Hvala, pa do jutri.",
+      "en": "Thanks, see you tomorrow.",
+      "next": [
+        "nBye"
+      ],
+      "learnables": [
+        "hvala",
+        "pa_do_jutri"
+      ]
+    },
+    "nBye": {
+      "speaker": "npc",
+      "sl": "Srečno, pa se še kaj oglasite!",
+      "en": "All the best, and do drop by again!",
+      "deliverySL": "[toplo] Srečno, pa se še kaj oglasite!",
+      "next": [],
+      "learnables": [
+        "pa",
+        "kaj"
+      ]
+    }
+  }
+}

@@ -304,7 +304,8 @@
         "vikanje",
         "kaj_pomeni",
         "kaj_to_pomeni",
-        "ne_hvala"
+        "ne_hvala",
+        "skoda"
       ],
       "scenarios": [
         {
@@ -583,7 +584,8 @@
         "mandarina",
         "je_sladko",
         "je_kislo",
-        "je_zrelo"
+        "je_zrelo",
+        "blitva"
       ],
       "scenarios": [
         {
@@ -913,7 +915,8 @@
         "lep_pozdrav",
         "hvala_za",
         "veselim_se",
-        "hcerka"
+        "hcerka",
+        "pa_do_jutri"
       ],
       "scenarios": [
         {

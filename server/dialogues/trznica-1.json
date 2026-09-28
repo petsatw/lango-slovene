@@ -1,0 +1,209 @@
+{
+  "id": "trznica-l1",
+  "scenarioId": "trznica",
+  "level": 1,
+  "levelLabel": "Basic",
+  "title": "Prvi nakup",
+  "objectives": [
+    {
+      "label": "Dober dan.",
+      "descriptorEN": "Greet the seller."
+    },
+    {
+      "label": "En / Eno ___, prosim.",
+      "descriptorEN": "Ask for one of something — en for masculine, eno for feminine."
+    },
+    {
+      "label": "Hvala, nasvidenje.",
+      "descriptorEN": "Thank her and say goodbye."
+    }
+  ],
+  "introduces": [
+    "bucka",
+    "dober_dan",
+    "en_masacc",
+    "eno_femacc",
+    "hvala",
+    "hvala_nasvidenje",
+    "kumara",
+    "nasvidenje",
+    "paprika",
+    "por",
+    "radic",
+    "solata"
+  ],
+  "audio": "ready",
+  "voices": {
+    "npc": "shop-assistant",
+    "client": "slavko"
+  },
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Dober dan! Kaj bo?",
+      "en": "Good day! What'll it be?",
+      "deliverySL": "[toplo] Dober dan! Kaj bo?",
+      "next": [
+        "c1a",
+        "c1b",
+        "c1c"
+      ],
+      "learnables": [
+        "dober_dan",
+        "kaj"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Dober dan. Eno solato, prosim.",
+      "en": "Good day. One lettuce, please.",
+      "next": [
+        "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "eno_femacc",
+        "solata"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Dober dan. Eno papriko, prosim.",
+      "en": "Good day. One pepper, please.",
+      "next": [
+        "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "eno_femacc",
+        "paprika"
+      ]
+    },
+    "c1c": {
+      "speaker": "client",
+      "sl": "Dober dan. En por, prosim.",
+      "en": "Good day. One leek, please.",
+      "next": [
+        "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "en_masacc",
+        "por"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Izvolite. Kaj pa še?",
+      "en": "Here you are. What else?",
+      "deliverySL": "[toplo] Izvolite. Kaj pa še?",
+      "next": [
+        "c2a",
+        "c2b",
+        "c2c"
+      ],
+      "learnables": [
+        "izvolite",
+        "pa",
+        "kaj"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Eno kumaro, prosim.",
+      "en": "One cucumber, please.",
+      "next": [
+        "n3"
+      ],
+      "learnables": [
+        "eno_femacc",
+        "kumara"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "Eno bučko, prosim.",
+      "en": "One courgette, please.",
+      "next": [
+        "n3"
+      ],
+      "learnables": [
+        "eno_femacc",
+        "bucka"
+      ]
+    },
+    "c2c": {
+      "speaker": "client",
+      "sl": "En radič, prosim.",
+      "en": "One radicchio, please.",
+      "next": [
+        "n3"
+      ],
+      "learnables": [
+        "en_masacc",
+        "radic"
+      ]
+    },
+    "n3": {
+      "speaker": "npc",
+      "sl": "Tako. To bo dva evra petdeset.",
+      "en": "There you go. That'll be two euros fifty.",
+      "deliverySL": "[toplo] Tako. To bo dva evra petdeset.",
+      "next": [
+        "c3a",
+        "c3b",
+        "c3c"
+      ],
+      "learnables": [
+        "evro",
+        "stevilo_dva",
+        "stevilo_petdeset"
+      ]
+    },
+    "c3a": {
+      "speaker": "client",
+      "sl": "Hvala.",
+      "en": "Thank you.",
+      "next": [
+        "nBye"
+      ],
+      "learnables": [
+        "hvala"
+      ]
+    },
+    "c3b": {
+      "speaker": "client",
+      "sl": "Hvala, nasvidenje.",
+      "en": "Thanks, goodbye.",
+      "next": [
+        "nBye"
+      ],
+      "learnables": [
+        "hvala_nasvidenje"
+      ]
+    },
+    "c3c": {
+      "speaker": "client",
+      "sl": "Nasvidenje.",
+      "en": "Goodbye.",
+      "next": [
+        "nBye"
+      ],
+      "learnables": [
+        "nasvidenje"
+      ]
+    },
+    "nBye": {
+      "speaker": "npc",
+      "sl": "Hvala vam, lep dan še naprej.",
+      "en": "Thank you, have a nice day.",
+      "deliverySL": "[toplo] Hvala vam, lep dan še naprej.",
+      "next": [],
+      "learnables": [
+        "hvala",
+        "lep"
+      ]
+    }
+  }
+}

@@ -76,7 +76,56 @@
         "sop",
         "pest"
       ]
-    }
+    },
+    "dialogue": {
+      "voices": {
+        "npc": "shop-assistant",
+        "client": "slavko"
+      },
+      "levels": [
+        {
+          "level": 1,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 2,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 3,
+          "levelLabel": "Intermediate"
+        },
+        {
+          "level": 4,
+          "levelLabel": "Intermediate"
+        },
+        {
+          "level": 5,
+          "levelLabel": "Intermediate"
+        },
+        {
+          "level": 6,
+          "levelLabel": "Intermediate"
+        },
+        {
+          "level": 7,
+          "levelLabel": "Intermediate"
+        },
+        {
+          "level": 8,
+          "levelLabel": "Advanced"
+        },
+        {
+          "level": 9,
+          "levelLabel": "Intermediate"
+        },
+        {
+          "level": 10,
+          "levelLabel": "Intermediate"
+        }
+      ]
+    },
+    "a1": true
   },
   "objectives": []
 }

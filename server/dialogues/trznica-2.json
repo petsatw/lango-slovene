@@ -1,0 +1,290 @@
+{
+  "id": "trznica-l2",
+  "scenarioId": "trznica",
+  "level": 2,
+  "levelLabel": "Basic",
+  "title": "Koliko stane?",
+  "objectives": [
+    {
+      "label": "Koliko stane?",
+      "descriptorEN": "Ask the price."
+    },
+    {
+      "label": "Počasi, prosim.",
+      "descriptorEN": "When you don't catch it: slower, again, repeat, or say you don't understand."
+    },
+    {
+      "label": "Ne, hvala. To je vse.",
+      "descriptorEN": "Answer 'anything else?' — one more item, or that's all."
+    }
+  ],
+  "introduces": [
+    "banana",
+    "hruska",
+    "ja",
+    "koliko_stane",
+    "mandarina",
+    "ne_hvala",
+    "ne_razumem",
+    "pocasi_prosim",
+    "ponovite_prosim",
+    "se_enkrat",
+    "to_je_vse"
+  ],
+  "audio": "ready",
+  "voices": {
+    "npc": "shop-assistant",
+    "client": "slavko"
+  },
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Dober dan! Sadje je danes čisto sveže. Kaj vam dam?",
+      "en": "Good day! The fruit is really fresh today. What can I get you?",
+      "deliverySL": "[toplo] Dober dan! Sadje je danes čisto sveže. Kaj vam dam?",
+      "next": [
+        "c1a",
+        "c1b"
+      ],
+      "learnables": [
+        "dober_dan",
+        "danes",
+        "kaj"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Dober dan. Eno hruško, prosim.",
+      "en": "Good day. One pear, please.",
+      "next": [
+        "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "eno_femacc",
+        "hruska"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Dober dan. Eno banano, prosim.",
+      "en": "Good day. One banana, please.",
+      "next": [
+        "n2"
+      ],
+      "learnables": [
+        "dober_dan",
+        "eno_femacc",
+        "banana"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Izvolite.",
+      "en": "Here you are.",
+      "deliverySL": "[toplo] Izvolite.",
+      "next": [
+        "c2a",
+        "c2b"
+      ],
+      "learnables": [
+        "izvolite"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Koliko stane?",
+      "en": "How much is it?",
+      "next": [
+        "n3"
+      ],
+      "learnables": [
+        "koliko_stane"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "Hvala. Koliko stane?",
+      "en": "Thanks. How much is it?",
+      "next": [
+        "n3"
+      ],
+      "learnables": [
+        "hvala",
+        "koliko_stane"
+      ]
+    },
+    "n3": {
+      "speaker": "npc",
+      "sl": "Šestdeset centov bo.",
+      "en": "That'll be sixty cents.",
+      "deliverySL": "[poslovno] Šestdeset centov bo.",
+      "next": [
+        "c3a",
+        "c3b",
+        "c3c",
+        "c3d"
+      ],
+      "learnables": [
+        "cent",
+        "stevilo_sestdeset"
+      ]
+    },
+    "c3a": {
+      "speaker": "client",
+      "sl": "Počasi, prosim.",
+      "en": "Slowly, please.",
+      "context": "he didn't catch the price",
+      "next": [
+        "n4"
+      ],
+      "learnables": [
+        "pocasi_prosim"
+      ]
+    },
+    "c3b": {
+      "speaker": "client",
+      "sl": "Ponovite, prosim.",
+      "en": "Please repeat that.",
+      "context": "he didn't catch the price",
+      "next": [
+        "n4"
+      ],
+      "learnables": [
+        "ponovite_prosim"
+      ]
+    },
+    "c3c": {
+      "speaker": "client",
+      "sl": "Še enkrat, prosim.",
+      "en": "Once more, please.",
+      "context": "he didn't catch the price",
+      "next": [
+        "n4"
+      ],
+      "learnables": [
+        "se_enkrat"
+      ]
+    },
+    "c3d": {
+      "speaker": "client",
+      "sl": "Ne razumem.",
+      "en": "I don't understand.",
+      "context": "he didn't catch the price",
+      "next": [
+        "n4"
+      ],
+      "learnables": [
+        "ne_razumem"
+      ]
+    },
+    "n4": {
+      "speaker": "npc",
+      "sl": "Šestdeset centov. Bo še kaj?",
+      "en": "Sixty cents. Anything else?",
+      "deliverySL": "[toplo] Šestdeset centov. Bo še kaj?",
+      "next": [
+        "c4a",
+        "c4b"
+      ],
+      "learnables": [
+        "cent",
+        "kaj",
+        "stevilo_sestdeset"
+      ]
+    },
+    "c4a": {
+      "speaker": "client",
+      "sl": "Ja, eno mandarino, prosim.",
+      "en": "Yes, one mandarin, please.",
+      "next": [
+        "n5a"
+      ],
+      "learnables": [
+        "eno_femacc",
+        "mandarina",
+        "ja"
+      ]
+    },
+    "c4b": {
+      "speaker": "client",
+      "sl": "Ne, hvala. To je vse.",
+      "en": "No, thanks. That's all.",
+      "next": [
+        "n5b"
+      ],
+      "learnables": [
+        "ne_hvala",
+        "to_je_vse"
+      ]
+    },
+    "n5a": {
+      "speaker": "npc",
+      "sl": "Izvolite. Skupaj bo devetdeset centov.",
+      "en": "Here you are. That's ninety cents altogether.",
+      "deliverySL": "[toplo] Izvolite. Skupaj bo devetdeset centov.",
+      "next": [
+        "cz1",
+        "cz2"
+      ],
+      "learnables": [
+        "izvolite",
+        "cent",
+        "stevilo_devetdeset"
+      ]
+    },
+    "n5b": {
+      "speaker": "npc",
+      "sl": "V redu, potem pa šestdeset centov.",
+      "en": "All right, sixty cents then.",
+      "deliverySL": "[toplo] V redu, potem pa šestdeset centov.",
+      "next": [
+        "cz1",
+        "cz2"
+      ],
+      "learnables": [
+        "v_redu",
+        "cent",
+        "potem",
+        "pa",
+        "stevilo_sestdeset"
+      ]
+    },
+    "cz1": {
+      "speaker": "client",
+      "sl": "Hvala.",
+      "en": "Thank you.",
+      "next": [
+        "nBye"
+      ],
+      "learnables": [
+        "hvala"
+      ]
+    },
+    "cz2": {
+      "speaker": "client",
+      "sl": "Hvala, nasvidenje.",
+      "en": "Thanks, goodbye.",
+      "next": [
+        "nBye"
+      ],
+      "learnables": [
+        "hvala_nasvidenje"
+      ]
+    },
+    "nBye": {
+      "speaker": "npc",
+      "sl": "Hvala vam, nasvidenje! Pa še kaj pridite.",
+      "en": "Thank you, goodbye! Do come again.",
+      "deliverySL": "[toplo] Hvala vam, nasvidenje! Pa še kaj pridite.",
+      "next": [],
+      "learnables": [
+        "hvala",
+        "nasvidenje",
+        "pa",
+        "kaj"
+      ]
+    }
+  }
+}
