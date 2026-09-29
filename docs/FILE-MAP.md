@@ -106,7 +106,7 @@ Every operator command maps to a file here (or in `server/probes/` / `server/uti
 | `npm run test:mastery` | `server/probes/mastery-test.ts` | one clip through the mastery loop, verify objective progress |
 | `npm run test:learnable` | `server/probes/learnable-test.ts` | durable mastery rules — unit + temp-file store + `--live` end-to-end |
 | `npm run probe:converse` | `server/probes/converse-probe.ts` | one clip through free conversation; verify reply + per-learnable crediting |
-| `npm run test:live-match` | `server/probes/live-match-test.ts` | the live-mode phrase matcher on plain inputs — surfaces, aliases, fuzzy, keyterms |
+| `npm run test:live-match` | `server/probes/live-match-test.ts` | live-mode crediting on plain inputs — transcriber hints, the verdict rule, the lesson score |
 | `npm run test:retention` | `server/probes/retention-test.ts` | the record writers + the retention sweep against a temp asset dir — what a declining session leaves behind |
 | `npm run probe:live-credit` | `server/probes/live-credit-probe.ts` | grade a RECORDED live session and print both evidence channels; writes nothing. No args lists the sessions |
 | `npm run build:seed-assets` | `server/scripts/build-seed-assets.ts` | pre-build the seed's teacher-voice line audio for the starter pack (operator-run; bills) |

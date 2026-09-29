@@ -49,9 +49,11 @@ export function accessCodeOk(supplied: unknown): boolean {
  *  this is on by default — running the SAME learner through both vendors back to back is exactly the
  *  comparison we want, and a restart between runs would only add noise. */
 export function resolveProvider(requested: unknown): LiveProvider {
-  const configured = (process.env.LIVE_PROVIDER || "gemini") as LiveProvider;
+  // Grok by default: its transcriber takes the Slovene hint, where Gemini's ignored it and wrote the
+  // learner's Slovene as Spanish and Italian.
+  const configured = (process.env.LIVE_PROVIDER || "grok") as LiveProvider;
   if (requested === "gemini" || requested === "grok") return requested;
-  return configured === "grok" ? "grok" : "gemini";
+  return configured === "gemini" ? "gemini" : "grok";
 }
 
 function sweep(): void {

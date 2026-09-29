@@ -32,8 +32,8 @@ GROK_IMAGE_MODEL=grok-imagine-image-quality
 #     ceiling is a provider-side spend cap in the vendor console, not anything in this file. ---
 # Unset = the live tutor is closed. Any non-empty value opens it to whoever has the string.
 LIVE_ACCESS_CODE=
-# Which vendor answers. Testers may override per session (?provider=grok); everyone else gets this.
-LIVE_PROVIDER=gemini
+# Which vendor answers. Testers may override per session (?provider=gemini); everyone else gets this.
+LIVE_PROVIDER=grok
 SESSION_TTL_SEC=600
 LIVE_MAX_CONCURRENT=3
 # =1 logs vendor events the adapter does not handle. Set it when a transcript or a state never arrives:

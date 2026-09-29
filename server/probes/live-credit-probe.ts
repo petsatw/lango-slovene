@@ -1,4 +1,4 @@
-// Live-mode crediting against a REAL recorded session — the grader, the matcher and the shared firewall
+// Live-mode crediting against a REAL recorded session — the grader and the shared firewall
 // on a transcript a vendor actually produced. It bills one cheap text call and writes nothing: the
 // learner model, the turn log and the session log are all left alone, so a session can be re-graded as
 // often as the rules change.
@@ -12,7 +12,8 @@ import path from "node:path";
 import { ASSET_DIR } from "../assets/store";
 import * as learner from "../assets/learner";
 import { creditFromEvidence } from "../mastery";
-import { gradeSession } from "../live/grader";
+import { LEARNABLES } from "../learnables";
+import { creditable, gradeSession } from "../live/grader";
 import { keytermsFor } from "../live/match";
 import { buildLessonPrompt } from "../live/prompt";
 import type { LiveSessionLog } from "../live/log";
@@ -60,17 +61,20 @@ if (!grade) {
 }
 
 console.log(`\ngraded by ${grade.provider} in ${grade.gradeMs}ms\n`);
-console.log("  target                asr        uptake  correct  recast  line  verdict   said");
+console.log("  learnable             lesson  uptake  correct  recast  line  verdict   said");
 for (const c of grade.channels) {
   console.log(
-    `  ${c.id.padEnd(20)}  ${(c.asr ? c.asrVia! : "—").padEnd(9)}` +
+    `  ${c.id.padEnd(20)}  ${(c.inLesson ? "yes" : "—").padEnd(6)}` +
       `  ${String(c.uptake).padEnd(6)}  ${String(c.correct).padEnd(7)}  ${String(c.recast).padEnd(6)}` +
       `  ${String(c.saidLine).padEnd(4)}  ${c.verdict.padEnd(8)}  ${c.said || "—"}`,
   );
 }
 
 // The same firewall the tap mode runs on, against a throwaway model so nothing durable moves.
-const credit = creditFromEvidence(learner.load("live-credit-probe"), grade.evidence, targets);
+const { total, succeeded, attempted } = grade.lessonScore;
+console.log(`\nlesson score: ${succeeded.length} of ${total}  (succeeded ${succeeded.join(", ") || "—"} · attempted ${attempted.join(", ") || "—"})`);
+const probeModel = learner.load("live-credit-probe");
+const credit = creditFromEvidence(probeModel, creditable(probeModel, grade), Object.values(LEARNABLES));
 console.log(
   `\ncredit: ${credit.progress.length ? credit.progress.map((p) => `${p.id}=${p.result}`).join("  ") : "none"}\n`,
 );

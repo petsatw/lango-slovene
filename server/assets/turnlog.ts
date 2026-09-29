@@ -74,24 +74,25 @@ export interface TurnLogInput {
     observed: Array<{ surface: string; gloss: string }>;
     candidates: Array<{ surface: string; gloss: string }>;
   };
-  // Live-session grading (server/live/grader.ts). One row per session rather than per turn, and it
-  // records the two evidence channels SEPARATELY — the transcript's own hearing and the tutor's uptake —
-  // so how often they agree accrues from ordinary running, with no experiment to schedule.
+  // Live-session grading (server/live/grader.ts). One row per session rather than per turn: what the
+  // grader read for every learnable the learner produced, and the lesson score over the lesson's own
+  // targets.
   live?: {
     sessionId: string;
     lessonId: string;
     liveProvider: string;
     channels: Array<{
       id: string;
-      asr: boolean;
-      asrVia: string | null;
+      inLesson: boolean;
       uptake: boolean;
+      saidLine: number;
       correct: boolean;
       recast: boolean;
       said: string;
       saidLang: string;
       verdict: string;
     }>;
+    lessonScore: { total: number; succeeded: string[]; attempted: string[] };
   };
   // Post-credit durable counts for exactly the ids credited this turn — so the log shows whether the
   // verdict bundled multiple items or moved one earned production.

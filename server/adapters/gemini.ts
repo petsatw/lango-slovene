@@ -101,13 +101,13 @@ const WITNESS_SCHEMA = {
   required: ["reply", "transcript_verbatim", "utterance_lang", "targets", "observed"],
 };
 
-// The live GRADER schema — one row per target, facts only. The learner line is named by NUMBER rather
-// than quoted, so the server resolves it against the transcript it supplied and a reading can only point
-// at a line that was really there.
+// The live GRADER schema — one row per catalog learnable the learner produced, facts only. The learner
+// line is named by NUMBER rather than quoted, so the server resolves it against the transcript it
+// supplied and a reading can only point at a line that was really there.
 const GRADE_SCHEMA = {
   type: "OBJECT",
   properties: {
-    targets: {
+    produced: {
       type: "ARRAY",
       items: {
         type: "OBJECT",
@@ -123,7 +123,7 @@ const GRADE_SCHEMA = {
       },
     },
   },
-  required: ["targets"],
+  required: ["produced"],
 };
 
 // The grader is NOT the tutor. It is told so in its first line, because the same model in its teaching
@@ -137,24 +137,37 @@ const GRADE_INSTRUCTION = [
   "actually said back, and the tutor heard the AUDIO rather than this transcript — so a tutor line that",
   "answers a phrase is evidence the phrase was said even when the learner's own line does not show it.",
   "",
-  "Mark conservatively. A target was produced only when the LEARNER said it, on their own line — a",
-  "word the tutor said is never the learner's. It may appear inside a longer sentence and in whatever",
-  "form that sentence needs: 'krompir' is produced by 'Kilo krompirja, prosim.' When you are unsure the",
-  "learner said it, they did not.",
+  "You are given the CATALOG of learnables, one per line: id — «Slovene» (kind) = meaning. Find every",
+  "catalog learnable the LEARNER produced anywhere in the conversation. The kind says how one is carried:",
+  "  vocabulary — one word, listed in its dictionary form. It is produced in ANY form a sentence gives it:",
+  "               case, number, gender, person, tense. 'hrušk' and 'hruške' both carry «hruška»;",
+  "               'Kilo krompirja, prosim.' carries «krompir».",
+  "  chunk      — a fixed phrase used whole: «Dober dan.», «To je vse.». It is produced when the learner",
+  "               says the phrase, with the small variation natural speech has ('Ne hvala' for «Ne,",
+  "               hvala.»). One of its words alone is not the chunk.",
+  "  pattern    — a frame with a slot ___: «Imate danes ___?». It is produced when the learner's line",
+  "               uses the frame around any filler, in the order and forms Slovene allows: 'Imate hruške",
+  "               danes?' carries «Imate danes ___?».",
+  "One line can carry several learnables, and a phrase and the words inside it are each produced:",
+  "'Pol kile hrušk, prosim.' carries the pol-kila frame, «hruška» and «prosim» wherever the catalog has",
+  "them. Report each one.",
   "",
-  "For each target phrase you are given, report:",
-  "  said_line — the number of the ONE LEARNER line this phrase rests on. 0 if no learner line does.",
+  "Mark conservatively. A learnable was produced only when the LEARNER said it, on their own line — a",
+  "word the tutor said is never the learner's. When you are unsure the learner said it, they did not.",
+  "Use catalog ids exactly as given; Slovene the catalog does not hold is not reported.",
+  "",
+  "For each learnable produced, report ONE row. If it was produced more than once, cite the line where",
+  "it was said best — correct and taken up — so the row reflects the learner's best production:",
+  "  id        — the catalog id.",
+  "  said_line — the number of the LEARNER line it rests on.",
   "  uptake    — did the TUTOR LINE IMMEDIATELY AFTER said_line reply as though the learner had just",
-  "              produced this phrase (greeted back, served what was ordered, answered the question)?",
-  "              A tutor opening, greeting or introducing itself is not a reply to anything: uptake is",
-  "              the tutor RESPONDING to that learner line, and it is false when said_line is 0.",
-  "  correct   — reading both that learner line and the tutor's reply, was the learner's form correct",
-  "              Slovene for this phrase? Any case, gender or number that works is correct.",
-  "  recast    — did the tutor say the phrase back in a corrected form?",
+  "              produced it (greeted back, served what was ordered, answered the question)? A tutor",
+  "              opening, greeting or introducing itself is not a reply to anything.",
+  "  correct   — reading both that learner line and the tutor's reply, was the learner's form real,",
+  "              correct Slovene for this learnable in the form the sentence needs?",
+  "  recast    — did the tutor say it back in a corrected form?",
   "  said_lang — the language the WORDS of that line are in: sl, en or other. A line written in English",
-  "              words is en even when it means exactly what the Slovene target means.",
-  "",
-  "Report a row for EVERY target. A target that never came up gets false, false, false, 0, \"other\".",
+  "              words is en even when it means exactly what the Slovene means.",
 ].join("\n");
 
 /** Trim a provider error body so we never echo anything sensitive and keep logs short. */
@@ -311,13 +324,13 @@ export class GeminiE2 implements E2Adapter {
   // to see who spoke each line, since the whole two-channel reading turns on the alternation.
   async grade(input: {
     transcript: ConversationTurn[];
-    targets: WitnessTarget[];
+    catalog: WitnessTarget[];
   }): Promise<LiveTargetReading[]> {
     const key = requireKey();
     const conversation = input.transcript
       .map((t, i) => `${i + 1}. ${t.role === "tutor" ? "TUTOR" : "LEARNER"}: ${t.text}`)
       .join("\n");
-    const targets = input.targets
+    const catalog = input.catalog
       .map((t) => `- ${t.id} — «${t.sl}» (${t.kind}) = ${t.gloss}`)
       .join("\n");
 
@@ -327,7 +340,7 @@ export class GeminiE2 implements E2Adapter {
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: GRADE_INSTRUCTION }] },
         contents: [
-          { role: "user", parts: [{ text: `TARGET PHRASES:\n${targets}\n\nTRANSCRIPT:\n${conversation}` }] },
+          { role: "user", parts: [{ text: `CATALOG:\n${catalog}\n\nTRANSCRIPT:\n${conversation}` }] },
         ],
         generationConfig: {
           responseMimeType: "application/json",
@@ -349,7 +362,7 @@ export class GeminiE2 implements E2Adapter {
       throw new Error(`Gemini returned non-JSON: ${text.slice(0, 200)}`);
     }
 
-    const rows = Array.isArray(parsed.targets) ? parsed.targets : [];
+    const rows = Array.isArray(parsed.produced) ? parsed.produced : [];
     return rows
       .map((r: any) => ({
         id: String(r?.id ?? ""),

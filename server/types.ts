@@ -134,23 +134,24 @@ export interface WitnessResult {
   role?: string | null;
 }
 
-/** The live grader's reading of ONE target across a finished spoken session (MODEL → SERVER). Facts
- *  only, same discipline as the witness contract: the verdict rule and all crediting are the server's
- *  (server/live/grader.ts). The grader reads a transcript, not audio, and it is not the tutor — a tutor
- *  is built to accept imperfect input warmly, which is the opposite of what marking wants. */
+/** The live grader's reading of ONE catalog learnable the learner produced in a finished spoken session
+ *  (MODEL → SERVER). Facts only, same discipline as the witness contract: the verdict rule and all
+ *  crediting are the server's (server/live/grader.ts). The grader reads a transcript, not audio, and it
+ *  is not the tutor — a tutor is built to accept imperfect input warmly, which is the opposite of what
+ *  marking wants. */
 export interface LiveTargetReading {
   id: string;
-  /** Did the tutor's REPLY to the cited line answer as though the learner had produced this target — the
-   *  comprehension channel. It is evidence the tutor HEARD the phrase even where the transcript does
-   *  not show it. */
+  /** Did the tutor's REPLY to the cited line answer as though the learner had produced this learnable —
+   *  the comprehension channel. It is evidence the tutor HEARD it even where the transcript does not
+   *  show it. */
   uptake: boolean;
-  /** Was the learner's form correct Slovene for this target. */
+  /** Was the learner's form correct Slovene for this learnable, in whatever form the sentence needs. */
   correct: boolean;
-  /** Did the tutor say the phrase back in a corrected form. A recast is help, and help is not unaided. */
+  /** Did the tutor say it back in a corrected form. A recast is help, and help is not unaided. */
   recast: boolean;
-  /** Which numbered transcript line the reading rests on; 0 when the target never came up. An index
-   *  rather than a quote: the server resolves it against the transcript it supplied, so a reading can
-   *  only ever point at a line that was really there. */
+  /** Which numbered transcript line the reading rests on. An index rather than a quote: the server
+   *  resolves it against the transcript it supplied, so a reading can only ever point at a line that
+   *  was really there. */
   saidLine: number;
   /** The language the words of that line are IN: "sl" | "en" | "other". */
   saidLang: string;
@@ -196,12 +197,12 @@ export interface E2Adapter {
    *  reveal translation on a LIVE transcript, where there is no JSON turn to carry a gloss back.
    *  Optional so adapters without a text path can omit it. */
   gloss?(sl: string): Promise<string>;
-  /** Read a FINISHED spoken session against a closed target set and report per-target linguistic facts.
-   *  Text only — the whole conversation in order, both roles — and it decides no credit. Optional so
-   *  adapters without a text path can omit it. */
+  /** Read a FINISHED spoken session against the learnable catalog and report one reading per learnable
+   *  the learner produced. Text only — the whole conversation in order, both roles — and it decides no
+   *  credit. Optional so adapters without a text path can omit it. */
   grade?(input: {
     transcript: ConversationTurn[];
-    targets: WitnessTarget[];
+    catalog: WitnessTarget[];
   }): Promise<LiveTargetReading[]>;
   /** Cheap credential/endpoint check used by `npm run probe:e2`. Must NOT log the key. */
   ping(): Promise<string>;
