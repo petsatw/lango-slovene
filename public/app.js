@@ -485,11 +485,21 @@ function stopDialogueAudio() {
   if (dialogueAudio) { try { dialogueAudio.pause(); } catch {} dialogueAudio = null; }
 }
 
-// Play one dialogue line in its speaker's voice; resolves when it ends. Supersedes any clip already
-// playing, so the two voices never sound at once. Keyed on node.sl.
+// The awaiter of the tree line currently playing. A paused clip fires neither `ended` nor `error`, so a
+// line cut short by a ▶ replay is released here — otherwise the choices waiting on it never render.
+let treePendingLine = null;
+// The tree's generation. Bumped on restart and close; a step re-checks it after awaiting a line and
+// returns rather than rendering choices into a tree that has moved on.
+let treeGen = 0;
+
+// Play one dialogue line in its speaker's voice; resolves when it ends or is superseded. Supersedes any
+// clip already playing, so the two voices never sound at once. Keyed on node.sl.
 function playDialogueLine(node) {
   return new Promise((resolve) => {
+    // STOP FIRST, then release — the same order as sceneSay, so the old clip is paused before its
+    // awaiter moves on.
     stopDialogueAudio();
+    treePendingLine?.();
     const voice = dialogue.voices[node.speaker];
     const params = new URLSearchParams({ text: node.sl });
     if (dialogue.scenarioId) params.set("scenarioId", dialogue.scenarioId);
@@ -497,7 +507,12 @@ function playDialogueLine(node) {
     const audio = new Audio(`/api/speak?${params.toString()}`);
     dialogueAudio = audio;
     obs.state("speaking…");
-    const doneFn = () => { if (dialogueAudio === audio) { dialogueAudio = null; obs.state("idle"); } resolve(); };
+    const doneFn = () => {
+      if (dialogueAudio === audio) { dialogueAudio = null; obs.state("idle"); }
+      if (treePendingLine === doneFn) treePendingLine = null;
+      resolve();
+    };
+    treePendingLine = doneFn;
     audio.onended = doneFn;
     audio.onerror = doneFn;
     audio.play().catch(doneFn);
@@ -545,8 +560,10 @@ function dialogueBubble(node) {
 async function presentNpcNode(nodeId) {
   const node = dialogue.nodes[nodeId];
   if (!node) return;
+  const gen = treeGen;
   dialogueBubble(node);
   if (dialogue.audio === "ready") await playDialogueLine(node);
+  if (gen !== treeGen) return;
   renderChoices(node);
 }
 
@@ -662,7 +679,9 @@ async function chooseClient(clientNodeId) {
   const nextNpc = (cn.next || [])[0];
   const advance = () => (nextNpc ? presentNpcNode(nextNpc) : renderChoices(cn));
   if (dialogue.audio === "ready") {
+    const gen = treeGen;
     await playDialogueLine(cn); // client speaks…
+    if (gen !== treeGen) return;
     advance();                  // …then the npc replies
   } else {
     advance();
@@ -671,6 +690,7 @@ async function chooseClient(clientNodeId) {
 
 // (Re)start the current level's tree from its root.
 function startDialogueTree() {
+  treeGen++;
   stopDialogueAudio();
   $("dialogue-title").textContent = dialogue.title;
   $("dialogue-convo").innerHTML = "";
@@ -681,6 +701,7 @@ function startDialogueTree() {
 }
 
 function closeDialogue() {
+  treeGen++;
   stopIntro();
   stopDialogueAudio();
   const card = $("dialogue-convo").closest(".dialogue-card");
