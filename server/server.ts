@@ -751,7 +751,7 @@ server.listen(port, () => {
   console.log(`▶ lango-slovenian demo on http://localhost:${port}`);
   console.log(`  E2=${process.env.E2_PROVIDER || "gemini"}  E3=${process.env.E3_PROVIDER || "elevenlabs"}`);
   const live = process.env.LIVE_ACCESS_CODE
-    ? `LIVE=${process.env.LIVE_PROVIDER || "gemini"} (ttl ${process.env.SESSION_TTL_SEC || 600}s)`
+    ? `LIVE=${process.env.LIVE_PROVIDER || "grok"} (ttl ${process.env.SESSION_TTL_SEC || 600}s)`
     : "LIVE=closed (set LIVE_ACCESS_CODE to open it)";
   console.log(`  ${live}`);
 });
