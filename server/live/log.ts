@@ -19,6 +19,13 @@ export interface LiveTranscript {
   text: string;
 }
 
+/** X of Y: the lesson's targets the learner produced successfully (and tried), out of all of them. */
+export interface LessonScore {
+  total: number;
+  succeeded: string[];
+  attempted: string[];
+}
+
 export interface LiveSessionLog {
   sessionId: string;
   /** The sitting: the id the same tester's tap-to-speak turns are recorded under, so one run of a lesson
@@ -32,9 +39,11 @@ export interface LiveSessionLog {
   error: string | null;
   /** What the session credited — the per-learnable verdicts the grader's evidence earned through the
    *  shared firewall (server/live/grader.ts), the same verdicts a tap turn records on its student turn.
-   *  Written by a second pass once grading finishes, so it is absent on a session that put no targets in
-   *  play, produced no speech, credited nothing, or whose grade failed. */
+   *  Any catalog learnable, in the lesson or not. Written by a second pass once grading finishes, so it
+   *  is absent on a session that produced no speech, credited nothing, or whose grade failed. */
   credit?: LearnableProgress[];
+  /** The lesson score, written by the same pass. Absent on a session with no speech or a failed grade. */
+  lessonScore?: LessonScore;
   /** Did this session agree to its data being kept. `false` marks the log for the retention sweep,
    *  which empties the transcript text and leaves the shape and the credit
    *  (server/assets/retention.ts). Omitted = kept. */

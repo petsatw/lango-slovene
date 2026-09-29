@@ -125,52 +125,58 @@ npm run prompt:live -- trznica
 
 ---
 
-## Crediting a live session — one grader, two channels
+## Crediting a live session — one grader, the whole catalog
 
 The session is over before any of this runs. Nothing blocks, nothing gates the learner's turn, and no
 extra response is asked for mid-conversation; when the socket closes and the transcript is written,
 [server/live/grader.ts](../server/live/grader.ts) reads it.
 
-It reads **two accounts of what the learner said**, which fail independently:
+**The lesson steers; it does not bound the credit.** Every catalog learnable the learner produced is
+credited, in the lesson or not. The lesson's own targets are counted separately as the **lesson score**:
+X of the lesson's Y targets produced successfully.
 
-- **the ASR channel** — the learner's own transcript line, the vendor's hearing of them. Read
-  deterministically by [server/live/match.ts](../server/live/match.ts).
-- **the comprehension channel** — the tutor's reply to that line, produced from the *audio* rather than
-  from the transcript. Observed staying right in a session where the transcript went wrong.
+A single **grader** decides which learnables a line carries. It is a text call over the finished
+transcript, not the live model, and it runs with a grader instruction rather than the tutor's persona: a
+tutor is built to accept imperfect input warmly, so an in-character judgement conflates rapport with
+correctness. It is given the catalog and how each kind is carried:
 
-A single **grader** reads both. It is a text call over the finished transcript, not the live model, and
-it runs with a grader instruction rather than the tutor's persona: a tutor is built to accept imperfect
-input warmly, so an in-character judgement conflates rapport with correctness.
+- **vocabulary** — one word in its dictionary form, produced in any form a sentence gives it: *hrušk*
+  carries `hruska`, *Kilo krompirja* carries `krompir`.
+- **chunk** — a fixed phrase used whole, with the variation natural speech has.
+- **pattern** — a frame with a slot, produced around any filler.
+
+One line can carry several learnables, and a phrase and the words inside it are each credited:
+*Hvala, nasvidenje.* credits `hvala_nasvidenje`, `hvala` and `nasvidenje`.
+
+It reads **two accounts of each production**, which fail independently: the learner's own line (the
+vendor's hearing of them, often wrong about Slovene) and the tutor's reply to that line (produced from the
+*audio*, so it stays right when the transcript goes wrong).
 
 | verdict | rule |
 |---|---|
-| **attempt** | either channel fires, and the line is Slovene. Granted liberally — a beginner who tried is the thing being measured. |
-| **success** | the grader cites the learner line that carries the target, the line is Slovene, the form is correct in whatever inflection the sentence needs, the tutor's reply to that line took it up, and the tutor did not recast it. |
+| **success** | the grader cites the learner line that carries it, the line is Slovene, the form is correct in whatever inflection the sentence needs, the tutor's reply to that line took it up, and the tutor did not recast it. |
+| **attempt** | the grader cites a Slovene learner line that carries it, and the success test fails. |
 
-The grader decides success and marks conservatively: a target counts only on the learner's own line, and
-"unsure" is "not produced". The matcher is not required for a success — it compares text, so it cannot see
-`krompir` in *Kilo krompirja*, and a production the tutor understood is credit due. It is logged beside
-every verdict as a second opinion, and it can grant an attempt on its own. Echoing a phrase the tutor has
-just modelled still counts: the lessons are heard-first, and "unaided" means **not recast**, not "not
-modelled". The rule is `readTarget` in [server/live/grader.ts](../server/live/grader.ts).
+The grader marks conservatively: a learnable counts only on the learner's own line, and "unsure" is "not
+produced". Echoing a phrase the tutor has just modelled still counts: the lessons are heard-first, and
+"unaided" means **not recast**, not "not modelled". The rule is `readTarget` in
+[server/live/grader.ts](../server/live/grader.ts). An attempt at a learnable outside the lesson that is
+already mastered is dropped (`creditable`): an attempt lowers a mastered item, and the lesson never asked
+for it.
 
-### Matching, not transcribing
+### Transcriber hints
 
-The targets are a closed set of at most eight known phrases, so this is **detection**, not
-transcription — open-vocabulary Slovene accuracy is not what it rests on. `match.ts` case-folds, strips
-diacritics and punctuation, then tries three things in order: the canonical surface, a **recorded
-mishearing** (`Živjo` → "Zero"), and edit distance over a same-length window. A pattern's frame is its
-literal word runs in order, so "Eno ___, prosim." lands on *Eno kavo prosim*.
-
-The same set — literal runs plus the aliases — goes to Grok as `audio.input.transcription.keyterms`
-beside `language_hint`. It costs nothing and attacks a mishearing at its source. Gemini Live documents
-no hint list, so there it reaches the vendor through the prompt alone.
-
-Grow the alias list from real sessions: a target the tutor plainly answered while the learner's own line
-read as something else is an alias waiting to be written down.
+Both vendors write the learner's line with a speech recogniser separate from the model that answers, so
+the tutor can understand a line the transcript gets wrong. Each recogniser is pinned to Slovene and given
+the lesson's phrases — their literal word runs plus **recorded mishearings** (`Živjo` → "Zero")
+([server/live/match.ts](../server/live/match.ts)): Grok as `audio.input.transcription.language_hint` +
+`keyterms`, Gemini as `inputAudioTranscription.languageCodes` + `customVocabulary`. Unpinned, Gemini's
+detects the language itself, and it has heard beginner Slovene as Spanish and German. Grow the
+mishearing list from real sessions: a phrase the tutor plainly answered while the learner's own line read
+as something else is one waiting to be written down.
 
 ```bash
-npm run test:live-match                      # the matcher, on plain inputs
+npm run test:live-match                      # hints, verdict rule, lesson score, on plain inputs
 npm run probe:live-credit                    # list recorded sessions
 npm run probe:live-credit -- <sessionId>     # grade one, read-only, writes nothing
 ```
@@ -178,13 +184,13 @@ npm run probe:live-credit -- <sessionId>     # grade one, read-only, writes noth
 ### What it leaves behind
 
 Credit rides the same firewall tap mode uses (`mastery.creditFromEvidence`: allowlist → produced →
-Slovene → the cited span is in the transcript → success or attempt), and the same store. Live gains
-credit, not a second way of granting it. Two records come out of it:
+Slovene → the cited span is in the transcript → success or attempt), and the same store, with the whole
+catalog as the allowlist. Live gains credit, not a second way of granting it. Two records come out of it:
 
-- `assets/live/<sessionId>.json` gains `credit` — the per-learnable verdicts the session earned.
-- one `path: "live"` row in `assets/turnlog/turns.jsonl`, carrying the grader's input, the durable counts
-  after crediting, and **each channel separately**. That last part is why the row exists: how often the
-  two channels agree accrues from ordinary running, with no experiment to schedule.
+- `assets/live/<sessionId>.json` gains `credit` — the per-learnable verdicts the session earned — and
+  `lessonScore`.
+- one `path: "live"` row in `assets/turnlog/turns.jsonl`, carrying the grader's input, what it read for
+  every learnable produced, the lesson score, and the durable counts after crediting.
 
 Nothing new is retained. The grader reads a transcript that was already written, and only the verdict
 outlives the session — no second transcription pass, and no learner audio kept to run one.

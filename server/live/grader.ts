@@ -1,47 +1,45 @@
-// Crediting a LIVE session — one grader, two evidence channels, after the session is over.
+// Crediting a LIVE session — one grader reading the whole transcript, after the session is over.
 //
-// A finished session leaves two accounts of what the learner said, and they fail independently:
+// The lesson steers the tutor; it does not bound the credit. Every catalog learnable the learner
+// produced is credited, in the lesson or not, and the lesson's own targets are counted separately as
+// the lesson score (X of Y).
 //
-//   the ASR channel           — the learner's own transcript line, which is the vendor's hearing of
-//                               them. Read here deterministically by the matcher (./match.ts).
-//   the comprehension channel — the tutor's NEXT line, which was produced from the AUDIO rather than
-//                               from that transcript. It stays right when the transcript goes wrong.
+// Deciding that a line carries a learnable is language understanding, so it is the grader's reading and
+// nothing else's: a word takes whatever form its sentence needs ("kilo krompirja" carries `krompir`), a
+// chunk varies the way speech does, a pattern's slot holds anything. The grader is given the catalog and
+// how each kind is carried, and it reports every learnable it finds on a learner line.
 //
-// The grader — a conservative marker reading the whole transcript — decides success; the matcher is a
-// second opinion that is logged, and that can grant an attempt on its own:
-//   ATTEMPT — either channel fires. Granted liberally; a beginner who tried is the thing being measured.
-//   SUCCESS — the grader cites the learner line that carries the target, that line is Slovene, the form
-//             is correct in whatever inflection the sentence needs, the tutor's reply took it up, and the
-//             tutor did not recast it. The matcher is not required: it compares text, so "kilo krompirja"
-//             never matches "krompir", and a correct production the tutor understood is credit due.
-//             Echoing a phrase the tutor has just modelled still counts: the lessons are heard-first,
-//             and "unaided" means NOT RECAST, not "not modelled".
+// It reads two accounts of each production, because they fail independently:
+//   the learner's line         — the vendor's hearing of them, which is often wrong about Slovene.
+//   the tutor's NEXT line      — produced from the AUDIO, so it stays right when the transcript goes wrong.
+//
+//   SUCCESS — the grader cites the learner line that carries the learnable, that line is Slovene, the
+//             form is correct in whatever inflection the sentence needs, the tutor's reply took it up,
+//             and the tutor did not recast it. Echoing a phrase the tutor has just modelled still
+//             counts: the lessons are heard-first, and "unaided" means NOT RECAST, not "not modelled".
+//   ATTEMPT — the grader cites a Slovene learner line that carries it, and the success test fails.
 //
 // Crediting itself stays where it belongs. The grader emits the same `WitnessResult` envelope tap mode
 // emits and `mastery.creditFromEvidence` adjudicates it — so live mode gains credit without the app
 // gaining a second crediting path to keep in step.
 
-import type { Learnable } from "../learnables";
-import type { LiveTargetReading, TargetEvidence, WitnessResult } from "../types";
+import { LEARNABLES, type Learnable } from "../learnables";
+import type { LearnerModel, LiveTargetReading, TargetEvidence, WitnessResult } from "../types";
 import { getE2 } from "../adapters/index";
 import * as learner from "../assets/learner";
 import * as turnlog from "../assets/turnlog";
-import { countsFor, creditFromEvidence } from "../mastery";
-import { matchTarget, type MatchVia } from "./match";
+import { countsFor, creditFromEvidence, isMastered } from "../mastery";
 import * as liveLog from "./log";
-import type { LiveSessionLog, LiveTranscript } from "./log";
+import type { LessonScore, LiveSessionLog, LiveTranscript } from "./log";
 
-/** What each channel said about one target — the record that makes live credit auditable, and, kept per
- *  session, the data that says how often the two channels agree. */
+/** What the grader read for one learnable — the record that makes live credit auditable. */
 export interface ChannelReading {
   id: string;
-  /** The learner's own line carried the target. Deterministic, from the transcript, no model involved. */
-  asr: boolean;
-  /** How it landed, when it did — an exact surface, a recorded mishearing, or edit distance. */
-  asrVia: MatchVia | null;
-  /** The tutor's reply to the cited line took the target up as understood. The model's judgement. */
+  /** One of the lesson's targets, which is what the lesson score counts. */
+  inLesson: boolean;
+  /** The tutor's reply to the cited line took the learnable up as understood. */
   uptake: boolean;
-  /** Which numbered transcript line the grader read the target off. 0 when it found none. */
+  /** Which numbered transcript line the grader read it off. */
   saidLine: number;
   correct: boolean;
   recast: boolean;
@@ -55,63 +53,53 @@ export interface LiveGrade {
   /** The envelope the shared firewall adjudicates. */
   evidence: WitnessResult;
   channels: ChannelReading[];
+  lessonScore: LessonScore;
   /** How long the grading call took, for the turn log. */
   gradeMs: number;
   provider: string;
 }
 
-/** The learner's own lines, with the transcript numbers the grader sees — the only text the ASR channel
- *  may read, and the numbers that let the two channels be checked against each other. */
-function learnerLines(transcripts: LiveTranscript[]): { line: number; text: string }[] {
-  return transcripts
-    .map((t, i) => ({ line: i + 1, text: t.text.trim(), role: t.role }))
-    .filter((t) => t.role === "user" && t.text)
-    .map(({ line, text }) => ({ line, text }));
-}
-
-/** The line the grader pointed at, by its number in the transcript it was given. A number that is not a
- *  learner line is a reading with nothing under it, and it earns nothing. */
+/** The learner line a reading points at, by its number in the transcript the grader was given. A number
+ *  that is not a learner line is a reading with nothing under it, and it earns nothing. */
 function citedLine(transcripts: LiveTranscript[], n: number): string | null {
   const entry = transcripts[n - 1];
   if (!entry || entry.role !== "user") return null;
   return entry.text.trim() || null;
 }
 
-/** One target's verdict from the two channels. Pure, so the rule is tested on plain inputs.
+/** One learnable's verdict from the grader's reading. Pure, so the rule is tested on plain inputs.
  *
  *  The span the credit rests on is taken FROM the transcript, never from the model: the line the grader
- *  cited, once that line is confirmed to be a learner line, or else the line the matcher fired on. That
- *  keeps the firewall's span check meaningful when the canonical Slovene is nowhere in the text — under
- *  a mishearing, or an inflection ("kilo krompirja" for `krompir`). */
+ *  cited, once that line is confirmed to be a Slovene learner line. */
 export function readTarget(
   transcripts: LiveTranscript[],
-  asrHit: { line: number; text: string } | null,
-  read: LiveTargetReading | undefined,
+  read: LiveTargetReading,
 ): { said: string | null; saidLang: string; verdict: "success" | "attempt" | "none" } {
-  const cited = read ? citedLine(transcripts, read.saidLine) : null;
-  // The matcher IS language evidence for a line it fired on — it compared it against known Slovene.
-  // Anywhere else the grader's label decides, which is where an English answer has to be caught.
-  const citedLang = cited ? (asrHit?.line === read!.saidLine ? "sl" : read!.saidLang ?? "") : "";
-  const useCited = !!cited && citedLang === "sl";
-  const said = useCited ? cited : (asrHit?.text ?? cited);
-  const saidLang = useCited || asrHit ? "sl" : citedLang;
-
-  // Success is about ONE production: the cited line, taken up by the tutor's reply to it. Uptake is read
-  // off the reply to that same line, so the tutor's own opening greeting is never evidence the learner
-  // greeted it back.
-  const success = useCited && read!.uptake === true && read!.correct === true && read!.recast !== true;
-  const fired = success || ((!!asrHit || read?.uptake === true) && !!said && saidLang === "sl");
-  return { said, saidLang, verdict: !fired ? "none" : success ? "success" : "attempt" };
+  const cited = citedLine(transcripts, read.saidLine);
+  if (!cited || read.saidLang !== "sl") return { said: cited, saidLang: cited ? read.saidLang : "", verdict: "none" };
+  const success = read.uptake && read.correct && !read.recast;
+  return { said: cited, saidLang: "sl", verdict: success ? "success" : "attempt" };
 }
 
-/** Read a finished session against the target set it was opened with. Returns null when there is
- *  nothing to grade — no learner speech, or a lesson that put no targets in play. */
+/** X of Y: how many of the lesson's targets the learner produced successfully, and which. */
+export function scoreLesson(targets: Learnable[], channels: ChannelReading[]): LessonScore {
+  const verdict = new Map(channels.map((c) => [c.id, c.verdict]));
+  const ids = targets.map((t) => t.id);
+  return {
+    total: ids.length,
+    succeeded: ids.filter((id) => verdict.get(id) === "success"),
+    attempted: ids.filter((id) => verdict.get(id) === "attempt"),
+  };
+}
+
+/** Read a finished session against the whole catalog. `targets` are the lesson's, and they only decide
+ *  the lesson score. Returns null when there is nothing to grade — no learner speech. */
 export async function gradeSession(
   transcripts: LiveTranscript[],
   targets: Learnable[],
 ): Promise<LiveGrade | null> {
-  const lines = learnerLines(transcripts);
-  if (!lines.length || !targets.length) return null;
+  const lines = transcripts.map((t) => ({ role: t.role, text: t.text.trim() })).filter((t) => t.role === "user" && t.text);
+  if (!lines.length) return null;
 
   const e2 = getE2();
   if (!e2.grade) throw new Error(`E2 provider "${e2.name}" cannot grade a live session`);
@@ -119,29 +107,28 @@ export async function gradeSession(
   const t0 = performance.now();
   const readings = await e2.grade({
     transcript: transcripts.map((t) => ({ role: t.role, text: t.text })),
-    targets: targets.map((t) => ({ id: t.id, kind: t.kind, sl: t.sl, gloss: t.gloss })),
+    catalog: Object.entries(LEARNABLES).map(([id, l]) => ({ id, kind: l.kind, sl: l.sl, gloss: l.gloss })),
   });
   const gradeMs = Math.round(performance.now() - t0);
 
-  const byId = new Map<string, LiveTargetReading>(readings.map((r) => [r.id, r]));
+  const lessonIds = new Set(targets.map((t) => t.id));
   const channels: ChannelReading[] = [];
   const evidence: TargetEvidence[] = [];
+  const seen = new Set<string>();
 
-  for (const target of targets) {
-    const asrHit = lines
-      .map((l) => ({ ...l, match: matchTarget(l.text, target) }))
-      .find((l) => l.match.matched);
-    const read = byId.get(target.id);
-    const { said, saidLang, verdict } = readTarget(transcripts, asrHit ?? null, read);
+  for (const read of readings) {
+    // An id the catalog does not hold, or a second row for one already read, earns nothing.
+    if (!LEARNABLES[read.id] || seen.has(read.id)) continue;
+    seen.add(read.id);
+    const { said, saidLang, verdict } = readTarget(transcripts, read);
 
     channels.push({
-      id: target.id,
-      asr: !!asrHit,
-      asrVia: asrHit?.match.via ?? null,
-      uptake: read?.uptake === true,
-      saidLine: read?.saidLine ?? 0,
-      correct: read?.correct === true,
-      recast: read?.recast === true,
+      id: read.id,
+      inLesson: lessonIds.has(read.id),
+      uptake: read.uptake,
+      saidLine: read.saidLine,
+      correct: read.correct,
+      recast: read.recast,
       said: said ?? "",
       saidLang,
       verdict,
@@ -150,7 +137,7 @@ export async function gradeSession(
     if (verdict === "none") continue;
     const success = verdict === "success";
     evidence.push({
-      id: target.id,
+      id: read.id,
       produced: true,
       said: said!,
       saidLang,
@@ -169,16 +156,29 @@ export async function gradeSession(
       userGloss: "",
       utteranceLang: "sl",
       targets: evidence,
-      // Deliberately empty. Off-target Slovene becomes a catalog candidate in free chat, where the
-      // transcript is the model's own careful hearing of one clip. A live transcript is the vendor's
-      // running hearing of continuous speech, and its mishearings would enter the catalog queue as
-      // Slovene words nobody said.
+      // Deliberately empty. Slovene the catalog does not hold becomes a catalog candidate in free chat,
+      // where the transcript is the model's own careful hearing of one clip. A live transcript is the
+      // vendor's running hearing of continuous speech, and its mishearings would enter the catalog queue
+      // as Slovene words nobody said.
       observed: [],
       role: null,
     },
     channels,
+    lessonScore: scoreLesson(targets, channels),
     gradeMs,
     provider: e2.name,
+  };
+}
+
+/** The evidence a learner model can take. An attempt at a learnable outside the lesson that is already
+ *  mastered is dropped: the lesson never asked for it, and an attempt at a mastered item lowers it. */
+export function creditable(model: LearnerModel, grade: LiveGrade): WitnessResult {
+  const lesson = new Set(grade.channels.filter((c) => c.inLesson).map((c) => c.id));
+  return {
+    ...grade.evidence,
+    targets: grade.evidence.targets.filter(
+      (e) => e.correct || lesson.has(e.id) || !isMastered(model.learnables[e.id]),
+    ),
   };
 }
 
@@ -201,9 +201,10 @@ export async function creditSession(args: {
   if (!grade) return;
 
   // The same firewall the tap mode runs on: allowlist → produced → Slovene → the span is in the
-  // transcript → success or attempt. Live mode gains credit, not a second way of granting it.
+  // transcript → success or attempt. The allowlist is the whole catalog, because the lesson does not
+  // bound the credit. Live mode gains credit, not a second way of granting it.
   const model = learner.load(args.learnerId);
-  const credit = creditFromEvidence(model, grade.evidence, targets);
+  const credit = creditFromEvidence(model, creditable(model, grade), Object.values(LEARNABLES));
   const saved = credit.progress.length ? learner.save(args.learnerId, credit.model) : credit.model;
 
   turnlog.record({
@@ -228,9 +229,10 @@ export async function creditSession(args: {
       lessonId: log.lessonId,
       liveProvider: log.provider,
       channels: grade.channels,
+      lessonScore: grade.lessonScore,
     },
     creditedCounts: countsFor(saved, credit.progress),
   });
 
-  if (credit.progress.length) liveLog.write({ ...log, credit: credit.progress });
+  liveLog.write({ ...log, lessonScore: grade.lessonScore, ...(credit.progress.length ? { credit: credit.progress } : {}) });
 }

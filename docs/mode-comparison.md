@@ -44,13 +44,13 @@ firewall then adjudicates. Live gains credit without the app gaining a second wa
 So the two halves of a sitting are comparable on per-learnable progress, and `npm run runs` prints what
 each half moved. Read the difference against three asymmetries:
 
-- **Live grades against a frozen set.** Tap re-selects its targets every turn as the learner progresses;
-  a live session's are fixed at second zero.
+- **Live grades against the whole catalog.** Tap re-selects its targets every turn as the learner
+  progresses; a live session's lesson targets are fixed at second zero, but they only steer the tutor and
+  set the lesson score — any catalog learnable produced is credited.
 - **Live's evidence is lower-fidelity.** A tap record separates `userVerbatim` from the English gloss; a
   live user line is the vendor's running hearing of continuous speech, and it can be plainly wrong about
-  Slovene. The grader reads two channels rather than one because of it (live-tutor.md).
-- **Live's SUCCESS bar is stricter**, so expect it to under-credit relative to tap until the two-channel
-  record says otherwise.
+  Slovene. The grader reads the tutor's reply beside the learner's line because of it (live-tutor.md).
+- **Live's SUCCESS bar is stricter**, so expect it to under-credit relative to tap.
 
 ## Naming a provider
 
