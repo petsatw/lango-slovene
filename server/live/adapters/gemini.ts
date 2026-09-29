@@ -38,10 +38,12 @@ export class GeminiAdapter implements LiveAdapter {
 
   constructor(private cb: LiveCallbacks) {}
 
-  // `keyterms` is unused here: `inputAudioTranscription` takes no hint list in the Live API reference,
-  // so the closed target set reaches this vendor only through the prompt. Grading works the same either
-  // way — the matcher's alias list is what carries a mishearing that the vendor was never warned about.
-  connect(_sessionId: string, instructions: string, _keyterms: string[] = []): Promise<void> {
+  // The input transcript comes from a speech recogniser separate from the model that answers: the model
+  // hears the audio itself, the recogniser writes the learner's line. Left unconfigured it detects the
+  // language on its own and heard beginner Slovene as Spanish and German ("¿De verdad?" for Dober dan)
+  // while the tutor answered correctly. `languageCodes` pins it to Slovene and `customVocabulary` biases
+  // it toward the lesson's phrases, the same two hints Grok takes as language_hint + keyterms.
+  connect(_sessionId: string, instructions: string, keyterms: string[] = []): Promise<void> {
     const key = process.env.GEMINI_API_KEY;
     if (!key) return Promise.reject(new Error("GEMINI_API_KEY is not set"));
 
@@ -62,7 +64,10 @@ export class GeminiAdapter implements LiveAdapter {
           setup: {
             model: `models/${MODEL}`,
             generationConfig: { responseModalities: ["AUDIO"] },
-            inputAudioTranscription: {},
+            inputAudioTranscription: {
+              languageCodes: ["sl"],
+              ...(keyterms.length ? { customVocabulary: keyterms } : {}),
+            },
             outputAudioTranscription: {},
             systemInstruction: { parts: [{ text: instructions }] },
           },
