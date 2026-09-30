@@ -14,7 +14,8 @@
 //
 // A SCENE is the exception, by design: a scenario with a `live` surface brings its own harness — the
 // scene's Slovene instructions to the tutor — and the app appends the day's scheduled lines and the shape
-// of the lesson (scenePrompt below). Opened by the scenario id.
+// of the lesson (scenePrompt below). Opened by the scenario id, or by one of the scenario's trees, whose
+// handoff takes the tree's lines as the day's.
 //
 // WHAT IS STILL DIFFERENT, and it is not small:
 //   - The prompt is built ONCE, at connect. Free chat is stateless and rebuilds it every turn, so its
@@ -88,10 +89,23 @@ function liveScene(id: string): (Scenario & { surfaces: { live: LiveSurface } })
   return s?.surfaces?.live ? (s as Scenario & { surfaces: { live: LiveSurface } }) : undefined;
 }
 
-/** The scene's own harness, then the lesson the app runs through it: today's scheduled lines, and the
- *  shape of the lesson up to its closing line. The harness says who the tutor is and what the scene
- *  holds; the app says which lines the learner practises and when the lesson is over. */
-function scenePrompt(harness: string, sel: SceneSelection, close: string): string {
+/** Today's lines as the scene prompt lists them: headed groups, in the order the tutor works through
+ *  them. A scenario-id session has the schedule's three; a tree handoff has one, the tree's lines. */
+type LineGroup = { heading: string; lines: Learnable[] };
+
+function scheduleGroups(sel: SceneSelection): LineGroup[] {
+  return [
+    { heading: "FIRST — lines they said on an earlier day. Make an opening for each of these before anything new:",
+      lines: sel.review },
+    { heading: "EVERY VISIT:", lines: sel.core },
+    { heading: "NEW TODAY:", lines: sel.fresh },
+  ].filter((g) => g.lines.length);
+}
+
+/** The scene's own harness, then the lesson the app runs through it: today's lines, and the shape of
+ *  the lesson up to its closing line. The harness says who the tutor is and what the scene holds; the
+ *  app says which lines the learner practises and when the lesson is over. */
+function scenePrompt(harness: string, groups: LineGroup[], close: string): string {
   const lines = (ls: Learnable[]) => ls.map((l) => `  «${l.sl}» — ${l.gloss}`);
   return [
     harness,
@@ -102,14 +116,7 @@ function scenePrompt(harness: string, sel: SceneSelection, close: string): strin
     "buyer's lines they are practising today. Give them a natural opening to say each one — by what you",
     "sell, what you ask, and how you answer.",
     "",
-    ...(sel.review.length
-      ? ["FIRST — lines they said on an earlier day. Make an opening for each of these before anything new:",
-         ...lines(sel.review), ""]
-      : []),
-    "EVERY VISIT:",
-    ...lines(sel.core),
-    "",
-    ...(sel.fresh.length ? ["NEW TODAY:", ...lines(sel.fresh), ""] : []),
+    ...groups.flatMap((g) => [g.heading, ...lines(g.lines), ""]),
     "HOW THE LESSON RUNS",
     "- Open with «Dober dan.» and wait for the buyer.",
     "- Stay at this stall: its goods, its prices, the lines above. No praise, no grammar, no words from",
@@ -134,24 +141,50 @@ export interface LessonPrompt {
    *  card: the day's schedule decides what the tutor steers toward, and anything on the card the learner
    *  actually says is credit due. */
   targets: Learnable[];
+  /** What the tutor steers toward — the lines the objectives overlay shows. For a lesson it is
+   *  `targets`; for a scene it is today's lines, a short list out of the whole card. */
+  objectives: Learnable[];
 }
+
+const resolve = (ids: string[]) => ids.map((id) => LEARNABLES[id]!);
 
 export function buildLessonPrompt(lessonId: string, learnerId: string): LessonPrompt {
   const scene = liveScene(lessonId);
   if (scene) {
     const live = scene.surfaces.live;
-    const sel = selectForScene(learner.load(learnerId), live);
+    const groups = scheduleGroups(selectForScene(learner.load(learnerId), live));
     const card = [...new Set([...live.core, ...live.bank, ...(live.stock ?? [])])];
     return {
       lessonId,
       title: scene.name ?? scene.title,
-      instructions: scenePrompt(harnessText(live), sel, live.close),
-      targets: card.map((id) => LEARNABLES[id]!),
+      instructions: scenePrompt(harnessText(live), groups, live.close),
+      targets: resolve(card),
+      objectives: groups.flatMap((g) => g.lines),
     };
   }
 
   const d = lessonIndex().get(lessonId);
   if (!d) throw new Error(`no such lesson: ${lessonId}`);
+
+  // A tree at a scene's stall hands off to the scene itself: the same harness, with the lines the tree
+  // just had the learner say as today's lines, all of them. The lines off the card join the targets, so
+  // the lesson score can count what the tutor was told to steer toward.
+  const treeScene = liveScene(d.scenarioId);
+  if (treeScene) {
+    const live = treeScene.surfaces.live;
+    const lines = focusIdsFor(d);
+    return {
+      lessonId,
+      title: d.title,
+      instructions: scenePrompt(
+        harnessText(live),
+        [{ heading: "TODAY — the lines they just rehearsed at your stall:", lines: resolve(lines) }],
+        live.close,
+      ),
+      targets: resolve([...new Set([...live.core, ...live.bank, ...(live.stock ?? []), ...lines])]),
+      objectives: resolve(lines),
+    };
+  }
 
   // The witness selection, same call the free-chat turn makes: `knows` is the learner model's contents
   // (the tutor's palette), `targets` is the bounded in-play set led by this lesson's material.
@@ -176,5 +209,5 @@ export function buildLessonPrompt(lessonId: string, learnerId: string): LessonPr
     context,
   ) + SPOKEN_TAIL;
 
-  return { lessonId, title: d.title, instructions, targets };
+  return { lessonId, title: d.title, instructions, targets, objectives: targets };
 }

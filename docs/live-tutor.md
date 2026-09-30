@@ -123,6 +123,15 @@ credited once, when the socket closes, like any live session.
 npm run prompt:live -- trznica
 ```
 
+A **tree** of that scenario hands off to the same scene. "Now try it for real" at the end of a `trznica`
+tap tree opens the harness with one list of today's lines: every client line of the tree just walked
+through, in tree order, uncapped. The grader scores the whole card plus any of those lines not on it.
+Trees of scenarios without a `live` surface keep the shared body.
+
+```bash
+npm run prompt:live -- trznica-l8
+```
+
 ---
 
 ## Crediting a live session — one grader, the whole catalog
