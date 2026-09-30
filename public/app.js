@@ -757,6 +757,7 @@ let mode = "live";
 let holding = false;       // tap mode: the button is down and the mic is open
 let freeChatBegun = false; // tap mode opens with the tutor speaking first — once per session
 let liveTick = null;       // polls tutor-speaking, which no message reports (see liveSpeaking)
+let liveObjectives = [];   // the Slovene of each line the tutor steers toward, sent at connect
 
 // Going the other way is free: live just starts talking. Going INTO tap hands the learner a button
 // they have to work, so the switch asks first — carry this conversation across, or see the tutorial
@@ -804,7 +805,33 @@ function renderPractice() {
     opt.classList.toggle("active", opt.dataset.mode === mode);
     opt.disabled = live || holding || seedActive;
   }
+
+  const showObjectives = mode === "live" && live && liveObjectives.length > 0;
+  $("objectives-row").hidden = !showObjectives;
+  if (!showObjectives) setObjectivesOpen(false);
 }
+
+onLive("objectives", (items) => {
+  liveObjectives = (items || []).map((i) => i.sl).filter(Boolean);
+  const list = $("objectives");
+  list.replaceChildren(...liveObjectives.map((sl) => {
+    const li = document.createElement("li");
+    li.textContent = sl;
+    return li;
+  }));
+  renderPractice();
+});
+
+function setObjectivesOpen(open) {
+  $("objectives").classList.toggle("open", open);
+  $("objectives").setAttribute("aria-hidden", String(!open));
+  $("objectives-btn").classList.toggle("expanded", open);
+  $("objectives-btn").setAttribute("aria-expanded", String(open));
+}
+
+$("objectives-btn").addEventListener("click", () =>
+  setObjectivesOpen(!$("objectives").classList.contains("open")));
+$("objectives").addEventListener("click", () => setObjectivesOpen(false));
 
 async function toggleLive() {
   if (liveActive()) {
@@ -828,6 +855,7 @@ async function toggleLive() {
   btn.disabled = true;
   $("live-state").textContent = "connecting…";
   liveBubbles.clear(); // ids are per-session; a stale one would revise last session's bubble
+  liveObjectives = [];
   try {
     await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined,
                       learnerId, runId, retain: retainSession });

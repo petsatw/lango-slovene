@@ -44,7 +44,12 @@ Client → server: binary audio, and `{"type":"end"}`.
 Server → client: binary audio, plus
 `{"type":"transcript","role":"user"|"tutor","text":…}`,
 `{"type":"state","status":"connected"|"listening"|"speaking"|"ended"}`,
-`{"type":"error","code":"vendor_connect"|"vendor_setup"|"vendor_audio"|"ended"}`.
+`{"type":"error","code":"vendor_connect"|"vendor_setup"|"vendor_audio"|"ended"}`,
+`{"type":"objectives","items":[{"sl":…}]}` — once, when the prompt is built, before the vendor connects.
+
+The objectives are the lines the tutor steers toward, in Slovene, a pattern as its frame with `___`: a
+lesson's targets, a scene's day's lines, or a tree handoff's tree lines. The grader may score a larger set
+(a scene's whole card); the overlay shows only what the session is working on.
 
 The create response deliberately **omits the provider**. Vendor error bodies stop at the adapter — they
 carry account and quota detail, and the app has no use for either.
