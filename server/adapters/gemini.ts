@@ -9,6 +9,8 @@ import type {
   LiveTargetReading,
   WitnessResult,
   WitnessTarget,
+  ScenarioCandidate,
+  ScenarioRanking,
 } from "../types";
 
 const BASE = "https://generativelanguage.googleapis.com/v1beta/models";
@@ -407,6 +409,63 @@ export class GeminiE2 implements E2Adapter {
     if (!res.ok) throw shortError(res.status, await res.text());
     const data: any = await res.json();
     return String(data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "").trim();
+  }
+
+  async rankScenarios(input: { query: string; candidates: ScenarioCandidate[] }): Promise<ScenarioRanking> {
+    const key = requireKey();
+    const list = input.candidates.map((c) => `- ${c.dialogueId}: ${c.description}`).join("\n");
+    const res = await fetch(`${BASE}/${this.model}:generateContent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [
+            {
+              text:
+                "You match a Slovene learner's description of a situation they want to practise (English, " +
+                "Slovene or mixed) to lesson levels. Score each relevant level 0..1 (1 = exactly that " +
+                "situation, 0.5 = same place or same language skill, below 0.3 = not useful) and give a short " +
+                "English reason. Omit irrelevant levels. Use only ids from the list. Also write `fallback`: a " +
+                "one-sentence English scene for a live role-play of the learner's situation, and the Slovene " +
+                "role noun the tutor should play (e.g. 'prodajalka na tržnici'), or null.",
+            },
+          ],
+        },
+        contents: [{ role: "user", parts: [{ text: `Situation: ${input.query}\n\nLevels:\n${list}` }] }],
+        generationConfig: {
+          temperature: 0,
+          maxOutputTokens: 1024,
+          thinkingConfig: { thinkingBudget: 0 },
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "OBJECT",
+            properties: {
+              matches: {
+                type: "ARRAY",
+                items: {
+                  type: "OBJECT",
+                  properties: { dialogueId: { type: "STRING" }, score: { type: "NUMBER" }, reason: { type: "STRING" } },
+                  required: ["dialogueId", "score", "reason"],
+                },
+              },
+              fallback: {
+                type: "OBJECT",
+                properties: { scene: { type: "STRING" }, role: { type: "STRING", nullable: true } },
+                required: ["scene"],
+              },
+            },
+            required: ["matches", "fallback"],
+          },
+        },
+      }),
+    });
+    if (!res.ok) throw shortError(res.status, await res.text());
+    const data: any = await res.json();
+    const parsed = JSON.parse(String(data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "{}"));
+    return {
+      matches: Array.isArray(parsed.matches) ? parsed.matches : [],
+      fallback: { scene: String(parsed.fallback?.scene ?? ""), role: parsed.fallback?.role ?? null },
+    };
   }
 
   async ping(): Promise<string> {

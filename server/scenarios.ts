@@ -94,6 +94,11 @@ export interface Scenario {
   /** Short label for the picker dropdown (e.g. "Café"). Falls back to title if absent. */
   name?: string;
   title: string;
+  /** One plain-English sentence of the situations this scenario covers — read by the scenario finder
+   *  (server/match.ts). Optional; `lint:scenario` requires it. */
+  summaryEN?: string;
+  /** Finder keywords: places, things, situations, synonyms (EN + SL). Optional; `lint:scenario` requires it. */
+  tags?: string[];
   status: "active" | "planned";
   /** Who the tutor plays (free-text role — drives the tutor prompt). */
   character: string;
@@ -190,6 +195,10 @@ export function validateScenario(file: string, raw: any): Scenario {
   asString(file, raw, "character");
   asString(file, raw, "setup");
   asString(file, raw, "opening");
+  if (raw.summaryEN !== undefined && (typeof raw.summaryEN !== "string" || !raw.summaryEN.trim()))
+    fail(file, `"summaryEN", if present, must be a non-empty string`);
+  if (raw.tags !== undefined && (!Array.isArray(raw.tags) || raw.tags.some((t: unknown) => typeof t !== "string" || !t.trim())))
+    fail(file, `"tags", if present, must be an array of non-empty strings`);
   if (raw.role !== undefined && (typeof raw.role !== "string" || !raw.role.length))
     fail(file, `"role", if present, must be a non-empty string`);
   if (raw.characterRef !== undefined) {

@@ -41,6 +41,12 @@
   <!-- ① PRACTICE — scenario list. The two group headings ARE this screen's titles; the back button and
        the wordmark already say where you are. Tap a scenario → its levels. -->
   <main id="practice" class="screen" hidden>
+    <!-- Scenario finder: type-ahead from a static index as you type; Enter → the NLU match on the server. -->
+    <form id="finder" class="finder" autocomplete="off">
+      <input id="finder-input" type="search" enterkeyhint="search"
+             placeholder="What do you want to practise? e.g. buying vegetables at the market" />
+    </form>
+    <div id="finder-results" class="level-list" hidden></div>
     <div id="scenario-list" class="scenario-list"></div>
   </main>
 

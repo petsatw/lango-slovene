@@ -29,6 +29,7 @@ import { getLearnable, LEARNABLES } from "./learnables";
 import { buildGalleryHtml } from "./scripts/gallery";
 import { frameFor } from "./scripts/dialogue-lib";
 import { liveRouter, attachLive } from "./live/index";
+import { buildIndex, matchSituation, SYNONYMS, STOP, MATCH_THRESHOLD } from "./match";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -131,6 +132,7 @@ app.get("/api/practice", (req, res) => {
     .filter(({ dialogues }) => dialogues.length > 0)
     .map(({ s, dialogues }) => ({
       id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null,
+      summaryEN: s.summaryEN ?? null, tags: s.tags ?? [],
       // The spoken lessons are the spine of the course, so they have a durable home in the picker
       // alongside the rehearsal trees. `mode` is what splits the two groups on the screen: a spoken
       // scenario's levels open the scene surface, a rehearsal scenario's open the click-through tree.
@@ -151,6 +153,35 @@ app.get("/api/practice", (req, res) => {
     started: Object.keys(learner.load(learnerOf(req)).learnables).length > 0,
     scene: sceneScenario?.id ?? null,
   });
+});
+
+// SCENARIO FINDER — the learner's free-text situation → up to 3 published levels + a live-chat framing
+// for when none fits. Keyword ranking always; the E2 re-rank when the adapter has one (text only, cheap).
+// Text only for now — the client can type, or dictate with the OS keyboard.
+function finderIndex() {
+  return buildIndex(
+    SCENARIOS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null,
+      summaryEN: s.summaryEN, tags: s.tags, dialogues: getPublishedDialogues(s.id) }))
+      .filter((s) => s.dialogues.length > 0),
+  );
+}
+
+// Layer 1 — the static keyword index, fetched ONCE by the Practice screen so type-ahead runs per
+// keystroke in the browser with no network or model call (public/app.js mirrors tokenize/score).
+app.get("/api/match/index", (_req, res) => {
+  res.json({
+    entries: finderIndex().map(({ tokens, scenarioTokens, ...e }) => ({ ...e, tokens: [...tokens], scenarioTokens: [...scenarioTokens] })),
+    synonyms: SYNONYMS, stop: [...STOP], threshold: MATCH_THRESHOLD,
+  });
+});
+
+// Layer 2 — natural-language understanding on submit: Gemini sees the whole catalog and maps intent.
+app.post("/api/match", async (req, res) => {
+  const text = typeof req.body?.text === "string" ? req.body.text.trim().slice(0, 500) : "";
+  if (!text) return res.status(400).json({ error: "text is required" });
+  const index = finderIndex();
+  const useModel = req.body?.ranker !== "keyword" && !!process.env.GEMINI_API_KEY;
+  res.json(await matchSituation(text, index, useModel ? getE2() : undefined));
 });
 
 // SPOKEN SCENE — one step of an `advance: "audio"` dialogue. The learner's recording is NEVER sent

@@ -91,6 +91,10 @@ export function lintScenario(scenario: Scenario, others: Scenario[]): LintIssue[
     }
   }
 
+  // 7) Scenario-finder metadata: a summary sentence + at least 3 tags, so free-text matching can find it.
+  if (!scenario.summaryEN) err("finder-summary", `has no "summaryEN" — the scenario finder can't describe it.`);
+  if ((scenario.tags ?? []).length < 3) err("finder-tags", `has ${(scenario.tags ?? []).length} "tags"; expected ≥3 for the scenario finder.`);
+
   return issues;
 }
 

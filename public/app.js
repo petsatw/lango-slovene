@@ -330,6 +330,8 @@ async function loadPractice() {
   el.innerHTML = "<p class='muted'>Loading…</p>";
   try {
     const { scenarios } = await (await api("/api/practice")).json();
+    practiceScenarios = scenarios;
+    loadFinderIndex();
     if (!scenarios.length) { el.innerHTML = "<p class='muted'>No scenarios yet.</p>"; return; }
     el.innerHTML = "";
     // Two groups, because they are two different things to do: the spoken lessons are the course, the
@@ -358,6 +360,123 @@ async function loadPractice() {
     el.innerHTML = `<p class='muted'>Failed: ${err.message}</p>`;
   }
 }
+
+// ---- Scenario finder — two layers. (1) Type-ahead: the static keyword index is fetched once and scored
+// in the browser on every keystroke (no network, no model). Mirrors tokenize/expandQuery/keywordScore in
+// server/match.ts — keep the two in step. (2) Enter → POST /api/match: Gemini reads the whole catalog and
+// maps the learner's intent to levels with reasons; the server falls back to keywords if it fails. The
+// "Practise this live" card is always last, opening the free-chat tutor framed for the learner's words.
+let practiceScenarios = [];
+let finderIndex = null;
+
+async function loadFinderIndex() {
+  if (finderIndex) return;
+  try {
+    const idx = await (await api("/api/match/index")).json();
+    finderIndex = {
+      ...idx,
+      stopSet: new Set(idx.stop),
+      entries: idx.entries.map((e) => ({ ...e, tokens: new Set(e.tokens), scenarioTokens: new Set(e.scenarioTokens) })),
+    };
+  } catch { finderIndex = null; } // type-ahead is optional; Enter still works
+}
+
+function finderFold(text) {
+  return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, " ").split(/\s+/);
+}
+function finderStem(w) {
+  if (w.length > 4 && w.endsWith("ies")) return w.slice(0, -3) + "y";
+  if (w.length > 4 && /(ches|shes|oes)$/.test(w)) return w.slice(0, -2);
+  if (w.length > 3 && w.endsWith("s") && !w.endsWith("ss")) return w.slice(0, -1);
+  return w;
+}
+function finderTokens(text) {
+  return finderFold(text).filter((w) => w.length > 1 && !finderIndex.stopSet.has(w)).map(finderStem);
+}
+function finderSuggest(text) {
+  const q = new Set(finderTokens(text));
+  for (const w of finderFold(text)) for (const s of finderIndex.synonyms[w] || []) finderTokens(s).forEach((t) => q.add(t));
+  if (!q.size) return [];
+  return finderIndex.entries
+    .map((e) => {
+      let where = 0, which = 0;
+      for (const t of q) { if (e.scenarioTokens.has(t)) where++; if (e.tokens.has(t)) which++; }
+      return { ...e, score: Math.min(1, (0.6 * where + 0.4 * which) / Math.min(q.size, 6)), reason: "" };
+    })
+    .filter((m) => m.score >= finderIndex.threshold)
+    .sort((a, b) => b.score - a.score || a.level - b.level)
+    .slice(0, 3);
+}
+
+function renderFinder(matches, live, note) {
+  const el = $("finder-results");
+  el.innerHTML = "";
+  el.hidden = false;
+  if (note) {
+    const p = document.createElement("p");
+    p.className = "muted";
+    p.textContent = note;
+    el.appendChild(p);
+  }
+  for (const m of matches) {
+    const card = document.createElement("button");
+    card.className = "level-card";
+    card.type = "button";
+    card.innerHTML =
+      `<span class="level-main">` +
+        `<span class="level-title"></span>` +
+        `<span class="scenario-meta"></span>` +
+      `</span><span class="level-chevron">›</span>`;
+    card.querySelector(".level-title").textContent = `${m.scenarioName} — ${m.levelTitle}`;
+    card.querySelector(".scenario-meta").textContent = m.reason || "";
+    card.addEventListener("click", () => openFinderMatch(m));
+    el.appendChild(card);
+  }
+  if (live) {
+    const card = document.createElement("button");
+    card.className = "level-card";
+    card.type = "button";
+    card.innerHTML = `<span class="level-main"><span class="level-title"></span><span class="scenario-meta">Live AI tutor plays the scene with you</span></span><span class="level-chevron">›</span>`;
+    card.querySelector(".level-title").textContent = `Practise this live: “${live.query}”`;
+    card.addEventListener("click", () => openTutor({ focus: [], role: live.role, context: { scene: live.scene, practiced: [] } }));
+    el.appendChild(card);
+  }
+}
+
+function openFinderMatch(m) {
+  const s = practiceScenarios.find((x) => x.id === m.scenarioId);
+  if (!s) return;
+  openScenario(s);
+  const i = s.dialogues.findIndex((d) => d.id === m.dialogueId);
+  if (i >= 0) openLevel(i);
+}
+
+$("finder-input").addEventListener("input", (e) => {
+  const text = e.target.value.trim();
+  if (!text) { $("finder-results").hidden = true; return; }
+  if (!finderIndex) return;
+  renderFinder(finderSuggest(text), null, "Press Enter to search by meaning");
+});
+
+$("finder").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const text = $("finder-input").value.trim();
+  if (!text) return;
+  renderFinder([], null, "Finding the best match…");
+  try {
+    const res = await api("/api/match", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    const note = data.matches.length ? "" : "No ready-made lesson fits yet — practise it live:";
+    renderFinder(data.matches, { query: text, ...data.fallback }, note);
+  } catch (err) {
+    renderFinder(finderIndex ? finderSuggest(text) : [], { query: text, scene: `The learner wants to practise: ${text}`, role: null }, `Search failed (${err.message})`);
+  }
+});
 
 // The scenario TASK is the headline; difficulty is a glanceable chip, not encoded jargon. Every dialogue
 // in the MVP is A1, so the CEFR band is constant noise — we collapse the (inconsistent) authored labels

@@ -909,3 +909,8 @@ body.in-scene header { display: none; }
 }
 .phrase-en { grid-column: 1 / -1; font-size: 14px; color: var(--muted); }
 .phrase-en.held { display: none; }
+
+/* Scenario finder (Practice screen) */
+.finder { width: 100%; max-width: 520px; margin-bottom: 10px; }
+.finder input { width: 100%; box-sizing: border-box; padding: 12px 14px; font-size: 16px; border-radius: 12px; border: 1px solid #ccc; }
+#finder-results { margin-bottom: 18px; }

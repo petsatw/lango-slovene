@@ -2,6 +2,8 @@
   "id": "bakery",
   "name": "Bakery",
   "title": "At the bakery (pekarna)",
+  "summaryEN": "Buying bread, rolls and pastries at a bakery: ordering one or two of something, ordering by weight, asking prices, ordering a cake ahead.",
+  "tags": ["bakery", "pekarna", "bread", "rolls", "pastry", "cake", "buying food", "shop", "weight", "kilo", "grams", "decagrams", "quantities", "numbers", "price"],
   "status": "active",
   "character": "a friendly baker at a small neighbourhood bakery (pekarna) in Ljubljana",
   "role": "prodajalka v pekarni",
