@@ -544,7 +544,14 @@ $("finder-input").addEventListener("input", (e) => {
   const text = e.target.value.trim();
   if (!text) { $("finder-results").hidden = true; return; }
   if (!finderIndex) return;
-  renderFinder(finderSuggest(text), null, "Press Enter to search by meaning");
+  const matches = finderSuggest(text);
+  // No keyword hits → same empty-state message + live card as submit (clears/updates as they type).
+  if (!matches.length) {
+    renderFinder([], { query: text, scene: `The learner wants to practise: ${text}`, role: null },
+      "No lessons match that yet — try practising it live!");
+    return;
+  }
+  renderFinder(matches, null, "Press Enter to search by meaning");
 });
 
 $("finder").addEventListener("submit", async (e) => {
@@ -560,10 +567,12 @@ $("finder").addEventListener("submit", async (e) => {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-    const note = data.matches.length ? "" : "No ready-made lesson fits yet — practise it live:";
+    const note = data.matches.length ? "" : "No lessons match that yet — try practising it live!";
     renderFinder(data.matches, { query: text, ...data.fallback }, note);
   } catch (err) {
-    renderFinder(finderIndex ? finderSuggest(text) : [], { query: text, scene: `The learner wants to practise: ${text}`, role: null }, `Search failed (${err.message})`);
+    const matches = finderIndex ? finderSuggest(text) : [];
+    const note = matches.length ? `Search failed (${err.message})` : "No lessons match that yet — try practising it live!";
+    renderFinder(matches, { query: text, scene: `The learner wants to practise: ${text}`, role: null }, note);
   }
 });
 
