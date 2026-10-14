@@ -376,7 +376,10 @@ async function loadFinderIndex() {
     finderIndex = {
       ...idx,
       stopSet: new Set(idx.stop),
-      entries: idx.entries.map((e) => ({ ...e, tokens: new Set(e.tokens), scenarioTokens: new Set(e.scenarioTokens) })),
+      entries: idx.entries.map((e) => ({
+        ...e, tokens: new Set(e.tokens), scenarioTokens: new Set(e.scenarioTokens),
+        nodes: e.nodes.map((n) => ({ ...n, tokens: new Set(n.tokens) })),
+      })),
     };
   } catch { finderIndex = null; } // type-ahead is optional; Enter still works
 }
@@ -393,19 +396,66 @@ function finderStem(w) {
 function finderTokens(text) {
   return finderFold(text).filter((w) => w.length > 1 && !finderIndex.stopSet.has(w)).map(finderStem);
 }
+// Mirrors bestNode/snippetFor in server/match.ts: the line with the most query hits + the line after it.
+function finderSnippet(e, q) {
+  let best = null, bestHits = 0;
+  for (const n of e.nodes) {
+    let hits = 0;
+    for (const t of q) if (n.tokens.has(t)) hits++;
+    if (hits > bestHits) { best = n; bestHits = hits; }
+  }
+  if (!best) return null;
+  const after = e.nodes.find((x) => x.id === best.next[0]);
+  const lines = [best, ...(after ? [after] : [])].map(({ speaker, sl, en }) => ({ speaker, sl, en }));
+  const terms = [...q].filter((t) => lines.some((l) => finderTokens(`${l.sl} ${l.en}`).includes(t)));
+  return { nodeId: best.id, lines, terms };
+}
+
 function finderSuggest(text) {
   const q = new Set(finderTokens(text));
   for (const w of finderFold(text)) for (const s of finderIndex.synonyms[w] || []) finderTokens(s).forEach((t) => q.add(t));
   if (!q.size) return [];
+  const words = finderTokens(text).length;
   return finderIndex.entries
     .map((e) => {
       let where = 0, which = 0;
       for (const t of q) { if (e.scenarioTokens.has(t)) where++; if (e.tokens.has(t)) which++; }
-      return { ...e, score: Math.min(1, (0.6 * where + 0.4 * which) / Math.min(q.size, 6)), reason: "" };
+      return { ...e, score: Math.min(1, (0.6 * where + 0.4 * which) / Math.max(1, Math.min(words, 6))), reason: "", snippet: finderSnippet(e, q) };
     })
     .filter((m) => m.score >= finderIndex.threshold)
-    .sort((a, b) => b.score - a.score || a.level - b.level)
+    .sort((a, b) => b.score - a.score || (b.snippet?.terms.length ?? 0) - (a.snippet?.terms.length ?? 0) || a.level - b.level)
     .slice(0, 3);
+}
+
+// Text with every word whose folded+stemmed form is a matched term wrapped in <mark> (DOM-built, no HTML).
+function finderHighlight(el, text, terms) {
+  const set = new Set(terms);
+  for (const part of text.split(/(\s+)/)) {
+    const tok = finderFold(part).filter(Boolean).map(finderStem);
+    if (tok.some((t) => set.has(t))) {
+      const m = document.createElement("mark");
+      m.textContent = part;
+      el.appendChild(m);
+    } else el.appendChild(document.createTextNode(part));
+  }
+}
+
+function finderSnippetEl(snippet) {
+  const box = document.createElement("span");
+  box.className = "finder-snippet";
+  for (const l of snippet.lines) {
+    const line = document.createElement("span");
+    line.className = `finder-line ${l.speaker === "npc" ? "npc" : "client"}`;
+    const sl = document.createElement("span");
+    sl.className = "finder-sl";
+    finderHighlight(sl, l.sl, snippet.terms);
+    const en = document.createElement("span");
+    en.className = "finder-en";
+    finderHighlight(en, l.en, snippet.terms);
+    line.append(sl, en);
+    box.appendChild(line);
+  }
+  return box;
 }
 
 function renderFinder(matches, live, note) {
@@ -429,6 +479,7 @@ function renderFinder(matches, live, note) {
       `</span><span class="level-chevron">›</span>`;
     card.querySelector(".level-title").textContent = `${m.scenarioName} — ${m.levelTitle}`;
     card.querySelector(".scenario-meta").textContent = m.reason || "";
+    if (m.snippet) card.querySelector(".level-main").appendChild(finderSnippetEl(m.snippet));
     card.addEventListener("click", () => openFinderMatch(m));
     el.appendChild(card);
   }
@@ -448,7 +499,45 @@ function openFinderMatch(m) {
   if (!s) return;
   openScenario(s);
   const i = s.dialogues.findIndex((d) => d.id === m.dialogueId);
-  if (i >= 0) openLevel(i);
+  if (i < 0) return;
+  // Tap-through trees open AT the matched exchange; spoken levels (and anything unreachable) open at the start.
+  if ((s.dialogues[i].advance ?? "tap") !== "audio" && m.snippet) openLevelAt(i, m.snippet.nodeId);
+  else openLevel(i);
+}
+
+// Open a rehearsal tree already walked to `nodeId`: the path from the root is shown as (silent) bubbles,
+// then the npc line that leads into the matched exchange plays and offers its choices — so a matched
+// client line appears as one of the options. No path (orphan node) → the normal start.
+function openLevelAt(i, nodeId) {
+  dialogue = dialogues[i];
+  const path = treePath(dialogue, nodeId);
+  if (!path) { openLevel(i); return; }
+  applyDialogueBackground();
+  $("dialogue").hidden = false;
+  startDialogueTree();               // resets state + presents the root…
+  if (path.length === 1 && dialogue.nodes[nodeId].speaker === "npc") return; // …which IS the target
+  treeGen++;                         // …then cancel that and replay the path silently instead
+  stopDialogueAudio();
+  $("dialogue-convo").innerHTML = "";
+  const entry = dialogue.nodes[nodeId].speaker === "npc" ? path.length - 1 : path.length - 2;
+  for (const id of path.slice(0, entry)) dialogueBubble(dialogue.nodes[id]);
+  presentNpcNode(path[entry]);
+}
+
+/** BFS root → nodeId over `next`; returns the node ids along the way (inclusive) or null. */
+function treePath(d, nodeId) {
+  const prev = { [d.root]: null };
+  const queue = [d.root];
+  while (queue.length) {
+    const id = queue.shift();
+    if (id === nodeId) {
+      const out = [];
+      for (let x = id; x; x = prev[x]) out.unshift(x);
+      return out;
+    }
+    for (const n of (d.nodes[id]?.next || [])) if (!(n in prev)) { prev[n] = id; queue.push(n); }
+  }
+  return null;
 }
 
 $("finder-input").addEventListener("input", (e) => {

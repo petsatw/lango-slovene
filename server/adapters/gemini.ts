@@ -413,7 +413,9 @@ export class GeminiE2 implements E2Adapter {
 
   async rankScenarios(input: { query: string; candidates: ScenarioCandidate[] }): Promise<ScenarioRanking> {
     const key = requireKey();
-    const list = input.candidates.map((c) => `- ${c.dialogueId}: ${c.description}`).join("\n");
+    const list = input.candidates
+      .map((c) => `- ${c.dialogueId}: ${c.description}\n` + c.lines.map((l) => `    [${l.id}] ${l.sl} (${l.en})`).join("\n"))
+      .join("\n");
     const res = await fetch(`${BASE}/${this.model}:generateContent`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": key },
@@ -425,7 +427,8 @@ export class GeminiE2 implements E2Adapter {
                 "You match a Slovene learner's description of a situation they want to practise (English, " +
                 "Slovene or mixed) to lesson levels. Score each relevant level 0..1 (1 = exactly that " +
                 "situation, 0.5 = same place or same language skill, below 0.3 = not useful) and give a short " +
-                "English reason. Omit irrelevant levels. Use only ids from the list. Also write `fallback`: a " +
+                "English reason, and the id of the ONE line [in brackets] of that level that best shows why " +
+                "(nodeId). Omit irrelevant levels. Use only ids from the list. Also write `fallback`: a " +
                 "one-sentence English scene for a live role-play of the learner's situation, and the Slovene " +
                 "role noun the tutor should play (e.g. 'prodajalka na tržnici'), or null.",
             },
@@ -434,7 +437,7 @@ export class GeminiE2 implements E2Adapter {
         contents: [{ role: "user", parts: [{ text: `Situation: ${input.query}\n\nLevels:\n${list}` }] }],
         generationConfig: {
           temperature: 0,
-          maxOutputTokens: 1024,
+          maxOutputTokens: 2048,
           thinkingConfig: { thinkingBudget: 0 },
           responseMimeType: "application/json",
           responseSchema: {
@@ -444,7 +447,9 @@ export class GeminiE2 implements E2Adapter {
                 type: "ARRAY",
                 items: {
                   type: "OBJECT",
-                  properties: { dialogueId: { type: "STRING" }, score: { type: "NUMBER" }, reason: { type: "STRING" } },
+                  properties: {
+                    dialogueId: { type: "STRING" }, score: { type: "NUMBER" }, reason: { type: "STRING" }, nodeId: { type: "STRING" },
+                  },
                   required: ["dialogueId", "score", "reason"],
                 },
               },

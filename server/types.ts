@@ -181,12 +181,13 @@ export interface ScenarioCandidate {
   dialogueId: string;
   scenarioId: string;
   description: string; // scenario name + level title + summary + objectives, plain English
+  lines: { id: string; sl: string; en: string }[]; // every line of the level, so the model can cite one
 }
 
 /** The model's ranking of candidates for a learner's free-text situation. It decides nothing: the
  *  server drops unknown ids and applies the threshold + cap. */
 export interface ScenarioRanking {
-  matches: { dialogueId: string; score: number; reason: string }[];
+  matches: { dialogueId: string; score: number; reason: string; nodeId?: string }[];
   fallback: { scene: string; role: string | null };
 }
 

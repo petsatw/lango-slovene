@@ -36,6 +36,19 @@ check("residence permit → upravna-enota first", permit[0]?.scenarioId === "upr
 const coffee = top("I would like to order a coffee");
 check("coffee → cafe or restaurant first", ["cafe", "restaurant"].includes(coffee[0]?.scenarioId ?? ""), ids(coffee));
 
+const sn = coffee[0]?.snippet;
+check("coffee → snippet from a restaurant line containing kava/kavo",
+  coffee[0]?.scenarioId === "restaurant" && !!sn && /\bkav[oa]\b/i.test(sn.lines[0]?.sl ?? ""), JSON.stringify(sn));
+check("coffee snippet: node is a real line of that level + 'coffee' is a highlight term",
+  !!sn && index.find((e) => e.dialogueId === coffee[0]!.dialogueId)!.nodes.some((n) => n.id === sn.nodeId) && sn.terms.includes("coffee"),
+  JSON.stringify(sn));
+check("top market + permit matches carry a snippet", !!market[0]?.snippet && !!permit[0]?.snippet, ids(market));
+check("kilo of tomatoes → trznica-l3 with the tomato line", top("kilo of tomatoes")[0]?.snippet?.lines[0]?.sl.includes("paradižnika") === true, ids(top("kilo of tomatoes")));
+
+const coffeeOne = top("coffee");
+check("single word 'coffee' → restaurant with a kava/kavo snippet",
+  coffeeOne[0]?.scenarioId === "restaurant" && /\bkav[oa]\b/i.test(coffeeOne[0]?.snippet?.lines[0]?.sl ?? ""), ids(coffeeOne));
+
 const vet = top("I need to go to the vet");
 check("vet → no match (live fallback only)", vet.length === 0, ids(vet));
 
@@ -56,6 +69,9 @@ if (process.argv.includes("--live")) {
     check("live: permit → upravna-enota first", m2.matches[0]?.scenarioId === "upravna-enota", ids(m2.matches));
     const m3 = await run("I would like to order a coffee");
     check("live: coffee → cafe/restaurant first", ["cafe", "restaurant"].includes(m3.matches[0]?.scenarioId ?? ""), ids(m3.matches));
+    const sn3 = m3.matches[0]?.snippet;
+    check("live: coffee snippet node belongs to its level", !!sn3 &&
+      index.find((e) => e.dialogueId === m3.matches[0]!.dialogueId)!.nodes.some((n) => n.id === sn3.nodeId), JSON.stringify(sn3));
     const m4 = await run("I need to go to the vet");
     check("live: vet → no level above threshold + a vet fallback scene",
       m4.matches.length === 0 && /vet/i.test(m4.fallback.scene), `${ids(m4.matches)} | ${m4.fallback.scene}`);

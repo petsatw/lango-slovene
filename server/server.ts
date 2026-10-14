@@ -170,7 +170,10 @@ function finderIndex() {
 // keystroke in the browser with no network or model call (public/app.js mirrors tokenize/score).
 app.get("/api/match/index", (_req, res) => {
   res.json({
-    entries: finderIndex().map(({ tokens, scenarioTokens, ...e }) => ({ ...e, tokens: [...tokens], scenarioTokens: [...scenarioTokens] })),
+    entries: finderIndex().map(({ tokens, scenarioTokens, nodes, ...e }) => ({
+      ...e, tokens: [...tokens], scenarioTokens: [...scenarioTokens],
+      nodes: nodes.map((n) => ({ ...n, tokens: [...n.tokens] })),
+    })),
     synonyms: SYNONYMS, stop: [...STOP], threshold: MATCH_THRESHOLD,
   });
 });
