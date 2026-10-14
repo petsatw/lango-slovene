@@ -83,7 +83,9 @@ Fixed once, for the whole scenario:
   `role`, `setup`, `opening` and `register` into the reconcile input verbatim — the reconcile overwrites
   the manifest's copies from the input, and keeps any `surfaces` it does not own (a `live` surface
   survives).
-- **Register**: ti/vi + pogovorni/knjižni. It holds on every line, the client's included.
+- **Register**: ti/vi + pogovorni/knjižni. It holds on every line, the client's included. Where the
+  domain map gives each interlocutor its own register (vi to adults, ti to children), each line takes
+  the register of the person it is said to or by.
 - **Voices**: `npc` and `client` profiles from `server/catalog/voices.json`. **The client is a person with a
   gender** — the one the client voice belongs to. First-person forms follow it (*Rad bi* / *Rada bi*,
   *prišel* / *prišla*). State it in every brief.
