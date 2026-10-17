@@ -500,8 +500,8 @@
   },
   "sem_ime": {
     "kind": "pattern",
-    "sl": "Sem ___.",
-    "gloss": "I am ___ / you are ___ — the copula frame, naming who or what someone is (Sem Slavko, Sem študent, Ti si učitelj)",
+    "sl": "Sem / Si / Je / Sva / Sta / Smo / Ste / So ___.",
+    "gloss": "the copula 'biti', any person and the dual — I am / you are / he is / the two are ___ ('Še mladiček je.', 'Oba sta moja.', 'Ali je vaš pes prijazen?')",
     "predictableError": "the 'Moje ime je ___' calque instead of the natural 'Sem ___'; jaz is usually dropped; and in the 2nd person, carrying the 1sg over as 'Ti sem ___' — the 2sg copula is 'si'",
     "core": true,
     "a1": true
@@ -532,8 +532,8 @@
   },
   "star_sem_let": {
     "kind": "pattern",
-    "sl": "Star / Stara sem ___ let.",
-    "gloss": "I am ___ years old",
+    "sl": "Star / Stara sem / je ___ let / mesecev.",
+    "gloss": "I am / he is ___ years / months old — 'star' agrees with whose age it is; from five up the unit is genitive plural ('Star je pet mesecev.')",
     "predictableError": "gender ('star' masc. / 'stara' fem.); genitive plural 'let' after 5+",
     "core": true,
     "a1": true
@@ -733,8 +733,8 @@
   },
   "grem_v": {
     "kind": "pattern",
-    "sl": "Grem v / na ___.",
-    "gloss": "I'm going to ___",
+    "sl": "Grem / Gremo / Pojdite ___.",
+    "gloss": "go — any person, and the command pojdi / pojdite; where to in the slot: v / na + accusative, mimo, naprej ('Gremo na drugo stran.', 'Gremo kar mimo.', 'Kar pojdite mimo.')",
     "predictableError": "'v' vs 'na'; accusative of direction ('grem na pošto')",
     "core": true,
     "a1": true
@@ -1041,8 +1041,8 @@
   },
   "hocem": {
     "kind": "pattern",
-    "sl": "Hočem ___.",
-    "gloss": "I want ___",
+    "sl": "Hočem / Hočeš / Hoče ___.",
+    "gloss": "want ___ — any person; + a noun (acc.) or an infinitive ('Samo igrati se hoče.', 'Ali mu hočeš dati priboljšek?'); as a request 'hočem' is blunt",
     "predictableError": "'hočem' is blunt for a request — use 'rad bi' / 'lahko dobim' politely; accusative object",
     "core": true,
     "a1": true
@@ -1108,9 +1108,9 @@
   },
   "ali_lahko": {
     "kind": "pattern",
-    "sl": "Ali lahko ___?",
-    "gloss": "May I / can I ___? (asking permission; 'ali' is often dropped in speech)",
-    "predictableError": "keeping the English modal+infinitive ('lahko plačati'); after '(ali) lahko' it takes the finite 1sg present — 'Lahko plačam jutri?'",
+    "sl": "Ali lahko ___? / Lahko ___.",
+    "gloss": "can / may — asking ('Ali lahko malo počakate?', 'Ali ga lahko pokličete?') and granting ('Lahko ga pobožate.', 'Lahko ga pobožaš.'); lahko + present-tense verb in any person; a short pronoun (ga / mu / se) goes second — after 'ali' ('Ali ga lahko pokličete?'), after 'lahko' when there is no 'ali' ('Lahko ga pobožate.')",
+    "predictableError": "keeping the English modal+infinitive ('lahko pobožati'); after '(ali) lahko' comes the finite present, in the person meant — 'Lahko plačam?', 'Lahko ga pobožate.'",
     "a1": true,
     "core": true
   },
@@ -1196,8 +1196,8 @@
   },
   "ime_mi_je": {
     "kind": "pattern",
-    "sl": "Ime mi je ___.",
-    "gloss": "My name is ___.",
+    "sl": "Ime mi / ti / mu / ji / vam je ___.",
+    "gloss": "my / your / his / her name is ___ — the person is a dative pronoun ('Ime mu je Enzo.')",
     "predictableError": "Calquing English as 'Moje ime je ___' (nominative possessive) instead of the natural dative 'Ime mi je ___' — dropping or omitting the dative clitic 'mi'.",
     "a1": true,
     "core": true
@@ -2247,8 +2247,8 @@
   },
   "ali_or": {
     "kind": "pattern",
-    "sl": "___ ali ___?",
-    "gloss": "___ or ___? (offering two options)",
+    "sl": "Ali ___? / ___ ali ___?",
+    "gloss": "'ali' — the word that opens a yes/no question ('Ali je vaš pes prijazen?') and 'or' between options ('Kavo ali čaj?')",
     "predictableError": "the same word also opens a yes/no question; between two nouns it is plainly 'or' — 'Kavo ali čaj?', and both options take the same case.",
     "core": false,
     "a1": true
@@ -3174,9 +3174,9 @@
     "a1": true
   },
   "bil_sem": {
-    "kind": "chunk",
-    "sl": "Bil sem doma. / Bila sem doma.",
-    "gloss": "I was at home (man / woman)",
+    "kind": "pattern",
+    "sl": "Bil / Bila sem / je ___.",
+    "gloss": "was ___ — the past of biti, any person: 'Bil sem doma.', 'Pred kratkim je bil operiran.'",
     "predictableError": "the past of 'biti' is the participle 'bil/bila' PLUS 'sem' — dropping 'sem' ('jaz bil doma') leaves no tense at all",
     "core": false,
     "a1": true
@@ -3557,6 +3557,317 @@
     "sl": "blitva",
     "gloss": "chard (fem.)",
     "predictableError": "echoing the accusative 'blitvo' heard in her list when asking about it; asked about on its own, it is the nominative 'blitva'",
+    "a1": true
+  },
+  "lep_dan": {
+    "kind": "chunk",
+    "sl": "Lep dan!",
+    "gloss": "have a nice day (said when leaving)",
+    "predictableError": "translating 'have a nice day' word for word — 'Imejte lep dan!'; Slovenes just say 'Lep dan!' (or 'Lep dan še naprej.')",
+    "core": true,
+    "a1": true
+  },
+  "mladicek": {
+    "kind": "vocabulary",
+    "sl": "mladiček",
+    "gloss": "puppy",
+    "predictableError": "adding an article ('Še en mladiček je') — bare noun: 'Še mladiček je.'",
+    "a1": true
+  },
+  "pobozati": {
+    "kind": "vocabulary",
+    "sl": "pobožati",
+    "gloss": "to pet, stroke (once)",
+    "predictableError": "putting the dog in the dative by analogy with 'dati' ('pobožati mu') — it takes the accusative: 'Lahko GA pobožate.'",
+    "a1": true
+  },
+  "prijazen": {
+    "kind": "vocabulary",
+    "sl": "prijazen",
+    "gloss": "friendly",
+    "predictableError": "keeping the -e- for a female dog ('prijazena') — it drops: 'prijazna je', 'nista prijazna'",
+    "a1": true
+  },
+  "se_still": {
+    "kind": "vocabulary",
+    "sl": "še",
+    "gloss": "still, yet ('Še mladiček je.' = he's still a puppy)",
+    "predictableError": "mixing up 'še' (still) and 'že' (already) — 'Že mladiček je' makes no sense",
+    "a1": true
+  },
+  "mesanec": {
+    "kind": "vocabulary",
+    "sl": "mešanec",
+    "gloss": "mixed-breed dog, mutt",
+    "predictableError": "using the adjective 'mešan' ('Mešan je' = he is mixed) — the breed answer is the noun: 'Mešanec je.'",
+    "a1": true
+  },
+  "zivahen": {
+    "kind": "vocabulary",
+    "sl": "živahen",
+    "gloss": "lively, full of energy",
+    "predictableError": "keeping the -e- when it inflects ('živahena') — 'živahna', 'živahni'",
+    "a1": true
+  },
+  "moj": {
+    "kind": "vocabulary",
+    "sl": "moj",
+    "gloss": "my, mine",
+    "predictableError": "making it agree with the owner, not what's owned — two male dogs: 'Oba sta moja' (dual); a female dog: 'moja'",
+    "a1": true
+  },
+  "nic_hudega": {
+    "kind": "chunk",
+    "sl": "Nič hudega.",
+    "gloss": "no problem / never mind (accepting an apology)",
+    "predictableError": "saying 'nič hudo' or the calque 'Ni problem' — both drop the genitive; the set reply is 'Nič hudega' (and 'Ni problema', with -a)",
+    "core": true,
+    "a1": true
+  },
+  "oba": {
+    "kind": "vocabulary",
+    "sl": "oba",
+    "gloss": "both (masc.; fem./neut. 'obe')",
+    "predictableError": "using a plural verb ('oba so') — two takes the dual: 'Oba sta moja.'",
+    "a1": true
+  },
+  "operiran": {
+    "kind": "vocabulary",
+    "sl": "operiran",
+    "gloss": "operated on",
+    "predictableError": "not agreeing the participle with the dog — a male dog 'je bil operiran', a female 'je bila operirana'",
+    "a1": true
+  },
+  "plasen": {
+    "kind": "vocabulary",
+    "sl": "plašen",
+    "gloss": "shy, timid (a lasting trait)",
+    "predictableError": "using 'prestrašen' (frightened right now) for a dog that is shy by nature — 'Plašen je' is the trait",
+    "a1": true
+  },
+  "pred_kratkim": {
+    "kind": "chunk",
+    "sl": "pred kratkim",
+    "gloss": "recently, not long ago",
+    "predictableError": "'pred kratko' — after 'pred' in the time sense it is instrumental 'kratkim'",
+    "a1": true
+  },
+  "tega_raje_ne": {
+    "kind": "chunk",
+    "sl": "Tega raje ne, prosim.",
+    "gloss": "better not this one, please (keeping someone off one of the dogs)",
+    "predictableError": "using the nominative 'Ta raje ne' — the dog is the thing being refused, so masculine animate 'tega'",
+    "core": true,
+    "a1": true
+  },
+  "tega_tistega": {
+    "kind": "pattern",
+    "sl": "Tega lahko ___, tistega pa ne.",
+    "gloss": "this one you can ___, but not that one (the slot carries the verb: pobožate to an adult, pobožaš to a child)",
+    "predictableError": "using the nominative 'Ta lahko …, tisti pa ne' for the dog — as the object it takes animate 'tega / tistega'; or putting 'pa' first English-style ('pa tistega ne')",
+    "a1": true
+  },
+  "dati": {
+    "kind": "vocabulary",
+    "sl": "dati",
+    "gloss": "to give",
+    "predictableError": "regularizing the irregular present/imperative — 'dam, daš, da … daste', command 'daj / dajte'; the receiver is dative ('daj MU')",
+    "a1": true
+  },
+  "kar": {
+    "kind": "vocabulary",
+    "sl": "kar",
+    "gloss": "go ahead / just (softening particle) — 'Kar pojdite mimo.', 'Gremo kar mimo.', 'Ja, kar.'",
+    "predictableError": "leaving it out, which makes 'Pojdite mimo' sound like an order — 'kar' turns it into an invitation",
+    "a1": true
+  },
+  "malo": {
+    "kind": "vocabulary",
+    "sl": "malo",
+    "gloss": "a little, a moment (also softens a request) — 'Ali lahko malo počakate?'",
+    "predictableError": "calquing 'wait a moment' as 'počakajte en moment' — the everyday softener is 'malo'; with a noun it takes the genitive ('malo vode')",
+    "a1": true
+  },
+  "mimo": {
+    "kind": "vocabulary",
+    "sl": "mimo",
+    "gloss": "past, by ('iti mimo' = to go past)",
+    "predictableError": "calquing 'past' with 'čez', or using the nominative after it — with a noun 'mimo' takes the genitive: 'mimo psa'",
+    "a1": true
+  },
+  "ne_skrbite": {
+    "kind": "chunk",
+    "sl": "Ne skrbite.",
+    "gloss": "don't worry (vi, to a stranger)",
+    "predictableError": "saying the ti-form 'Ne skrbi' to a stranger, or a calque 'Ne bodite zaskrbljeni'",
+    "a1": true
+  },
+  "pocakati": {
+    "kind": "vocabulary",
+    "sl": "počakati",
+    "gloss": "to wait (a moment) — 'Počakaj!' to a child, 'Ali lahko malo počakate?' to an adult",
+    "predictableError": "mixing up the address forms — a child gets 'Počakaj!', an adult 'Počakajte!' / 'Ali lahko malo počakate?'; the ti-form to a stranger sounds rude",
+    "a1": true
+  },
+  "poklicati": {
+    "kind": "vocabulary",
+    "sl": "poklicati",
+    "gloss": "to call (a dog back; also to phone)",
+    "predictableError": "keeping the infinitive stem in the present ('poklicate') — c→č: 'pokličem, pokličete'",
+    "a1": true
+  },
+  "povodec": {
+    "kind": "vocabulary",
+    "sl": "povodec",
+    "gloss": "lead, leash",
+    "predictableError": "mixing direction and place: putting on the lead is 'na povodec' (acc.), being on it is 'na povodcu' (loc., -e- drops)",
+    "a1": true
+  },
+  "drzati": {
+    "kind": "vocabulary",
+    "sl": "držati",
+    "gloss": "to hold",
+    "predictableError": "using the plural 'jih držim' for two dogs — two take the dual: 'ju držim'",
+    "a1": true
+  },
+  "igrati_se": {
+    "kind": "vocabulary",
+    "sl": "igrati se",
+    "gloss": "to play (as a dog or child plays)",
+    "predictableError": "dropping 'se' — without it 'igrati' means to play a game or an instrument",
+    "a1": true
+  },
+  "nervozen": {
+    "kind": "vocabulary",
+    "sl": "nervozen",
+    "gloss": "nervous, on edge",
+    "predictableError": "calquing 'around other dogs' with 'okoli' — the setting is 'ob' + locative: 'nervozen ob drugih psih'",
+    "a1": true
+  },
+  "pes": {
+    "kind": "vocabulary",
+    "sl": "pes",
+    "gloss": "dog (masc.)",
+    "predictableError": "keeping the -e- when it inflects ('pesa', 'pesi') — it drops: 'psa', 'psi', 'na druge pse', 'ob drugih psih'; two dogs are 'psa'",
+    "a1": true
+  },
+  "samo": {
+    "kind": "vocabulary",
+    "sl": "samo",
+    "gloss": "only, just",
+    "predictableError": "confusing 'samo' (only/just) with 'sam' (alone, by himself) — 'Samo igrati se hoče' = he just wants to play",
+    "a1": true
+  },
+  "skakati": {
+    "kind": "vocabulary",
+    "sl": "skakati",
+    "gloss": "to jump (repeatedly); jump up at",
+    "predictableError": "regularizing the present 'skaka' — k→č: 'skače'; jumping at = 'na' + acc. ('na druge pse')",
+    "a1": true
+  },
+  "stran": {
+    "kind": "vocabulary",
+    "sl": "stran",
+    "gloss": "side (fem.) — 'na drugo stran' = to the other side",
+    "predictableError": "using the locative 'na drugi strani' (on the other side) for movement — going there is accusative 'na drugo stran'",
+    "a1": true
+  },
+  "ta": {
+    "kind": "vocabulary",
+    "sl": "ta",
+    "gloss": "this (one); animate masc. acc. 'tega'",
+    "predictableError": "the dog as object is 'tega', not 'ta' ('Tega lahko pobožate'); as subject it stays 'ta' ('Ta je še mladiček.')",
+    "a1": true
+  },
+  "vcasih": {
+    "kind": "vocabulary",
+    "sl": "včasih",
+    "gloss": "sometimes",
+    "predictableError": "splitting it 'v časih' by analogy with 'čas'; it is one word (and with the past tense it can mean 'in the old days')",
+    "a1": true
+  },
+  "bravo": {
+    "kind": "vocabulary",
+    "sl": "bravo",
+    "gloss": "well done! (praising a child)",
+    "predictableError": "calquing 'good job' as 'Dobro delo!' — nobody says it; praise is 'Bravo!'",
+    "a1": true
+  },
+  "dlan": {
+    "kind": "vocabulary",
+    "sl": "dlan",
+    "gloss": "palm (of the hand), fem.",
+    "predictableError": "treating it as masculine because it ends in a consonant — it's feminine: 'na dlan', 'na dlani'",
+    "a1": true
+  },
+  "nezno": {
+    "kind": "vocabulary",
+    "sl": "nežno",
+    "gloss": "gently",
+    "predictableError": "using the adjective 'nežen' as the instruction — 'gently!' is the adverb 'Nežno.'",
+    "a1": true
+  },
+  "priboljsek": {
+    "kind": "vocabulary",
+    "sl": "priboljšek",
+    "gloss": "treat (for a dog)",
+    "predictableError": "keeping the -e- when it inflects ('priboljšeki') — it drops: 'priboljški', 'priboljška'",
+    "a1": true
+  },
+  "takole": {
+    "kind": "vocabulary",
+    "sl": "takole",
+    "gloss": "like this (showing how)",
+    "predictableError": "calquing 'like this' as 'kot to'; when you show someone how, it's 'takole'",
+    "a1": true
+  },
+  "naj": {
+    "kind": "pattern",
+    "sl": "Naj ___.",
+    "gloss": "let him / her ___ (naj + present verb) — 'Naj te najprej povoha.'",
+    "predictableError": "putting an infinitive after naj ('naj te povohati') — naj takes the present tense, in whichever person is meant: 'Naj te najprej povoha.', 'Kaj naj naredim?'",
+    "a1": true
+  },
+  "najprej": {
+    "kind": "vocabulary",
+    "sl": "najprej",
+    "gloss": "first (before anything else)",
+    "predictableError": "using 'prvi' or 'prvič' (the first time) — 'first, let him sniff you' is 'najprej'",
+    "a1": true
+  },
+  "povohati": {
+    "kind": "vocabulary",
+    "sl": "povohati",
+    "gloss": "to sniff; 'povohati se' = to sniff each other",
+    "predictableError": "using the plural 'se povohajo' for two dogs — exactly two take the dual: 'Ali se lahko povohata?'",
+    "a1": true
+  },
+  "dobro": {
+    "kind": "vocabulary",
+    "sl": "dobro",
+    "gloss": "fine, well (answering 'how are they / how are you'); OK, good (agreeing)",
+    "predictableError": "answering with the adjective — 'Dobra sta' / 'Sem dober' (calque of 'they're good'), which says they're well-behaved or good people; the how-are-you answer is the adverb 'Dobro'",
+    "a1": true
+  },
+  "naprej": {
+    "kind": "vocabulary",
+    "sl": "naprej",
+    "gloss": "on, onward, ahead (movement); 'še naprej' = from now on",
+    "predictableError": "using 'naprej' (moving forward) for a place ('in front') — that's 'spredaj'",
+    "a1": true
+  },
+  "vas": {
+    "kind": "vocabulary",
+    "sl": "vaš",
+    "gloss": "your (vi — to one stranger, or to several people)",
+    "predictableError": "saying 'tvoj' to a stranger, or not agreeing it — 'vaš pes', 'vaša psička'",
+    "a1": true
+  },
+  "hrana": {
+    "kind": "vocabulary",
+    "sl": "hrana",
+    "gloss": "food (fem.)",
+    "predictableError": "keeping the accusative under negation ('ne dajte mu hrano') — negation takes the genitive: 'ne dajte mu hrane'",
     "a1": true
   }
 }

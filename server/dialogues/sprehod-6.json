@@ -1,0 +1,351 @@
+{
+  "id": "sprehod-l6",
+  "scenarioId": "sprehod",
+  "level": 6,
+  "levelLabel": "Basic",
+  "title": "A child and a treat",
+  "objectives": [
+    {
+      "label": "Živjo! Počakaj!",
+      "descriptorEN": "Stop a child running at the puppy (ti)."
+    },
+    {
+      "label": "Ali mu lahko da priboljšek?",
+      "descriptorEN": "Ask the parent whether the child may give a treat (vi)."
+    },
+    {
+      "label": "Daj mu takole, na dlan. Nežno. Bravo!",
+      "descriptorEN": "Show the child how (ti)."
+    },
+    {
+      "label": "V redu.",
+      "descriptorEN": "Accept the parent's no."
+    }
+  ],
+  "introduces": [
+    "ali_or",
+    "bravo",
+    "dlan",
+    "nezno",
+    "priboljsek",
+    "takole",
+    "v_redu",
+    "zivjo"
+  ],
+  "audio": "pending",
+  "voices": {
+    "npc": "female-speaker",
+    "client": "slavko"
+  },
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Kuža! A ga lahko pobožam?",
+      "en": "A doggy! Can I pet him?",
+      "deliverySL": "[navdušeno, hitro] Kuža! A ga lahko pobožam?",
+      "next": [
+        "c1a",
+        "c1b"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "pobozati"
+      ]
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Živjo! Počakaj!",
+      "en": "Hi! Wait!",
+      "next": [
+        "n2"
+      ],
+      "learnables": [
+        "pocakati",
+        "zivjo"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Živjo! Počakaj! Počasi.",
+      "en": "Hi! Wait! Slowly.",
+      "next": [
+        "n2"
+      ],
+      "learnables": [
+        "pocakati",
+        "pocasi_prosim",
+        "zivjo"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Dober dan, oprostite. Čisto nora je na pse.",
+      "en": "Good day, sorry. She's mad about dogs.",
+      "deliverySL": "[v zadregi] Dober dan, oprostite. Čisto nora je na pse.",
+      "next": [
+        "c2a",
+        "c2b"
+      ],
+      "learnables": [
+        "dober_dan",
+        "oprostite",
+        "pes",
+        "sem_ime"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Dober dan. Ali mu lahko da priboljšek?",
+      "en": "Good day. Can she give him a treat?",
+      "context": "the mother is relaxed about it",
+      "next": [
+        "n3yes"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "dati",
+        "dober_dan",
+        "priboljsek"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "Dober dan. Ali mu lahko da priboljšek?",
+      "en": "Good day. Can she give him a treat?",
+      "context": "the mother is wary of dogs",
+      "next": [
+        "n3no"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "dati",
+        "dober_dan",
+        "priboljsek"
+      ]
+    },
+    "n3yes": {
+      "speaker": "npc",
+      "sl": "Ja, kar.",
+      "en": "Yes, go ahead.",
+      "deliverySL": "[toplo] Ja, kar.",
+      "next": [
+        "c3a",
+        "c3b"
+      ],
+      "learnables": [
+        "ja",
+        "kar"
+      ]
+    },
+    "c3a": {
+      "speaker": "client",
+      "sl": "Ali mu hočeš dati priboljšek?",
+      "en": "Do you want to give him a treat?",
+      "next": [
+        "n4"
+      ],
+      "learnables": [
+        "ali_or",
+        "dati",
+        "hocem",
+        "priboljsek"
+      ]
+    },
+    "c3b": {
+      "speaker": "client",
+      "sl": "Hočeš mu dati priboljšek?",
+      "en": "Want to give him a treat?",
+      "next": [
+        "n4"
+      ],
+      "learnables": [
+        "dati",
+        "hocem",
+        "priboljsek"
+      ]
+    },
+    "n4": {
+      "speaker": "npc",
+      "sl": "Ja!",
+      "en": "Yes!",
+      "deliverySL": "[veselo] Ja!",
+      "next": [
+        "c4a",
+        "c4b"
+      ],
+      "learnables": [
+        "ja"
+      ]
+    },
+    "c4a": {
+      "speaker": "client",
+      "sl": "Daj mu takole, na dlan.",
+      "en": "Give it to him like this, on your palm.",
+      "next": [
+        "n5"
+      ],
+      "learnables": [
+        "dati",
+        "dlan",
+        "takole"
+      ]
+    },
+    "c4b": {
+      "speaker": "client",
+      "sl": "Takole, na dlan. Počasi.",
+      "en": "Like this, on your palm. Slowly.",
+      "next": [
+        "n5"
+      ],
+      "learnables": [
+        "dlan",
+        "pocasi_prosim",
+        "takole"
+      ]
+    },
+    "n5": {
+      "speaker": "npc",
+      "sl": "Polizal me je! A ga zdaj lahko pobožam?",
+      "en": "He licked me! Can I pet him now?",
+      "deliverySL": "[veselo] Polizal me je! A ga zdaj lahko pobožam?",
+      "next": [
+        "c5a",
+        "c5b"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "pobozati",
+        "sem_ime"
+      ]
+    },
+    "c5a": {
+      "speaker": "client",
+      "sl": "Lahko ga pobožaš. Nežno.",
+      "en": "You can pet him. Gently.",
+      "next": [
+        "n6"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "nezno",
+        "pobozati"
+      ]
+    },
+    "c5b": {
+      "speaker": "client",
+      "sl": "Bravo! Lahko ga pobožaš. Nežno.",
+      "en": "Well done! You can pet him. Gently.",
+      "next": [
+        "n6"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "bravo",
+        "nezno",
+        "pobozati"
+      ]
+    },
+    "n6": {
+      "speaker": "npc",
+      "sl": "Najlepša hvala! Pridi, greva, reci adijo.",
+      "en": "Thank you very much! Come on, we're going, say bye.",
+      "deliverySL": "[toplo] Najlepša hvala! Pridi, greva, reci adijo.",
+      "next": [
+        "c6a",
+        "c6b"
+      ],
+      "learnables": [
+        "adijo",
+        "grem_v",
+        "hvala"
+      ]
+    },
+    "c6a": {
+      "speaker": "client",
+      "sl": "Bravo! Adijo!",
+      "en": "Well done! Bye!",
+      "next": [
+        "nBye"
+      ],
+      "learnables": [
+        "adijo",
+        "bravo"
+      ]
+    },
+    "c6b": {
+      "speaker": "client",
+      "sl": "Adijo, lep dan!",
+      "en": "Bye, have a nice day!",
+      "next": [
+        "nBye"
+      ],
+      "learnables": [
+        "adijo",
+        "lep_dan"
+      ]
+    },
+    "nBye": {
+      "speaker": "npc",
+      "sl": "Adijo! Zdaj bo ves dan govorila samo o kužku.",
+      "en": "Bye! Now she'll talk about nothing but the doggy all day.",
+      "deliverySL": "[toplo] Adijo! Zdaj bo ves dan govorila samo o kužku.",
+      "next": [],
+      "learnables": [
+        "adijo",
+        "samo"
+      ]
+    },
+    "n3no": {
+      "speaker": "npc",
+      "sl": "Hm, raje ne. Pridi k mami.",
+      "en": "Hm, better not. Come to mummy.",
+      "deliverySL": "[oklevajoče] Hm, raje ne. Pridi k mami.",
+      "next": [
+        "c3n1",
+        "c3n2"
+      ],
+      "learnables": [
+        "ne",
+        "raje"
+      ]
+    },
+    "c3n1": {
+      "speaker": "client",
+      "sl": "V redu. Adijo, lep dan!",
+      "en": "OK. Bye, have a nice day!",
+      "next": [
+        "nByeNo"
+      ],
+      "learnables": [
+        "adijo",
+        "lep_dan",
+        "v_redu"
+      ]
+    },
+    "c3n2": {
+      "speaker": "client",
+      "sl": "V redu, nič hudega. Adijo!",
+      "en": "OK, no problem. Bye!",
+      "next": [
+        "nByeNo"
+      ],
+      "learnables": [
+        "adijo",
+        "nic_hudega",
+        "v_redu"
+      ]
+    },
+    "nByeNo": {
+      "speaker": "npc",
+      "sl": "Adijo! Daj, pomahaj kužku.",
+      "en": "Bye! Go on, wave to the doggy.",
+      "deliverySL": "[toplo] Adijo! Daj, pomahaj kužku.",
+      "next": [],
+      "learnables": [
+        "adijo",
+        "dati"
+      ]
+    }
+  }
+}
