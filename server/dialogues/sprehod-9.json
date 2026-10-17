@@ -2,28 +2,33 @@
   "id": "sprehod-l9",
   "scenarioId": "sprehod",
   "level": 9,
-  "levelLabel": "Advanced",
+  "levelLabel": "Above A1",
   "title": "Chatting with a regular",
   "objectives": [
     {
       "label": "Dobro, hvala. Denver je danes miren.",
-      "descriptorEN": "Answer how the dogs are."
+      "descriptorEN": "Say how the dogs are today."
     },
     {
       "label": "Prosim, ne dajte mu hrane.",
-      "descriptorEN": "Turn down a treat for the older dog."
+      "descriptorEN": "Turn down a treat and say why."
+    },
+    {
+      "label": "Temu lahko, tistemu pa ne.",
+      "descriptorEN": "Allow something for one dog, not the other."
     },
     {
       "label": "Kaj pomeni ___?",
       "descriptorEN": "Ask what a word means."
+    },
+    {
+      "label": "Tega raje ne, prosim.",
+      "descriptorEN": "Stop another dog from coming up to yours."
     }
   ],
   "introduces": [
-    "danes",
     "hrana",
-    "kaj_pomeni",
-    "miren",
-    "ne_razumem"
+    "kaj_pomeni"
   ],
   "audio": "pending",
   "voices": {
@@ -39,7 +44,8 @@
       "deliverySL": "[veselo] Dober dan! Kako sta fanta?",
       "next": [
         "c1a",
-        "c1b"
+        "c1b",
+        "c1c"
       ],
       "learnables": [
         "dober_dan",
@@ -49,10 +55,39 @@
     },
     "c1a": {
       "speaker": "client",
+      "sl": "Dobro, hvala. Denver je danes miren.",
+      "en": "Fine, thanks. Denver is calm today.",
+      "next": [
+        "n2a"
+      ],
+      "learnables": [
+        "danes",
+        "dobro",
+        "hvala",
+        "miren",
+        "sem_ime"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Denver je danes malo nervozen.",
+      "en": "Denver is a bit nervous today.",
+      "next": [
+        "n2b"
+      ],
+      "learnables": [
+        "danes",
+        "malo",
+        "nervozen",
+        "sem_ime"
+      ]
+    },
+    "c1c": {
+      "speaker": "client",
       "sl": "Dobro, hvala. Pa vaša?",
       "en": "Fine, thanks. And yours?",
       "next": [
-        "n2"
+        "n2c"
       ],
       "learnables": [
         "dobro",
@@ -61,254 +96,727 @@
         "vas"
       ]
     },
-    "c1b": {
-      "speaker": "client",
-      "sl": "Dober dan. Dobro, hvala — Enzo je živahen, Denver pa je danes miren.",
-      "en": "Good day. Fine, thanks — Enzo's lively, but Denver is calm today.",
+    "n2c": {
+      "speaker": "npc",
+      "sl": "Ah, moja je v redu, samo stara je že. Kaj pa Denver, kako je danes?",
+      "en": "Oh, mine's fine, she's just getting old. And Denver, how is he today?",
+      "deliverySL": "[toplo] Ah, moja je v redu, samo stara je že. Kaj pa Denver, kako je danes?",
       "next": [
-        "n2"
+        "c2c1",
+        "c2c2"
       ],
       "learnables": [
         "danes",
-        "dober_dan",
-        "dobro",
-        "hvala",
-        "miren",
+        "moj",
         "pa",
+        "samo",
+        "sem_ime",
+        "star",
+        "v_redu"
+      ]
+    },
+    "c2c1": {
+      "speaker": "client",
+      "sl": "Danes je miren.",
+      "en": "He's calm today.",
+      "next": [
+        "n2a"
+      ],
+      "learnables": [
+        "danes",
+        "miren",
+        "sem_ime"
+      ]
+    },
+    "c2c2": {
+      "speaker": "client",
+      "sl": "Danes je malo nervozen.",
+      "en": "Today he's a bit nervous.",
+      "next": [
+        "n2b"
+      ],
+      "learnables": [
+        "danes",
+        "malo",
+        "nervozen",
+        "sem_ime"
+      ]
+    },
+    "n2a": {
+      "speaker": "npc",
+      "sl": "Super, potem lahko moja pride bliže. Pridi sem! Joj, Enzo je pa spet živahen!",
+      "en": "Great, then mine can come closer. Come here! Oh, Enzo's lively again!",
+      "deliverySL": "[toplo] Super, potem lahko moja pride bliže. Pridi sem! Joj, Enzo je pa spet živahen!",
+      "next": [
+        "c2a",
+        "c2ax"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "moj",
+        "pa",
+        "potem",
         "sem_ime",
         "zivahen"
       ]
     },
-    "n2": {
-      "speaker": "npc",
-      "sl": "Tudi moja je dobre volje. Glejte, piškot imam. A ga lahko dam Denverju?",
-      "en": "Mine's in good spirits too. Look, I've got a biscuit. Can I give it to Denver?",
-      "deliverySL": "[toplo] Tudi moja je dobre volje. Glejte, piškot imam. A ga lahko dam Denverju?",
-      "next": [
-        "c2a",
-        "c2b"
-      ],
-      "learnables": [
-        "ali_lahko",
-        "dati",
-        "moj",
-        "sem_ime"
-      ]
-    },
     "c2a": {
       "speaker": "client",
-      "sl": "Prosim, ne dajte mu hrane.",
-      "en": "Please don't give him any food.",
+      "sl": "Ja, samo igrati se hoče.",
+      "en": "Yes, he just wants to play.",
       "next": [
         "n3"
       ],
       "learnables": [
-        "dati",
-        "hrana",
-        "ne",
-        "prosim"
+        "hocem",
+        "igrati_se",
+        "ja",
+        "samo"
+      ]
+    },
+    "n2b": {
+      "speaker": "npc",
+      "sl": "Potem pa svojo raje držim pri sebi. Ostani tukaj!",
+      "en": "Then I'd better keep mine by me. Stay here!",
+      "deliverySL": "[toplo] Potem pa svojo raje držim pri sebi. Ostani tukaj!",
+      "next": [
+        "c2b",
+        "c2bx"
+      ],
+      "learnables": [
+        "drzati",
+        "pa",
+        "potem",
+        "raje"
       ]
     },
     "c2b": {
       "speaker": "client",
-      "sl": "Hvala, ampak prosim, ne dajte mu hrane.",
-      "en": "Thanks, but please don't give him food.",
+      "sl": "Hvala. Včasih je nervozen ob drugih psih.",
+      "en": "Thanks. He's sometimes nervous around other dogs.",
       "next": [
         "n3"
       ],
       "learnables": [
-        "ampak",
-        "dati",
-        "hrana",
         "hvala",
-        "ne",
-        "prosim"
+        "nervozen",
+        "pes",
+        "sem_ime",
+        "vcasih",
+        "vrstilni_drugi"
       ]
     },
     "n3": {
       "speaker": "npc",
-      "sl": "Aja? Kaj mu pa je?",
-      "en": "Oh? What's the matter with him?",
-      "deliverySL": "[toplo] Aja? Kaj mu pa je?",
+      "sl": "Glejte, piškote imam. A jih lahko dam fantoma?",
+      "en": "Look, I've got biscuits. Can I give some to the boys?",
+      "deliverySL": "[toplo] Glejte, piškote imam. A jih lahko dam fantoma?",
       "next": [
         "c3a",
         "c3b"
       ],
       "learnables": [
-        "pa",
-        "sem_ime"
+        "ali_lahko",
+        "dati",
+        "fant"
       ]
     },
     "c3a": {
       "speaker": "client",
-      "sl": "Pred kratkim je bil operiran.",
-      "en": "He had an operation recently.",
+      "sl": "Prosim, ne dajte jima hrane. Denver je bil pred kratkim operiran.",
+      "en": "Please don't give them food. Denver had an operation recently.",
       "next": [
-        "n4"
+        "n4a"
       ],
       "learnables": [
         "bil_sem",
+        "dati",
+        "hrana",
+        "ne",
         "operiran",
-        "pred_kratkim"
+        "pred_kratkim",
+        "prosim"
       ]
     },
     "c3b": {
       "speaker": "client",
-      "sl": "Ja. Pred kratkim je bil operiran.",
-      "en": "Yes. He had an operation recently.",
+      "sl": "Temu lahko, tistemu pa ne.",
+      "en": "This one can, but not that one.",
       "next": [
-        "n4"
+        "n4b"
       ],
       "learnables": [
-        "bil_sem",
-        "ja",
-        "operiran",
-        "pred_kratkim"
+        "tega_tistega"
       ]
     },
-    "n4": {
+    "n4a": {
       "speaker": "npc",
-      "sl": "Joj, revček. Glejte, moji je pa vaš kosmatinec všeč.",
-      "en": "Oh, poor thing. Look, mine has taken a liking to your furry one.",
-      "deliverySL": "[toplo] Joj, revček. Glejte, moji je pa vaš kosmatinec všeč.",
+      "sl": "Joj, škoda. Seveda, revček. Potem jih pa kar pospravim.",
+      "en": "Oh, a shame. Of course, poor thing. I'll just put them away, then.",
+      "deliverySL": "[toplo] Joj, škoda. Seveda, revček. Potem jih pa kar pospravim.",
       "next": [
         "c4a",
-        "c4b",
-        "c4c"
+        "c4ax"
       ],
       "learnables": [
-        "moj",
+        "kar",
         "pa",
-        "sem_ime",
-        "vas"
+        "potem",
+        "seveda"
       ]
     },
     "c4a": {
       "speaker": "client",
+      "sl": "Ja, ampak v redu je.",
+      "en": "Yes, but he's all right.",
+      "next": [
+        "nW"
+      ],
+      "learnables": [
+        "ampak",
+        "ja",
+        "sem_ime",
+        "v_redu"
+      ]
+    },
+    "n4b": {
+      "speaker": "npc",
+      "sl": "Na, Enzo! Ha, kar pogoltnil ga je. Kaj pa Denver — kaj mu pa je?",
+      "en": "Here, Enzo! Ha, he just gulped it down. And Denver — what's the matter with him?",
+      "deliverySL": "[toplo] Na, Enzo! Ha, kar pogoltnil ga je. Kaj pa Denver — kaj mu pa je?",
+      "next": [
+        "c4b",
+        "c4bx"
+      ],
+      "learnables": [
+        "kar",
+        "pa",
+        "sem_ime"
+      ]
+    },
+    "c4b": {
+      "speaker": "client",
+      "sl": "Pred kratkim je bil operiran.",
+      "en": "He had an operation recently.",
+      "next": [
+        "nW"
+      ],
+      "learnables": [
+        "bil_sem",
+        "operiran",
+        "pred_kratkim"
+      ]
+    },
+    "nW": {
+      "speaker": "npc",
+      "sl": "Ubogi kosmatinec! Pa tako lep je.",
+      "en": "Poor furry thing! And he's so handsome.",
+      "deliverySL": "[toplo] Ubogi kosmatinec! Pa tako lep je.",
+      "next": [
+        "cWa",
+        "cWb",
+        "cWc"
+      ],
+      "learnables": [
+        "pa",
+        "sem_ime"
+      ]
+    },
+    "cWa": {
+      "speaker": "client",
       "sl": "Kaj pomeni kosmatinec?",
       "en": "What does 'kosmatinec' mean?",
       "next": [
-        "n5"
+        "nWa"
       ],
       "learnables": [
         "kaj_pomeni"
       ]
     },
-    "c4b": {
+    "cWb": {
       "speaker": "client",
-      "sl": "Ne razumem. Kaj pomeni kosmatinec?",
-      "en": "I don't understand. What does 'kosmatinec' mean?",
+      "sl": "Ne razumem.",
+      "en": "I don't understand.",
       "next": [
-        "n5"
+        "nWb"
       ],
       "learnables": [
-        "kaj_pomeni",
         "ne_razumem"
       ]
     },
-    "c4c": {
+    "cWc": {
       "speaker": "client",
       "sl": "Ponovite, prosim.",
-      "en": "Please repeat.",
+      "en": "Please say that again.",
       "next": [
-        "n5"
+        "nWc"
       ],
       "learnables": [
         "ponovite_prosim"
       ]
     },
-    "n5": {
+    "nWa": {
       "speaker": "npc",
-      "sl": "Kosmatinec — to je pes z veliko dlake, kot vaš Denver. Moja bi ga rada povohala.",
-      "en": "'Kosmatinec' — that's a dog with lots of fur, like your Denver. Mine would like to sniff him.",
-      "deliverySL": "[toplo] Kosmatinec — to je pes z veliko dlake, kot vaš Denver. Moja bi ga rada povohala.",
+      "sl": "Kosmatinec je pes z veliko dlake — kot vaš Denver.",
+      "en": "A 'kosmatinec' is a dog with lots of fur — like your Denver.",
+      "deliverySL": "[toplo] Kosmatinec je pes z veliko dlake — kot vaš Denver.",
       "next": [
-        "c5a",
-        "c5b"
+        "cWa2",
+        "cWa2x"
       ],
       "learnables": [
-        "moj",
         "pes",
-        "povohati",
-        "rad_verb",
         "sem_ime",
         "vas"
       ]
     },
-    "c5a": {
+    "cWa2": {
       "speaker": "client",
-      "sl": "Tega raje ne, prosim. Včasih je nervozen.",
-      "en": "Better not this one, please. He's sometimes nervous.",
+      "sl": "Aha, v redu. Hvala.",
+      "en": "Ah, okay. Thanks.",
       "next": [
-        "n6"
+        "nDog"
       ],
       "learnables": [
-        "nervozen",
-        "sem_ime",
-        "tega_raje_ne",
-        "vcasih"
+        "hvala",
+        "v_redu"
       ]
     },
-    "c5b": {
-      "speaker": "client",
-      "sl": "Tega lahko povoha, tistega pa ne.",
-      "en": "She can sniff this one, but not that one.",
-      "next": [
-        "n6"
-      ],
-      "learnables": [
-        "povohati",
-        "tega_tistega"
-      ]
-    },
-    "n6": {
+    "nWb": {
       "speaker": "npc",
-      "sl": "Seveda, seveda. No, jaz grem naprej. Se vidimo!",
-      "en": "Of course, of course. Well, I'm off. See you!",
-      "deliverySL": "[toplo] Seveda, seveda. No, jaz grem naprej. Se vidimo!",
+      "sl": "Mislim — ubogi Denver. Dober pes je.",
+      "en": "I mean — poor Denver. He's a good dog.",
+      "deliverySL": "[toplo] Mislim — ubogi Denver. Dober pes je.",
       "next": [
-        "c6a",
-        "c6b"
+        "cWb2",
+        "cWb2x"
+      ],
+      "learnables": [
+        "pes",
+        "sem_ime"
+      ]
+    },
+    "cWb2": {
+      "speaker": "client",
+      "sl": "Ja, je. Hvala.",
+      "en": "Yes, he is. Thanks.",
+      "next": [
+        "nDog"
+      ],
+      "learnables": [
+        "hvala",
+        "ja",
+        "sem_ime"
+      ]
+    },
+    "nWc": {
+      "speaker": "npc",
+      "sl": "Kos … ma … ti … nec. Kosmatinec.",
+      "en": "Kos … ma … ti … nec. Kosmatinec.",
+      "deliverySL": "[počasi in razločno, potrpežljivo] Kos … ma … ti … nec. Kosmatinec.",
+      "next": [
+        "cWc1",
+        "cWc2"
+      ],
+      "learnables": []
+    },
+    "cWc1": {
+      "speaker": "client",
+      "sl": "Kaj pa pomeni?",
+      "en": "And what does it mean?",
+      "next": [
+        "nWa"
+      ],
+      "learnables": [
+        "pa"
+      ]
+    },
+    "cWc2": {
+      "speaker": "client",
+      "sl": "Aha, kosmatinec. V redu.",
+      "en": "Ah, 'kosmatinec'. Okay.",
+      "next": [
+        "nDog"
+      ],
+      "learnables": [
+        "v_redu"
+      ]
+    },
+    "nDog": {
+      "speaker": "npc",
+      "sl": "Ups, glejte — moja bi ga rada pozdravila!",
+      "en": "Oops, look — mine wants to say hello to him!",
+      "deliverySL": "[toplo] Ups, glejte — moja bi ga rada pozdravila!",
+      "next": [
+        "cD1",
+        "cD2",
+        "cD3"
+      ],
+      "learnables": [
+        "moj",
+        "rad_verb"
+      ]
+    },
+    "cD1": {
+      "speaker": "client",
+      "sl": "Tega raje ne, prosim.",
+      "en": "Better not this one, please.",
+      "context": "Denver stiffens as she comes",
+      "next": [
+        "nD1"
+      ],
+      "learnables": [
+        "tega_raje_ne"
+      ]
+    },
+    "cD2": {
+      "speaker": "client",
+      "sl": "Lahko se povohata, danes je miren.",
+      "en": "They can sniff each other, he's calm today.",
+      "context": "Denver stays calm",
+      "next": [
+        "nD2"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "danes",
+        "miren",
+        "povohati",
+        "sem_ime"
+      ]
+    },
+    "cD3": {
+      "speaker": "client",
+      "sl": "Lahko se povohata, danes je miren.",
+      "en": "They can sniff each other, he's calm today.",
+      "context": "Denver growls after all",
+      "next": [
+        "nD3"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "danes",
+        "miren",
+        "povohati",
+        "sem_ime"
+      ]
+    },
+    "nD1": {
+      "speaker": "npc",
+      "sl": "Oh, oprostite! Pridi sem! No, jaz moram naprej. Se vidimo!",
+      "en": "Oh, sorry! Come here! Well, I have to go on. See you!",
+      "deliverySL": "[toplo] Oh, oprostite! Pridi sem! No, jaz moram naprej. Se vidimo!",
+      "next": [
+        "cZ1",
+        "cZ1x"
+      ],
+      "learnables": [
+        "naprej",
+        "oprostite",
+        "sem_ime"
+      ]
+    },
+    "cZ1": {
+      "speaker": "client",
+      "sl": "Nič hudega. Adijo, lep dan!",
+      "en": "No harm done. Bye, have a nice day!",
+      "next": [
+        "nByeA"
+      ],
+      "learnables": [
+        "adijo",
+        "lep_dan",
+        "nic_hudega"
+      ]
+    },
+    "nByeA": {
+      "speaker": "npc",
+      "sl": "Hvala, enako. Do jutri!",
+      "en": "Thanks, same to you. Till tomorrow!",
+      "deliverySL": "[toplo] Hvala, enako. Do jutri!",
+      "next": [],
+      "learnables": [
+        "hvala"
+      ]
+    },
+    "nD2": {
+      "speaker": "npc",
+      "sl": "Glejte ju — že sta prijatelja! No, midve greva naprej. Se vidimo!",
+      "en": "Look at them — friends already! Well, the two of us are off. See you!",
+      "deliverySL": "[veselo] Glejte ju — že sta prijatelja! No, midve greva naprej. Se vidimo!",
+      "next": [
+        "cZ2",
+        "cZ2x"
       ],
       "learnables": [
         "grem_v",
         "naprej",
-        "seveda"
+        "sem_ime"
       ]
     },
-    "c6a": {
+    "cZ2": {
+      "speaker": "client",
+      "sl": "Bravo, Denver! Adijo, lep dan!",
+      "en": "Well done, Denver! Bye, have a nice day!",
+      "next": [
+        "nByeB"
+      ],
+      "learnables": [
+        "adijo",
+        "bravo",
+        "lep_dan"
+      ]
+    },
+    "nByeB": {
+      "speaker": "npc",
+      "sl": "Adijo, pa do jutri, fanta!",
+      "en": "Bye, see you tomorrow, boys!",
+      "deliverySL": "[toplo] Adijo, pa do jutri, fanta!",
+      "next": [],
+      "learnables": [
+        "adijo",
+        "fant",
+        "pa"
+      ]
+    },
+    "nD3": {
+      "speaker": "npc",
+      "sl": "Ups! Dobro, dobro, potem pa greva naprej. Se vidimo!",
+      "en": "Oops! All right, all right, we'll go on then. See you!",
+      "deliverySL": "[toplo] Ups! Dobro, dobro, potem pa greva naprej. Se vidimo!",
+      "next": [
+        "cZ3",
+        "cZ3x"
+      ],
+      "learnables": [
+        "dobro",
+        "grem_v",
+        "naprej",
+        "pa",
+        "potem"
+      ]
+    },
+    "cZ3": {
+      "speaker": "client",
+      "sl": "Oprostite! Včasih je nervozen ob drugih psih. Adijo!",
+      "en": "Sorry! He's sometimes nervous around other dogs. Bye!",
+      "next": [
+        "nByeC"
+      ],
+      "learnables": [
+        "adijo",
+        "nervozen",
+        "oprostite",
+        "pes",
+        "sem_ime",
+        "vcasih",
+        "vrstilni_drugi"
+      ]
+    },
+    "nByeC": {
+      "speaker": "npc",
+      "sl": "Nič hudega, ne skrbite. Adijo!",
+      "en": "No harm done, don't worry. Bye!",
+      "deliverySL": "[toplo] Nič hudega, ne skrbite. Adijo!",
+      "next": [],
+      "learnables": [
+        "adijo",
+        "ne_skrbite",
+        "nic_hudega"
+      ]
+    },
+    "c2ax": {
+      "speaker": "client",
+      "sl": "Oprostite, držim ga. Še mladiček je.",
+      "en": "Sorry, I'm holding him. He's still a puppy.",
+      "next": [
+        "n2aH"
+      ],
+      "learnables": [
+        "drzati",
+        "mladicek",
+        "oprostite",
+        "se_still",
+        "sem_ime"
+      ]
+    },
+    "c2bx": {
+      "speaker": "client",
+      "sl": "Hvala, ampak Enzo je prijazen. Lahko se povohata.",
+      "en": "Thanks, but Enzo is friendly. They can sniff each other.",
+      "next": [
+        "n2bE"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "ampak",
+        "hvala",
+        "povohati",
+        "prijazen",
+        "sem_ime"
+      ]
+    },
+    "c4ax": {
+      "speaker": "client",
+      "sl": "Enzu pa lahko daste.",
+      "en": "You can give Enzo some, though.",
+      "next": [
+        "n4aE"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "dati",
+        "pa"
+      ]
+    },
+    "c4bx": {
+      "speaker": "client",
+      "sl": "Plašen je.",
+      "en": "He's shy.",
+      "next": [
+        "n4bS"
+      ],
+      "learnables": [
+        "plasen",
+        "sem_ime"
+      ]
+    },
+    "cWa2x": {
+      "speaker": "client",
+      "sl": "Aha! Pa Enzo?",
+      "en": "Ah! And Enzo?",
+      "next": [
+        "nWaE"
+      ],
+      "learnables": [
+        "pa"
+      ]
+    },
+    "cWb2x": {
+      "speaker": "client",
+      "sl": "Ja, ampak včasih je nervozen.",
+      "en": "Yes, but he's sometimes nervous.",
+      "next": [
+        "nWbN"
+      ],
+      "learnables": [
+        "ampak",
+        "ja",
+        "nervozen",
+        "sem_ime",
+        "vcasih"
+      ]
+    },
+    "cZ1x": {
       "speaker": "client",
       "sl": "Adijo, lep dan!",
       "en": "Bye, have a nice day!",
       "next": [
-        "nBye"
+        "nByeA"
       ],
       "learnables": [
         "adijo",
         "lep_dan"
       ]
     },
-    "c6b": {
+    "cZ2x": {
       "speaker": "client",
-      "sl": "Hvala, adijo!",
-      "en": "Thanks, bye!",
+      "sl": "Bravo, fanta! Adijo!",
+      "en": "Well done, boys! Bye!",
       "next": [
-        "nBye"
+        "nByeB"
       ],
       "learnables": [
         "adijo",
-        "hvala"
+        "bravo",
+        "fant"
       ]
     },
-    "nBye": {
-      "speaker": "npc",
-      "sl": "Adijo, pa do jutri!",
-      "en": "Bye, see you tomorrow!",
-      "deliverySL": "[toplo] Adijo, pa do jutri!",
-      "next": [],
+    "cZ3x": {
+      "speaker": "client",
+      "sl": "Oprostite! Adijo!",
+      "en": "Sorry! Bye!",
+      "next": [
+        "nByeC"
+      ],
       "learnables": [
         "adijo",
+        "oprostite"
+      ]
+    },
+    "n2aH": {
+      "speaker": "npc",
+      "sl": "Saj ga poznam, malega divjaka.",
+      "en": "Oh, I know him, the little wild one.",
+      "deliverySL": "[toplo] Saj ga poznam, malega divjaka.",
+      "next": [
+        "n3"
+      ],
+      "learnables": []
+    },
+    "n2bE": {
+      "speaker": "npc",
+      "sl": "No, prav, samo z malim. Pridi, ampak lepo!",
+      "en": "Well, all right, only with the little one. (to her dog) Come on, but nicely!",
+      "deliverySL": "[toplo] No, prav, samo z malim. Pridi, ampak lepo!",
+      "next": [
+        "n3"
+      ],
+      "learnables": [
+        "ampak",
+        "samo"
+      ]
+    },
+    "n4aE": {
+      "speaker": "npc",
+      "sl": "Na, Enzo! Tebi pa ne, Denver, žal.",
+      "en": "Here, Enzo! Not you, Denver, sorry.",
+      "deliverySL": "[veselo] Na, Enzo! Tebi pa ne, Denver, žal.",
+      "next": [
+        "nW"
+      ],
+      "learnables": [
+        "ne",
         "pa"
+      ]
+    },
+    "n4bS": {
+      "speaker": "npc",
+      "sl": "Aha, plašen. Zato se drži bolj ob strani.",
+      "en": "Ah, shy. That's why he keeps to the side.",
+      "deliverySL": "[toplo] Aha, plašen. Zato se drži bolj ob strani.",
+      "next": [
+        "nW"
+      ],
+      "learnables": [
+        "drzati",
+        "plasen"
+      ]
+    },
+    "nWaE": {
+      "speaker": "npc",
+      "sl": "Enzo? Enzo je mali razbojnik, Denver je pa pravi gospod.",
+      "en": "Enzo? Enzo's a little rascal, but Denver is a real gentleman.",
+      "deliverySL": "[veselo] Enzo? Enzo je mali razbojnik, Denver je pa pravi gospod.",
+      "next": [
+        "nDog"
+      ],
+      "learnables": [
+        "pa",
+        "sem_ime"
+      ]
+    },
+    "nWbN": {
+      "speaker": "npc",
+      "sl": "Saj vem. Ampak z mojo se lepo razume.",
+      "en": "I know. But he gets on well with mine.",
+      "deliverySL": "[toplo] Saj vem. Ampak z mojo se lepo razume.",
+      "next": [
+        "nDog"
+      ],
+      "learnables": [
+        "ampak",
+        "moj"
       ]
     }
   }

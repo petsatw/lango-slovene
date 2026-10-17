@@ -32,31 +32,32 @@
         "ne_razumem"
       ],
       "bank": [
+        "ne",
+        "nezno",
+        "samo",
+        "takole",
+        "grem_v",
+        "hocem",
         "hvala",
         "ime_mi_je",
-        "ne",
+        "ne_skrbite",
         "star_sem_let",
+        "ampak",
         "bil_sem",
         "pred_kratkim",
         "tega_tistega",
-        "grem_v",
-        "ne_skrbite",
-        "hocem",
-        "rad_verb",
-        "samo",
+        "raje",
+        "v_redu",
         "vcasih",
+        "dobro",
+        "rad_verb",
         "ali_or",
         "bravo",
-        "nezno",
-        "takole",
-        "v_redu",
         "naj",
         "oprosti",
-        "ampak",
-        "dobro",
-        "raje",
         "vas",
-        "kaj_pomeni"
+        "kaj_pomeni",
+        "se_enkrat"
       ],
       "stock": [
         "pes",
@@ -125,7 +126,7 @@
         },
         {
           "level": 6,
-          "levelLabel": "Basic"
+          "levelLabel": "Intermediate"
         },
         {
           "level": 7,
@@ -133,15 +134,15 @@
         },
         {
           "level": 8,
-          "levelLabel": "Intermediate"
+          "levelLabel": "Basic"
         },
         {
           "level": 9,
-          "levelLabel": "Advanced"
+          "levelLabel": "Above A1"
         },
         {
           "level": 10,
-          "levelLabel": "Basic"
+          "levelLabel": "Intermediate"
         }
       ]
     },

@@ -3662,8 +3662,8 @@
   },
   "tega_tistega": {
     "kind": "pattern",
-    "sl": "Tega lahko ___, tistega pa ne.",
-    "gloss": "this one you can ___, but not that one (the slot carries the verb: pobožate to an adult, pobožaš to a child)",
+    "sl": "Tega / Temu lahko ___, tistega / tistemu pa ne.",
+    "gloss": "this one you can ___, but not that one (the slot carries the verb: pobožate / pobožaš, povoha; with dati the frame is dative: temu / tistemu)",
     "predictableError": "using the nominative 'Ta lahko …, tisti pa ne' for the dog — as the object it takes animate 'tega / tistega'; or putting 'pa' first English-style ('pa tistega ne')",
     "a1": true
   },
