@@ -2,6 +2,8 @@
   "id": "cafe",
   "name": "Café",
   "title": "Ordering at a café in Ljubljana",
+  "summaryEN": "Ordering coffee or another drink at a café: with or without milk, asking the price and paying.",
+  "tags": ["cafe", "café", "kavarna", "coffee", "espresso", "tea", "milk", "drink", "order", "barista", "bar"],
   "status": "active",
   "character": "a friendly barista at a small café in Ljubljana",
   "characterRef": "barista",

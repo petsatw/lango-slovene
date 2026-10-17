@@ -41,6 +41,12 @@
   <!-- ① PRACTICE — scenario list. The two group headings ARE this screen's titles; the back button and
        the wordmark already say where you are. Tap a scenario → its levels. -->
   <main id="practice" class="screen" hidden>
+    <!-- Scenario finder: type-ahead from a static index as you type; Enter → the NLU match on the server. -->
+    <form id="finder" class="finder" autocomplete="off">
+      <input id="finder-input" type="search" enterkeyhint="search"
+             placeholder="What do you want to practise? e.g. buying vegetables at the market" />
+    </form>
+    <div id="finder-results" class="level-list" hidden></div>
     <div id="scenario-list" class="scenario-list"></div>
   </main>
 
@@ -59,7 +65,17 @@
   <main id="tutor" class="screen tutor" hidden>
     <div class="story-card dialogue-card practice-surface">
       <p id="practice-title" class="practice-label">Live AI tutor</p>
-      <div id="transcript" class="dialogue-convo" aria-live="polite"></div>
+      <!-- The session's objectives: a pill shown only while live runs, and a sheet it drops over the
+           transcript. Tapping the sheet rolls it back up. -->
+      <div id="objectives-row" class="hint-row objectives-row" hidden>
+        <button id="objectives-btn" class="hint-btn" type="button" aria-controls="objectives" aria-expanded="false">
+          <span class="hint-label">objectives</span><span class="chev">▾</span>
+        </button>
+      </div>
+      <div class="objectives-frame">
+        <div id="transcript" class="dialogue-convo" aria-live="polite"></div>
+        <ul id="objectives" class="objectives-sheet" aria-hidden="true"></ul>
+      </div>
       <!-- Which mode is being evaluated. It does not persist: every session starts on live. -->
       <div id="mode-toggle" class="mode-toggle" role="group" aria-label="Practice mode">
         <button class="mode-opt" type="button" data-mode="live">Live</button>

@@ -2,6 +2,8 @@
   "id": "library",
   "name": "Library",
   "title": "At the library (knjižnica)",
+  "summaryEN": "At the library: borrowing and returning books, registering for a card, WiFi and printing, opening hours.",
+  "tags": ["library", "knjižnica", "book", "borrow", "return", "library card", "register", "membership", "wifi", "password", "printing", "opening hours"],
   "status": "active",
   "character": "a soft-spoken, whimsical, slightly eccentric young librarian (knjižničarka) at a city public library in Ljubljana",
   "role": "knjižničarka",

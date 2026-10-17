@@ -328,7 +328,8 @@ export async function startLive({ lessonId, accessCode, provider, learnerId, run
       // happens well before the audio it generated has been heard — stopping on it truncated every
       // tutor line in the first real session. Only barge-in cuts the tutor off.
       emit("state", msg.status);
-    } else if (msg.type === "error") emit("error", msg.code);
+    } else if (msg.type === "objectives") emit("objectives", msg.items);
+    else if (msg.type === "error") emit("error", msg.code);
   };
 
   ws.onclose = () => {

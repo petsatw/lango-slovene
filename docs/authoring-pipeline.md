@@ -67,6 +67,10 @@ must interpret), and **the reconcile owns id assignment** (authors propose provi
 
 ## The dialogue surface, end to end
 
+A new domain starts with **`.claude/skills/map-domain/SKILL.md`** — the minimal card, the situation map with
+outcomes and the banded dialogue plan, then the card and the live scene registered, then a handoff to the
+tap-tree session.
+
 Tap trees: **`.claude/skills/create-tap-tree/SKILL.md`** — the operator's situation map, transcribed into
 trees; `slovenian-author` (tap-tree mode) finishes the Slovene and the delivery, `scenario-critic` (tap-tree
 mode) checks it, then the same reconcile and gates as below.

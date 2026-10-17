@@ -2,6 +2,8 @@
   "id": "trznica",
   "name": "Market stall",
   "title": "At a farm stall (tržnica)",
+  "summaryEN": "Buying fruit and vegetables at a farm stall in the market: ordering one or several, by weight (a kilo, half a kilo, grams) or by the piece or bunch, asking prices, what's in stock, tasting, and chatting with the seller.",
+  "tags": ["market", "farmers market", "tržnica", "stall", "produce", "fruit", "vegetables", "apples", "tomatoes", "potatoes", "weight", "kilo", "half a kilo", "grams", "bunch", "piece", "quantities", "numbers", "price", "how much", "taste", "ripe", "sweet"],
   "status": "active",
   "character": "Metka, a seller at a farm stall on a Slovene market",
   "role": "prodajalka Metka na kmečki tržnici",

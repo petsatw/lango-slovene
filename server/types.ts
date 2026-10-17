@@ -176,6 +176,21 @@ export interface E2Result {
   focusObjectiveId: string;
 }
 
+/** One level the scenario finder offers the model to rank (server/match.ts). */
+export interface ScenarioCandidate {
+  dialogueId: string;
+  scenarioId: string;
+  description: string; // scenario name + level title + summary + objectives, plain English
+  lines: { id: string; sl: string; en: string }[]; // every line of the level, so the model can cite one
+}
+
+/** The model's ranking of candidates for a learner's free-text situation. It decides nothing: the
+ *  server drops unknown ids and applies the threshold + cap. */
+export interface ScenarioRanking {
+  matches: { dialogueId: string; score: number; reason: string; nodeId?: string }[];
+  fallback: { scene: string; role: string | null };
+}
+
 export interface E2Adapter {
   readonly name: string;
   understand(input: {
@@ -197,6 +212,9 @@ export interface E2Adapter {
    *  reveal translation on a LIVE transcript, where there is no JSON turn to carry a gloss back.
    *  Optional so adapters without a text path can omit it. */
   gloss?(sl: string): Promise<string>;
+  /** Scenario finder re-rank: score each candidate level 0..1 for the learner's situation + write a
+   *  free-chat scene for when none fits. Text only. Optional — the keyword ranker covers its absence. */
+  rankScenarios?(input: { query: string; candidates: ScenarioCandidate[] }): Promise<ScenarioRanking>;
   /** Read a FINISHED spoken session against the learnable catalog and report one reading per learnable
    *  the learner produced. Text only — the whole conversation in order, both roles — and it decides no
    *  credit. Optional so adapters without a text path can omit it. */

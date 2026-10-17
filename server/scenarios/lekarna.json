@@ -2,6 +2,8 @@
   "id": "lekarna",
   "name": "Pharmacy",
   "title": "At the pharmacy (lekarna)",
+  "summaryEN": "At the pharmacy: describing a symptom, choosing tablets or syrup, asking the price.",
+  "tags": ["pharmacy", "lekarna", "medicine", "sick", "headache", "cold", "symptoms", "pills", "tablets", "health", "chemist", "drugstore"],
   "status": "active",
   "character": "a friendly pharmacist at a neighbourhood pharmacy (lekarna) in Ljubljana",
   "characterRef": "pharmacist",

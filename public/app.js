@@ -330,6 +330,8 @@ async function loadPractice() {
   el.innerHTML = "<p class='muted'>Loading…</p>";
   try {
     const { scenarios } = await (await api("/api/practice")).json();
+    practiceScenarios = scenarios;
+    loadFinderIndex();
     if (!scenarios.length) { el.innerHTML = "<p class='muted'>No scenarios yet.</p>"; return; }
     el.innerHTML = "";
     // Two groups, because they are two different things to do: the spoken lessons are the course, the
@@ -358,6 +360,221 @@ async function loadPractice() {
     el.innerHTML = `<p class='muted'>Failed: ${err.message}</p>`;
   }
 }
+
+// ---- Scenario finder — two layers. (1) Type-ahead: the static keyword index is fetched once and scored
+// in the browser on every keystroke (no network, no model). Mirrors tokenize/expandQuery/keywordScore in
+// server/match.ts — keep the two in step. (2) Enter → POST /api/match: Gemini reads the whole catalog and
+// maps the learner's intent to levels with reasons; the server falls back to keywords if it fails. The
+// "Practise this live" card is always last, opening the free-chat tutor framed for the learner's words.
+let practiceScenarios = [];
+let finderIndex = null;
+
+async function loadFinderIndex() {
+  if (finderIndex) return;
+  try {
+    const idx = await (await api("/api/match/index")).json();
+    finderIndex = {
+      ...idx,
+      stopSet: new Set(idx.stop),
+      entries: idx.entries.map((e) => ({
+        ...e, tokens: new Set(e.tokens), scenarioTokens: new Set(e.scenarioTokens),
+        nodes: e.nodes.map((n) => ({ ...n, tokens: new Set(n.tokens) })),
+      })),
+    };
+  } catch { finderIndex = null; } // type-ahead is optional; Enter still works
+}
+
+function finderFold(text) {
+  return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, " ").split(/\s+/);
+}
+function finderStem(w) {
+  if (w.length > 4 && w.endsWith("ies")) return w.slice(0, -3) + "y";
+  if (w.length > 4 && /(ches|shes|oes)$/.test(w)) return w.slice(0, -2);
+  if (w.length > 3 && w.endsWith("s") && !w.endsWith("ss")) return w.slice(0, -1);
+  return w;
+}
+function finderTokens(text) {
+  return finderFold(text).filter((w) => w.length > 1 && !finderIndex.stopSet.has(w)).map(finderStem);
+}
+// Mirrors bestNode/snippetFor in server/match.ts: the line with the most query hits + the line after it.
+function finderSnippet(e, q) {
+  let best = null, bestHits = 0;
+  for (const n of e.nodes) {
+    let hits = 0;
+    for (const t of q) if (n.tokens.has(t)) hits++;
+    if (hits > bestHits) { best = n; bestHits = hits; }
+  }
+  if (!best) return null;
+  const after = e.nodes.find((x) => x.id === best.next[0]);
+  const lines = [best, ...(after ? [after] : [])].map(({ speaker, sl, en }) => ({ speaker, sl, en }));
+  const terms = [...q].filter((t) => lines.some((l) => finderTokens(`${l.sl} ${l.en}`).includes(t)));
+  return { nodeId: best.id, lines, terms };
+}
+
+function finderSuggest(text) {
+  const q = new Set(finderTokens(text));
+  for (const w of finderFold(text)) for (const s of finderIndex.synonyms[w] || []) finderTokens(s).forEach((t) => q.add(t));
+  if (!q.size) return [];
+  const words = finderTokens(text).length;
+  return finderIndex.entries
+    .map((e) => {
+      let where = 0, which = 0;
+      for (const t of q) { if (e.scenarioTokens.has(t)) where++; if (e.tokens.has(t)) which++; }
+      return { ...e, score: Math.min(1, (0.6 * where + 0.4 * which) / Math.max(1, Math.min(words, 6))), reason: "", snippet: finderSnippet(e, q) };
+    })
+    .filter((m) => m.score >= finderIndex.threshold)
+    .sort((a, b) => b.score - a.score || (b.snippet?.terms.length ?? 0) - (a.snippet?.terms.length ?? 0) || a.level - b.level)
+    .slice(0, 3);
+}
+
+// Text with every word whose folded+stemmed form is a matched term wrapped in <mark> (DOM-built, no HTML).
+function finderHighlight(el, text, terms) {
+  const set = new Set(terms);
+  for (const part of text.split(/(\s+)/)) {
+    const tok = finderFold(part).filter(Boolean).map(finderStem);
+    if (tok.some((t) => set.has(t))) {
+      const m = document.createElement("mark");
+      m.textContent = part;
+      el.appendChild(m);
+    } else el.appendChild(document.createTextNode(part));
+  }
+}
+
+function finderSnippetEl(snippet) {
+  const box = document.createElement("span");
+  box.className = "finder-snippet";
+  for (const l of snippet.lines) {
+    const line = document.createElement("span");
+    line.className = `finder-line ${l.speaker === "npc" ? "npc" : "client"}`;
+    const sl = document.createElement("span");
+    sl.className = "finder-sl";
+    finderHighlight(sl, l.sl, snippet.terms);
+    const en = document.createElement("span");
+    en.className = "finder-en";
+    finderHighlight(en, l.en, snippet.terms);
+    line.append(sl, en);
+    box.appendChild(line);
+  }
+  return box;
+}
+
+function renderFinder(matches, live, note) {
+  const el = $("finder-results");
+  el.innerHTML = "";
+  el.hidden = false;
+  if (note) {
+    const p = document.createElement("p");
+    p.className = "muted";
+    p.textContent = note;
+    el.appendChild(p);
+  }
+  for (const m of matches) {
+    const card = document.createElement("button");
+    card.className = "level-card";
+    card.type = "button";
+    card.innerHTML =
+      `<span class="level-main">` +
+        `<span class="level-title"></span>` +
+        `<span class="scenario-meta"></span>` +
+      `</span><span class="level-chevron">›</span>`;
+    card.querySelector(".level-title").textContent = `${m.scenarioName} — ${m.levelTitle}`;
+    card.querySelector(".scenario-meta").textContent = m.reason || "";
+    if (m.snippet) card.querySelector(".level-main").appendChild(finderSnippetEl(m.snippet));
+    card.addEventListener("click", () => openFinderMatch(m));
+    el.appendChild(card);
+  }
+  if (live) {
+    const card = document.createElement("button");
+    card.className = "level-card";
+    card.type = "button";
+    card.innerHTML = `<span class="level-main"><span class="level-title"></span><span class="scenario-meta">Live AI tutor plays the scene with you</span></span><span class="level-chevron">›</span>`;
+    card.querySelector(".level-title").textContent = `Practise this live: “${live.query}”`;
+    card.addEventListener("click", () => openTutor({ focus: [], role: live.role, context: { scene: live.scene, practiced: [] } }));
+    el.appendChild(card);
+  }
+}
+
+function openFinderMatch(m) {
+  const s = practiceScenarios.find((x) => x.id === m.scenarioId);
+  if (!s) return;
+  openScenario(s);
+  const i = s.dialogues.findIndex((d) => d.id === m.dialogueId);
+  if (i < 0) return;
+  // Tap-through trees open AT the matched exchange; spoken levels (and anything unreachable) open at the start.
+  if ((s.dialogues[i].advance ?? "tap") !== "audio" && m.snippet) openLevelAt(i, m.snippet.nodeId);
+  else openLevel(i);
+}
+
+// Open a rehearsal tree already walked to `nodeId`: the path from the root is shown as (silent) bubbles,
+// then the npc line that leads into the matched exchange plays and offers its choices — so a matched
+// client line appears as one of the options. No path (orphan node) → the normal start.
+function openLevelAt(i, nodeId) {
+  dialogue = dialogues[i];
+  const path = treePath(dialogue, nodeId);
+  if (!path) { openLevel(i); return; }
+  applyDialogueBackground();
+  $("dialogue").hidden = false;
+  startDialogueTree();               // resets state + presents the root…
+  if (path.length === 1 && dialogue.nodes[nodeId].speaker === "npc") return; // …which IS the target
+  treeGen++;                         // …then cancel that and replay the path silently instead
+  stopDialogueAudio();
+  $("dialogue-convo").innerHTML = "";
+  const entry = dialogue.nodes[nodeId].speaker === "npc" ? path.length - 1 : path.length - 2;
+  for (const id of path.slice(0, entry)) dialogueBubble(dialogue.nodes[id]);
+  presentNpcNode(path[entry]);
+}
+
+/** BFS root → nodeId over `next`; returns the node ids along the way (inclusive) or null. */
+function treePath(d, nodeId) {
+  const prev = { [d.root]: null };
+  const queue = [d.root];
+  while (queue.length) {
+    const id = queue.shift();
+    if (id === nodeId) {
+      const out = [];
+      for (let x = id; x; x = prev[x]) out.unshift(x);
+      return out;
+    }
+    for (const n of (d.nodes[id]?.next || [])) if (!(n in prev)) { prev[n] = id; queue.push(n); }
+  }
+  return null;
+}
+
+$("finder-input").addEventListener("input", (e) => {
+  const text = e.target.value.trim();
+  if (!text) { $("finder-results").hidden = true; return; }
+  if (!finderIndex) return;
+  const matches = finderSuggest(text);
+  // No keyword hits → same empty-state message + live card as submit (clears/updates as they type).
+  if (!matches.length) {
+    renderFinder([], { query: text, scene: `The learner wants to practise: ${text}`, role: null },
+      "No lessons match that yet — try practising it live!");
+    return;
+  }
+  renderFinder(matches, null, "Press Enter to search by meaning");
+});
+
+$("finder").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const text = $("finder-input").value.trim();
+  if (!text) return;
+  renderFinder([], null, "Finding the best match…");
+  try {
+    const res = await api("/api/match", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    const note = data.matches.length ? "" : "No lessons match that yet — try practising it live!";
+    renderFinder(data.matches, { query: text, ...data.fallback }, note);
+  } catch (err) {
+    const matches = finderIndex ? finderSuggest(text) : [];
+    const note = matches.length ? `Search failed (${err.message})` : "No lessons match that yet — try practising it live!";
+    renderFinder(matches, { query: text, scene: `The learner wants to practise: ${text}`, role: null }, note);
+  }
+});
 
 // The scenario TASK is the headline; difficulty is a glanceable chip, not encoded jargon. Every dialogue
 // in the MVP is A1, so the CEFR band is constant noise — we collapse the (inconsistent) authored labels
@@ -757,6 +974,7 @@ let mode = "live";
 let holding = false;       // tap mode: the button is down and the mic is open
 let freeChatBegun = false; // tap mode opens with the tutor speaking first — once per session
 let liveTick = null;       // polls tutor-speaking, which no message reports (see liveSpeaking)
+let liveObjectives = [];   // the Slovene of each line the tutor steers toward, sent at connect
 
 // Going the other way is free: live just starts talking. Going INTO tap hands the learner a button
 // they have to work, so the switch asks first — carry this conversation across, or see the tutorial
@@ -804,7 +1022,33 @@ function renderPractice() {
     opt.classList.toggle("active", opt.dataset.mode === mode);
     opt.disabled = live || holding || seedActive;
   }
+
+  const showObjectives = mode === "live" && live && liveObjectives.length > 0;
+  $("objectives-row").hidden = !showObjectives;
+  if (!showObjectives) setObjectivesOpen(false);
 }
+
+onLive("objectives", (items) => {
+  liveObjectives = (items || []).map((i) => i.sl).filter(Boolean);
+  const list = $("objectives");
+  list.replaceChildren(...liveObjectives.map((sl) => {
+    const li = document.createElement("li");
+    li.textContent = sl;
+    return li;
+  }));
+  renderPractice();
+});
+
+function setObjectivesOpen(open) {
+  $("objectives").classList.toggle("open", open);
+  $("objectives").setAttribute("aria-hidden", String(!open));
+  $("objectives-btn").classList.toggle("expanded", open);
+  $("objectives-btn").setAttribute("aria-expanded", String(open));
+}
+
+$("objectives-btn").addEventListener("click", () =>
+  setObjectivesOpen(!$("objectives").classList.contains("open")));
+$("objectives").addEventListener("click", () => setObjectivesOpen(false));
 
 async function toggleLive() {
   if (liveActive()) {
@@ -828,6 +1072,7 @@ async function toggleLive() {
   btn.disabled = true;
   $("live-state").textContent = "connecting…";
   liveBubbles.clear(); // ids are per-session; a stale one would revise last session's bubble
+  liveObjectives = [];
   try {
     await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined,
                       learnerId, runId, retain: retainSession });

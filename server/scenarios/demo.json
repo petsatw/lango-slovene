@@ -2,6 +2,8 @@
   "id": "demo",
   "name": "Demo",
   "title": "Demo",
+  "summaryEN": "Meeting someone new: greeting, saying your name, and asking them to slow down or repeat when you don't understand.",
+  "tags": ["meet", "introduce", "name", "greeting", "student", "small talk", "repeat", "slowly", "understand"],
   "status": "active",
   "character": "Slavko, a warm, curious dragon who is the learner's companion through the course — he speaks Slovene to them from the first second and is unmistakably on their side",
   "setup": "Slavko has been waiting for his new student to turn up. When the learner arrives he sorts out aloud which of them is which — he is the tutor, they are the student — and since Slovene gives a student two names he says both aloud, then names his own role and turns the question back with \"In ti?\" so they can answer it themselves. Then they trade names, agree to meet again, and say goodbye. Nothing records the learner, so he can never repeat their name back; asking for his own name in return is what he does instead.",

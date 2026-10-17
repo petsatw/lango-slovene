@@ -216,6 +216,9 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
     const built = buildLessonPrompt(lessonId, learnerId);
     instructions = built.instructions;
     targets = built.targets;
+    // What the objectives overlay lists. Sent before the vendor connects, so it arrives even when the
+    // vendor never does.
+    sendJson({ type: "objectives", items: built.objectives.map((l) => ({ sl: l.sl })) });
   } catch (err: any) {
     console.error("[live] prompt build failed:", err?.message);
     failure = "vendor_setup";

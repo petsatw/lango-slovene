@@ -34,6 +34,7 @@ The client holds the live `SessionState` in memory and talks only to `/api`. Key
 | `server/server.ts` | HTTP endpoints + the hot-audio LRU; serves the PWA, `/api`, and `/gallery`. Captures each run. |
 | `server/orchestrator.ts` | runs a turn: the E2 understand call + the **deterministic mastery rules** (`applyProgress`, `TURN_CAP`); credits the durable learner model; `converse` (free conversation) |
 | `server/prompt.ts` | builds the tutor system prompt fresh each turn (turn policy + mastery-aware lines); `buildConversationPrompt` |
+| `server/match.ts` | the **scenario finder**: pure keyword index/score + synonym map (`buildIndex`, `keywordRank`) and `matchSituation` (E2 `rankScenarios` NLU over the whole catalog, keyword fallback). Endpoints `GET /api/match/index` (client type-ahead) + `POST /api/match` |
 | `server/scenarios.ts` | loads `scenarios/*.json`; `getScenario`, `freshSession`, `characterVoiceProfile` |
 | `server/learnables.ts` | loads + validates the **learnable catalog** (`catalog/learnables.json`); `getLearnable`, `LEARNABLES` |
 | `server/seeds.ts` | loads + validates the **seed** onboarding dialogues (`seeds/*.json`); `getSeed`, `SEEDS`, `STARTER_SEED_ID` |
@@ -104,6 +105,7 @@ Every operator command maps to a file here (or in `server/probes/` / `server/uti
 | `npm run probe:e3` | `server/probes/e3-probe.ts` | check E3 with a real synthesis |
 | `npm run replay` | `server/probes/replay.ts` | real recorded audio → full E2+E3 pipeline, verify output |
 | `npm run test:mastery` | `server/probes/mastery-test.ts` | one clip through the mastery loop, verify objective progress |
+| `npm run test:match` | `server/probes/match-test.ts` | scenario finder — keyword layer on the real catalog; `--live` for the Gemini NLU leg |
 | `npm run test:learnable` | `server/probes/learnable-test.ts` | durable mastery rules — unit + temp-file store + `--live` end-to-end |
 | `npm run probe:converse` | `server/probes/converse-probe.ts` | one clip through free conversation; verify reply + per-learnable crediting |
 | `npm run test:live-match` | `server/probes/live-match-test.ts` | live-mode crediting on plain inputs — transcriber hints, the verdict rule, the lesson score |

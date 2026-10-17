@@ -2,6 +2,8 @@
   "id": "upravna-enota",
   "name": "Administrative Unit",
   "title": "At the administrative unit (upravna enota)",
+  "summaryEN": "At the administrative unit: submitting a residence and work permit application, appointments, documents, fees and how you'll be notified.",
+  "tags": ["administrative unit", "upravna enota", "residence permit", "work permit", "visa", "application", "documents", "appointment", "office", "bureaucracy", "fee", "paperwork"],
   "status": "active",
   "character": "a brisk but courteous clerk (uslužbenka) at a Slovenian administrative unit (upravna enota) in Ljubljana",
   "role": "uslužbenka",
