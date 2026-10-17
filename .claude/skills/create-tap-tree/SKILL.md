@@ -104,8 +104,10 @@ learner-facing. The structure follows the library:
   and they are **different intents**: yes / no / "yes, but …", this one / that one, ask / wait, accept /
   refuse. **Each choice leads to its own npc reaction**; the branches may rejoin a node or two later, once
   the reaction has played out. Two wordings of one answer (*Izvolite.* / *Seveda, tukaj je moja
-  izkaznica.*) are a fork only where nothing else is at stake — the goodbye before a terminal is the
-  usual one — and of the forks before that point, at most one in four is that kind.
+  izkaznica.*) are a fork only where nothing else is at stake: the goodbye that closes an encounter, before
+  a terminal or before the next person in a level with several. Anywhere else, at most one fork in four is
+  that kind. Where an npc line has only one natural reply, the fork is a decision the line invites (agree
+  or push back, answer or ask back), not a second wording.
 - **"No" is a live choice** wherever the situation allows one. A refusal plays out: the other person
   understands, is disappointed, or asks why.
 - **Outcomes are chosen by the learner through `context`.** Where the world, not the learner, decides what
@@ -229,11 +231,11 @@ Present, per level:
 - everything marked `(added)`, and every line LS changed from R's Slovene, with its reason
 
 Then, across the scenario:
-- the decisions: per level, the forks before the goodbye and how many of them converge (every option
-  sharing one `next`), which should be at most one in four —
+- the decisions: per level, the forks and the converging ones (every option sharing one `next`) with
+  their lines, so each can be seen to be an encounter's goodbye or else counted against the one in four —
 
   ```bash
-  node -e 'const r=require("./.scratch/dialogue-drafts/<scenarioId>/reconcile-input.json");for(const l of r.levels){const N=l.nodes;let f=0,s=0;for(const n of Object.values(N)){if(n.speaker!=="npc"||n.next.length<2)continue;const t=new Set(n.next.map(c=>N[c].next.join()));if(t.size===1&&!N[[...t][0]]?.next.length)continue;f++;if(t.size===1)s++}console.log(`L${l.level} forks ${f} converging ${s} terminals ${Object.values(N).filter(n=>!n.next.length).length}`)}'
+  node -e 'const r=require("./.scratch/dialogue-drafts/<scenarioId>/reconcile-input.json");for(const l of r.levels){const N=l.nodes,c=[];let f=0;for(const [id,n] of Object.entries(N)){if(n.speaker!=="npc"||n.next.length<2)continue;f++;if(new Set(n.next.map(x=>N[x].next.join())).size===1)c.push(`  ${id}: ${n.next.map(x=>N[x].sl).join(" | ")}`)}console.log(`L${l.level} forks ${f} converging ${c.length}\n${c.join("\n")}`)}'
   ```
 - the ledger, with findings (never said, said once)
 - the critic's notes and what happened to each fix
