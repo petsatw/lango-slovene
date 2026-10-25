@@ -1,0 +1,63 @@
+{
+  "key": "fdc34b506ba152885b29d97c34a79cee953d7264ee6c16688f983eac65505cf4",
+  "text": "Potem vpraša: A govoriš slovensko? Reci ji: Govorim slovensko.",
+  "words": [
+    {
+      "text": "Potem",
+      "start": 0.259,
+      "end": 0.519,
+      "loss": 0.03851585388183594
+    },
+    {
+      "text": "vpraša:",
+      "start": 0.56,
+      "end": 1.039,
+      "loss": 1.0347610201154436
+    },
+    {
+      "text": "A",
+      "start": 1.299,
+      "end": 1.379,
+      "loss": 2.328125
+    },
+    {
+      "text": "govoriš",
+      "start": 1.5,
+      "end": 1.86,
+      "loss": 0.008103438786097936
+    },
+    {
+      "text": "slovensko?",
+      "start": 1.879,
+      "end": 2.44,
+      "loss": 0.020830917358398437
+    },
+    {
+      "text": "Reci",
+      "start": 3.46,
+      "end": 3.859,
+      "loss": 0.18828201293945312
+    },
+    {
+      "text": "ji:",
+      "start": 4.38,
+      "end": 4.4,
+      "loss": 6.109375
+    },
+    {
+      "text": "Govorim",
+      "start": 4.42,
+      "end": 4.819,
+      "loss": 0.3213176727294922
+    },
+    {
+      "text": "slovensko.",
+      "start": 4.9,
+      "end": 5.46,
+      "loss": 0.03619651794433594
+    }
+  ],
+  "loss": 0.5348362230485485,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:49.574Z"
+}

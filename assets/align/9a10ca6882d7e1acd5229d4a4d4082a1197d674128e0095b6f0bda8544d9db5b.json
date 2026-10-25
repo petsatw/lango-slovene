@@ -1,0 +1,33 @@
+{
+  "key": "76d34c87eae0be13199b65c97b7e33497beaf40c5f1e111ebc939a92d0f95428",
+  "text": "Super! Kdo sem jaz?",
+  "words": [
+    {
+      "text": "Super!",
+      "start": 0.14,
+      "end": 0.5,
+      "loss": 0.27057647705078125
+    },
+    {
+      "text": "Kdo",
+      "start": 0.879,
+      "end": 1.1,
+      "loss": 0.08943684895833333
+    },
+    {
+      "text": "sem",
+      "start": 1.12,
+      "end": 1.259,
+      "loss": 0.5185445149739584
+    },
+    {
+      "text": "jaz?",
+      "start": 1.279,
+      "end": 1.539,
+      "loss": 0.1416015625
+    }
+  ],
+  "loss": 0.21380856162623355,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:00:31.329Z"
+}

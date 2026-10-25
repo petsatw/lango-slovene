@@ -1,0 +1,39 @@
+{
+  "key": "09a10905bfda1540e3071e9044ed932aee167294c7829e1bef9633b5b4f55642",
+  "text": "Okej, pardon. Sem iz Ljubljane.",
+  "words": [
+    {
+      "text": "Okej,",
+      "start": 0.219,
+      "end": 0.579,
+      "loss": 0.8046539306640625
+    },
+    {
+      "text": "pardon.",
+      "start": 0.599,
+      "end": 1.5,
+      "loss": 0.48365565708705355
+    },
+    {
+      "text": "Sem",
+      "start": 1.519,
+      "end": 1.679,
+      "loss": 0.24186197916666666
+    },
+    {
+      "text": "iz",
+      "start": 1.719,
+      "end": 1.819,
+      "loss": 0.00850677490234375
+    },
+    {
+      "text": "Ljubljane.",
+      "start": 1.879,
+      "end": 2.319,
+      "loss": 0.020566463470458984
+    }
+  ],
+  "loss": 0.2728074289137317,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:07.000Z"
+}

@@ -1,0 +1,27 @@
+{
+  "key": "8c7426328075bd88026554ea5147d228005dd6b8a075fa8c3dc8c587cf3ebedd",
+  "text": "Ja! Sem učitelj.",
+  "words": [
+    {
+      "text": "Ja!",
+      "start": 0.179,
+      "end": 0.439,
+      "loss": 1.3411458333333333
+    },
+    {
+      "text": "Sem",
+      "start": 0.759,
+      "end": 0.919,
+      "loss": 0.4680989583333333
+    },
+    {
+      "text": "učitelj.",
+      "start": 0.939,
+      "end": 1.259,
+      "loss": 0.5330352783203125
+    }
+  ],
+  "loss": 0.6162490844726562,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:00:30.603Z"
+}

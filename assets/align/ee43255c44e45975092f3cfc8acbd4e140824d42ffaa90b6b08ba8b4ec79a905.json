@@ -1,0 +1,27 @@
+{
+  "key": "ee12d7ec77c8ca7b4f3b3f39242169252807d17f3fec0343e80aa6c85a76bc0f",
+  "text": "Ha! In angleško?",
+  "words": [
+    {
+      "text": "Ha!",
+      "start": 0.199,
+      "end": 0.28,
+      "loss": 2.4375
+    },
+    {
+      "text": "In",
+      "start": 0.879,
+      "end": 1.139,
+      "loss": 0.894775390625
+    },
+    {
+      "text": "angleško?",
+      "start": 1.199,
+      "end": 1.719,
+      "loss": 0.3362320793999566
+    }
+  ],
+  "loss": 0.8417623043060303,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:04.622Z"
+}

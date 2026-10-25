@@ -1,0 +1,63 @@
+{
+  "key": "3ce9af34642ec652dc6e123d1873ccd3f5cecf8dd544acaf2bde3adad2d2501a",
+  "text": "Še ime! Poslušaj: Sem Slavko in sem iz Ljubljane.",
+  "words": [
+    {
+      "text": "Še",
+      "start": 0.219,
+      "end": 0.28,
+      "loss": 0.026092529296875
+    },
+    {
+      "text": "ime!",
+      "start": 0.34,
+      "end": 0.599,
+      "loss": 0.0800933837890625
+    },
+    {
+      "text": "Poslušaj:",
+      "start": 1.439,
+      "end": 1.86,
+      "loss": 0.7133890787760416
+    },
+    {
+      "text": "Sem",
+      "start": 2.619,
+      "end": 2.779,
+      "loss": 0.24469502766927084
+    },
+    {
+      "text": "Slavko",
+      "start": 2.839,
+      "end": 3.439,
+      "loss": 0.02109527587890625
+    },
+    {
+      "text": "in",
+      "start": 3.5,
+      "end": 3.659,
+      "loss": 0.0014162063598632812
+    },
+    {
+      "text": "sem",
+      "start": 3.699,
+      "end": 3.859,
+      "loss": 0.005218505859375
+    },
+    {
+      "text": "iz",
+      "start": 3.86,
+      "end": 3.98,
+      "loss": 0.007350921630859375
+    },
+    {
+      "text": "Ljubljane.",
+      "start": 4,
+      "end": 4.42,
+      "loss": 0.04257092475891113
+    }
+  ],
+  "loss": 0.18814769083139848,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:51.889Z"
+}

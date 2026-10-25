@@ -12,6 +12,7 @@
 //   npm run rekey:assets             # dry run — what would be re-keyed vs needs re-render
 //   npm run rekey:assets -- --apply  # copy the bytes to the new keys
 //   npm run rekey:assets -- --harvest [--apply]  # seed a canonical render from a sole-asset frame's bytes
+//   npm run rekey:assets -- --audio [--apply]    # move clips to the voice-only audio key
 
 import "dotenv/config";
 import { existsSync, readFileSync } from "node:fs";
@@ -82,6 +83,32 @@ if (harvest) {
 // bytes to the new key — free, no regeneration. An asset already present at its new key (e.g. one we just
 // re-rendered) is skipped. People should be re-rendered FIRST (render:asset) so they land at the new key
 // and this pass leaves them alone.
+// ---- AUDIO mode: an audio key is its voice and its words (provider|voiceId|text). Clips keyed under the
+// earlier `voiceId:model` tag hold the same speech, so copy each one — and its alignment, which shares its
+// key — to the voice-only key, recording the model that rendered it.
+if (process.argv.slice(2).includes("--audio")) {
+  console.log(`\n=== rekey:assets --audio${apply ? "  --apply" : "  (dry run)"} ===`);
+  let copied = 0, present = 0, missing = 0;
+  const seen = new Set<string>();
+  for (const old of manifest) {
+    if (old.type !== "audio" || seen.has(old.key) || !String(old.voiceOrModel).includes(":")) continue;
+    seen.add(old.key);
+    const [voiceId, model] = String(old.voiceOrModel).split(":");
+    const newKey = store.audioKey(old.provider, voiceId!, old.text);
+    if (store.has(newKey, "audio")) { present++; continue; }
+    if (!store.has(old.key, "audio")) { missing++; continue; }
+    copied++;
+    if (!apply) continue;
+    const meta = { provider: old.provider, voiceOrModel: voiceId!, model, text: old.text, scenarioId: old.scenarioId, objectiveId: old.objectiveId };
+    store.put(newKey, "audio", store.read(old.key, "audio")!, { ...meta, mimeType: old.mimeType });
+    const align = store.read(old.key, "align");
+    if (align) store.put(newKey, "align", align, meta);
+  }
+  console.log(`${apply ? "Re-keyed" : "Would re-key"} ${copied} clip(s); ${present} already at the new key; ${missing} not on disk.`);
+  if (!apply && copied) console.log(`Run with --apply to copy the bytes.`);
+  process.exit(0);
+}
+
 if (restyle) {
   console.log(`\n=== rekey:assets --restyle${apply ? "  --apply" : "  (dry run)"} ===`);
   // Figure images are now objects (an actor's visual is its visualRef object), so iterating objects

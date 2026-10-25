@@ -1,0 +1,93 @@
+{
+  "key": "46f87f62f2ba60c28a65a0e101577595a6428a7c72ea9e35bae24098c30aeda0",
+  "text": "Ob petih! Torej: v soboto, pri babici, ob petih. Vidiš? Zdaj veš vse. Adijo!",
+  "words": [
+    {
+      "text": "Ob",
+      "start": 0.099,
+      "end": 0.259,
+      "loss": 3.50390625
+    },
+    {
+      "text": "petih!",
+      "start": 0.28,
+      "end": 0.679,
+      "loss": 1.6605148315429688
+    },
+    {
+      "text": "Torej:",
+      "start": 1.819,
+      "end": 2.099,
+      "loss": 0.43022410074869794
+    },
+    {
+      "text": "v",
+      "start": 2.539,
+      "end": 2.74,
+      "loss": 0.77734375
+    },
+    {
+      "text": "soboto,",
+      "start": 2.779,
+      "end": 3.199,
+      "loss": 0.6982879638671875
+    },
+    {
+      "text": "pri",
+      "start": 3.359,
+      "end": 3.5,
+      "loss": 0.006534576416015625
+    },
+    {
+      "text": "babici,",
+      "start": 3.539,
+      "end": 4,
+      "loss": 0.6617663247244698
+    },
+    {
+      "text": "ob",
+      "start": 4.139,
+      "end": 4.299,
+      "loss": 0.802001953125
+    },
+    {
+      "text": "petih.",
+      "start": 4.319,
+      "end": 4.779,
+      "loss": 0.066436767578125
+    },
+    {
+      "text": "Vidiš?",
+      "start": 5.48,
+      "end": 5.819,
+      "loss": 0.3752479553222656
+    },
+    {
+      "text": "Zdaj",
+      "start": 6.279,
+      "end": 6.46,
+      "loss": 0.021817445755004883
+    },
+    {
+      "text": "veš",
+      "start": 6.539,
+      "end": 6.679,
+      "loss": 0.002780914306640625
+    },
+    {
+      "text": "vse.",
+      "start": 6.779,
+      "end": 6.96,
+      "loss": 0.14140748977661133
+    },
+    {
+      "text": "Adijo!",
+      "start": 7.659,
+      "end": 8,
+      "loss": 1.1488291422526042
+    }
+  ],
+  "loss": 0.5881680563876504,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:40.997Z"
+}

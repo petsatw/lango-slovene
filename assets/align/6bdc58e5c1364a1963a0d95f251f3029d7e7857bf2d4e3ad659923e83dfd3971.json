@@ -1,0 +1,15 @@
+{
+  "key": "d275d9d11cc1393bb7d7a1e4bccfa629a00cac2457145cf0bf2877f65efea8f1",
+  "text": "Živjo!",
+  "words": [
+    {
+      "text": "Živjo!",
+      "start": 0.179,
+      "end": 0.579,
+      "loss": 2.138671875
+    }
+  ],
+  "loss": 2.138671875,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:00.116Z"
+}

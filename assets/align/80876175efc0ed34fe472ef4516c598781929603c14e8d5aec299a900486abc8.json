@@ -1,0 +1,27 @@
+{
+  "key": "f3085b8915c556fa661a0f8837a54c881cdf36a8c8c80d7932999a776bf9506a",
+  "text": "Adijo! Se vidiva.",
+  "words": [
+    {
+      "text": "Adijo!",
+      "start": 0.239,
+      "end": 0.699,
+      "loss": 1.0906168619791667
+    },
+    {
+      "text": "Se",
+      "start": 1.279,
+      "end": 1.439,
+      "loss": 0.084228515625
+    },
+    {
+      "text": "vidiva.",
+      "start": 1.459,
+      "end": 1.839,
+      "loss": 0.5724400111607143
+    }
+  ],
+  "loss": 0.7174287683823529,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-29T07:53:57.685Z"
+}

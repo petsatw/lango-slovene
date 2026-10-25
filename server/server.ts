@@ -651,7 +651,7 @@ app.get("/api/speak", async (req, res) => {
 
   // Scenario tags (optional) so live clips are queryable by scenario/objective in the manifest.
   const objectiveId = req.query.objectiveId ? String(req.query.objectiveId) : undefined;
-  const meta = { provider: e3.name, voiceOrModel: e3.voiceTagFor(voiceProfile), text, scenarioId: scenarioIdQ, objectiveId };
+  const meta = { provider: e3.name, voiceOrModel: e3.voiceTagFor(voiceProfile), model: e3.model, text, scenarioId: scenarioIdQ, objectiveId };
 
   // A conversational reply is a sentence the tutor composed about THIS learner — "Živjo, Kris! Si
   // študent?" — and persisting it would leave a permanent recording of their name in a store shared by

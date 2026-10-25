@@ -277,7 +277,7 @@ export async function runTurn(input: {
   const { bytes } = await store.getOrCreate(
     key,
     "audio",
-    { provider: e3.name, voiceOrModel: voiceTag, text: u.tutorReply },
+    { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text: u.tutorReply },
     async () => {
       const r = await e3.synthesize({ text: u.tutorReply, voiceProfile });
       return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };

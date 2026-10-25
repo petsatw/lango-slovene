@@ -1,0 +1,21 @@
+{
+  "key": "72d01a466c0e0aa5d9c39d41959a81a4ca131ab9d211913d21e02fb02a277977",
+  "text": "Daj, poskusi!",
+  "words": [
+    {
+      "text": "Daj,",
+      "start": 0.14,
+      "end": 0.36,
+      "loss": 2.8203125
+    },
+    {
+      "text": "poskusi!",
+      "start": 0.479,
+      "end": 1.339,
+      "loss": 0.68408203125
+    }
+  ],
+  "loss": 1.2887796988854041,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:02.404Z"
+}

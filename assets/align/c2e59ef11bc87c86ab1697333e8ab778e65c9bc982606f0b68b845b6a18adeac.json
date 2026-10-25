@@ -1,0 +1,69 @@
+{
+  "key": "ee0686b8f7676bfa638dfbaf2de2515a0762279f206fba1e9713c7c315fd0e28",
+  "text": "Aha, ne. Nič hudega. Potem pa takole: Nisem iz Slovenije.",
+  "words": [
+    {
+      "text": "Aha,",
+      "start": 0.159,
+      "end": 0.56,
+      "loss": 0.014491081237792969
+    },
+    {
+      "text": "ne.",
+      "start": 0.839,
+      "end": 0.979,
+      "loss": 0.8612111409505209
+    },
+    {
+      "text": "Nič",
+      "start": 1.539,
+      "end": 1.719,
+      "loss": 0.07745361328125
+    },
+    {
+      "text": "hudega.",
+      "start": 1.74,
+      "end": 2.119,
+      "loss": 0.005644185202462333
+    },
+    {
+      "text": "Potem",
+      "start": 2.859,
+      "end": 3.099,
+      "loss": 0.2650155067443848
+    },
+    {
+      "text": "pa",
+      "start": 3.1,
+      "end": 3.179,
+      "loss": 0.0009484291076660156
+    },
+    {
+      "text": "takole:",
+      "start": 3.22,
+      "end": 3.519,
+      "loss": 0.75592041015625
+    },
+    {
+      "text": "Nisem",
+      "start": 4.48,
+      "end": 5,
+      "loss": 0.12414493560791015
+    },
+    {
+      "text": "iz",
+      "start": 5.019,
+      "end": 5.259,
+      "loss": 0.0204315185546875
+    },
+    {
+      "text": "Slovenije.",
+      "start": 5.279,
+      "end": 5.859,
+      "loss": 0.006592941284179687
+    }
+  ],
+  "loss": 0.1803197191472639,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:06.668Z"
+}

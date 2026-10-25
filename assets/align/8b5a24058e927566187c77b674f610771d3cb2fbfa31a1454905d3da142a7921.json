@@ -1,0 +1,39 @@
+{
+  "key": "37c569935961591ed435acf0020e84d5da4f58fe089885ee63eea28045d9ecdb",
+  "text": "Živjo! Kako ti je ime?",
+  "words": [
+    {
+      "text": "Živjo!",
+      "start": 0.179,
+      "end": 0.579,
+      "loss": 0.15592193603515625
+    },
+    {
+      "text": "Kako",
+      "start": 1.139,
+      "end": 1.339,
+      "loss": 0.089385986328125
+    },
+    {
+      "text": "ti",
+      "start": 1.419,
+      "end": 1.5,
+      "loss": 0.05487060546875
+    },
+    {
+      "text": "je",
+      "start": 1.519,
+      "end": 1.599,
+      "loss": 0.12158203125
+    },
+    {
+      "text": "ime?",
+      "start": 1.639,
+      "end": 1.839,
+      "loss": 0.106475830078125
+    }
+  ],
+  "loss": 0.1020719354802912,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:55:58.934Z"
+}

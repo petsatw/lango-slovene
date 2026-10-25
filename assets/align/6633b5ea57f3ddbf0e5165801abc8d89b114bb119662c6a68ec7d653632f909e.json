@@ -1,0 +1,21 @@
+{
+  "key": "beedcfb2d5914174b0f5ea9f836803389f8ef544b2c5dcc4e7d76bb85ad8914b",
+  "text": "Sem Slavko.",
+  "words": [
+    {
+      "text": "Sem",
+      "start": 0.219,
+      "end": 0.5,
+      "loss": 0.27734375
+    },
+    {
+      "text": "Slavko.",
+      "start": 0.639,
+      "end": 1.139,
+      "loss": 0.16168212890625
+    }
+  ],
+  "loss": 0.20161021839488635,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:00:29.095Z"
+}

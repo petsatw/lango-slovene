@@ -235,8 +235,10 @@ export interface E3Result {
 export interface E3Adapter {
   readonly name: string;
   /** Stable cache-key tag for the TEACHER/default voice profile — part of the audio cache key, so a
-   *  voice/model change doesn't replay stale audio. Equals `voiceTagFor(teacherProfile)`. */
+   *  voice change doesn't replay another voice's audio. Equals `voiceTagFor(teacherProfile)`. */
   readonly voiceTag: string;
+  /** The model that renders new clips. Recorded in the manifest beside each clip; not part of its key. */
+  readonly model: string;
   /** Cache-key tag for a NAMED voice profile (e.g. "male-speaker"). Audio reuse keys by the speaker's
    *  voice profile: the same text in two profiles is two distinct clips. Omit → the teacher voice. */
   voiceTagFor(voiceProfile?: string): string;

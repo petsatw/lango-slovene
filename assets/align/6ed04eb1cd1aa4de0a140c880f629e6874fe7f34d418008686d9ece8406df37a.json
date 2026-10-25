@@ -1,0 +1,69 @@
+{
+  "key": "86ec8c74dd26ee7d82a8f3024312c3f8a069c9f65de6981a2a2ba089d74c7eaf",
+  "text": "Zakaj?! Rojstni dan je! Danes! In imam seznam. Dolg seznam.",
+  "words": [
+    {
+      "text": "Zakaj?!",
+      "start": 0.199,
+      "end": 0.839,
+      "loss": 0.7553885323660714
+    },
+    {
+      "text": "Rojstni",
+      "start": 1.319,
+      "end": 1.679,
+      "loss": 0.4323207310267857
+    },
+    {
+      "text": "dan",
+      "start": 1.759,
+      "end": 2.039,
+      "loss": 0.025044759114583332
+    },
+    {
+      "text": "je!",
+      "start": 2.079,
+      "end": 2.299,
+      "loss": 0.1150970458984375
+    },
+    {
+      "text": "Danes!",
+      "start": 2.659,
+      "end": 3.24,
+      "loss": 0.058497111002604164
+    },
+    {
+      "text": "In",
+      "start": 4.38,
+      "end": 4.46,
+      "loss": 0.2041015625
+    },
+    {
+      "text": "imam",
+      "start": 4.5,
+      "end": 4.759,
+      "loss": 0.0081787109375
+    },
+    {
+      "text": "seznam.",
+      "start": 4.859,
+      "end": 5.359,
+      "loss": 0.23182024274553573
+    },
+    {
+      "text": "Dolg",
+      "start": 6.239,
+      "end": 6.559,
+      "loss": 0.1044921875
+    },
+    {
+      "text": "seznam.",
+      "start": 6.639,
+      "end": 7.039,
+      "loss": 0.30140250069754465
+    }
+  ],
+  "loss": 0.2388667737023305,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:42.021Z"
+}

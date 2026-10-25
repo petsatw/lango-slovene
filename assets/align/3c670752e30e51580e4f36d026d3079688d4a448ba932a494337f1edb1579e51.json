@@ -1,0 +1,21 @@
+{
+  "key": "bd5b8de179d4ae1fde6d4d9a0784d14f2724a016820387ce801b02a00803c045",
+  "text": "Sem učitelj.",
+  "words": [
+    {
+      "text": "Sem",
+      "start": 0.179,
+      "end": 0.62,
+      "loss": 0.5074869791666666
+    },
+    {
+      "text": "učitelj.",
+      "start": 0.659,
+      "end": 1.079,
+      "loss": 0.13581180572509766
+    }
+  ],
+  "loss": 0.2199255625406901,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:00:29.473Z"
+}

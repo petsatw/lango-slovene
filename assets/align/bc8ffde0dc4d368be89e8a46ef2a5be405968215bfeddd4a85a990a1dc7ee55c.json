@@ -1,0 +1,69 @@
+{
+  "key": "41caf4720e94f24b489a6afa7cc404d26fcca9c2bfa77514f13d1ecb31643c4f",
+  "text": "Živjo! Glej, danes sem prinesel torbo. Notri je nekaj stvari.",
+  "words": [
+    {
+      "text": "Živjo!",
+      "start": 0.28,
+      "end": 0.639,
+      "loss": 0.8824539184570312
+    },
+    {
+      "text": "Glej,",
+      "start": 1.559,
+      "end": 1.779,
+      "loss": 0.10305633544921874
+    },
+    {
+      "text": "danes",
+      "start": 2.319,
+      "end": 2.559,
+      "loss": 0.00283660888671875
+    },
+    {
+      "text": "sem",
+      "start": 2.599,
+      "end": 2.72,
+      "loss": 0.0008141199747721354
+    },
+    {
+      "text": "prinesel",
+      "start": 2.759,
+      "end": 3.159,
+      "loss": 0.0009039342403411865
+    },
+    {
+      "text": "torbo.",
+      "start": 3.24,
+      "end": 3.559,
+      "loss": 0.019226551055908203
+    },
+    {
+      "text": "Notri",
+      "start": 4.42,
+      "end": 4.719,
+      "loss": 0.14171905517578126
+    },
+    {
+      "text": "je",
+      "start": 4.739,
+      "end": 4.779,
+      "loss": 0.002552032470703125
+    },
+    {
+      "text": "nekaj",
+      "start": 4.819,
+      "end": 5.039,
+      "loss": 0.00039348602294921877
+    },
+    {
+      "text": "stvari.",
+      "start": 5.099,
+      "end": 5.319,
+      "loss": 0.020325745855058943
+    }
+  ],
+  "loss": 0.11180219298503438,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T15:42:38.963Z"
+}

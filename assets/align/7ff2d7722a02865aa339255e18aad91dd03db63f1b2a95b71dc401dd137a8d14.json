@@ -1,0 +1,39 @@
+{
+  "key": "f9d28b7c7f2464077bbd61d5801c56990eca4be53fb066a9679a9d814f9b7c51",
+  "text": "Ti pa dobro angleško! Adijo!",
+  "words": [
+    {
+      "text": "Ti",
+      "start": 0.219,
+      "end": 0.359,
+      "loss": 0.027099609375
+    },
+    {
+      "text": "pa",
+      "start": 0.379,
+      "end": 0.56,
+      "loss": 0.0005731582641601562
+    },
+    {
+      "text": "dobro",
+      "start": 0.579,
+      "end": 0.899,
+      "loss": 0.00888214111328125
+    },
+    {
+      "text": "angleško!",
+      "start": 0.919,
+      "end": 1.719,
+      "loss": 0.5505252414279513
+    },
+    {
+      "text": "Adijo!",
+      "start": 1.779,
+      "end": 2.179,
+      "loss": 1.256378173828125
+    }
+  ],
+  "loss": 0.47206476756504606,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T11:40:46.951Z"
+}

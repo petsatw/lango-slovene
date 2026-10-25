@@ -1,0 +1,21 @@
+{
+  "key": "49aa52131574859374033a233e787138bf33d0c9e3583fe20e75003c7edc2859",
+  "text": "Govorim slovensko.",
+  "words": [
+    {
+      "text": "Govorim",
+      "start": 0.099,
+      "end": 0.639,
+      "loss": 0.13819231305803573
+    },
+    {
+      "text": "slovensko.",
+      "start": 0.68,
+      "end": 1.439,
+      "loss": 0.14405746459960939
+    }
+  ],
+  "loss": 0.13605202568901908,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:01.298Z"
+}

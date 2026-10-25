@@ -1,0 +1,105 @@
+{
+  "key": "40dcb9b434814ca325d6c67156daca4bfe822eea092647c022de0978f6ac9363",
+  "text": "Pri babici. Ona je v Ljubljani, tako kot jaz — saj veš. In pride veliko ljudi!",
+  "words": [
+    {
+      "text": "Pri",
+      "start": 0.099,
+      "end": 0.359,
+      "loss": 0.045865376790364586
+    },
+    {
+      "text": "babici.",
+      "start": 0.399,
+      "end": 1.019,
+      "loss": 0.07433346339634486
+    },
+    {
+      "text": "Ona",
+      "start": 1.839,
+      "end": 2,
+      "loss": 0.09041150410970052
+    },
+    {
+      "text": "je",
+      "start": 2.059,
+      "end": 2.099,
+      "loss": 0.0010929107666015625
+    },
+    {
+      "text": "v",
+      "start": 2.139,
+      "end": 2.18,
+      "loss": 0.001220703125
+    },
+    {
+      "text": "Ljubljani,",
+      "start": 2.22,
+      "end": 2.759,
+      "loss": 0.010268592834472656
+    },
+    {
+      "text": "tako",
+      "start": 2.96,
+      "end": 3.119,
+      "loss": 0.004656791687011719
+    },
+    {
+      "text": "kot",
+      "start": 3.179,
+      "end": 3.319,
+      "loss": 0.0012194315592447917
+    },
+    {
+      "text": "jaz",
+      "start": 3.379,
+      "end": 3.759,
+      "loss": 0.006999015808105469
+    },
+    {
+      "text": "—",
+      "start": 4.019,
+      "end": 4.0200000000000005,
+      "loss": 4.375
+    },
+    {
+      "text": "saj",
+      "start": 4.099,
+      "end": 4.219,
+      "loss": 0.09771728515625
+    },
+    {
+      "text": "veš.",
+      "start": 4.259,
+      "end": 4.519,
+      "loss": 0.10401058197021484
+    },
+    {
+      "text": "In",
+      "start": 5.319,
+      "end": 5.46,
+      "loss": 0.82666015625
+    },
+    {
+      "text": "pride",
+      "start": 5.5,
+      "end": 5.819,
+      "loss": 0.0044921875
+    },
+    {
+      "text": "veliko",
+      "start": 5.859,
+      "end": 6.299,
+      "loss": 0.010637919108072916
+    },
+    {
+      "text": "ljudi!",
+      "start": 6.359,
+      "end": 6.639,
+      "loss": 0.917726198832194
+    }
+  ],
+  "loss": 0.25379752501463276,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:39.122Z"
+}

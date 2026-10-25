@@ -1,0 +1,51 @@
+{
+  "key": "a84cd0545def0f236b4381d4d42144bd8239a7deafe78aeafc0274fee8a87d1c",
+  "text": "Ojoj! Ne razumeš. Reci: Še enkrat, prosim.",
+  "words": [
+    {
+      "text": "Ojoj!",
+      "start": 0.179,
+      "end": 0.74,
+      "loss": 2.277734375
+    },
+    {
+      "text": "Ne",
+      "start": 0.979,
+      "end": 1.059,
+      "loss": 0.14324951171875
+    },
+    {
+      "text": "razumeš.",
+      "start": 1.1,
+      "end": 1.639,
+      "loss": 0.054583072662353516
+    },
+    {
+      "text": "Reci:",
+      "start": 2.019,
+      "end": 2.359,
+      "loss": 1.2083114624023437
+    },
+    {
+      "text": "Še",
+      "start": 3.119,
+      "end": 3.259,
+      "loss": 0.9671173095703125
+    },
+    {
+      "text": "enkrat,",
+      "start": 3.299,
+      "end": 3.639,
+      "loss": 0.05107252938406808
+    },
+    {
+      "text": "prosim.",
+      "start": 3.74,
+      "end": 3.959,
+      "loss": 0.08806037902832031
+    }
+  ],
+  "loss": 0.5024772371564593,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:03:12.509Z"
+}

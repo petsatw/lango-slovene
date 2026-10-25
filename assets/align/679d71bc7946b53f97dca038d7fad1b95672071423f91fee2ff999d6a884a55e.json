@@ -1,0 +1,105 @@
+{
+  "key": "2acb2e15c8e6e80d825ba82156965e07c155827befe7e914ac4b33f51521c0cf",
+  "text": "Zdaj grem k babici in povem vse naenkrat. Enkrat čez mesto, ne štirikrat! Hvala ti! Adijo!",
+  "words": [
+    {
+      "text": "Zdaj",
+      "start": 0.28,
+      "end": 0.419,
+      "loss": 0.04283022880554199
+    },
+    {
+      "text": "grem",
+      "start": 0.439,
+      "end": 0.62,
+      "loss": 0.0011434555053710938
+    },
+    {
+      "text": "k",
+      "start": 0.659,
+      "end": 0.719,
+      "loss": 6.0625
+    },
+    {
+      "text": "babici",
+      "start": 0.739,
+      "end": 1.1,
+      "loss": 0.014614423116048178
+    },
+    {
+      "text": "in",
+      "start": 1.12,
+      "end": 1.219,
+      "loss": 0.004482269287109375
+    },
+    {
+      "text": "povem",
+      "start": 1.24,
+      "end": 1.5,
+      "loss": 0.0005178451538085938
+    },
+    {
+      "text": "vse",
+      "start": 1.519,
+      "end": 1.839,
+      "loss": 0.001121838887532552
+    },
+    {
+      "text": "naenkrat.",
+      "start": 1.899,
+      "end": 2.419,
+      "loss": 0.019771575927734375
+    },
+    {
+      "text": "Enkrat",
+      "start": 3.599,
+      "end": 3.919,
+      "loss": 0.30254530906677246
+    },
+    {
+      "text": "čez",
+      "start": 3.959,
+      "end": 4.079,
+      "loss": 0.0078277587890625
+    },
+    {
+      "text": "mesto,",
+      "start": 4.159,
+      "end": 4.519,
+      "loss": 0.028229554494222004
+    },
+    {
+      "text": "ne",
+      "start": 4.94,
+      "end": 5.019,
+      "loss": 0.014580726623535156
+    },
+    {
+      "text": "štirikrat!",
+      "start": 5.119,
+      "end": 5.699,
+      "loss": 0.7860367298126221
+    },
+    {
+      "text": "Hvala",
+      "start": 6.799,
+      "end": 7.119,
+      "loss": 0.35195026397705076
+    },
+    {
+      "text": "ti!",
+      "start": 7.219,
+      "end": 7.379,
+      "loss": 0.29199759165445965
+    },
+    {
+      "text": "Adijo!",
+      "start": 8.059,
+      "end": 8.479,
+      "loss": 1.1847203572591145
+    }
+  ],
+  "loss": 0.2928114308251275,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:37.415Z"
+}

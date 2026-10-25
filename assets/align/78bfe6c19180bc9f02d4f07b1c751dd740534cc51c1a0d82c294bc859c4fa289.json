@@ -1,0 +1,69 @@
+{
+  "key": "6f01eec9ad6451b18aaa95e4674617f378f50abc618f222b19850e1301f47f35",
+  "text": "Ja, ja, vem: počasi, prosim! Slavko, počasi! Me še razumeš?",
+  "words": [
+    {
+      "text": "Ja,",
+      "start": 0.099,
+      "end": 0.239,
+      "loss": 0.18290201822916666
+    },
+    {
+      "text": "ja,",
+      "start": 0.5,
+      "end": 0.659,
+      "loss": 0.2562662760416667
+    },
+    {
+      "text": "vem:",
+      "start": 0.899,
+      "end": 1.1,
+      "loss": 2.0554046630859375
+    },
+    {
+      "text": "počasi,",
+      "start": 1.319,
+      "end": 1.879,
+      "loss": 0.21369280133928573
+    },
+    {
+      "text": "prosim!",
+      "start": 2.039,
+      "end": 2.44,
+      "loss": 0.5689762660435268
+    },
+    {
+      "text": "Slavko,",
+      "start": 3.079,
+      "end": 3.519,
+      "loss": 0.04363359723772321
+    },
+    {
+      "text": "počasi!",
+      "start": 3.559,
+      "end": 4.139,
+      "loss": 0.28922816685267855
+    },
+    {
+      "text": "Me",
+      "start": 5.339,
+      "end": 5.44,
+      "loss": 0.2987060546875
+    },
+    {
+      "text": "še",
+      "start": 5.519,
+      "end": 5.599,
+      "loss": 0.05548095703125
+    },
+    {
+      "text": "razumeš?",
+      "start": 5.659,
+      "end": 6.179,
+      "loss": 0.042781829833984375
+    }
+  ],
+  "loss": 0.32920633736303295,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:36.511Z"
+}

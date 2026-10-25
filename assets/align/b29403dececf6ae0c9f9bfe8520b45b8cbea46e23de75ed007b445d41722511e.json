@@ -1,0 +1,51 @@
+{
+  "key": "b34c4441d3431b9d29b8b8b38b50aab3525b479f56949eb1b3b2519f4c112409",
+  "text": "Jaz sem Slavko, ja. Sem iz Ljubljane.",
+  "words": [
+    {
+      "text": "Jaz",
+      "start": 0.219,
+      "end": 0.379,
+      "loss": 1.3059895833333333
+    },
+    {
+      "text": "sem",
+      "start": 0.399,
+      "end": 0.539,
+      "loss": 0.4925130208333333
+    },
+    {
+      "text": "Slavko,",
+      "start": 0.579,
+      "end": 0.939,
+      "loss": 0.13693673270089285
+    },
+    {
+      "text": "ja.",
+      "start": 1.079,
+      "end": 1.259,
+      "loss": 0.6829427083333334
+    },
+    {
+      "text": "Sem",
+      "start": 1.819,
+      "end": 2.019,
+      "loss": 0.9430338541666666
+    },
+    {
+      "text": "iz",
+      "start": 2.079,
+      "end": 2.22,
+      "loss": 0.1165771484375
+    },
+    {
+      "text": "Ljubljane.",
+      "start": 2.279,
+      "end": 2.679,
+      "loss": 0.296160888671875
+    }
+  ],
+  "loss": 0.40255201185071793,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:05.676Z"
+}

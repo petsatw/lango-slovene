@@ -1,0 +1,57 @@
+{
+  "key": "df1a23a89eecbba8954039ee1abba894565bf4c59be7ccb0e648568ccfa873b1",
+  "text": "Daj, vprašaj me še kaj! Rain, na primer?",
+  "words": [
+    {
+      "text": "Daj,",
+      "start": 0.179,
+      "end": 0.379,
+      "loss": 1.2197265625
+    },
+    {
+      "text": "vprašaj",
+      "start": 0.5,
+      "end": 0.819,
+      "loss": 0.2556629180908203
+    },
+    {
+      "text": "me",
+      "start": 0.839,
+      "end": 0.899,
+      "loss": 0.06329345703125
+    },
+    {
+      "text": "še",
+      "start": 0.979,
+      "end": 1.079,
+      "loss": 0.05126953125
+    },
+    {
+      "text": "kaj!",
+      "start": 1.139,
+      "end": 1.419,
+      "loss": 0.7248077392578125
+    },
+    {
+      "text": "Rain,",
+      "start": 1.839,
+      "end": 2.279,
+      "loss": 0.2083251953125
+    },
+    {
+      "text": "na",
+      "start": 2.339,
+      "end": 2.419,
+      "loss": 0.117431640625
+    },
+    {
+      "text": "primer?",
+      "start": 2.44,
+      "end": 2.7,
+      "loss": 0.19223458426339285
+    }
+  ],
+  "loss": 0.36045792102813723,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T13:21:48.671Z"
+}

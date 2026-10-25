@@ -1,0 +1,51 @@
+{
+  "key": "109e28eb1a601a4662fad34ac0ebb54a56de300eecc50456346c6fd495e1d10f",
+  "text": "Ojoj. Ojoj, ojoj, ojoj! Danes je sobota!",
+  "words": [
+    {
+      "text": "Ojoj.",
+      "start": 0.28,
+      "end": 0.819,
+      "loss": 1.35703125
+    },
+    {
+      "text": "Ojoj,",
+      "start": 1.24,
+      "end": 1.639,
+      "loss": 0.4595703125
+    },
+    {
+      "text": "ojoj,",
+      "start": 1.699,
+      "end": 1.959,
+      "loss": 0.45888671875
+    },
+    {
+      "text": "ojoj!",
+      "start": 2.019,
+      "end": 2.439,
+      "loss": 1.251171875
+    },
+    {
+      "text": "Danes",
+      "start": 3,
+      "end": 3.299,
+      "loss": 0.0521728515625
+    },
+    {
+      "text": "je",
+      "start": 3.359,
+      "end": 3.46,
+      "loss": 0.0090179443359375
+    },
+    {
+      "text": "sobota!",
+      "start": 3.5,
+      "end": 4.119,
+      "loss": 0.92779541015625
+    }
+  ],
+  "loss": 0.6116713523864746,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:41.360Z"
+}

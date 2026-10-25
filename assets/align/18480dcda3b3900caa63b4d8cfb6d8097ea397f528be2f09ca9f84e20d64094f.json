@@ -1,0 +1,63 @@
+{
+  "key": "dbc7731e5cf01c6244fd492d8781312874b342a6a3d1b54d918ebc57a35566c1",
+  "text": "Me veseli! Jaz sem Slavko. Zdaj pa še ti.",
+  "words": [
+    {
+      "text": "Me",
+      "start": 0.119,
+      "end": 0.299,
+      "loss": 0.166015625
+    },
+    {
+      "text": "veseli!",
+      "start": 0.34,
+      "end": 0.919,
+      "loss": 0.20078114100864955
+    },
+    {
+      "text": "Jaz",
+      "start": 1.559,
+      "end": 1.74,
+      "loss": 0.3022257486979167
+    },
+    {
+      "text": "sem",
+      "start": 1.779,
+      "end": 1.899,
+      "loss": 0.0335235595703125
+    },
+    {
+      "text": "Slavko.",
+      "start": 2,
+      "end": 2.419,
+      "loss": 0.09767804827008929
+    },
+    {
+      "text": "Zdaj",
+      "start": 3.22,
+      "end": 3.359,
+      "loss": 0.018729209899902344
+    },
+    {
+      "text": "pa",
+      "start": 3.379,
+      "end": 3.439,
+      "loss": 0.00159454345703125
+    },
+    {
+      "text": "še",
+      "start": 3.5,
+      "end": 3.619,
+      "loss": 0.01904296875
+    },
+    {
+      "text": "ti.",
+      "start": 3.659,
+      "end": 3.74,
+      "loss": 0.07590230305989583
+    }
+  ],
+  "loss": 0.09477922393054497,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:55:59.334Z"
+}

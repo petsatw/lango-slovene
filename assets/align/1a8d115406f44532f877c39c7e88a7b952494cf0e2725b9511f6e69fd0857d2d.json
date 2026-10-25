@@ -1,0 +1,105 @@
+{
+  "key": "20062f2851e25dd17feb8a6d8ca0b757d6a559ed29b629061d9033d850c098dc",
+  "text": "Midva morava iti! Jaz moram kupiti torto, ti pa moraš delati. Ob petih pri babici. Adijo!",
+  "words": [
+    {
+      "text": "Midva",
+      "start": 0.14,
+      "end": 0.479,
+      "loss": 0.17691650390625
+    },
+    {
+      "text": "morava",
+      "start": 0.5,
+      "end": 0.959,
+      "loss": 0.009705225626627604
+    },
+    {
+      "text": "iti!",
+      "start": 1.039,
+      "end": 1.48,
+      "loss": 0.5100612640380859
+    },
+    {
+      "text": "Jaz",
+      "start": 2.099,
+      "end": 2.399,
+      "loss": 0.13508097330729166
+    },
+    {
+      "text": "moram",
+      "start": 2.46,
+      "end": 2.659,
+      "loss": 0.0009243965148925781
+    },
+    {
+      "text": "kupiti",
+      "start": 2.74,
+      "end": 3.019,
+      "loss": 0.00043018658955891925
+    },
+    {
+      "text": "torto,",
+      "start": 3.139,
+      "end": 3.5,
+      "loss": 0.10875638326009114
+    },
+    {
+      "text": "ti",
+      "start": 3.899,
+      "end": 4.059,
+      "loss": 0.018474578857421875
+    },
+    {
+      "text": "pa",
+      "start": 4.079,
+      "end": 4.199,
+      "loss": 0.0004115104675292969
+    },
+    {
+      "text": "moraš",
+      "start": 4.259,
+      "end": 4.48,
+      "loss": 0.0006805896759033203
+    },
+    {
+      "text": "delati.",
+      "start": 4.5,
+      "end": 4.88,
+      "loss": 0.035493782588413784
+    },
+    {
+      "text": "Ob",
+      "start": 5.98,
+      "end": 6.159,
+      "loss": 0.5806884765625
+    },
+    {
+      "text": "petih",
+      "start": 6.199,
+      "end": 6.619,
+      "loss": 0.006599044799804688
+    },
+    {
+      "text": "pri",
+      "start": 6.659,
+      "end": 6.739,
+      "loss": 0.0011477470397949219
+    },
+    {
+      "text": "babici.",
+      "start": 6.819,
+      "end": 7.379,
+      "loss": 0.15508569989885604
+    },
+    {
+      "text": "Adijo!",
+      "start": 7.739,
+      "end": 8.319,
+      "loss": 0.9846827189127604
+    }
+  ],
+  "loss": 0.14308211642704652,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:44.952Z"
+}

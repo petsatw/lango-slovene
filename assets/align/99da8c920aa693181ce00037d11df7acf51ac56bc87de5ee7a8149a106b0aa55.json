@@ -1,0 +1,33 @@
+{
+  "key": "4e0a221b2df4ddb548e0e9774758c56b4e3a2c97b4985a2cd136d05925489957",
+  "text": "Jaz? Sem iz Ljubljane.",
+  "words": [
+    {
+      "text": "Jaz?",
+      "start": 0.299,
+      "end": 0.639,
+      "loss": 0.13649749755859375
+    },
+    {
+      "text": "Sem",
+      "start": 1.139,
+      "end": 1.299,
+      "loss": 0.2697957356770833
+    },
+    {
+      "text": "iz",
+      "start": 1.339,
+      "end": 1.459,
+      "loss": 0.00449371337890625
+    },
+    {
+      "text": "Ljubljane.",
+      "start": 1.48,
+      "end": 1.919,
+      "loss": 0.11879453659057618
+    }
+  ],
+  "loss": 0.12037394263527611,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:08.344Z"
+}

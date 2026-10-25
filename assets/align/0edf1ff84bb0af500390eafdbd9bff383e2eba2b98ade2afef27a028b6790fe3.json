@@ -1,0 +1,21 @@
+{
+  "key": "4f5c4073468bafd33f88230643d4f82f2f0b11ff2963a597bd9252dcd145fb95",
+  "text": "Iz Ljubljane.",
+  "words": [
+    {
+      "text": "Iz",
+      "start": 0.219,
+      "end": 0.68,
+      "loss": 0.8876953125
+    },
+    {
+      "text": "Ljubljane.",
+      "start": 0.719,
+      "end": 1.279,
+      "loss": 0.23994903564453124
+    }
+  ],
+  "loss": 0.32666602501502406,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:05.986Z"
+}

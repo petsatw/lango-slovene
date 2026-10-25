@@ -1,0 +1,57 @@
+{
+  "key": "9528ee474614bc1736d36971d0931bcb0018781726395c93dc948baa2a4f2bf4",
+  "text": "Drugič grem počasi, obljubim. Počasi, Slavko, prosim! Adijo!",
+  "words": [
+    {
+      "text": "Drugič",
+      "start": 0.159,
+      "end": 0.639,
+      "loss": 0.029725948969523113
+    },
+    {
+      "text": "grem",
+      "start": 0.68,
+      "end": 0.919,
+      "loss": 0.0012999773025512695
+    },
+    {
+      "text": "počasi,",
+      "start": 0.939,
+      "end": 1.539,
+      "loss": 0.020993164607456753
+    },
+    {
+      "text": "obljubim.",
+      "start": 1.86,
+      "end": 2.419,
+      "loss": 0.004623519049750434
+    },
+    {
+      "text": "Počasi,",
+      "start": 3.579,
+      "end": 4.119,
+      "loss": 0.3835967608860561
+    },
+    {
+      "text": "Slavko,",
+      "start": 4.239,
+      "end": 4.699,
+      "loss": 0.011934552873883928
+    },
+    {
+      "text": "prosim!",
+      "start": 4.739,
+      "end": 5.319,
+      "loss": 0.12089920043945312
+    },
+    {
+      "text": "Adijo!",
+      "start": 6.259,
+      "end": 6.759,
+      "loss": 1.1512552897135417
+    }
+  ],
+  "loss": 0.1819718321164449,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T13:21:46.039Z"
+}

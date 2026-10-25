@@ -1,0 +1,63 @@
+{
+  "key": "60a868c30c44325a9284a9a98638a30a4e00ed4e02567cd6259b0b3b7de490bf",
+  "text": "Zdaj veš, od kod sem. In govoriva slovensko! Adijo!",
+  "words": [
+    {
+      "text": "Zdaj",
+      "start": 0.179,
+      "end": 0.479,
+      "loss": 0.010185599327087402
+    },
+    {
+      "text": "veš,",
+      "start": 0.56,
+      "end": 0.879,
+      "loss": 0.010509490966796875
+    },
+    {
+      "text": "od",
+      "start": 1.179,
+      "end": 1.339,
+      "loss": 0.00405120849609375
+    },
+    {
+      "text": "kod",
+      "start": 1.36,
+      "end": 1.559,
+      "loss": 0.74993896484375
+    },
+    {
+      "text": "sem.",
+      "start": 1.62,
+      "end": 1.899,
+      "loss": 0.071807861328125
+    },
+    {
+      "text": "In",
+      "start": 2.579,
+      "end": 2.7,
+      "loss": 0.8053092956542969
+    },
+    {
+      "text": "govoriva",
+      "start": 2.74,
+      "end": 3.139,
+      "loss": 0.007434666156768799
+    },
+    {
+      "text": "slovensko!",
+      "start": 3.199,
+      "end": 3.879,
+      "loss": 0.11866626739501954
+    },
+    {
+      "text": "Adijo!",
+      "start": 4.859,
+      "end": 5.299,
+      "loss": 1.1213328043619792
+    }
+  ],
+  "loss": 0.3111546366822486,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:08.716Z"
+}

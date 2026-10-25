@@ -1,0 +1,81 @@
+{
+  "key": "c3e782f2b822cdb879e48cf72cafe279a4ffcd05e867f5a0e9626966c661415c",
+  "text": "Zato ji reci takole: Nisem iz Slovenije in ne govorim dobro slovensko.",
+  "words": [
+    {
+      "text": "Zato",
+      "start": 0.239,
+      "end": 0.5,
+      "loss": 0.020641326904296875
+    },
+    {
+      "text": "ji",
+      "start": 0.539,
+      "end": 0.599,
+      "loss": 0.0066680908203125
+    },
+    {
+      "text": "reci",
+      "start": 0.639,
+      "end": 0.879,
+      "loss": 2.169087290763855
+    },
+    {
+      "text": "takole:",
+      "start": 0.899,
+      "end": 1.279,
+      "loss": 0.433560984475272
+    },
+    {
+      "text": "Nisem",
+      "start": 2.259,
+      "end": 2.599,
+      "loss": 0.02915496826171875
+    },
+    {
+      "text": "iz",
+      "start": 2.619,
+      "end": 2.74,
+      "loss": 0.0047760009765625
+    },
+    {
+      "text": "Slovenije",
+      "start": 2.759,
+      "end": 3.46,
+      "loss": 0.0005875428517659506
+    },
+    {
+      "text": "in",
+      "start": 3.539,
+      "end": 3.639,
+      "loss": 0.0029382705688476562
+    },
+    {
+      "text": "ne",
+      "start": 3.679,
+      "end": 3.779,
+      "loss": 0.0012249946594238281
+    },
+    {
+      "text": "govorim",
+      "start": 3.799,
+      "end": 4.139,
+      "loss": 0.008351973124912806
+    },
+    {
+      "text": "dobro",
+      "start": 4.199,
+      "end": 4.44,
+      "loss": 0.0005950927734375
+    },
+    {
+      "text": "slovensko.",
+      "start": 4.579,
+      "end": 5.079,
+      "loss": 0.06519758701324463
+    }
+  ],
+  "loss": 0.18333312783922467,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:52.761Z"
+}

@@ -41,9 +41,14 @@ export class ElevenLabsE3 implements E3Adapter {
     return process.env[envVar] || "";
   }
 
-  /** Cache-key tag for a profile — `${voiceId}:${modelId}`. Omit → teacher voice (legacy tag). */
+  /** Cache-key tag for a profile — the voice id. A clip is its voice and its words; the model that
+   *  rendered it is recorded in the manifest (`model`), not keyed. Omit → teacher voice. */
   voiceTagFor(voiceProfile?: string): string {
-    return `${this.voiceIdFor(voiceProfile)}:${this.modelId}`;
+    return this.voiceIdFor(voiceProfile);
+  }
+
+  get model(): string {
+    return this.modelId;
   }
 
   get voiceTag(): string {

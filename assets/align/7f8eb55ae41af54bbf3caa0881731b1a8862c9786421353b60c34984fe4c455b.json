@@ -1,0 +1,123 @@
+{
+  "key": "66af3389294090f94629ac5488e53e9324c471c0f8e71c4513215f24b07c9c00",
+  "text": "Zdaj imam! Veš, kaj babico najbolj zanima? Reci mi tako: Nisem iz Slovenije, ampak govorim slovensko. To je tisto!",
+  "words": [
+    {
+      "text": "Zdaj",
+      "start": 0.14,
+      "end": 0.459,
+      "loss": 0.01736927032470703
+    },
+    {
+      "text": "imam!",
+      "start": 0.519,
+      "end": 0.779,
+      "loss": 0.14288330078125
+    },
+    {
+      "text": "Veš,",
+      "start": 1.979,
+      "end": 2.159,
+      "loss": 0.2861900329589844
+    },
+    {
+      "text": "kaj",
+      "start": 2.259,
+      "end": 2.419,
+      "loss": 0.0005505879720052084
+    },
+    {
+      "text": "babico",
+      "start": 2.48,
+      "end": 2.919,
+      "loss": 0.009488423665364584
+    },
+    {
+      "text": "najbolj",
+      "start": 2.98,
+      "end": 3.319,
+      "loss": 0.0003814697265625
+    },
+    {
+      "text": "zanima?",
+      "start": 3.399,
+      "end": 3.839,
+      "loss": 0.0032447406223842074
+    },
+    {
+      "text": "Reci",
+      "start": 5.219,
+      "end": 5.48,
+      "loss": 0.013800621032714844
+    },
+    {
+      "text": "mi",
+      "start": 5.5,
+      "end": 5.619,
+      "loss": 0.0010533332824707031
+    },
+    {
+      "text": "tako:",
+      "start": 5.659,
+      "end": 5.96,
+      "loss": 0.26587390899658203
+    },
+    {
+      "text": "Nisem",
+      "start": 6.799,
+      "end": 7.159,
+      "loss": 0.12752227783203124
+    },
+    {
+      "text": "iz",
+      "start": 7.219,
+      "end": 7.319,
+      "loss": 0.014373779296875
+    },
+    {
+      "text": "Slovenije,",
+      "start": 7.339,
+      "end": 7.899,
+      "loss": 0.001432943344116211
+    },
+    {
+      "text": "ampak",
+      "start": 8.279,
+      "end": 8.539,
+      "loss": 0.003341531753540039
+    },
+    {
+      "text": "govorim",
+      "start": 8.619,
+      "end": 9.039,
+      "loss": 0.0002402918679373605
+    },
+    {
+      "text": "slovensko.",
+      "start": 9.159,
+      "end": 9.8,
+      "loss": 0.022669363021850585
+    },
+    {
+      "text": "To",
+      "start": 11.119,
+      "end": 11.319,
+      "loss": 0.19931793212890625
+    },
+    {
+      "text": "je",
+      "start": 11.38,
+      "end": 11.5,
+      "loss": 0.000392913818359375
+    },
+    {
+      "text": "tisto!",
+      "start": 11.539,
+      "end": 11.939,
+      "loss": 0.4383518695831299
+    }
+  ],
+  "loss": 0.0656658599251195,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:35.367Z"
+}

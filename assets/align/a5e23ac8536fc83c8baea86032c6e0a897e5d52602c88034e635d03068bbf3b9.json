@@ -1,0 +1,33 @@
+{
+  "key": "c4f602f18e412e8bc53999e4a1aa540acd01c0950ffee7853dd199806c0094de",
+  "text": "Ker je presenečenje! Pssst!",
+  "words": [
+    {
+      "text": "Ker",
+      "start": 0.14,
+      "end": 0.359,
+      "loss": 0.17521158854166666
+    },
+    {
+      "text": "je",
+      "start": 0.439,
+      "end": 0.659,
+      "loss": 0.0016937255859375
+    },
+    {
+      "text": "presenečenje!",
+      "start": 0.699,
+      "end": 2.22,
+      "loss": 0.4440388312706581
+    },
+    {
+      "text": "Pssst!",
+      "start": 2.98,
+      "end": 3.419,
+      "loss": 1.3256429036458333
+    }
+  ],
+  "loss": 0.5357978962085865,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:39.932Z"
+}

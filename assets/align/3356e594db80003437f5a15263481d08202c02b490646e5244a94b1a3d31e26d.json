@@ -1,0 +1,51 @@
+{
+  "key": "2cd1f9e455181475d225c18d1b92686ce1ae94d083d230e45d714e890f6368f1",
+  "text": "Ampak angleško? Uf. Ne govorim dobro angleško.",
+  "words": [
+    {
+      "text": "Ampak",
+      "start": 0.199,
+      "end": 0.839,
+      "loss": 0.011365890502929688
+    },
+    {
+      "text": "angleško?",
+      "start": 0.919,
+      "end": 1.62,
+      "loss": 0.08960956997341579
+    },
+    {
+      "text": "Uf.",
+      "start": 2.48,
+      "end": 3.199,
+      "loss": 1.79345703125
+    },
+    {
+      "text": "Ne",
+      "start": 3.22,
+      "end": 3.359,
+      "loss": 0.20915985107421875
+    },
+    {
+      "text": "govorim",
+      "start": 3.379,
+      "end": 3.819,
+      "loss": 0.00074005126953125
+    },
+    {
+      "text": "dobro",
+      "start": 3.839,
+      "end": 4.079,
+      "loss": 0.00042161941528320315
+    },
+    {
+      "text": "angleško.",
+      "start": 4.119,
+      "end": 4.639,
+      "loss": 0.07780032687717015
+    }
+  ],
+  "loss": 0.17048952890479047,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:56:03.941Z"
+}

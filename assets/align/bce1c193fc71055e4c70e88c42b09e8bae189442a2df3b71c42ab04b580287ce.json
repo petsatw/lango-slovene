@@ -1,0 +1,81 @@
+{
+  "key": "0cb9e1de96378d09404305b2070ba3d86070e0e247889fd99343097577f9deec",
+  "text": "Odlično! Zdaj pa imam nekaj v roki. Vprašaj me: Kaj je to?",
+  "words": [
+    {
+      "text": "Odlično!",
+      "start": 0.299,
+      "end": 1.019,
+      "loss": 0.12936881184577942
+    },
+    {
+      "text": "Zdaj",
+      "start": 1.839,
+      "end": 2,
+      "loss": 0.03765153884887695
+    },
+    {
+      "text": "pa",
+      "start": 2.099,
+      "end": 2.159,
+      "loss": 0.0024423599243164062
+    },
+    {
+      "text": "imam",
+      "start": 2.2,
+      "end": 2.399,
+      "loss": 0.006623715162277222
+    },
+    {
+      "text": "nekaj",
+      "start": 2.44,
+      "end": 2.679,
+      "loss": 0.000527048110961914
+    },
+    {
+      "text": "v",
+      "start": 2.7,
+      "end": 2.759,
+      "loss": 2.125
+    },
+    {
+      "text": "roki.",
+      "start": 2.779,
+      "end": 3.079,
+      "loss": 0.10219879150390625
+    },
+    {
+      "text": "Vprašaj",
+      "start": 3.619,
+      "end": 4,
+      "loss": 0.16833932059151785
+    },
+    {
+      "text": "me:",
+      "start": 4.079,
+      "end": 4.159,
+      "loss": 2.0114110310872397
+    },
+    {
+      "text": "Kaj",
+      "start": 4.859,
+      "end": 4.98,
+      "loss": 0.5887451171875
+    },
+    {
+      "text": "je",
+      "start": 5.019,
+      "end": 5.119,
+      "loss": 0.03187084197998047
+    },
+    {
+      "text": "to?",
+      "start": 5.139,
+      "end": 5.259,
+      "loss": 0.0041294097900390625
+    }
+  ],
+  "loss": 0.229750984701617,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T15:42:40.386Z"
+}

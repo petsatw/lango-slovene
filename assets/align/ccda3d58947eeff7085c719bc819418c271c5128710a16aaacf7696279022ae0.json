@@ -1,0 +1,45 @@
+{
+  "key": "aeb64ce87408664ec34f18360c43411b61cdbf44d2964ffd9c3a08dc3cb6a76d",
+  "text": "Na, to je tvoja knjiga. Adijo!",
+  "words": [
+    {
+      "text": "Na,",
+      "start": 0.219,
+      "end": 0.379,
+      "loss": 0.8154296875
+    },
+    {
+      "text": "to",
+      "start": 0.519,
+      "end": 0.659,
+      "loss": 0.0093231201171875
+    },
+    {
+      "text": "je",
+      "start": 0.699,
+      "end": 0.819,
+      "loss": 0.00429534912109375
+    },
+    {
+      "text": "tvoja",
+      "start": 0.859,
+      "end": 1.12,
+      "loss": 0.00386505126953125
+    },
+    {
+      "text": "knjiga.",
+      "start": 1.22,
+      "end": 1.559,
+      "loss": 0.0151824951171875
+    },
+    {
+      "text": "Adijo!",
+      "start": 2.359,
+      "end": 2.72,
+      "loss": 1.1883443196614583
+    }
+  ],
+  "loss": 0.32489957809448244,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T15:42:42.779Z"
+}

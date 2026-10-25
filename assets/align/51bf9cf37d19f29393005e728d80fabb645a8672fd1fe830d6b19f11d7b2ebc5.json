@@ -1,0 +1,51 @@
+{
+  "key": "cefa5c76b04ef1444c73dcb09f97a018c37a20c50611bc8f9f76413de83d1fd9",
+  "text": "Grandma? Babica! Zdaj grem k babici. Adijo!",
+  "words": [
+    {
+      "text": "Grandma?",
+      "start": 0.219,
+      "end": 0.74,
+      "loss": 0.11852645874023438
+    },
+    {
+      "text": "Babica!",
+      "start": 1.62,
+      "end": 2.46,
+      "loss": 0.14709036690848215
+    },
+    {
+      "text": "Zdaj",
+      "start": 3.399,
+      "end": 3.599,
+      "loss": 0.35401296615600586
+    },
+    {
+      "text": "grem",
+      "start": 3.639,
+      "end": 3.819,
+      "loss": 0.0011281967163085938
+    },
+    {
+      "text": "k",
+      "start": 3.859,
+      "end": 3.879,
+      "loss": 0.00921630859375
+    },
+    {
+      "text": "babici.",
+      "start": 3.98,
+      "end": 4.5,
+      "loss": 0.16101837158203125
+    },
+    {
+      "text": "Adijo!",
+      "start": 4.9,
+      "end": 5.46,
+      "loss": 0.9969889322916666
+    }
+  ],
+  "loss": 0.3200483543928279,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T15:42:46.861Z"
+}

@@ -1,0 +1,75 @@
+{
+  "key": "08d57250ed948908089bd4111f5573a3bea63dfd59236e491e59db75562252e1",
+  "text": "Kaj naj ji povem o tebi? Vedno vpraša: A govoriš slovensko?",
+  "words": [
+    {
+      "text": "Kaj",
+      "start": 0.079,
+      "end": 0.219,
+      "loss": 0.9000651041666666
+    },
+    {
+      "text": "naj",
+      "start": 0.259,
+      "end": 0.379,
+      "loss": 0.11328125
+    },
+    {
+      "text": "ji",
+      "start": 0.399,
+      "end": 0.479,
+      "loss": 0.28173828125
+    },
+    {
+      "text": "povem",
+      "start": 0.519,
+      "end": 0.759,
+      "loss": 0.00792999267578125
+    },
+    {
+      "text": "o",
+      "start": 0.799,
+      "end": 0.879,
+      "loss": 0.047607421875
+    },
+    {
+      "text": "tebi?",
+      "start": 0.899,
+      "end": 1.199,
+      "loss": 0.04095306396484375
+    },
+    {
+      "text": "Vedno",
+      "start": 2.46,
+      "end": 2.759,
+      "loss": 0.078826904296875
+    },
+    {
+      "text": "vpraša:",
+      "start": 2.859,
+      "end": 3.319,
+      "loss": 0.2762516566685268
+    },
+    {
+      "text": "A",
+      "start": 3.759,
+      "end": 3.779,
+      "loss": 1.1171875
+    },
+    {
+      "text": "govoriš",
+      "start": 3.879,
+      "end": 4.239,
+      "loss": 0.0040193285260881695
+    },
+    {
+      "text": "slovensko?",
+      "start": 4.279,
+      "end": 4.819,
+      "loss": 0.04772186279296875
+    }
+  ],
+  "loss": 0.16139605893927106,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:56.053Z"
+}

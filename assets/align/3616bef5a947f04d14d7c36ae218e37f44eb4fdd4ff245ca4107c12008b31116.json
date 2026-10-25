@@ -1,0 +1,45 @@
+{
+  "key": "97d67ba7edee782058f329e8e2abd5082f2ffe833b05f6094aea7a5ec406e157",
+  "text": "Ooo, bravo! V soboto. Pridi, prosim!",
+  "words": [
+    {
+      "text": "Ooo,",
+      "start": 0.159,
+      "end": 0.419,
+      "loss": 2.326171875
+    },
+    {
+      "text": "bravo!",
+      "start": 0.62,
+      "end": 1.339,
+      "loss": 0.05394744873046875
+    },
+    {
+      "text": "V",
+      "start": 2.099,
+      "end": 2.24,
+      "loss": 0.3125
+    },
+    {
+      "text": "soboto.",
+      "start": 2.319,
+      "end": 2.879,
+      "loss": 0.09186008998325892
+    },
+    {
+      "text": "Pridi,",
+      "start": 3.48,
+      "end": 3.859,
+      "loss": 0.07029215494791667
+    },
+    {
+      "text": "prosim!",
+      "start": 4.039,
+      "end": 4.48,
+      "loss": 0.2098031725202288
+    }
+  ],
+  "loss": 0.39783747990926105,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:38.638Z"
+}

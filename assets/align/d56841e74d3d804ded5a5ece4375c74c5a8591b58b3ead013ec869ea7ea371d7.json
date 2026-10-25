@@ -1,0 +1,27 @@
+{
+  "key": "223b1047884bd0dc91305e2c5de515168884e303041728a1bbb87b578d82db56",
+  "text": "Ja! Sem Slavko.",
+  "words": [
+    {
+      "text": "Ja!",
+      "start": 0.239,
+      "end": 0.479,
+      "loss": 2.0061848958333335
+    },
+    {
+      "text": "Sem",
+      "start": 0.74,
+      "end": 0.939,
+      "loss": 0.490966796875
+    },
+    {
+      "text": "Slavko.",
+      "start": 1.059,
+      "end": 1.519,
+      "loss": 0.6997833251953125
+    }
+  ],
+  "loss": 0.8677276611328125,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:00:31.858Z"
+}

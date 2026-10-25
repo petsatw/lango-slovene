@@ -1,0 +1,93 @@
+{
+  "key": "1322d045c55c9d3ef4253e2029a32c6cd8e77f500d27e37b842be96ae04a60dc",
+  "text": "Delati?! V soboto?! Ja, ja, vem, delo je delo. Ampak danes je rojstni dan!",
+  "words": [
+    {
+      "text": "Delati?!",
+      "start": 0.119,
+      "end": 0.979,
+      "loss": 1.0982398986816406
+    },
+    {
+      "text": "V",
+      "start": 1.419,
+      "end": 1.48,
+      "loss": 0.419921875
+    },
+    {
+      "text": "soboto?!",
+      "start": 1.699,
+      "end": 2.299,
+      "loss": 0.576324462890625
+    },
+    {
+      "text": "Ja,",
+      "start": 3.099,
+      "end": 3.319,
+      "loss": 0.17763264973958334
+    },
+    {
+      "text": "ja,",
+      "start": 3.48,
+      "end": 3.619,
+      "loss": 0.0689697265625
+    },
+    {
+      "text": "vem,",
+      "start": 3.779,
+      "end": 4.019,
+      "loss": 0.03243875503540039
+    },
+    {
+      "text": "delo",
+      "start": 4.36,
+      "end": 4.619,
+      "loss": 0.007700443267822266
+    },
+    {
+      "text": "je",
+      "start": 4.659,
+      "end": 4.739,
+      "loss": 0.002796173095703125
+    },
+    {
+      "text": "delo.",
+      "start": 4.779,
+      "end": 5.019,
+      "loss": 0.07531013488769531
+    },
+    {
+      "text": "Ampak",
+      "start": 6.139,
+      "end": 6.379,
+      "loss": 0.18182773590087892
+    },
+    {
+      "text": "danes",
+      "start": 6.44,
+      "end": 6.719,
+      "loss": 0.006159210205078125
+    },
+    {
+      "text": "je",
+      "start": 6.739,
+      "end": 6.779,
+      "loss": 0.0038604736328125
+    },
+    {
+      "text": "rojstni",
+      "start": 6.839,
+      "end": 7.219,
+      "loss": 0.03455243791852679
+    },
+    {
+      "text": "dan!",
+      "start": 7.259,
+      "end": 7.619,
+      "loss": 0.15691280364990234
+    }
+  ],
+  "loss": 0.23310103609755234,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:43.526Z"
+}

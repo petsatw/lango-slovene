@@ -1,0 +1,51 @@
+{
+  "key": "d1f80f2f1b3c85358c88f1851685ada6f37dea92da0aa3869acbc8939fa4be21",
+  "text": "Ja! Počasi. Veš kaj? Ti govoriš slovensko!",
+  "words": [
+    {
+      "text": "Ja!",
+      "start": 0.28,
+      "end": 0.839,
+      "loss": 2.573486328125
+    },
+    {
+      "text": "Počasi.",
+      "start": 1.24,
+      "end": 2.139,
+      "loss": 0.1508331298828125
+    },
+    {
+      "text": "Veš",
+      "start": 3.019,
+      "end": 3.199,
+      "loss": 0.3311665852864583
+    },
+    {
+      "text": "kaj?",
+      "start": 3.24,
+      "end": 3.459,
+      "loss": 0.036940574645996094
+    },
+    {
+      "text": "Ti",
+      "start": 4.219,
+      "end": 4.319,
+      "loss": 0.08267974853515625
+    },
+    {
+      "text": "govoriš",
+      "start": 4.38,
+      "end": 4.699,
+      "loss": 0.005013602120535714
+    },
+    {
+      "text": "slovensko!",
+      "start": 4.739,
+      "end": 5.299,
+      "loss": 0.08280701637268066
+    }
+  ],
+  "loss": 0.26131145159403485,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:03:13.420Z"
+}

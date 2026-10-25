@@ -1,0 +1,45 @@
+{
+  "key": "1df5323f485859a4a1acf9e27827b150f226b6bf77f6b3b629d7132d555e5562",
+  "text": "Ej, ravno prav! Poglej, kaj imam.",
+  "words": [
+    {
+      "text": "Ej,",
+      "start": 0.14,
+      "end": 0.34,
+      "loss": 0.038126627604166664
+    },
+    {
+      "text": "ravno",
+      "start": 0.439,
+      "end": 0.74,
+      "loss": 0.004210472106933594
+    },
+    {
+      "text": "prav!",
+      "start": 0.759,
+      "end": 0.979,
+      "loss": 0.33988265991210936
+    },
+    {
+      "text": "Poglej,",
+      "start": 1.379,
+      "end": 1.579,
+      "loss": 0.07053089141845703
+    },
+    {
+      "text": "kaj",
+      "start": 1.659,
+      "end": 1.799,
+      "loss": 0.00091552734375
+    },
+    {
+      "text": "imam.",
+      "start": 1.819,
+      "end": 2.039,
+      "loss": 0.17767868041992188
+    }
+  ],
+  "loss": 0.10398419698079427,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T13:21:46.362Z"
+}

@@ -1,0 +1,33 @@
+{
+  "key": "54d0fcf152c0e80e14c3740e157de7eb343a8013e74ba37749df5d09b26ed74c",
+  "text": "Se spomniš? Sem Slavko.",
+  "words": [
+    {
+      "text": "Se",
+      "start": 0.14,
+      "end": 0.239,
+      "loss": 0.58935546875
+    },
+    {
+      "text": "spomniš?",
+      "start": 0.34,
+      "end": 0.879,
+      "loss": 0.036285400390625
+    },
+    {
+      "text": "Sem",
+      "start": 1.459,
+      "end": 1.699,
+      "loss": 0.2544759114583333
+    },
+    {
+      "text": "Slavko.",
+      "start": 1.74,
+      "end": 2.139,
+      "loss": 0.10497610909598214
+    }
+  ],
+  "loss": 0.1354330311650815,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T09:55:29.934Z"
+}

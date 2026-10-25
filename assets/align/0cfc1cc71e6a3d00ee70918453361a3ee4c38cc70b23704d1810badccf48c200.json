@@ -1,0 +1,93 @@
+{
+  "key": "dbabe99b052ba1e9f817540eccd3f2fb90822b0ffaa5d81ea6cee27f56edc766",
+  "text": "Torej, počasi. Tvoja država je lepa. Država? Nova beseda, ne? Reci mi: Ne razumem.",
+  "words": [
+    {
+      "text": "Torej,",
+      "start": 0.119,
+      "end": 0.399,
+      "loss": 0.404605229695638
+    },
+    {
+      "text": "počasi.",
+      "start": 0.519,
+      "end": 1.199,
+      "loss": 0.040379387991768975
+    },
+    {
+      "text": "Tvoja",
+      "start": 2.079,
+      "end": 2.339,
+      "loss": 0.040448570251464845
+    },
+    {
+      "text": "država",
+      "start": 2.419,
+      "end": 2.919,
+      "loss": 0.0017851193745930989
+    },
+    {
+      "text": "je",
+      "start": 2.98,
+      "end": 3.079,
+      "loss": 0.0009100437164306641
+    },
+    {
+      "text": "lepa.",
+      "start": 3.119,
+      "end": 3.48,
+      "loss": 0.0109619140625
+    },
+    {
+      "text": "Država?",
+      "start": 4.659,
+      "end": 5.159,
+      "loss": 0.1914675576346261
+    },
+    {
+      "text": "Nova",
+      "start": 5.579,
+      "end": 5.779,
+      "loss": 0.025455474853515625
+    },
+    {
+      "text": "beseda,",
+      "start": 5.839,
+      "end": 6.199,
+      "loss": 0.012063401085989816
+    },
+    {
+      "text": "ne?",
+      "start": 6.259,
+      "end": 6.359,
+      "loss": 0.008044242858886719
+    },
+    {
+      "text": "Reci",
+      "start": 7.359,
+      "end": 7.559,
+      "loss": 0.09797859191894531
+    },
+    {
+      "text": "mi:",
+      "start": 7.619,
+      "end": 7.719,
+      "loss": 1.1749064127604167
+    },
+    {
+      "text": "Ne",
+      "start": 8.539,
+      "end": 8.599,
+      "loss": 0.546875
+    },
+    {
+      "text": "razumem.",
+      "start": 8.659,
+      "end": 9,
+      "loss": 0.027154922485351562
+    }
+  ],
+  "loss": 0.12183330117202387,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T13:21:44.097Z"
+}

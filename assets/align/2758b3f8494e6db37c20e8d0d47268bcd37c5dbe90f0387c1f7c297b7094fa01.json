@@ -1,0 +1,45 @@
+{
+  "key": "f877b4a6a1e6b153a80746cb62ed57388d630373349f79037e90ba609ae41afb",
+  "text": "In ti? Si študent ali študentka?",
+  "words": [
+    {
+      "text": "In",
+      "start": 0.14,
+      "end": 0.239,
+      "loss": 1.018310546875
+    },
+    {
+      "text": "ti?",
+      "start": 0.359,
+      "end": 0.539,
+      "loss": 0.7815755208333334
+    },
+    {
+      "text": "Si",
+      "start": 1.179,
+      "end": 1.339,
+      "loss": 0.11962890625
+    },
+    {
+      "text": "študent",
+      "start": 1.48,
+      "end": 1.919,
+      "loss": 0.29462977818080355
+    },
+    {
+      "text": "ali",
+      "start": 2.079,
+      "end": 2.24,
+      "loss": 0.017354329427083332
+    },
+    {
+      "text": "študentka?",
+      "start": 2.339,
+      "end": 2.899,
+      "loss": 0.2712375640869141
+    }
+  ],
+  "loss": 0.32432568073272705,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:00:29.857Z"
+}

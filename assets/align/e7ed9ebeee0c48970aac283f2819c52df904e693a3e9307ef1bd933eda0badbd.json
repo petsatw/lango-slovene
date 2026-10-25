@@ -1,0 +1,165 @@
+{
+  "key": "fdf33a16b4a182156f21180debd0c99bc3d67f9eba22bc71aceb97e29af77e5b",
+  "text": "Zdaj pa vem, kako! Dve stvari, en stavek. Poslušaj: Sem iz Ljubljane in govorim slovensko. Zdaj pa ti — dve stvari naenkrat, da ju nesem babici.",
+  "words": [
+    {
+      "text": "Zdaj",
+      "start": 0.259,
+      "end": 0.519,
+      "loss": 0.0008868873119354248
+    },
+    {
+      "text": "pa",
+      "start": 0.599,
+      "end": 0.699,
+      "loss": 0.0000591278076171875
+    },
+    {
+      "text": "vem,",
+      "start": 0.74,
+      "end": 0.859,
+      "loss": 0.5860913991928101
+    },
+    {
+      "text": "kako!",
+      "start": 0.959,
+      "end": 1.24,
+      "loss": 0.6658720016479492
+    },
+    {
+      "text": "Dve",
+      "start": 2,
+      "end": 2.139,
+      "loss": 0.03971290588378906
+    },
+    {
+      "text": "stvari,",
+      "start": 2.22,
+      "end": 2.539,
+      "loss": 0.008524247578212194
+    },
+    {
+      "text": "en",
+      "start": 2.859,
+      "end": 2.96,
+      "loss": 0.0014722347259521484
+    },
+    {
+      "text": "stavek.",
+      "start": 3.019,
+      "end": 3.439,
+      "loss": 0.0026915413992745535
+    },
+    {
+      "text": "Poslušaj:",
+      "start": 4.039,
+      "end": 4.48,
+      "loss": 0.707663098971049
+    },
+    {
+      "text": "Sem",
+      "start": 5.119,
+      "end": 5.279,
+      "loss": 0.27509307861328125
+    },
+    {
+      "text": "iz",
+      "start": 5.319,
+      "end": 5.4,
+      "loss": 0.00038433074951171875
+    },
+    {
+      "text": "Ljubljane",
+      "start": 5.44,
+      "end": 5.879,
+      "loss": 0.0009883112377590602
+    },
+    {
+      "text": "in",
+      "start": 5.96,
+      "end": 6.019,
+      "loss": 0.009257078170776367
+    },
+    {
+      "text": "govorim",
+      "start": 6.079,
+      "end": 6.379,
+      "loss": 0.0005892174584524972
+    },
+    {
+      "text": "slovensko.",
+      "start": 6.46,
+      "end": 6.98,
+      "loss": 0.010156047344207764
+    },
+    {
+      "text": "Zdaj",
+      "start": 7.899,
+      "end": 8.039,
+      "loss": 0.28544649481773376
+    },
+    {
+      "text": "pa",
+      "start": 8.099,
+      "end": 8.179,
+      "loss": 0.00004565715789794922
+    },
+    {
+      "text": "ti",
+      "start": 8.22,
+      "end": 8.34,
+      "loss": 0.0003223419189453125
+    },
+    {
+      "text": "—",
+      "start": 8.979,
+      "end": 8.979999999999999,
+      "loss": 5.03125
+    },
+    {
+      "text": "dve",
+      "start": 9.059,
+      "end": 9.179,
+      "loss": 0.21159871419270834
+    },
+    {
+      "text": "stvari",
+      "start": 9.26,
+      "end": 9.519,
+      "loss": 0.00016099214553833008
+    },
+    {
+      "text": "naenkrat,",
+      "start": 9.559,
+      "end": 10.019,
+      "loss": 0.023000677426656086
+    },
+    {
+      "text": "da",
+      "start": 10.159,
+      "end": 10.199,
+      "loss": 0.022584915161132812
+    },
+    {
+      "text": "ju",
+      "start": 10.239,
+      "end": 10.3,
+      "loss": 1.089447021484375
+    },
+    {
+      "text": "nesem",
+      "start": 10.34,
+      "end": 10.599,
+      "loss": 0.03213844299316406
+    },
+    {
+      "text": "babici.",
+      "start": 10.659,
+      "end": 11.039,
+      "loss": 0.00482865742274693
+    }
+  ],
+  "loss": 0.20617060197724235,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-27T14:15:34.018Z"
+}

@@ -1,0 +1,21 @@
+{
+  "key": "b407bf4b0a97a4d345d76bf8e3f625bb2cfdd801e7b6bf2b49790675de016013",
+  "text": "Dežnik. Dežnik.",
+  "words": [
+    {
+      "text": "Dežnik.",
+      "start": 0.159,
+      "end": 0.719,
+      "loss": 1.7132306780133928
+    },
+    {
+      "text": "Dežnik.",
+      "start": 1.22,
+      "end": 1.819,
+      "loss": 1.2136404854910714
+    }
+  ],
+  "loss": 1.3826700846354167,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T13:21:47.396Z"
+}

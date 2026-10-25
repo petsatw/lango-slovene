@@ -78,7 +78,7 @@ const e3 = getE3();
   for (const p of profiles) {
     let voiceId = "";
     try {
-      voiceId = e3.voiceTagFor(p).split(":")[0] ?? ""; // tag = `${voiceId}:${modelId}`
+      voiceId = e3.voiceTagFor(p); // the tag is the voice id
     } catch (err: any) {
       problems.push(`voice profile "${p}": ${err?.message}`); // unknown profile (no binding row)
       continue;
@@ -135,7 +135,7 @@ for (const { file, d } of files) {
       const { hit } = await store.getOrCreate(
         key,
         "audio",
-        { provider: e3.name, voiceOrModel: voiceTag, text: node.sl, scenarioId: d.scenarioId, objectiveId: `dialogue:${d.id}:${id}${value ? `:${value}` : ""}` },
+        { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text: node.sl, scenarioId: d.scenarioId, objectiveId: `dialogue:${d.id}:${id}${value ? `:${value}` : ""}` },
         async () => {
           const r = await e3.synthesize({ text: genText, voiceProfile });
           return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };
@@ -168,7 +168,7 @@ for (const { file, d } of files) {
         const { hit } = await store.getOrCreate(
           xKey,
           "audio",
-          { provider: e3.name, voiceOrModel: voiceTag, text: x.text, scenarioId: d.scenarioId, objectiveId: `dialogue:${d.id}:${id}${value ? `:${value}` : ""}:${x.suffix}` },
+          { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text: x.text, scenarioId: d.scenarioId, objectiveId: `dialogue:${d.id}:${id}${value ? `:${value}` : ""}:${x.suffix}` },
           async () => {
             const r = await e3.synthesize({ text: x.say, voiceProfile, ...(x.speed !== undefined ? { speed: x.speed } : {}) });
             return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };

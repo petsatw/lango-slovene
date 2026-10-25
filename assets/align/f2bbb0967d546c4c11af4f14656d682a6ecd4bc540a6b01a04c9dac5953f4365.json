@@ -1,0 +1,27 @@
+{
+  "key": "3b9379f5abc71840ae1af88f5dd83447a2650b23177c66133f36a22ff7e9466e",
+  "text": "Kdo si ti?",
+  "words": [
+    {
+      "text": "Kdo",
+      "start": 0.119,
+      "end": 0.259,
+      "loss": 4.307291666666667
+    },
+    {
+      "text": "si",
+      "start": 0.34,
+      "end": 0.5,
+      "loss": 0.421875
+    },
+    {
+      "text": "ti?",
+      "start": 0.539,
+      "end": 0.599,
+      "loss": 1.7692057291666667
+    }
+  ],
+  "loss": 2.33779296875,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:00:30.926Z"
+}

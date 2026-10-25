@@ -1,0 +1,81 @@
+{
+  "key": "a96797f45d440a87068e614eca9c16e6c0824b3af7808dfab15bbb05542c6726",
+  "text": "Zjutraj! Aha, pa glede potice: pride še teta. Babica bo spet štela.",
+  "words": [
+    {
+      "text": "Zjutraj!",
+      "start": 0.179,
+      "end": 0.819,
+      "loss": 0.5812563896179199
+    },
+    {
+      "text": "Aha,",
+      "start": 1.48,
+      "end": 1.74,
+      "loss": 0.10593986511230469
+    },
+    {
+      "text": "pa",
+      "start": 2.299,
+      "end": 2.379,
+      "loss": 0.00482940673828125
+    },
+    {
+      "text": "glede",
+      "start": 2.419,
+      "end": 2.679,
+      "loss": 0.004195785522460938
+    },
+    {
+      "text": "potice:",
+      "start": 2.7,
+      "end": 3.159,
+      "loss": 1.131319863455636
+    },
+    {
+      "text": "pride",
+      "start": 3.679,
+      "end": 3.939,
+      "loss": 0.057270050048828125
+    },
+    {
+      "text": "še",
+      "start": 3.98,
+      "end": 4.119,
+      "loss": 0.0012557506561279297
+    },
+    {
+      "text": "teta.",
+      "start": 4.159,
+      "end": 4.46,
+      "loss": 0.03300323486328125
+    },
+    {
+      "text": "Babica",
+      "start": 5.159,
+      "end": 5.639,
+      "loss": 0.0744479497273763
+    },
+    {
+      "text": "bo",
+      "start": 5.699,
+      "end": 5.839,
+      "loss": 0.001407623291015625
+    },
+    {
+      "text": "spet",
+      "start": 5.879,
+      "end": 6.199,
+      "loss": 0.022494196891784668
+    },
+    {
+      "text": "štela.",
+      "start": 6.239,
+      "end": 6.659,
+      "loss": 0.03023529052734375
+    }
+  ],
+  "loss": 0.2127912329204047,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:57.229Z"
+}

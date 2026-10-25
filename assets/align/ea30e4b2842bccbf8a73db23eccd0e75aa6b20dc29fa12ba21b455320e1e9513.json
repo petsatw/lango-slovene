@@ -1,0 +1,39 @@
+{
+  "key": "6f2b7c70538ae0f6c8c1bd776bc20a76973af4fe6e84f15aeb795df48e1f750d",
+  "text": "Ha, super! Babica bo vesela.",
+  "words": [
+    {
+      "text": "Ha,",
+      "start": 0.199,
+      "end": 0.359,
+      "loss": 1.2455240885416667
+    },
+    {
+      "text": "super!",
+      "start": 0.579,
+      "end": 1,
+      "loss": 0.08876673380533855
+    },
+    {
+      "text": "Babica",
+      "start": 1.939,
+      "end": 2.44,
+      "loss": 0.20281982421875
+    },
+    {
+      "text": "bo",
+      "start": 2.539,
+      "end": 2.619,
+      "loss": 0.2613525390625
+    },
+    {
+      "text": "vesela.",
+      "start": 2.679,
+      "end": 3.119,
+      "loss": 0.15320914132254465
+    }
+  ],
+  "loss": 0.26702567509242464,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-28T19:40:51.499Z"
+}

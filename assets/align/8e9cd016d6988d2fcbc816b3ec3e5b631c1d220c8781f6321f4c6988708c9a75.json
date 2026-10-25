@@ -1,0 +1,51 @@
+{
+  "key": "c6a053693725c9e70b72acc740c14c60774e1b557172660e04a92e105878d05c",
+  "text": "Thank you? Hvala! In hvala tebi! Adijo!",
+  "words": [
+    {
+      "text": "Thank",
+      "start": 0.219,
+      "end": 0.459,
+      "loss": 0.23425140380859374
+    },
+    {
+      "text": "you?",
+      "start": 0.56,
+      "end": 0.719,
+      "loss": 0.45466184616088867
+    },
+    {
+      "text": "Hvala!",
+      "start": 1.62,
+      "end": 2.059,
+      "loss": 0.38576507568359375
+    },
+    {
+      "text": "In",
+      "start": 2.74,
+      "end": 2.879,
+      "loss": 0.216552734375
+    },
+    {
+      "text": "hvala",
+      "start": 3.299,
+      "end": 3.559,
+      "loss": 0.2039398193359375
+    },
+    {
+      "text": "tebi!",
+      "start": 3.659,
+      "end": 3.939,
+      "loss": 0.108319091796875
+    },
+    {
+      "text": "Adijo!",
+      "start": 4.679,
+      "end": 5.079,
+      "loss": 1.2937215169270833
+    }
+  ],
+  "loss": 0.38795055487217045,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T14:12:50.570Z"
+}

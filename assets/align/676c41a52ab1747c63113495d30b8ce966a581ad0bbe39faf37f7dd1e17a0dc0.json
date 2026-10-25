@@ -1,0 +1,69 @@
+{
+  "key": "c5a471d2265d75bbedb716074e70ca358e254afb608ca58488695d142eb45c86",
+  "text": "Super! Ne razumem — tako je! Ja, jaz sem prehiter.",
+  "words": [
+    {
+      "text": "Super!",
+      "start": 0.28,
+      "end": 0.879,
+      "loss": 0.10154116153717041
+    },
+    {
+      "text": "Ne",
+      "start": 2,
+      "end": 2.119,
+      "loss": 0.1085052490234375
+    },
+    {
+      "text": "razumem",
+      "start": 2.18,
+      "end": 2.639,
+      "loss": 0.0003229890550885882
+    },
+    {
+      "text": "—",
+      "start": 2.72,
+      "end": 2.721,
+      "loss": 7.53125
+    },
+    {
+      "text": "tako",
+      "start": 3.48,
+      "end": 3.74,
+      "loss": 0.05406689643859863
+    },
+    {
+      "text": "je!",
+      "start": 3.779,
+      "end": 3.939,
+      "loss": 1.500317891438802
+    },
+    {
+      "text": "Ja,",
+      "start": 4.639,
+      "end": 4.799,
+      "loss": 0.19370524088541666
+    },
+    {
+      "text": "jaz",
+      "start": 5.239,
+      "end": 5.38,
+      "loss": 0.010590871175130209
+    },
+    {
+      "text": "sem",
+      "start": 5.44,
+      "end": 5.539,
+      "loss": 0.001483599344889323
+    },
+    {
+      "text": "prehiter.",
+      "start": 5.619,
+      "end": 6.019,
+      "loss": 0.12308952543470594
+    }
+  ],
+  "loss": 0.4219390392303467,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:03:10.537Z"
+}

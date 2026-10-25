@@ -1,0 +1,21 @@
+{
+  "key": "cf4aa4aff8599798102a0d500a2eb4ad1c1bc68436cdc6b7e1972a9412a91f28",
+  "text": "Ja, poslušam!",
+  "words": [
+    {
+      "text": "Ja,",
+      "start": 0.439,
+      "end": 0.62,
+      "loss": 0.03778076171875
+    },
+    {
+      "text": "poslušam!",
+      "start": 0.659,
+      "end": 1.139,
+      "loss": 0.1477237277560764
+    }
+  ],
+  "loss": 0.11101341247558594,
+  "provider": "elevenlabs",
+  "createdAt": "2026-08-25T15:42:46.463Z"
+}

@@ -1,0 +1,33 @@
+{
+  "key": "7a70ac6c18f051078b09484b311b825349d89eed6ac7d215d0cfff725548a88e",
+  "text": "Ojoj. Reci: Ne razumem.",
+  "words": [
+    {
+      "text": "Ojoj.",
+      "start": 0.099,
+      "end": 0.639,
+      "loss": 2.5349609375
+    },
+    {
+      "text": "Reci:",
+      "start": 0.959,
+      "end": 0.96,
+      "loss": 4.2
+    },
+    {
+      "text": "Ne",
+      "start": 1,
+      "end": 1.1,
+      "loss": 0.798828125
+    },
+    {
+      "text": "razumem.",
+      "start": 1.12,
+      "end": 1.559,
+      "loss": 0.06009650230407715
+    }
+  ],
+  "loss": 1.5732872175133747,
+  "provider": "elevenlabs",
+  "createdAt": "2026-09-05T12:03:09.846Z"
+}
