@@ -15,7 +15,7 @@ repo owner, a member or a collaborator; for anyone else it removes the label and
 | `blocked` | The run ended without a PR. The `BLOCKED:` comment holds Claude's question or a link to the log. |
 
 **Secret.** Repo secret `CLAUDE_CODE_OAUTH_TOKEN` (Pro/Max subscription; create it with
-`claude setup-token`). `ANTHROPIC_API_KEY` works instead for API billing.
+`claude setup-token`). `ANTHROPIC_API_KEY` (API billing) can replace the OAuth token, but never add it alongside — swap it into the `with:` block instead.
 
 **Retry.** Answer the question on the issue, then add `ready-for-claude` again. Each label is a fresh
 run; attempts are not counted. Delete a leftover `claude/issue-N` branch first, because the run
