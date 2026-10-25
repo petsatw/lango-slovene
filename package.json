@@ -14,6 +14,7 @@
     "test:learnable": "tsx server/probes/learnable-test.ts",
     "test:dialogue": "tsx server/probes/dialogue-test.ts",
     "test:live-match": "tsx server/probes/live-match-test.ts",
+    "test:live-harness": "tsx server/probes/live-harness-test.ts",
     "test:retention": "tsx server/probes/retention-test.ts",
     "probe:converse": "tsx server/probes/converse-probe.ts",
     "probe:live-credit": "tsx server/probes/live-credit-probe.ts",

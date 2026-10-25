@@ -102,29 +102,47 @@ function scheduleGroups(sel: SceneSelection): LineGroup[] {
   ].filter((g) => g.lines.length);
 }
 
+/** A harness may hold one section per session, each headed `## @<id>` — a tree's dialogue id, or the
+ *  scenario id for a session opened by the scene itself. Everything before the first such heading is the
+ *  shared preamble. A session plays the preamble plus its own section, or the preamble alone when it has
+ *  none. A harness with no sections (trznica.md) is the whole text. */
+export function harnessFor(raw: string, id: string): string {
+  const text = raw.replace(/<!--[\s\S]*?-->\n?/g, "").trim(); // authoring notes never reach the tutor
+  // split with two capture groups: [preamble, id, title, body, id, title, body, …]
+  const parts = text.split(/^## @(\S+)[ \t]*([^\n]*)\n/m);
+  const preamble = parts[0]!.trim();
+  for (let i = 1; i < parts.length; i += 3) {
+    if (parts[i] !== id) continue;
+    const title = parts[i + 1]!.replace(/^[—-]\s*/, "");
+    return [preamble, "", "---", "", `THIS SITUATION — play only this one: ${title}`, parts[i + 2]!.trim()].join("\n");
+  }
+  return preamble;
+}
+
 /** The scene's own harness, then the lesson the app runs through it: today's lines, and the shape of
- *  the lesson up to its closing line. The harness says who the tutor is and what the scene holds; the
- *  app says which lines the learner practises and when the lesson is over. */
-function scenePrompt(harness: string, groups: LineGroup[], close: string): string {
+ *  the lesson up to its closing line. The harness says who the tutor is, the situation, its people and
+ *  its register; the app says which lines the learner practises and when the lesson is over. */
+function scenePrompt(harness: string, groups: LineGroup[], close: string, opening: string): string {
   const lines = (ls: Learnable[]) => ls.map((l) => `  «${l.sl}» — ${l.gloss}`);
   return [
     harness,
     "",
     "---",
     "",
-    "THE LESSON. The person in front of you is learning to buy at a stall like yours. Below are the",
-    "buyer's lines they are practising today. Give them a natural opening to say each one — by what you",
-    "sell, what you ask, and how you answer.",
+    "THE LESSON. The person in front of you is learning to handle the situation above in Slovene. Below",
+    "are the lines they are practising today. Give them a natural opening to say each one — by what you",
+    "do, what you ask, and how you answer.",
     "",
     ...groups.flatMap((g) => [g.heading, ...lines(g.lines), ""]),
     "HOW THE LESSON RUNS",
-    "- Open with «Dober dan.» and wait for the buyer.",
-    "- Stay at this stall: its goods, its prices, the lines above. No praise, no grammar, no words from",
-    "  outside the stall, and no English — not even when asked.",
-    "- Once one purchase is finished and the buyer has said each of today's lines, begin a second, shorter",
-    "  purchase in which each of today's lines comes up once more.",
+    `- Open the way the situation above says; if it says nothing, open with «${opening}» Then wait for the learner.`,
+    "- Stay in this situation: its people, its things, the lines above. No praise, no grammar, no words from",
+    "  outside it, and no English — not even when asked.",
+    "- Once the encounter is finished and the learner has said each of today's lines, begin a second, shorter",
+    "  encounter of the same kind in which each of today's lines comes up once more — unless the situation",
+    "  above says to end after the first.",
     `- Then end the lesson by saying «${close}» Say it once, and only there.`,
-    "- After that the buyer may keep talking as long as they like. Stay who you are, at the stall, in Slovene.",
+    "- After that the learner may keep talking as long as they like. Stay who you are, in this situation, in Slovene.",
     "",
     SPOKEN_MEDIUM,
   ].join("\n");
@@ -157,7 +175,7 @@ export function buildLessonPrompt(lessonId: string, learnerId: string): LessonPr
     return {
       lessonId,
       title: scene.name ?? scene.title,
-      instructions: scenePrompt(harnessText(live), groups, live.close),
+      instructions: scenePrompt(harnessFor(harnessText(live), lessonId), groups, live.close, scene.opening || "Dober dan."),
       targets: resolve(card),
       objectives: groups.flatMap((g) => g.lines),
     };
@@ -166,9 +184,10 @@ export function buildLessonPrompt(lessonId: string, learnerId: string): LessonPr
   const d = lessonIndex().get(lessonId);
   if (!d) throw new Error(`no such lesson: ${lessonId}`);
 
-  // A tree at a scene's stall hands off to the scene itself: the same harness, with the lines the tree
-  // just had the learner say as today's lines, all of them. The lines off the card join the targets, so
-  // the lesson score can count what the tutor was told to steer toward.
+  // A tree of a scene hands off to the scene itself — the harness's preamble plus the section keyed by
+  // this tree's dialogue id (e.g. sprehod-l4), if it has one — with the lines the tree just had the
+  // learner say as today's lines, all of them. The lines off the card join the targets, so the lesson
+  // score can count what the tutor was told to steer toward.
   const treeScene = liveScene(d.scenarioId);
   if (treeScene) {
     const live = treeScene.surfaces.live;
@@ -177,9 +196,10 @@ export function buildLessonPrompt(lessonId: string, learnerId: string): LessonPr
       lessonId,
       title: d.title,
       instructions: scenePrompt(
-        harnessText(live),
-        [{ heading: "TODAY — the lines they just rehearsed at your stall:", lines: resolve(lines) }],
+        harnessFor(harnessText(live), d.id),
+        [{ heading: "TODAY — the lines they just rehearsed in this situation:", lines: resolve(lines) }],
         live.close,
+        treeScene.opening || "Dober dan.",
       ),
       targets: resolve([...new Set([...live.core, ...live.bank, ...(live.stock ?? []), ...lines])]),
       objectives: resolve(lines),

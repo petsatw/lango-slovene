@@ -1,4 +1,5 @@
 # CLAUDE.md
 
-Project guidance for any agent is in [AGENTS.md](AGENTS.md) — what this is, how to run and verify it,
-how it's built, and the scenario-engine working agreements. Start there.
+AGENTS.md is the canonical guidance for this repo; it is imported here so Claude Code loads it automatically.
+
+@AGENTS.md

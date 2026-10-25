@@ -5,7 +5,8 @@
 // Hot-path lookup = file existence (fs.existsSync), NOT a manifest read. The manifest
 // (manifest.jsonl) is an append-only metadata sidecar for queries / the future library view.
 //
-// Content-addressed: an asset's key is sha256 over its *inputs* (provider|voice|text for audio),
+// Content-addressed: an asset's key is sha256 over its *inputs* (provider|voice id|text for audio —
+// the model is recorded in the manifest, not keyed),
 // so identical inputs always map to the same file. TTS is not byte-deterministic, so the FIRST
 // generation is canonical and reused thereafter — one clip per phrase, by design.
 
@@ -36,6 +37,7 @@ const MANIFEST = path.join(ASSET_DIR, "manifest.jsonl");
 export interface AssetMeta {
   provider: string;
   voiceOrModel: string; // voiceTag for audio, model for images
+  model?: string; // audio: the TTS model that rendered the clip (not part of its key)
   text?: string; // audio source text
   prompt?: string; // the RAW authored image prompt (the editable intent)
   mimeType?: string; // actual content type of the bytes (e.g. image/jpeg) — recorded for detectability
@@ -150,6 +152,7 @@ export function put(key: string, type: AssetType, bytes: Buffer, meta: AssetMeta
     path: path.relative(ASSET_DIR, p),
     provider: meta.provider,
     voiceOrModel: meta.voiceOrModel,
+    ...(meta.model !== undefined ? { model: meta.model } : {}),
     ...(meta.text !== undefined ? { text: meta.text } : {}),
     ...(meta.prompt !== undefined ? { prompt: meta.prompt } : {}),
     ...(meta.styleId !== undefined ? { styleId: meta.styleId } : {}),

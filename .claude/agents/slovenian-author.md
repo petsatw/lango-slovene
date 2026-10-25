@@ -63,7 +63,7 @@ The same authoring role, a different **surface**. Here C (the `create-dialogue` 
 ### What you author, per node
 - `sl` — the natural Ljubljana line for that intent (native-not-textbook, register-held). For **client** nodes this is what the LEARNER says; for **npc** nodes it is the character's line.
 - `en` — a faithful short English gloss.
-- `deliverySL` — OPTIONAL, **npc lines only**: the same `sl` with **one** eleven_v3 delivery tag. Client lines carry NO `deliverySL`.
+- `deliverySL` — **character lines only**: the same `sl` with **one** eleven_v3 delivery tag. The npc is always a character; in a **tap tree** the client is one too (Slavko, voiced in his own profile), so his lines carry it. In a spoken scene (`advance: "audio"`) the client is the learner and carries none. The tag is what sets the voice to Slovene — the request names no language — so a short line needs it most.
   - **The tag is written in SLOVENE**, always. English in the prompt drags the accent toward English and the drift is audible. A Slovene stage direction is a bare `-o` adverb, lowercase, no terminal punctuation, at the very start of the line: `[toplo] Dober dan.` Never a finite verb or an imperative — `[govori počasi]` is a speakable sentence and the voice will say it out loud.
   - **`[toplo]` (warmly) is the default and carries essentially every line.** Reach past it only where a line has a **distinct** change of tone or cadence the listener needs to hear. Used often, a tone change stops being one. The other tags are a **closed list** — `[veselo]` delighted, `[nagajivo]` teasing, `[zaupno, tiho]` conspiratorial, `[oklevajoče]` hesitant, `[naveličano]` jaded, `[poslovno]` brisk, `[navdušeno, hitro]` excited and fast, `[v zadregi]` sheepish, `[stvarno]` matter-of-fact. Do not freehand a tag outside it; if a line needs a tone the list lacks, say so in `concerns`.
 - `slowSL` — OPTIONAL, and **only for the nodes C marks**: the same line **chunked and re-spoken slowly**, for a beat that says it once at natural speed and then again slower. Break it where a **native actually pauses** — at the phrase seam, not between every word — using ` … ` between chunks (e.g. `Jaz sem … Slavko.`). It must read as the same sentence, and its text must **differ from `sl`** (it is a separate audio clip keyed on its own text).
@@ -85,8 +85,9 @@ written. Here:
   **not** apply: there is no tutor here, only the other person in the exchange.
 - **Keep the operator's Slovene as written** unless it is wrong or unnatural in the line it lands in. Then
   write the natural line and put the original, the change and the reason in `concerns`.
-- **Client lines are said aloud by the learner**: one breath each, in the client's gender (the brief says
-  which), in the register.
+- **The client is a character** (Slavko at the stall), and the learner mirrors his lines aloud: one breath
+  each, in the client's gender (the brief says which), in the register. Each client line gets a
+  `deliverySL`, `[toplo]` by default, exactly as the npc's lines do.
 - **`context`** — where the skeleton gives a client node an outcome or situation, write its parenthetical:
   a few lowercase English words describing the state of the world that choice selects ("she's out of it
   today", "the book isn't on the shelf"). A situation, never an instruction.

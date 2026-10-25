@@ -32,11 +32,12 @@ A clip generated at build time serves as a cache **hit** only when the serving h
 Serving cached audio and generating new audio are two separate contracts:
 
 - **Serving a cached clip is a pure disk read** ([server/server.ts:300](../server/server.ts#L300)) — it needs the
-  voice/model config to reproduce the key, but **no API key**.
+  voice-id config to reproduce the key (a clip's key is its voice and its words; the model is not part of
+  it), but **no API key**.
 - **A cache miss calls the provider** ([server/server.ts:318](../server/server.ts#L318)) — that needs
   `ELEVENLABS_API_KEY`. With no key, a miss returns `502` and bills nothing (`requireKey()` throws).
 
-So a pregenerated deploy runs with the **voice/model env set and the API key absent**: every authored line
+So a pregenerated deploy runs with the **voice env set and the API key absent**: every authored line
 plays free from disk; any un-generated text 502s harmlessly instead of spending.
 
 ### Required env for cached hits
@@ -159,7 +160,7 @@ Check cheapest-first; the packaging check is a git fact and needs no running ser
 
 1. **Is the audio committed on the deployed branch?** `git ls-tree … | grep -c '^assets/audio/'`.
 2. **Is the deploy on that commit, and is `ASSET_DIR` reading the checkout** (not an empty mounted volume)?
-3. **Are the voice/model env vars set and matching the build?** Recipe A with the same values isolates this.
+3. **Are the voice-id env vars set and matching the build?** Recipe A with the same values isolates this.
 
 A useful signal: intro narration plays from `public/intros/` regardless of the store or env, so "intro plays,
 dialogue doesn't" points at packaging (1–2) or the voice env (3), never at the intro path.

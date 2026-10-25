@@ -73,7 +73,8 @@ you judge how it is said and whether it holds up. On top of the usual:
   an instruction.
 - **The client lines can be said aloud.** One breath, in the client's gender, in the register.
 - **Delivery tags are Slovene, and `[toplo]` is the default** — the same rule as spoken lessons below.
-  Also flag a persona description used as a tag, and any `deliverySL` on a client line.
+  Both speakers are characters, so every line, the client's included, carries one; flag a line without
+  it, and a persona description used as a tag.
 - **The plan is covered.** Check the ledger against the plan: every learnable the plan puts in a level is
   said on a client node there. Report gaps in `notes`.
 - **`rewrite`** — a beat an exact replace cannot fix (a response that does not answer its parent on one
