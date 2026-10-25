@@ -100,9 +100,16 @@ learner-facing. The structure follows the library:
 
 - **Root** is the character opening the exchange. The first fork often picks the **errand** — which arm
   of the situation this visit is (library L6: register / renew / lost card, three arms).
-- **A fork offers 2 choices**, occasionally 3 where the situation truly has three arms. The choices are
-  either **different intents** (ask where the toilet is / ask where to sit) or **the same intent said two
-  ways**, one short and one fuller (*Izvolite.* / *Seveda, tukaj je moja izkaznica.*).
+- **A fork is a decision.** It offers 2 choices, occasionally 3 where the situation truly has three arms,
+  and they are **different intents**: yes / no / "yes, but …", this one / that one, ask / wait, accept /
+  refuse. **Each choice leads to its own npc reaction**; the branches may rejoin a node or two later, once
+  the reaction has played out. Two wordings of one answer (*Izvolite.* / *Seveda, tukaj je moja
+  izkaznica.*) are a fork only where nothing else is at stake: the goodbye that closes an encounter, before
+  a terminal or before the next person in a level with several. Anywhere else, at most one fork in four is
+  that kind. Where an npc line has only one natural reply, the fork is a decision the line invites (agree
+  or push back, answer or ask back), not a second wording.
+- **"No" is a live choice** wherever the situation allows one. A refusal plays out: the other person
+  understands, is disappointed, or asks why.
 - **Outcomes are chosen by the learner through `context`.** Where the world, not the learner, decides what
   happens next, the learner picks the world: the **same line** offered more than once, each with a
   different `context` (*Izvolite.* — "the book is available" / "the copy isn't on the shelf" / "only a
@@ -112,13 +119,17 @@ learner-facing. The structure follows the library:
   differently: its own close pair into its own terminal (`czBad1`/`czBad2` → `nByeBad`). Two terminals
   are normal where the visit can fail.
 - **By band:**
-  - **basic** — simple choices between things: which item, which weight, which greeting, how to leave.
-    One outcome: the visit goes as hoped. `context` only where two lines need telling apart.
-  - **intermediate** — the plan's outcomes (out of stock, a suggestion to accept or decline, a question
-    back), each an arm with its own `context`.
-  - **advanced** — several outcomes in one visit, and the learner leading more of the talk.
-- **Size** follows the situation: the library runs 10–33 nodes (basic 10–16, outcome-heavy 26–33). A
-  longer tree is not a harder one.
+  - **basic** — decisions with simple consequences: which item, yes or not now, how to leave. The world
+    cooperates. `context` only where two lines need telling apart.
+  - **intermediate** — the plan's outcomes as well (out of stock, a suggestion to accept or decline, a
+    question back), each an arm with its own `context`.
+  - **advanced** — several outcomes in one visit, and the learner leading more of the talk: he opens
+    exchanges, and his lines combine shapes from earlier levels.
+  - **the last level** — the longest tree in the scenario: the plan's actions strung into one visit, each
+    with its decisions and outcomes, refusals among them. It introduces nothing, and its reuse comes from
+    those outcomes; a beat that exists only to repeat an earlier level's exchange does not belong in it.
+- **Size** follows the situation: the library runs 10–33 nodes (basic 10–16, outcome-heavy 26–33); the
+  last level runs to 90–130. A longer tree is not a harder one.
 - **Every level is a whole visit** — greet, the business, close — so the core lines are said again in every
   level because the visit needs them.
 - **Openers and closers differ across levels.** The same `sl` in the same voice is one audio clip, so a
@@ -126,8 +137,10 @@ learner-facing. The structure follows the library:
 
 **Transcription, not design.** Everything in the skeleton comes from the plan. Where the tree needs a
 beat the plan does not have — a reply to the greeting, the close — write its intent and mark it
-`(added)` so R sees it in the review. Where the plan asks for something the structure cannot carry, say
-so to R; do not reshape the plan.
+`(added)` so R sees it in the review. A plan that lists its lines in sequence (*the passer-by asks, he
+answers, she thanks him*) gives the content; the decisions around those lines — the learner's no, the
+other person's reaction to it — are the skeleton's to add, marked `(added)`. Where the plan asks for
+something the structure cannot carry, say so to R; do not reshape the plan.
 
 ## Stage 3 — Language (LS, one per level, in parallel)
 
@@ -164,8 +177,10 @@ Quote this block into every LS and critic brief.
 >   line. Never a verb or an instruction (`[govori počasi]` is a sentence the voice will say aloud), never
 >   mid-line, never a character description (`[soft spoken, whimsical librarian]` is the old style — the
 >   persona lives in the words and in the voice profile).
-> - **Client lines carry no `deliverySL`.** They are what the learner says; they are synthesized plainly in
->   the client voice.
+> - **Both speakers are characters, and every line carries a `deliverySL`.** The client is Slavko (or the
+>   scenario's cast client), performing his side of the exchange in his own voice; the learner mirrors him.
+>   The tag is what sets the voice to Slovene — the request names no language, and a short bare line
+>   («Adijo, lep dan!») leaves the model to guess. `[toplo]` by default, the closed list past it.
 > - **An `intro`** (optional) is the client's own short monologue before the tree, in the client voice.
 >   Its `text` takes tags from the same list at the start of a sentence, only where the mood turns, and its
 >   `en` is the translation. A level without one opens straight on the character.
@@ -175,6 +190,8 @@ Quote this block into every LS and critic brief.
 Dispatch `scenario-critic` in **tap-tree mode** with every level's nodes, the deltas, the settings, the
 plan, the ledger output, and § Delivery. It returns addressed fixes (`sl`, `en`, `deliverySL`, `context`),
 delta findings, the convergence nodes it checked, and `rewrite`: beats that an exact replace cannot fix.
+A fork whose choices are two wordings of one answer where a real decision belongs (a missing no, a
+missing reaction) is a `rewrite`.
 
 - The addressed fixes go into `criticFixes`; the reconcile applies them.
 - `rewrite` non-empty → **one** LS dispatch for exactly those beats, with the critic's reason. What comes
@@ -216,6 +233,12 @@ Present, per level:
 - everything marked `(added)`, and every line LS changed from R's Slovene, with its reason
 
 Then, across the scenario:
+- the decisions: per level, the forks and the converging ones (every option sharing one `next`) with
+  their lines, so each can be seen to be an encounter's goodbye or else counted against the one in four —
+
+  ```bash
+  node -e 'const r=require("./.scratch/dialogue-drafts/<scenarioId>/reconcile-input.json");for(const l of r.levels){const N=l.nodes,c=[];let f=0;for(const [id,n] of Object.entries(N)){if(n.speaker!=="npc"||n.next.length<2)continue;f++;if(new Set(n.next.map(x=>N[x].next.join())).size===1)c.push(`  ${id}: ${n.next.map(x=>N[x].sl).join(" | ")}`)}console.log(`L${l.level} forks ${f} converging ${c.length}\n${c.join("\n")}`)}'
+  ```
 - the ledger, with findings (never said, said once)
 - the critic's notes and what happened to each fix
 - the clip budget (new synthesis vs re-keys)

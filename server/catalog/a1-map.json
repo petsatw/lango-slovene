@@ -204,7 +204,17 @@
         "kilo_prosim",
         "pol_kila_prosim",
         "dvesto_gramov_prosim",
-        "imate_danes"
+        "imate_danes",
+        "se_still",
+        "moj",
+        "oba",
+        "kar",
+        "malo",
+        "samo",
+        "ta",
+        "vcasih",
+        "naj",
+        "vas"
       ],
       "scenarios": [
         {
@@ -305,7 +315,15 @@
         "kaj_pomeni",
         "kaj_to_pomeni",
         "ne_hvala",
-        "skoda"
+        "skoda",
+        "lep_dan",
+        "nic_hudega",
+        "pred_kratkim",
+        "tega_raje_ne",
+        "ne_skrbite",
+        "bravo",
+        "takole",
+        "dobro"
       ],
       "scenarios": [
         {
@@ -327,6 +345,22 @@
         {
           "scenarioId": "library",
           "level": 3
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 3
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 4
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 5
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 9
         }
       ]
     },
@@ -703,7 +737,33 @@
         "gleda_3sg",
         "kino",
         "doma",
-        "zunaj"
+        "zunaj",
+        "mladicek",
+        "pobozati",
+        "prijazen",
+        "mesanec",
+        "zivahen",
+        "operiran",
+        "plasen",
+        "tega_tistega",
+        "dati",
+        "mimo",
+        "pocakati",
+        "poklicati",
+        "povodec",
+        "drzati",
+        "igrati_se",
+        "nervozen",
+        "pes",
+        "skakati",
+        "stran",
+        "dlan",
+        "nezno",
+        "priboljsek",
+        "najprej",
+        "povohati",
+        "naprej",
+        "hrana"
       ],
       "scenarios": [
         {
@@ -717,6 +777,46 @@
         {
           "scenarioId": "library",
           "level": 5
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 1
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 2
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 3
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 4
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 5
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 6
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 7
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 8
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 9
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 10
         }
       ]
     },
@@ -930,6 +1030,22 @@
         {
           "scenarioId": "restaurant",
           "level": 3
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 6
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 7
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 8
+        },
+        {
+          "scenarioId": "sprehod",
+          "level": 9
         }
       ]
     },

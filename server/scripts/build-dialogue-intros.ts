@@ -61,7 +61,7 @@ if (!scenarioId) {
   const problems: string[] = [];
   for (const p of profiles) {
     let voiceId = "";
-    try { voiceId = e3.voiceTagFor(p).split(":")[0] ?? ""; }
+    try { voiceId = e3.voiceTagFor(p); }
     catch (err: any) { problems.push(`voice profile "${p}": ${err?.message}`); continue; }
     if (!voiceId) problems.push(`voice profile "${p}": no voice id configured (see docs/SECRETS.md)`);
   }

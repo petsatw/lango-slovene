@@ -524,12 +524,14 @@ same `kruh` the learner has been building all along.
 - **Spine:** an `npc` node → **2 client-reply choices** → each client node's single `next` is the npc's
   response → branches **re-converge** onto shared later nodes so the tree stays finite. `root` **must be an
   `npc` node**; every path ends at `next: []`.
-- **`deliverySL`:** optional, **npc lines only** — the same line with **one** Slovene delivery tag from
-  [the delivery vocabulary](#the-delivery-vocabulary), `[toplo]` unless the line has a distinct change of
-  tone. **Client lines carry no `deliverySL`** — a client line is a line the learner will say, not a performance to
-  direct. (In a **spoken** scene client lines are not synthesized at all. Nothing in this app records or
-  plays back the learner's own voice; where the close screen offers to play a phrase, it is replaying the
-  character's clip — see [keyphrase-span-playback.md](keyphrase-span-playback.md).)
+- **`deliverySL`:** every synthesized line carries one — the same line with **one** Slovene delivery tag
+  from [the delivery vocabulary](#the-delivery-vocabulary), `[toplo]` unless the line has a distinct change
+  of tone. The tag is the only thing that sets the voice to Slovene: the request names no language, so a
+  bare line of two or three words leaves the model to guess. In a **tap** tree that is both speakers — the
+  client is a character (Slavko at the stall) performing his side of a worked example, voiced in his
+  profile. In a **spoken** scene the client is the learner and is not synthesized at all. (Nothing in this
+  app records or plays back the learner's own voice; where the close screen offers to play a phrase, it is
+  replaying the character's clip — see [keyphrase-span-playback.md](keyphrase-span-playback.md).)
 - **Register + voices:** hold the declared register across every line (a toast among friends is naturally
   `ti` and is not a break). Match the client lines to the **learner's gender** (the restaurant client Slavko
   is male: `rad bi`, `vzel bom`, `zame`).

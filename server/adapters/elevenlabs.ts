@@ -31,8 +31,13 @@ function requireKey(): string {
 
 export class ElevenLabsE3 implements E3Adapter {
   readonly name = "elevenlabs";
-  // Slovenian (slv) is only covered by eleven_v3 — multilingual_v2 / flash_v2_5 do NOT list it.
+  // Slovenian (sl) is covered by eleven_v3 and the eleven_v4 family — multilingual_v2 / flash_v2_5 do NOT
+  // list it.
   private modelId = process.env.ELEVENLABS_MODEL_ID || "eleven_v3";
+  // Every line this app speaks is Slovene. `language_code` enforces it for the model and its text
+  // normalization (digits read as Slovene), so a short line is never left to a language guess. A model
+  // that does not support the code ignores it. Not part of a clip's key.
+  private readonly languageCode = "sl";
 
   /** Concrete ElevenLabs voice id for a profile (default: the teacher voice). "" if its env is unset. */
   private voiceIdFor(voiceProfile: string = TEACHER_VOICE_PROFILE): string {
@@ -41,9 +46,14 @@ export class ElevenLabsE3 implements E3Adapter {
     return process.env[envVar] || "";
   }
 
-  /** Cache-key tag for a profile — `${voiceId}:${modelId}`. Omit → teacher voice (legacy tag). */
+  /** Cache-key tag for a profile — the voice id. A clip is its voice and its words; the model that
+   *  rendered it is recorded in the manifest (`model`), not keyed. Omit → teacher voice. */
   voiceTagFor(voiceProfile?: string): string {
-    return `${this.voiceIdFor(voiceProfile)}:${this.modelId}`;
+    return this.voiceIdFor(voiceProfile);
+  }
+
+  get model(): string {
+    return this.modelId;
   }
 
   get voiceTag(): string {
@@ -65,6 +75,7 @@ export class ElevenLabsE3 implements E3Adapter {
       body: JSON.stringify({
         text: input.text,
         model_id: this.modelId,
+        language_code: this.languageCode,
         voice_settings: {
           stability: 0.5,
           similarity_boost: 0.75,
@@ -97,6 +108,7 @@ export class ElevenLabsE3 implements E3Adapter {
       body: JSON.stringify({
         text: input.text,
         model_id: this.modelId,
+        language_code: this.languageCode,
         voice_settings: { stability: 0.5, similarity_boost: 0.75 },
       }),
     });

@@ -43,7 +43,7 @@ GEMINI_MODEL=gemini-2.5-flash        # verify exact model id against current doc
 
 ELEVENLABS_API_KEY=your-real-key-here
 ELEVENLABS_VOICE_ID=your-slovenian-voice-id
-ELEVENLABS_MODEL_ID=eleven_multilingual_v2
+ELEVENLABS_MODEL_ID=eleven_v3            # eleven_v3 or eleven_v4 — multilingual_v2 has no Slovenian
 ```
 
 ## 2. How to put keys IN `.env` without leaking them

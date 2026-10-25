@@ -35,7 +35,7 @@ for (const [text, seedId] of lines) {
     const { hit } = await store.getOrCreate(
       key,
       "audio",
-      { provider: e3.name, voiceOrModel: voiceTag, text, scenarioId: `seed:${seedId}` },
+      { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text, scenarioId: `seed:${seedId}` },
       async () => {
         const r = await e3.synthesize({ text });
         return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };

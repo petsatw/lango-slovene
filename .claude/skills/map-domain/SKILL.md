@@ -54,6 +54,10 @@ For each action, give its sub-situations and **how it can turn out**:
 - **~** the other person asks something back
 - **✗** a complication
 
+and **the decisions the learner makes in it**, each with the other person's reaction: yes, no, "yes,
+but …", this one or that one, ask first or wait. A refusal is a decision like any other and gets its own
+reaction (they understand, they are disappointed, they ask why).
+
 Mark each action as **minimal** (anyone in this domain meets it) or **use case** (R asked for it).
 Repair, being able to say you didn't understand, is an action in every domain.
 
@@ -103,9 +107,11 @@ Its fixes are applied once. Anything it could not settle goes to R.
 Cut the situation map into levels, as the stall plan did:
 - **Every level is a whole encounter**: the opening, the business, the close. The core lines come back in
   every level because every encounter needs them.
-- **Basic** levels offer simple choices between things (which item, which greeting, how to leave) with one
-  outcome. **Intermediate and advanced** levels branch on the map's outcomes. The last level strings
-  several actions and complications into one encounter and introduces nothing.
+- **Every level is built on the learner's decisions.** Each choice leads somewhere different: the other
+  person reacts to what the learner chose. **Basic** levels give decisions with simple consequences
+  (which dog, yes or not now, how to leave). **Intermediate and advanced** levels add the map's outcomes,
+  where the world decides as well. The last level is the longest tree in the domain: it strings the
+  actions into one encounter with many outcomes, refusals among them, and introduces nothing.
 - **Each card item is introduced in exactly one level and said again in at least one later level.** In the
   stall, 22 items were said in only one tree; plan the reuse here, where it is free.
 - Basic levels lean on core items. A basic tree computes as Basic only when 80% of its lines, the other
@@ -114,8 +120,8 @@ Cut the situation map into levels, as the stall plan did:
 - **The bank is ordered by the level that introduces each line**, so the live scene asks for what the trees
   just taught. The live scene opens after the level that completes the core.
 
-For each level give: band, title, the actions and outcomes it covers, the choices or outcomes, what it
-introduces, what it reuses.
+For each level give: band, title, the actions and outcomes it covers, the learner's decisions and where
+each leads, what it introduces, what it reuses.
 
 ## Stage 6 — The map, to R
 

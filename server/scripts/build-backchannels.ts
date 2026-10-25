@@ -46,7 +46,7 @@ const e3 = getE3();
   for (const p of profiles) {
     let voiceId = "";
     try {
-      voiceId = e3.voiceTagFor(p.id).split(":")[0] ?? "";
+      voiceId = e3.voiceTagFor(p.id);
     } catch (err: any) {
       problems.push(`voice profile "${p.id}": ${err?.message}`);
       continue;
@@ -75,7 +75,7 @@ for (const p of profiles) {
       const { hit } = await store.getOrCreate(
         key,
         "audio",
-        { provider: e3.name, voiceOrModel: voiceTag, text, objectiveId: `backchannel:${p.id}` },
+        { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text, objectiveId: `backchannel:${p.id}` },
         async () => {
           const r = await e3.synthesize({ text, voiceProfile: p.id });
           return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };

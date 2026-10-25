@@ -1,0 +1,177 @@
+{
+  "id": "sprehod",
+  "name": "Dog walk",
+  "title": "Walking the dogs (sprehod s psoma)",
+  "status": "active",
+  "character": "People you meet walking your two dogs in Ljubljana: passers-by, dog owners, a child and her mother",
+  "role": "ljudje, ki jih srečaš na sprehodu s psoma v Ljubljani",
+  "setup": "You are walking your two dogs in Ljubljana — Enzo, a five-month-old puppy, and Denver, an older dog who recently had an operation. People stop to pet them, ask about them, or come past with their own dogs and children.",
+  "opening": "Dober dan.",
+  "register": {
+    "form": "vi",
+    "variety": "pogovorni"
+  },
+  "surfaces": {
+    "live": {
+      "harness": "sprehod.md",
+      "close": "Adijo, lep dan še naprej.",
+      "core": [
+        "dober_dan",
+        "zivjo",
+        "adijo",
+        "lep_dan",
+        "ja",
+        "seveda",
+        "ali_lahko",
+        "sem_ime",
+        "tega_raje_ne",
+        "oprostite",
+        "nic_hudega",
+        "pocasi_prosim",
+        "ponovite_prosim",
+        "ne_razumem"
+      ],
+      "bank": [
+        "ne",
+        "nezno",
+        "samo",
+        "takole",
+        "grem_v",
+        "hocem",
+        "hvala",
+        "ime_mi_je",
+        "ne_skrbite",
+        "star_sem_let",
+        "ampak",
+        "bil_sem",
+        "pred_kratkim",
+        "tega_tistega",
+        "raje",
+        "v_redu",
+        "vcasih",
+        "dobro",
+        "rad_verb",
+        "ali_or",
+        "bravo",
+        "naj",
+        "oprosti",
+        "vas",
+        "kaj_pomeni",
+        "se_enkrat"
+      ],
+      "stock": [
+        "pes",
+        "mladicek",
+        "prijazen",
+        "zivahen",
+        "mesanec",
+        "fant",
+        "mesec",
+        "star",
+        "plasen",
+        "operiran",
+        "moj",
+        "oba",
+        "povodec",
+        "pocakati",
+        "poklicati",
+        "igrati_se",
+        "skakati",
+        "nervozen",
+        "miren",
+        "vrstilni_drugi",
+        "priboljsek",
+        "dati",
+        "dlan",
+        "pobozati",
+        "povohati",
+        "najprej",
+        "hrana",
+        "mimo",
+        "naprej",
+        "stran",
+        "drzati",
+        "se_still",
+        "ta",
+        "tisti",
+        "malo",
+        "kar"
+      ]
+    },
+    "dialogue": {
+      "voices": {
+        "npc": "female-speaker",
+        "client": "slavko"
+      },
+      "levels": [
+        {
+          "level": 1,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 2,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 3,
+          "levelLabel": "Intermediate"
+        },
+        {
+          "level": 4,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 5,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 6,
+          "levelLabel": "Intermediate"
+        },
+        {
+          "level": 7,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 8,
+          "levelLabel": "Basic"
+        },
+        {
+          "level": 9,
+          "levelLabel": "Above A1"
+        },
+        {
+          "level": 10,
+          "levelLabel": "Intermediate"
+        }
+      ]
+    },
+    "a1": true
+  },
+  "objectives": [],
+  "summaryEN": "Walking your two dogs in Ljubljana: letting people pet the puppy and answering about him, keeping strangers and children off the older dog, asking for space on a narrow path, explaining your dogs to other owners, a child with a treat, and chatting with a regular.",
+  "tags": [
+    "dog",
+    "dogs",
+    "dog walk",
+    "walk",
+    "sprehod",
+    "pes",
+    "puppy",
+    "mladiček",
+    "park",
+    "pet",
+    "pobožati",
+    "leash",
+    "lead",
+    "povodec",
+    "treat",
+    "child",
+    "other dog",
+    "friendly",
+    "sniff",
+    "bite",
+    "operation",
+    "nervous"
+  ]
+}

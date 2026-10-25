@@ -1,0 +1,457 @@
+{
+  "id": "sprehod-l5",
+  "scenarioId": "sprehod",
+  "level": 5,
+  "levelLabel": "Basic",
+  "title": "Explaining my dogs",
+  "objectives": [
+    {
+      "label": "Ta je še mladiček, rad skače na druge pse. Samo igrati se hoče.",
+      "descriptorEN": "Explain the puppy: he jumps on other dogs, he just wants to play."
+    },
+    {
+      "label": "Tisti je včasih nervozen ob drugih psih.",
+      "descriptorEN": "Explain the older dog: he's sometimes nervous around other dogs."
+    },
+    {
+      "label": "Gremo na drugo stran. / Kar pojdite mimo, ju držim.",
+      "descriptorEN": "Decide how you pass each other."
+    }
+  ],
+  "introduces": [
+    "dobro",
+    "pes",
+    "rad_verb",
+    "tisti"
+  ],
+  "audio": "ready",
+  "voices": {
+    "npc": "female-speaker",
+    "client": "slavko"
+  },
+  "root": "n1",
+  "nodes": {
+    "n1": {
+      "speaker": "npc",
+      "sl": "Pozdravljeni!",
+      "en": "Hello there!",
+      "deliverySL": "[veselo] Pozdravljeni!",
+      "next": [
+        "c1a",
+        "c1b"
+      ],
+      "learnables": []
+    },
+    "c1a": {
+      "speaker": "client",
+      "sl": "Dober dan. Ali lahko malo počakate, prosim?",
+      "en": "Good day. Could you wait a moment, please?",
+      "deliverySL": "[toplo] Dober dan. Ali lahko malo počakate, prosim?",
+      "next": [
+        "n2"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "dober_dan",
+        "malo",
+        "pocakati",
+        "prosim"
+      ]
+    },
+    "c1b": {
+      "speaker": "client",
+      "sl": "Dober dan. Gremo na drugo stran.",
+      "en": "Good day. We'll go over to the other side.",
+      "deliverySL": "[toplo] Dober dan. Gremo na drugo stran.",
+      "next": [
+        "nSide"
+      ],
+      "learnables": [
+        "dober_dan",
+        "grem_v",
+        "stran",
+        "vrstilni_drugi"
+      ]
+    },
+    "nSide": {
+      "speaker": "npc",
+      "sl": "Hvala, zelo prijazno!",
+      "en": "Thanks, that's very kind!",
+      "deliverySL": "[toplo] Hvala, zelo prijazno!",
+      "next": [
+        "cSide",
+        "cSidex"
+      ],
+      "learnables": [
+        "hvala",
+        "prijazen"
+      ]
+    },
+    "cSide": {
+      "speaker": "client",
+      "sl": "Adijo!",
+      "en": "Bye!",
+      "deliverySL": "[toplo] Adijo!",
+      "next": [
+        "nByeSide"
+      ],
+      "learnables": [
+        "adijo"
+      ]
+    },
+    "nByeSide": {
+      "speaker": "npc",
+      "sl": "Adijo, lepo se imejte!",
+      "en": "Bye, take care!",
+      "deliverySL": "[toplo] Adijo, lepo se imejte!",
+      "next": [],
+      "learnables": [
+        "adijo"
+      ]
+    },
+    "n2": {
+      "speaker": "npc",
+      "sl": "Seveda. A nista prijazna?",
+      "en": "Sure. Why, aren't they friendly?",
+      "deliverySL": "[toplo] Seveda. A nista prijazna?",
+      "next": [
+        "c2a",
+        "c2b"
+      ],
+      "learnables": [
+        "prijazen",
+        "sem_ime",
+        "seveda"
+      ]
+    },
+    "c2a": {
+      "speaker": "client",
+      "sl": "Ta je še mladiček, rad skače na druge pse.",
+      "en": "This one is still a puppy, he likes jumping on other dogs.",
+      "deliverySL": "[toplo] Ta je še mladiček, rad skače na druge pse.",
+      "next": [
+        "n3a"
+      ],
+      "learnables": [
+        "mladicek",
+        "pes",
+        "rad_verb",
+        "se_still",
+        "sem_ime",
+        "skakati",
+        "ta",
+        "vrstilni_drugi"
+      ]
+    },
+    "c2b": {
+      "speaker": "client",
+      "sl": "Tisti je včasih nervozen ob drugih psih.",
+      "en": "That one is sometimes nervous around other dogs.",
+      "deliverySL": "[toplo] Tisti je včasih nervozen ob drugih psih.",
+      "next": [
+        "n3b"
+      ],
+      "learnables": [
+        "nervozen",
+        "pes",
+        "sem_ime",
+        "tisti",
+        "vcasih",
+        "vrstilni_drugi"
+      ]
+    },
+    "n3a": {
+      "speaker": "npc",
+      "sl": "Ah, mladiček! Moja je bila čisto taka, ko je bila majhna.",
+      "en": "Ah, a puppy! Mine was just like that when she was little.",
+      "deliverySL": "[toplo] Ah, mladiček! Moja je bila čisto taka, ko je bila majhna.",
+      "next": [
+        "cBark",
+        "cPull",
+        "cCalm"
+      ],
+      "learnables": [
+        "bil_sem",
+        "mladicek",
+        "moj"
+      ]
+    },
+    "n3b": {
+      "speaker": "npc",
+      "sl": "Aha, razumem. Bom jo imela kar na kratko.",
+      "en": "Ah, I see. I'll keep mine on a short lead.",
+      "deliverySL": "[toplo] Aha, razumem. Bom jo imela kar na kratko.",
+      "next": [
+        "cBark",
+        "cPull",
+        "cCalm"
+      ],
+      "learnables": [
+        "kar"
+      ]
+    },
+    "cBark": {
+      "speaker": "client",
+      "sl": "Oprostite! Včasih je nervozen ob drugih psih.",
+      "en": "Sorry! He's sometimes nervous around other dogs.",
+      "deliverySL": "[toplo] Oprostite! Včasih je nervozen ob drugih psih.",
+      "context": "Denver barks at her dog",
+      "next": [
+        "nBark"
+      ],
+      "learnables": [
+        "nervozen",
+        "oprostite",
+        "pes",
+        "sem_ime",
+        "vcasih",
+        "vrstilni_drugi"
+      ]
+    },
+    "cPull": {
+      "speaker": "client",
+      "sl": "Oprostite! Še mladiček je, samo igrati se hoče.",
+      "en": "Sorry! He's still a puppy, he just wants to play.",
+      "deliverySL": "[toplo] Oprostite! Še mladiček je, samo igrati se hoče.",
+      "context": "Enzo pulls toward her dog",
+      "next": [
+        "nPull"
+      ],
+      "learnables": [
+        "hocem",
+        "igrati_se",
+        "mladicek",
+        "oprostite",
+        "samo",
+        "se_still",
+        "sem_ime"
+      ]
+    },
+    "cCalm": {
+      "speaker": "client",
+      "sl": "Dobro. Denver je danes miren.",
+      "en": "Good. Denver is calm today.",
+      "deliverySL": "[toplo] Dobro. Denver je danes miren.",
+      "context": "the dogs stay calm",
+      "next": [
+        "nCalm"
+      ],
+      "learnables": [
+        "danes",
+        "dobro",
+        "miren",
+        "sem_ime"
+      ]
+    },
+    "nBark": {
+      "speaker": "npc",
+      "sl": "Nič hudega, moja je navajena.",
+      "en": "No harm done, mine is used to it.",
+      "deliverySL": "[toplo] Nič hudega, moja je navajena.",
+      "next": [
+        "cPassSide",
+        "cPassBy"
+      ],
+      "learnables": [
+        "moj",
+        "nic_hudega",
+        "sem_ime"
+      ]
+    },
+    "nPull": {
+      "speaker": "npc",
+      "sl": "Nič hudega! Samo moja je že prestara za take igre.",
+      "en": "No harm done! Only mine is too old for games like that.",
+      "deliverySL": "[veselo] Nič hudega! Samo moja je že prestara za take igre.",
+      "next": [
+        "cPassSide",
+        "cPassBy"
+      ],
+      "learnables": [
+        "moj",
+        "nic_hudega",
+        "samo",
+        "sem_ime"
+      ]
+    },
+    "nCalm": {
+      "speaker": "npc",
+      "sl": "Lepo. A se lahko povohata?",
+      "en": "Lovely. Can they sniff each other?",
+      "deliverySL": "[toplo] Lepo. A se lahko povohata?",
+      "next": [
+        "cCalmNo",
+        "cCalmYes"
+      ],
+      "learnables": [
+        "ali_lahko",
+        "povohati"
+      ]
+    },
+    "cCalmNo": {
+      "speaker": "client",
+      "sl": "Tega raje ne, prosim.",
+      "en": "Better not this one, please.",
+      "deliverySL": "[toplo] Tega raje ne, prosim.",
+      "next": [
+        "nCalmNo"
+      ],
+      "learnables": [
+        "tega_raje_ne"
+      ]
+    },
+    "cCalmYes": {
+      "speaker": "client",
+      "sl": "Ja, seveda.",
+      "en": "Yes, of course.",
+      "deliverySL": "[toplo] Ja, seveda.",
+      "next": [
+        "nCalmYes"
+      ],
+      "learnables": [
+        "ja",
+        "seveda"
+      ]
+    },
+    "nCalmNo": {
+      "speaker": "npc",
+      "sl": "Prav, raje ne. Jo bom kar zadržala.",
+      "en": "Fine, better not. I'll hold mine back.",
+      "deliverySL": "[toplo] Prav, raje ne. Jo bom kar zadržala.",
+      "next": [
+        "cPassSide",
+        "cPassBy"
+      ],
+      "learnables": [
+        "kar",
+        "ne",
+        "raje"
+      ]
+    },
+    "nCalmYes": {
+      "speaker": "npc",
+      "sl": "Poglejte, kako sta si všeč!",
+      "en": "Look, they like each other!",
+      "deliverySL": "[veselo] Poglejte, kako sta si všeč!",
+      "next": [
+        "cPassSide",
+        "cPassBy"
+      ],
+      "learnables": [
+        "sem_ime"
+      ]
+    },
+    "cPassSide": {
+      "speaker": "client",
+      "sl": "Gremo na drugo stran.",
+      "en": "We'll go over to the other side.",
+      "deliverySL": "[toplo] Gremo na drugo stran.",
+      "next": [
+        "nPassSide"
+      ],
+      "learnables": [
+        "grem_v",
+        "stran",
+        "vrstilni_drugi"
+      ]
+    },
+    "cPassBy": {
+      "speaker": "client",
+      "sl": "Kar pojdite mimo, ju držim.",
+      "en": "Go ahead past, I'm holding them both.",
+      "deliverySL": "[toplo] Kar pojdite mimo, ju držim.",
+      "next": [
+        "nPassBy"
+      ],
+      "learnables": [
+        "drzati",
+        "grem_v",
+        "kar",
+        "mimo"
+      ]
+    },
+    "nPassSide": {
+      "speaker": "npc",
+      "sl": "Hvala, jaz grem pa kar tu naprej.",
+      "en": "Thanks, I'll just carry on along this side, then.",
+      "deliverySL": "[toplo] Hvala, jaz grem pa kar tu naprej.",
+      "next": [
+        "cz1",
+        "cz2"
+      ],
+      "learnables": [
+        "grem_v",
+        "hvala",
+        "kar",
+        "naprej",
+        "pa"
+      ]
+    },
+    "nPassBy": {
+      "speaker": "npc",
+      "sl": "Hvala, bom kar hitro mimo.",
+      "en": "Thanks, I'll just slip past quickly.",
+      "deliverySL": "[toplo] Hvala, bom kar hitro mimo.",
+      "next": [
+        "cz1",
+        "cz2"
+      ],
+      "learnables": [
+        "hvala",
+        "kar",
+        "mimo"
+      ]
+    },
+    "cz1": {
+      "speaker": "client",
+      "sl": "Hvala, adijo!",
+      "en": "Thank you, bye!",
+      "deliverySL": "[toplo] Hvala, adijo!",
+      "next": [
+        "nBye"
+      ],
+      "learnables": [
+        "adijo",
+        "hvala"
+      ]
+    },
+    "cz2": {
+      "speaker": "client",
+      "sl": "Adijo, lep dan!",
+      "en": "Bye, have a nice day!",
+      "deliverySL": "[toplo] Adijo, lep dan!",
+      "next": [
+        "nBye"
+      ],
+      "learnables": [
+        "adijo",
+        "lep_dan"
+      ]
+    },
+    "nBye": {
+      "speaker": "npc",
+      "sl": "Adijo, pa lep sprehod s fantoma!",
+      "en": "Bye, and have a nice walk with your two boys!",
+      "deliverySL": "[toplo] Adijo, pa lep sprehod s fantoma!",
+      "next": [],
+      "learnables": [
+        "adijo",
+        "fant",
+        "pa"
+      ]
+    },
+    "cSidex": {
+      "speaker": "client",
+      "sl": "Prosim, adijo!",
+      "en": "You're welcome, bye!",
+      "deliverySL": "[toplo] Prosim, adijo!",
+      "next": [
+        "nByeSide"
+      ],
+      "learnables": [
+        "adijo",
+        "prosim"
+      ]
+    }
+  }
+}

@@ -95,7 +95,7 @@ for (const item of audioItems) {
     const { hit } = await store.getOrCreate(
       key,
       "audio",
-      { provider: e3.name, voiceOrModel: voiceTag, text: item.text, scenarioId: scenario.id, objectiveId: item.objectiveId },
+      { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text: item.text, scenarioId: scenario.id, objectiveId: item.objectiveId },
       async () => {
         const r = await e3.synthesize({ text: item.text, voiceProfile: item.voiceProfile });
         return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };

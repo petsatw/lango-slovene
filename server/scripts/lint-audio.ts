@@ -38,6 +38,7 @@ import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { getE3 } from "../adapters/index";
+import { isSynthesized } from "./dialogue-lib";
 import * as store from "../assets/store";
 import { nodeForms } from "../dialogues";
 
@@ -108,9 +109,9 @@ let checkedClips = 0;
 
 function voiceTag(profile: string): string {
   const tag = e3.voiceTagFor(profile);
-  // `voiceIdFor` returns "" when the profile's env var is unset, which yields a tag like ":eleven_v3".
+  // `voiceIdFor` returns "" when the profile's env var is unset, which yields an empty tag.
   // Every key computed from that is wrong, so this is a hard error rather than a pile of misses.
-  if (tag.startsWith(":")) {
+  if (!tag) {
     const msg = `voice profile "${profile}" has no ${e3.name} voice id bound (its env var is unset)`;
     if (!bindingErrors.includes(msg)) bindingErrors.push(msg);
   }
@@ -154,14 +155,17 @@ for (const f of files) {
   readyLevels++;
 
   for (const [id, n] of Object.entries<any>(d.nodes ?? {})) {
-    if (n.speaker !== "npc") continue; // client lines are the learner's own — never synthesized
+    // The build's own rule decides what is voiced: in a tap tree both speakers are characters; in a
+    // spoken scene the client is the learner and has no clip.
+    if (!isSynthesized(d, n)) continue;
+    const profile: string = d.voices?.[n.speaker];
     // Every FORM of the line: as authored, plus one per variant. A character line that varies on a learner
     // fact is two recordings, and a level with only one of them plays silent for half its learners — the
     // exact failure this lint exists for, hidden behind a form the operator's own run never took.
     for (const { value, node } of nodeForms(n)) {
       const suffix = value ? `:${value}` : "";
-      checkClip(d, id, `sl${suffix}`, npcProfile, node.sl);
-      if (node.slowSL) checkClip(d, id, `slowSL${suffix}`, npcProfile, node.slowSL);
+      checkClip(d, id, `sl${suffix}`, profile, node.sl);
+      if (node.slowSL) checkClip(d, id, `slowSL${suffix}`, profile, node.slowSL);
     }
   }
 

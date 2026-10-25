@@ -117,9 +117,10 @@ The harness replaces the shared body for that session. The app appends what it o
   before the least produced. These are what the tutor steers toward. The grader scores the **whole
   card** — core, bank and `stock` (the goods the lines are filled with) — so anything on it the learner
   says is credited, scheduled today or not;
-- **how the lesson runs** — open on «Dober dan.», stay at the stall, no praise, grammar or English; once
-  a purchase is done and each line said, a second shorter purchase where each comes up once more; then
-  the `close` line, said once.
+- **how the lesson runs** — open as the harness says, else on the scenario's `opening`; stay in the
+  situation, no praise, grammar or English; once the encounter is done and each line said, a second
+  shorter one where each comes up once more (unless the harness says to end after the first); then the
+  `close` line, said once.
 
 The close line ends the lesson, not the session. The learner can keep talking; everything they say is
 credited once, when the socket closes, like any live session.
@@ -136,6 +137,14 @@ Trees of scenarios without a `live` surface keep the shared body.
 ```bash
 npm run prompt:live -- trznica-l8
 ```
+
+**Per-session situations.** A harness may hold one section per session, headed `## @<id>`: a tree's
+dialogue id (`## @sprehod-l4 — Intermediate 1 · Asking for space`), or the scenario id (`## @sprehod`)
+for the session opened by the scene itself. Everything before the first such heading is the shared
+preamble. A session plays the preamble plus its own section, or the preamble alone when it has none, so
+the tutor plays that dialogue's people, setting and register. A harness without sections (trznica.md) is
+sent whole. `<!-- -->` comments are authoring notes and are stripped. Every section ends on the `close`
+line.
 
 ---
 
