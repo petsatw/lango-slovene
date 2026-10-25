@@ -177,8 +177,10 @@ Quote this block into every LS and critic brief.
 >   line. Never a verb or an instruction (`[govori počasi]` is a sentence the voice will say aloud), never
 >   mid-line, never a character description (`[soft spoken, whimsical librarian]` is the old style — the
 >   persona lives in the words and in the voice profile).
-> - **Client lines carry no `deliverySL`.** They are what the learner says; they are synthesized plainly in
->   the client voice.
+> - **Both speakers are characters, and every line carries a `deliverySL`.** The client is Slavko (or the
+>   scenario's cast client), performing his side of the exchange in his own voice; the learner mirrors him.
+>   The tag is what sets the voice to Slovene — the request names no language, and a short bare line
+>   («Adijo, lep dan!») leaves the model to guess. `[toplo]` by default, the closed list past it.
 > - **An `intro`** (optional) is the client's own short monologue before the tree, in the client voice.
 >   Its `text` takes tags from the same list at the start of a sentence, only where the mood turns, and its
 >   `en` is the translation. A level without one opens straight on the character.
