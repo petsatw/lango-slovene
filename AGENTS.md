@@ -105,7 +105,7 @@ Work arrives as a GitHub issue labelled `slice` plus its gate (`G0` … `G5`), w
   behaviour likely to regress and is cheap to keep green. No extra scaffolding, mocks or fixtures.
 - An issue labelled `blocked` waits for the decision it names. If an assumption turns out wrong, stop and
   say so on the issue.
-- Open the PR against `release/mvp-alpha`, link the issue, and paste the acceptance-check output. A human merges.
+- Open the PR against `mvp` (Chris ships `mvp` into `release/*`), link the issue, and paste the acceptance-check output. A human merges.
 
 ## Testing conventions — low abstraction, high fidelity
 
