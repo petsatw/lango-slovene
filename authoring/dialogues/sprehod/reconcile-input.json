@@ -87,6 +87,7 @@
           "speaker": "client",
           "sl": "Dober dan. Ja, seveda. Lahko ga pobožate.",
           "en": "Good day. Yes, of course. You can pet him.",
+          "deliverySL": "[toplo] Dober dan. Ja, seveda. Lahko ga pobožate.",
           "next": [
             "n2yes"
           ],
@@ -102,6 +103,7 @@
           "speaker": "client",
           "sl": "Dober dan. Ja, počasi, prosim.",
           "en": "Good day. Yes, slowly, please.",
+          "deliverySL": "[toplo] Dober dan. Ja, počasi, prosim.",
           "next": [
             "n2slow"
           ],
@@ -115,6 +117,7 @@
           "speaker": "client",
           "sl": "Dober dan. Tega raje ne, prosim.",
           "en": "Good day. I'd rather not, please.",
+          "deliverySL": "[toplo] Dober dan. Tega raje ne, prosim.",
           "next": [
             "n2no"
           ],
@@ -140,6 +143,7 @@
           "speaker": "client",
           "sl": "Še mladiček je.",
           "en": "He's still a puppy.",
+          "deliverySL": "[toplo] Še mladiček je.",
           "next": [
             "n3pup"
           ],
@@ -153,6 +157,7 @@
           "speaker": "client",
           "sl": "Prijazen je.",
           "en": "He's friendly.",
+          "deliverySL": "[toplo] Prijazen je.",
           "next": [
             "n3friend"
           ],
@@ -212,6 +217,7 @@
           "speaker": "client",
           "sl": "Ja, takole.",
           "en": "Yes, like that.",
+          "deliverySL": "[toplo] Ja, takole.",
           "next": [
             "n3slow"
           ],
@@ -240,6 +246,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "nByeHappy"
           ],
@@ -252,6 +259,7 @@
           "speaker": "client",
           "sl": "Adijo!",
           "en": "Bye!",
+          "deliverySL": "[toplo] Adijo!",
           "next": [
             "nByeHappy"
           ],
@@ -284,6 +292,7 @@
           "speaker": "client",
           "sl": "Ne, še mladiček je. Skače.",
           "en": "No, he's still a puppy. He jumps.",
+          "deliverySL": "[toplo] Ne, še mladiček je. Skače.",
           "context": "she understands",
           "next": [
             "n3noOk"
@@ -300,6 +309,7 @@
           "speaker": "client",
           "sl": "Ne, še mladiček je. Skače.",
           "en": "No, he's still a puppy. He jumps.",
+          "deliverySL": "[toplo] Ne, še mladiček je. Skače.",
           "context": "she's a little disappointed",
           "next": [
             "n3noSad"
@@ -345,6 +355,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "nByeNo"
           ],
@@ -357,6 +368,7 @@
           "speaker": "client",
           "sl": "Adijo!",
           "en": "Bye!",
+          "deliverySL": "[toplo] Adijo!",
           "next": [
             "nByeNo"
           ],
@@ -380,6 +392,7 @@
           "speaker": "client",
           "sl": "Ja, samo nežno.",
           "en": "Yes, just gently.",
+          "deliverySL": "[toplo] Ja, samo nežno.",
           "next": [
             "n3slow"
           ],
@@ -529,6 +542,7 @@
           "speaker": "client",
           "sl": "Dober dan, hvala. Ime mu je Enzo.",
           "en": "Good day, thanks. His name is Enzo.",
+          "deliverySL": "[toplo] Dober dan, hvala. Ime mu je Enzo.",
           "next": [
             "n3"
           ],
@@ -556,6 +570,7 @@
           "speaker": "client",
           "sl": "Star je pet mesecev.",
           "en": "He's five months old.",
+          "deliverySL": "[toplo] Star je pet mesecev.",
           "next": [
             "n4"
           ],
@@ -581,6 +596,7 @@
           "speaker": "client",
           "sl": "Ne, prijazen je.",
           "en": "No, he's friendly.",
+          "deliverySL": "[toplo] Ne, prijazen je.",
           "next": [
             "n5a"
           ],
@@ -594,6 +610,7 @@
           "speaker": "client",
           "sl": "Še mladiček je, živahen je.",
           "en": "He's still a puppy, he's lively.",
+          "deliverySL": "[toplo] Še mladiček je, živahen je.",
           "next": [
             "n5b"
           ],
@@ -641,6 +658,7 @@
           "speaker": "client",
           "sl": "Fant je.",
           "en": "He's a boy.",
+          "deliverySL": "[toplo] Fant je.",
           "next": [
             "n6"
           ],
@@ -668,6 +686,7 @@
           "speaker": "client",
           "sl": "Mešanec je.",
           "en": "He's a mixed breed.",
+          "deliverySL": "[toplo] Mešanec je.",
           "next": [
             "n7"
           ],
@@ -694,6 +713,7 @@
           "speaker": "client",
           "sl": "Oprostite! Samo igrati se hoče.",
           "en": "Sorry! He just wants to play.",
+          "deliverySL": "[toplo] Oprostite! Samo igrati se hoče.",
           "next": [
             "n8a"
           ],
@@ -708,6 +728,7 @@
           "speaker": "client",
           "sl": "Ne skrbite, prijazen je.",
           "en": "Don't worry, he's friendly.",
+          "deliverySL": "[toplo] Ne skrbite, prijazen je.",
           "next": [
             "n8b"
           ],
@@ -756,6 +777,7 @@
           "speaker": "client",
           "sl": "Počasi, prosim.",
           "en": "Slowly, please.",
+          "deliverySL": "[toplo] Počasi, prosim.",
           "next": [
             "n10a"
           ],
@@ -767,6 +789,7 @@
           "speaker": "client",
           "sl": "Ponovite, prosim.",
           "en": "Please repeat.",
+          "deliverySL": "[toplo] Ponovite, prosim.",
           "next": [
             "n10b"
           ],
@@ -778,6 +801,7 @@
           "speaker": "client",
           "sl": "Ne razumem.",
           "en": "I don't understand.",
+          "deliverySL": "[toplo] Ne razumem.",
           "next": [
             "n10c"
           ],
@@ -839,6 +863,7 @@
           "speaker": "client",
           "sl": "Ja, seveda. Gremo.",
           "en": "Yes, sure. Let's go.",
+          "deliverySL": "[toplo] Ja, seveda. Gremo.",
           "next": [
             "nWalk"
           ],
@@ -852,6 +877,7 @@
           "speaker": "client",
           "sl": "Danes ne, gremo naprej. Adijo, lep dan!",
           "en": "Not today, we're going on. Bye, have a nice day!",
+          "deliverySL": "[toplo] Danes ne, gremo naprej. Adijo, lep dan!",
           "next": [
             "nBye"
           ],
@@ -891,6 +917,7 @@
           "speaker": "client",
           "sl": "Dober dan. Ime mu je Enzo, še mladiček je.",
           "en": "Good day. His name is Enzo, he's still a puppy.",
+          "deliverySL": "[toplo] Dober dan. Ime mu je Enzo, še mladiček je.",
           "next": [
             "n2pup"
           ],
@@ -905,6 +932,7 @@
           "speaker": "client",
           "sl": "Star je pet mesecev. Ne skrbite, prijazen je.",
           "en": "He's five months old. Don't worry, he's friendly.",
+          "deliverySL": "[toplo] Star je pet mesecev. Ne skrbite, prijazen je.",
           "next": [
             "n5a"
           ],
@@ -919,6 +947,7 @@
           "speaker": "client",
           "sl": "Fant je. Počasi, Enzo!",
           "en": "He's a boy. Slowly, Enzo!",
+          "deliverySL": "[toplo] Fant je. Počasi, Enzo!",
           "next": [
             "n6a"
           ],
@@ -932,6 +961,7 @@
           "speaker": "client",
           "sl": "Fant je. Prijazen je, samo živahen.",
           "en": "He's a boy. He's friendly, just lively.",
+          "deliverySL": "[toplo] Fant je. Prijazen je, samo živahen.",
           "next": [
             "n6b"
           ],
@@ -947,6 +977,7 @@
           "speaker": "client",
           "sl": "Mešanec je. Lahko ga pobožate.",
           "en": "He's a mixed breed. You can pet him.",
+          "deliverySL": "[toplo] Mešanec je. Lahko ga pobožate.",
           "next": [
             "n7b"
           ],
@@ -1142,6 +1173,7 @@
           "speaker": "client",
           "sl": "Tega raje ne, prosim. Plašen je.",
           "en": "Better not this one, please. He's shy.",
+          "deliverySL": "[toplo] Tega raje ne, prosim. Plašen je.",
           "next": [
             "n2"
           ],
@@ -1155,6 +1187,7 @@
           "speaker": "client",
           "sl": "Tega lahko pobožate, tistega pa ne.",
           "en": "You can pet this one, but not that one.",
+          "deliverySL": "[toplo] Tega lahko pobožate, tistega pa ne.",
           "next": [
             "n3"
           ],
@@ -1167,6 +1200,7 @@
           "speaker": "client",
           "sl": "Ne, prosim. Pred kratkim je bil operiran.",
           "en": "No, please. He had an operation recently.",
+          "deliverySL": "[toplo] Ne, prosim. Pred kratkim je bil operiran.",
           "next": [
             "n4"
           ],
@@ -1195,6 +1229,7 @@
           "speaker": "client",
           "sl": "Nič hudega. Tega lahko pobožate.",
           "en": "No problem. You can pet this one.",
+          "deliverySL": "[toplo] Nič hudega. Tega lahko pobožate.",
           "next": [
             "n3"
           ],
@@ -1209,6 +1244,7 @@
           "speaker": "client",
           "sl": "Nič hudega.",
           "en": "No problem.",
+          "deliverySL": "[toplo] Nič hudega.",
           "next": [
             "n5"
           ],
@@ -1236,6 +1272,7 @@
           "speaker": "client",
           "sl": "Ja, oba sta moja.",
           "en": "Yes, they're both mine.",
+          "deliverySL": "[toplo] Ja, oba sta moja.",
           "next": [
             "n7"
           ],
@@ -1250,6 +1287,7 @@
           "speaker": "client",
           "sl": "Ja, oba. Ta je še mladiček.",
           "en": "Yes, both. This one's still a puppy.",
+          "deliverySL": "[toplo] Ja, oba. Ta je še mladiček.",
           "next": [
             "n8"
           ],
@@ -1279,6 +1317,7 @@
           "speaker": "client",
           "sl": "Hvala. Tega pa lahko pobožate.",
           "en": "Thanks. This one you can pet, though.",
+          "deliverySL": "[toplo] Hvala. Tega pa lahko pobožate.",
           "next": [
             "n3"
           ],
@@ -1294,6 +1333,7 @@
           "speaker": "client",
           "sl": "Hvala. Adijo!",
           "en": "Thanks. Bye!",
+          "deliverySL": "[toplo] Hvala. Adijo!",
           "next": [
             "nWell"
           ],
@@ -1320,6 +1360,7 @@
           "speaker": "client",
           "sl": "Star je.",
           "en": "He's old.",
+          "deliverySL": "[toplo] Star je.",
           "next": [
             "n6"
           ],
@@ -1332,6 +1373,7 @@
           "speaker": "client",
           "sl": "Pred kratkim je bil operiran.",
           "en": "He had an operation recently.",
+          "deliverySL": "[toplo] Pred kratkim je bil operiran.",
           "next": [
             "n4"
           ],
@@ -1362,6 +1404,7 @@
           "speaker": "client",
           "sl": "Ampak tega lahko pobožate.",
           "en": "But you can pet this one.",
+          "deliverySL": "[toplo] Ampak tega lahko pobožate.",
           "next": [
             "n3"
           ],
@@ -1406,6 +1449,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "nBye"
           ],
@@ -1442,6 +1486,7 @@
           "speaker": "client",
           "sl": "Hvala, lep dan!",
           "en": "Thanks, have a nice day!",
+          "deliverySL": "[toplo] Hvala, lep dan!",
           "next": [
             "nBye"
           ],
@@ -1454,6 +1499,7 @@
           "speaker": "client",
           "sl": "Ja, star je pet mesecev. Adijo!",
           "en": "Yes, he's five months old. Bye!",
+          "deliverySL": "[toplo] Ja, star je pet mesecev. Adijo!",
           "next": [
             "nBye"
           ],
@@ -1595,6 +1641,7 @@
           "speaker": "client",
           "sl": "Ali ga lahko pokličete, prosim?",
           "en": "Can you call him back, please?",
+          "deliverySL": "[toplo] Ali ga lahko pokličete, prosim?",
           "next": [
             "n2call"
           ],
@@ -1608,6 +1655,7 @@
           "speaker": "client",
           "sl": "Ali ga lahko daste na povodec, prosim?",
           "en": "Can you put him on the lead, please?",
+          "deliverySL": "[toplo] Ali ga lahko daste na povodec, prosim?",
           "next": [
             "n2lead"
           ],
@@ -1622,6 +1670,7 @@
           "speaker": "client",
           "sl": "Ne skrbite, gremo kar mimo.",
           "en": "Don't worry, we'll just go past.",
+          "deliverySL": "[toplo] Ne skrbite, gremo kar mimo.",
           "next": [
             "n2pass"
           ],
@@ -1682,6 +1731,7 @@
           "speaker": "client",
           "sl": "Hvala!",
           "en": "Thank you!",
+          "deliverySL": "[toplo] Hvala!",
           "context": "her dog runs back to her",
           "next": [
             "n4"
@@ -1694,6 +1744,7 @@
           "speaker": "client",
           "sl": "Prosim, ali ga lahko pokličete? Ta je včasih nervozen.",
           "en": "Please, can you call him? This one is sometimes nervous.",
+          "deliverySL": "[toplo] Prosim, ali ga lahko pokličete? Ta je včasih nervozen.",
           "context": "her dog ignores her and keeps coming",
           "next": [
             "n3"
@@ -1727,6 +1778,7 @@
           "speaker": "client",
           "sl": "Nič hudega. Adijo!",
           "en": "No harm done. Bye!",
+          "deliverySL": "[toplo] Nič hudega. Adijo!",
           "next": [
             "n4"
           ],
@@ -1755,6 +1807,7 @@
           "speaker": "client",
           "sl": "Dober dan. Ali lahko malo počakate, prosim?",
           "en": "Good day. Could you wait a moment, please?",
+          "deliverySL": "[toplo] Dober dan. Ali lahko malo počakate, prosim?",
           "next": [
             "n5wait"
           ],
@@ -1770,6 +1823,7 @@
           "speaker": "client",
           "sl": "Dober dan. Gremo na drugo stran.",
           "en": "Good day. We'll go over to the other side.",
+          "deliverySL": "[toplo] Dober dan. Gremo na drugo stran.",
           "next": [
             "n5side"
           ],
@@ -1784,6 +1838,7 @@
           "speaker": "client",
           "sl": "Dober dan. Kar pojdite mimo, ju držim.",
           "en": "Good day. Go ahead past, I'm holding them.",
+          "deliverySL": "[toplo] Dober dan. Kar pojdite mimo, ju držim.",
           "next": [
             "n5pass"
           ],
@@ -1844,6 +1899,7 @@
           "speaker": "client",
           "sl": "Ja, seveda. Danes sta mirna.",
           "en": "Yes, of course. They're calm today.",
+          "deliverySL": "[toplo] Ja, seveda. Danes sta mirna.",
           "next": [
             "n6go"
           ],
@@ -1859,6 +1915,7 @@
           "speaker": "client",
           "sl": "Potem pa raje gremo na drugo stran.",
           "en": "Then we'd rather go to the other side.",
+          "deliverySL": "[toplo] Potem pa raje gremo na drugo stran.",
           "next": [
             "n6rather"
           ],
@@ -1902,6 +1959,7 @@
           "speaker": "client",
           "sl": "Hvala, adijo!",
           "en": "Thanks, bye!",
+          "deliverySL": "[toplo] Hvala, adijo!",
           "next": [
             "n7"
           ],
@@ -1933,6 +1991,7 @@
           "speaker": "client",
           "sl": "Ne skrbite, na povodcu je.",
           "en": "Don't worry, he's on the lead.",
+          "deliverySL": "[toplo] Ne skrbite, na povodcu je.",
           "context": "she relaxes a little",
           "next": [
             "n8ok"
@@ -1947,6 +2006,7 @@
           "speaker": "client",
           "sl": "Ne skrbite, na povodcu je.",
           "en": "Don't worry, he's on the lead.",
+          "deliverySL": "[toplo] Ne skrbite, na povodcu je.",
           "context": "she stays wary",
           "next": [
             "n8wary"
@@ -1961,6 +2021,7 @@
           "speaker": "client",
           "sl": "Mi počakamo. Kar pojdite mimo, prosim.",
           "en": "We'll wait. Go ahead past, please.",
+          "deliverySL": "[toplo] Mi počakamo. Kar pojdite mimo, prosim.",
           "next": [
             "n8wait"
           ],
@@ -2005,6 +2066,7 @@
           "speaker": "client",
           "sl": "Ne, oba sta na povodcu. Držim ju.",
           "en": "No, both are on the lead. I'm holding them.",
+          "deliverySL": "[toplo] Ne, oba sta na povodcu. Držim ju.",
           "next": [
             "n8ok"
           ],
@@ -2020,6 +2082,7 @@
           "speaker": "client",
           "sl": "Potem pa počakamo. Kar pojdite mimo.",
           "en": "Then we'll wait. Go ahead past.",
+          "deliverySL": "[toplo] Potem pa počakamo. Kar pojdite mimo.",
           "next": [
             "n8wait"
           ],
@@ -2050,6 +2113,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "nBye"
           ],
@@ -2062,6 +2126,7 @@
           "speaker": "client",
           "sl": "Prosim. Adijo!",
           "en": "You're welcome. Bye!",
+          "deliverySL": "[toplo] Prosim. Adijo!",
           "next": [
             "nByeWait"
           ],
@@ -2098,6 +2163,7 @@
           "speaker": "client",
           "sl": "V redu, hvala. Adijo!",
           "en": "All right, thanks. Bye!",
+          "deliverySL": "[toplo] V redu, hvala. Adijo!",
           "next": [
             "n4"
           ],
@@ -2111,6 +2177,7 @@
           "speaker": "client",
           "sl": "Hvala, lep dan!",
           "en": "Thanks, have a nice day!",
+          "deliverySL": "[toplo] Hvala, lep dan!",
           "next": [
             "n7"
           ],
@@ -2123,6 +2190,7 @@
           "speaker": "client",
           "sl": "Prosim. Lep dan!",
           "en": "You're welcome. Have a nice day!",
+          "deliverySL": "[toplo] Prosim. Lep dan!",
           "next": [
             "n7"
           ],
@@ -2135,6 +2203,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "n7"
           ],
@@ -2147,6 +2216,7 @@
           "speaker": "client",
           "sl": "V redu. Adijo!",
           "en": "All right. Bye!",
+          "deliverySL": "[toplo] V redu. Adijo!",
           "next": [
             "n7"
           ],
@@ -2159,6 +2229,7 @@
           "speaker": "client",
           "sl": "Prosim, lep dan!",
           "en": "You're welcome, have a nice day!",
+          "deliverySL": "[toplo] Prosim, lep dan!",
           "next": [
             "nBye"
           ],
@@ -2171,6 +2242,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "nByeWait"
           ],
@@ -2332,6 +2404,7 @@
           "speaker": "client",
           "sl": "Dober dan. Ali lahko malo počakate, prosim?",
           "en": "Good day. Could you wait a moment, please?",
+          "deliverySL": "[toplo] Dober dan. Ali lahko malo počakate, prosim?",
           "next": [
             "n2"
           ],
@@ -2347,6 +2420,7 @@
           "speaker": "client",
           "sl": "Dober dan. Gremo na drugo stran.",
           "en": "Good day. We'll go over to the other side.",
+          "deliverySL": "[toplo] Dober dan. Gremo na drugo stran.",
           "next": [
             "nSide"
           ],
@@ -2375,6 +2449,7 @@
           "speaker": "client",
           "sl": "Adijo!",
           "en": "Bye!",
+          "deliverySL": "[toplo] Adijo!",
           "next": [
             "nByeSide"
           ],
@@ -2411,6 +2486,7 @@
           "speaker": "client",
           "sl": "Ta je še mladiček, rad skače na druge pse.",
           "en": "This one is still a puppy, he likes jumping on other dogs.",
+          "deliverySL": "[toplo] Ta je še mladiček, rad skače na druge pse.",
           "next": [
             "n3a"
           ],
@@ -2429,6 +2505,7 @@
           "speaker": "client",
           "sl": "Tisti je včasih nervozen ob drugih psih.",
           "en": "That one is sometimes nervous around other dogs.",
+          "deliverySL": "[toplo] Tisti je včasih nervozen ob drugih psih.",
           "next": [
             "n3b"
           ],
@@ -2475,6 +2552,7 @@
           "speaker": "client",
           "sl": "Oprostite! Včasih je nervozen ob drugih psih.",
           "en": "Sorry! He's sometimes nervous around other dogs.",
+          "deliverySL": "[toplo] Oprostite! Včasih je nervozen ob drugih psih.",
           "context": "Denver barks at her dog",
           "next": [
             "nBark"
@@ -2492,6 +2570,7 @@
           "speaker": "client",
           "sl": "Oprostite! Še mladiček je, samo igrati se hoče.",
           "en": "Sorry! He's still a puppy, he just wants to play.",
+          "deliverySL": "[toplo] Oprostite! Še mladiček je, samo igrati se hoče.",
           "context": "Enzo pulls toward her dog",
           "next": [
             "nPull"
@@ -2510,6 +2589,7 @@
           "speaker": "client",
           "sl": "Dobro. Denver je danes miren.",
           "en": "Good. Denver is calm today.",
+          "deliverySL": "[toplo] Dobro. Denver je danes miren.",
           "context": "the dogs stay calm",
           "next": [
             "nCalm"
@@ -2570,6 +2650,7 @@
           "speaker": "client",
           "sl": "Tega raje ne, prosim.",
           "en": "Better not this one, please.",
+          "deliverySL": "[toplo] Tega raje ne, prosim.",
           "next": [
             "nCalmNo"
           ],
@@ -2581,6 +2662,7 @@
           "speaker": "client",
           "sl": "Ja, seveda.",
           "en": "Yes, of course.",
+          "deliverySL": "[toplo] Ja, seveda.",
           "next": [
             "nCalmYes"
           ],
@@ -2621,6 +2703,7 @@
           "speaker": "client",
           "sl": "Gremo na drugo stran.",
           "en": "We'll go over to the other side.",
+          "deliverySL": "[toplo] Gremo na drugo stran.",
           "next": [
             "nPassSide"
           ],
@@ -2634,6 +2717,7 @@
           "speaker": "client",
           "sl": "Kar pojdite mimo, ju držim.",
           "en": "Go ahead past, I'm holding them both.",
+          "deliverySL": "[toplo] Kar pojdite mimo, ju držim.",
           "next": [
             "nPassBy"
           ],
@@ -2680,6 +2764,7 @@
           "speaker": "client",
           "sl": "Hvala, adijo!",
           "en": "Thank you, bye!",
+          "deliverySL": "[toplo] Hvala, adijo!",
           "next": [
             "nBye"
           ],
@@ -2692,6 +2777,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "nBye"
           ],
@@ -2716,6 +2802,7 @@
           "speaker": "client",
           "sl": "Prosim, adijo!",
           "en": "You're welcome, bye!",
+          "deliverySL": "[toplo] Prosim, adijo!",
           "next": [
             "nByeSide"
           ],
@@ -2827,6 +2914,7 @@
           "speaker": "client",
           "sl": "Živjo! Počakaj!",
           "en": "Hi! Wait!",
+          "deliverySL": "[toplo] Živjo! Počakaj!",
           "next": [
             "nMom"
           ],
@@ -2839,6 +2927,7 @@
           "speaker": "client",
           "sl": "Lahko ga pobožaš. Nežno.",
           "en": "You can pet him. Gently.",
+          "deliverySL": "[toplo] Lahko ga pobožaš. Nežno.",
           "next": [
             "nPetY"
           ],
@@ -2852,6 +2941,7 @@
           "speaker": "client",
           "sl": "Oprosti, danes ne. Živahen je.",
           "en": "Sorry, not today. He's lively.",
+          "deliverySL": "[toplo] Oprosti, danes ne. Živahen je.",
           "next": [
             "nNoChild"
           ],
@@ -2896,6 +2986,7 @@
           "speaker": "client",
           "sl": "Dober dan. Ali mu lahko da priboljšek?",
           "en": "Good day. May she give him a treat?",
+          "deliverySL": "[toplo] Dober dan. Ali mu lahko da priboljšek?",
           "context": "the mother is easy-going about dogs",
           "next": [
             "nTreatYes"
@@ -2911,6 +3002,7 @@
           "speaker": "client",
           "sl": "Dober dan. Ali mu lahko da priboljšek?",
           "en": "Good day. May she give him a treat?",
+          "deliverySL": "[toplo] Dober dan. Ali mu lahko da priboljšek?",
           "context": "the mother is careful about dogs and food",
           "next": [
             "nTreatNo"
@@ -2926,6 +3018,7 @@
           "speaker": "client",
           "sl": "Nič hudega. Prijazen je, še mladiček je.",
           "en": "No harm done. He's friendly, he's still a puppy.",
+          "deliverySL": "[toplo] Nič hudega. Prijazen je, še mladiček je.",
           "next": [
             "nInfo"
           ],
@@ -2956,6 +3049,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "nByeInfo"
           ],
@@ -2994,6 +3088,7 @@
           "speaker": "client",
           "sl": "V redu. Adijo, lep dan!",
           "en": "All right. Bye, have a nice day!",
+          "deliverySL": "[toplo] V redu. Adijo, lep dan!",
           "next": [
             "nByeNoTreat"
           ],
@@ -3032,6 +3127,7 @@
           "speaker": "client",
           "sl": "Ali mu hočeš dati priboljšek?",
           "en": "Do you want to give him a treat?",
+          "deliverySL": "[toplo] Ali mu hočeš dati priboljšek?",
           "next": [
             "nEager"
           ],
@@ -3059,6 +3155,7 @@
           "speaker": "client",
           "sl": "Daj mu takole, na dlan.",
           "en": "Give it to him like this, on your palm.",
+          "deliverySL": "[toplo] Daj mu takole, na dlan.",
           "context": "she holds her hand still",
           "next": [
             "nGive"
@@ -3073,6 +3170,7 @@
           "speaker": "client",
           "sl": "Daj mu takole, na dlan.",
           "en": "Give it to him like this, on your palm.",
+          "deliverySL": "[toplo] Daj mu takole, na dlan.",
           "context": "his nose comes close and she pulls back",
           "next": [
             "nScared"
@@ -3098,6 +3196,7 @@
           "speaker": "client",
           "sl": "Nič hudega. Počasi, takole.",
           "en": "That's all right. Slowly, like this.",
+          "deliverySL": "[toplo] Nič hudega. Počasi, takole.",
           "next": [
             "nGive"
           ],
@@ -3111,6 +3210,7 @@
           "speaker": "client",
           "sl": "V redu. Potem pa raje ne.",
           "en": "That's fine. Then better not.",
+          "deliverySL": "[toplo] V redu. Potem pa raje ne.",
           "next": [
             "nMomScared"
           ],
@@ -3140,6 +3240,7 @@
           "speaker": "client",
           "sl": "Adijo!",
           "en": "Bye!",
+          "deliverySL": "[toplo] Adijo!",
           "next": [
             "nByeScared"
           ],
@@ -3174,6 +3275,7 @@
           "speaker": "client",
           "sl": "Bravo!",
           "en": "Well done!",
+          "deliverySL": "[toplo] Bravo!",
           "next": [
             "nMomThanks"
           ],
@@ -3199,6 +3301,7 @@
           "speaker": "client",
           "sl": "Prosim. Adijo, lep dan!",
           "en": "You're welcome. Bye, have a nice day!",
+          "deliverySL": "[toplo] Prosim. Adijo, lep dan!",
           "next": [
             "nByeTreat"
           ],
@@ -3252,6 +3355,7 @@
           "speaker": "client",
           "sl": "Nič hudega. Adijo!",
           "en": "No harm done. Bye!",
+          "deliverySL": "[toplo] Nič hudega. Adijo!",
           "next": [
             "nByeNo"
           ],
@@ -3276,6 +3380,7 @@
           "speaker": "client",
           "sl": "Adijo!",
           "en": "Bye!",
+          "deliverySL": "[toplo] Adijo!",
           "next": [
             "nByeInfo"
           ],
@@ -3287,6 +3392,7 @@
           "speaker": "client",
           "sl": "Ja, seveda. Adijo!",
           "en": "Yes, of course. Bye!",
+          "deliverySL": "[toplo] Ja, seveda. Adijo!",
           "next": [
             "nByeNoTreat"
           ],
@@ -3300,6 +3406,7 @@
           "speaker": "client",
           "sl": "Nič hudega. Adijo!",
           "en": "That's all right. Bye!",
+          "deliverySL": "[toplo] Nič hudega. Adijo!",
           "next": [
             "nByeScared"
           ],
@@ -3312,6 +3419,7 @@
           "speaker": "client",
           "sl": "Bravo, oba!",
           "en": "Well done, both of you!",
+          "deliverySL": "[toplo] Bravo, oba!",
           "next": [
             "nMomThanks"
           ],
@@ -3324,6 +3432,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "nByeTreat"
           ],
@@ -3336,6 +3445,7 @@
           "speaker": "client",
           "sl": "Oprosti! Adijo!",
           "en": "Sorry! Bye! (to the girl)",
+          "deliverySL": "[toplo] Oprosti! Adijo!",
           "next": [
             "nByeNo"
           ],
@@ -3348,6 +3458,7 @@
           "speaker": "client",
           "sl": "Počakaj! Naj te najprej povoha.",
           "en": "(to the girl) Wait! Let him sniff you first.",
+          "deliverySL": "[toplo] Počakaj! Naj te najprej povoha.",
           "next": [
             "nSniff"
           ],
@@ -3503,6 +3614,7 @@
           "speaker": "client",
           "sl": "Oprosti! Tega lahko pobožaš, tistega pa ne.",
           "en": "Sorry! You can pet this one, but not that one.",
+          "deliverySL": "[toplo] Oprosti! Tega lahko pobožaš, tistega pa ne.",
           "next": [
             "n2r"
           ],
@@ -3516,6 +3628,7 @@
           "speaker": "client",
           "sl": "Oprosti! Tega raje ne.",
           "en": "Sorry! Better not this one.",
+          "deliverySL": "[toplo] Oprosti! Tega raje ne.",
           "next": [
             "n2f"
           ],
@@ -3541,6 +3654,7 @@
           "speaker": "client",
           "sl": "Ne. Počasi. Naj te najprej povoha.",
           "en": "No. Slowly. Let him sniff you first.",
+          "deliverySL": "[toplo] Ne. Počasi. Naj te najprej povoha.",
           "next": [
             "n4"
           ],
@@ -3556,6 +3670,7 @@
           "speaker": "client",
           "sl": "Oprosti, danes pa raje ne.",
           "en": "Sorry, better not today after all.",
+          "deliverySL": "[toplo] Oprosti, danes pa raje ne.",
           "context": "enzo backs away behind your legs",
           "next": [
             "nNo"
@@ -3585,6 +3700,7 @@
           "speaker": "client",
           "sl": "Pred kratkim je bil operiran.",
           "en": "He had an operation recently.",
+          "deliverySL": "[toplo] Pred kratkim je bil operiran.",
           "next": [
             "n3op"
           ],
@@ -3598,6 +3714,7 @@
           "speaker": "client",
           "sl": "Plašen je.",
           "en": "He's shy.",
+          "deliverySL": "[toplo] Plašen je.",
           "next": [
             "n3sh"
           ],
@@ -3643,6 +3760,7 @@
           "speaker": "client",
           "sl": "Počasi. Naj te najprej povoha.",
           "en": "Slowly. Let him sniff you first.",
+          "deliverySL": "[toplo] Počasi. Naj te najprej povoha.",
           "next": [
             "n4"
           ],
@@ -3657,6 +3775,7 @@
           "speaker": "client",
           "sl": "Oprosti, danes raje ne.",
           "en": "Sorry, better not today.",
+          "deliverySL": "[toplo] Oprosti, danes raje ne.",
           "next": [
             "nNo"
           ],
@@ -3699,6 +3818,7 @@
           "speaker": "client",
           "sl": "V redu. Adijo!",
           "en": "That's fine. Bye!",
+          "deliverySL": "[toplo] V redu. Adijo!",
           "next": [
             "nByeNo"
           ],
@@ -3734,6 +3854,7 @@
           "speaker": "client",
           "sl": "Ja, takole.",
           "en": "Yes, like this.",
+          "deliverySL": "[toplo] Ja, takole.",
           "context": "enzo sniffs her hand and wags his tail",
           "next": [
             "n5ok"
@@ -3747,6 +3868,7 @@
           "speaker": "client",
           "sl": "Ja, takole.",
           "en": "Yes, like this.",
+          "deliverySL": "[toplo] Ja, takole.",
           "context": "enzo jumps up at her",
           "next": [
             "n5sc"
@@ -3774,6 +3896,7 @@
           "speaker": "client",
           "sl": "Ja, lahko ga pobožaš. Nežno.",
           "en": "Yes, you can pet him. Gently.",
+          "deliverySL": "[toplo] Ja, lahko ga pobožaš. Nežno.",
           "next": [
             "nMomOk"
           ],
@@ -3817,6 +3940,7 @@
           "speaker": "client",
           "sl": "Nič hudega, samo igrati se hoče. Počasi.",
           "en": "It's OK, he just wants to play. Slowly.",
+          "deliverySL": "[toplo] Nič hudega, samo igrati se hoče. Počasi.",
           "next": [
             "nMomBrave"
           ],
@@ -3832,6 +3956,7 @@
           "speaker": "client",
           "sl": "Nič hudega. Potem pa raje ne.",
           "en": "It's OK. Then better not.",
+          "deliverySL": "[toplo] Nič hudega. Potem pa raje ne.",
           "next": [
             "nMomSc"
           ],
@@ -3865,6 +3990,7 @@
           "speaker": "client",
           "sl": "Nič hudega. Adijo, lep dan!",
           "en": "No problem. Bye, have a nice day!",
+          "deliverySL": "[toplo] Nič hudega. Adijo, lep dan!",
           "next": [
             "nBye"
           ],
@@ -3878,6 +4004,7 @@
           "speaker": "client",
           "sl": "Bravo! Adijo!",
           "en": "Well done! Bye!",
+          "deliverySL": "[toplo] Bravo! Adijo!",
           "next": [
             "nByeKid"
           ],
@@ -3927,6 +4054,7 @@
           "speaker": "client",
           "sl": "Oprostite. Še mladiček je.",
           "en": "Sorry. He's still a puppy.",
+          "deliverySL": "[toplo] Oprostite. Še mladiček je.",
           "next": [
             "nByeSc"
           ],
@@ -3952,6 +4080,7 @@
           "speaker": "client",
           "sl": "Nič hudega. Adijo!",
           "en": "No problem. Bye!",
+          "deliverySL": "[toplo] Nič hudega. Adijo!",
           "next": [
             "nByeNo"
           ],
@@ -3964,6 +4093,7 @@
           "speaker": "client",
           "sl": "Ja, ampak nežno. Še mladiček je.",
           "en": "Yes, but gently. He's still a puppy.",
+          "deliverySL": "[toplo] Ja, ampak nežno. Še mladiček je.",
           "next": [
             "nMomOk"
           ],
@@ -3980,6 +4110,7 @@
           "speaker": "client",
           "sl": "Oprosti! Adijo!",
           "en": "Sorry! Bye! (to the girl)",
+          "deliverySL": "[toplo] Oprosti! Adijo!",
           "next": [
             "nByeSc"
           ],
@@ -4075,6 +4206,7 @@
           "speaker": "client",
           "sl": "Dober dan. Ali je vaš pes prijazen?",
           "en": "Good day. Is your dog friendly?",
+          "deliverySL": "[toplo] Dober dan. Ali je vaš pes prijazen?",
           "next": [
             "n2a"
           ],
@@ -4091,6 +4223,7 @@
           "speaker": "client",
           "sl": "Dober dan. Ali se lahko povohata?",
           "en": "Good day. Can they sniff each other?",
+          "deliverySL": "[toplo] Dober dan. Ali se lahko povohata?",
           "next": [
             "n2b"
           ],
@@ -4104,6 +4237,7 @@
           "speaker": "client",
           "sl": "Dober dan. Oprostite, gremo naprej.",
           "en": "Good day. Sorry, we're moving on.",
+          "deliverySL": "[toplo] Dober dan. Oprostite, gremo naprej.",
           "next": [
             "nDecl"
           ],
@@ -4166,6 +4300,7 @@
           "speaker": "client",
           "sl": "Ja, ampak še mladiček je.",
           "en": "Yes, but he's still a puppy.",
+          "deliverySL": "[toplo] Ja, ampak še mladiček je.",
           "context": "her dog is friendly",
           "next": [
             "n3ok"
@@ -4182,6 +4317,7 @@
           "speaker": "client",
           "sl": "Ja, ampak še mladiček je.",
           "en": "Yes, but he's still a puppy.",
+          "deliverySL": "[toplo] Ja, ampak še mladiček je.",
           "context": "her dog is old and shy",
           "next": [
             "n3old"
@@ -4198,6 +4334,7 @@
           "speaker": "client",
           "sl": "Ja, ampak še mladiček je.",
           "en": "Yes, but he's still a puppy.",
+          "deliverySL": "[toplo] Ja, ampak še mladiček je.",
           "context": "her dog doesn't like other dogs",
           "next": [
             "n3no"
@@ -4233,6 +4370,7 @@
           "speaker": "client",
           "sl": "Dobro. Počasi, Enzo.",
           "en": "Good. Slowly, Enzo.",
+          "deliverySL": "[toplo] Dobro. Počasi, Enzo.",
           "context": "the dogs sniff and play nicely",
           "next": [
             "n4play"
@@ -4246,6 +4384,7 @@
           "speaker": "client",
           "sl": "Dobro. Počasi, Enzo.",
           "en": "Good. Slowly, Enzo.",
+          "deliverySL": "[toplo] Dobro. Počasi, Enzo.",
           "context": "enzo jumps all over her dog",
           "next": [
             "n4wild"
@@ -4274,6 +4413,7 @@
           "speaker": "client",
           "sl": "Ta je danes miren. Lahko se povohata.",
           "en": "This one is calm today. They can sniff each other.",
+          "deliverySL": "[toplo] Ta je danes miren. Lahko se povohata.",
           "next": [
             "n5dYes"
           ],
@@ -4290,6 +4430,7 @@
           "speaker": "client",
           "sl": "Tega raje ne. Včasih je nervozen ob drugih psih.",
           "en": "Better not this one. He's sometimes nervous around other dogs.",
+          "deliverySL": "[toplo] Tega raje ne. Včasih je nervozen ob drugih psih.",
           "next": [
             "n5dNo"
           ],
@@ -4348,6 +4489,7 @@
           "speaker": "client",
           "sl": "Oprostite! Gremo naprej.",
           "en": "Sorry! We're moving on.",
+          "deliverySL": "[toplo] Oprostite! Gremo naprej.",
           "next": [
             "nWildBye"
           ],
@@ -4361,6 +4503,7 @@
           "speaker": "client",
           "sl": "Samo igrati se hoče. Držim ga.",
           "en": "He just wants to play. I'm holding him.",
+          "deliverySL": "[toplo] Samo igrati se hoče. Držim ga.",
           "next": [
             "n5hold"
           ],
@@ -4436,6 +4579,7 @@
           "speaker": "client",
           "sl": "Potem pa raje ne. Gremo naprej.",
           "en": "Then better not. We'll move on.",
+          "deliverySL": "[toplo] Potem pa raje ne. Gremo naprej.",
           "next": [
             "nByeNo"
           ],
@@ -4452,6 +4596,7 @@
           "speaker": "client",
           "sl": "Tega lahko povoha, tistega pa ne. Ta je miren.",
           "en": "She can sniff this one, but not that one. This one's calm.",
+          "deliverySL": "[toplo] Tega lahko povoha, tistega pa ne. Ta je miren.",
           "next": [
             "n4oDen"
           ],
@@ -4466,6 +4611,7 @@
           "speaker": "client",
           "sl": "Tega lahko povoha, tistega pa ne. Ta je miren.",
           "en": "She can sniff this one, but not that one. This one's calm.",
+          "deliverySL": "[toplo] Tega lahko povoha, tistega pa ne. Ta je miren.",
           "next": [
             "n4nDen"
           ],
@@ -4494,6 +4640,7 @@
           "speaker": "client",
           "sl": "Dobro, hvala. Adijo!",
           "en": "Good, thanks. Bye!",
+          "deliverySL": "[toplo] Dobro, hvala. Adijo!",
           "next": [
             "nBye"
           ],
@@ -4522,6 +4669,7 @@
           "speaker": "client",
           "sl": "V redu. Adijo!",
           "en": "OK. Bye!",
+          "deliverySL": "[toplo] V redu. Adijo!",
           "next": [
             "nByeNo"
           ],
@@ -4545,6 +4693,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "nBye"
           ],
@@ -4557,6 +4706,7 @@
           "speaker": "client",
           "sl": "Hvala, adijo!",
           "en": "Thanks, bye!",
+          "deliverySL": "[toplo] Hvala, adijo!",
           "next": [
             "nBye"
           ],
@@ -4580,6 +4730,7 @@
           "speaker": "client",
           "sl": "Bravo, Denver! Adijo!",
           "en": "Well done, Denver! Bye!",
+          "deliverySL": "[toplo] Bravo, Denver! Adijo!",
           "next": [
             "nBye"
           ],
@@ -4592,6 +4743,7 @@
           "speaker": "client",
           "sl": "Nič hudega. Adijo!",
           "en": "No problem. Bye!",
+          "deliverySL": "[toplo] Nič hudega. Adijo!",
           "next": [
             "nByeNo"
           ],
@@ -4702,6 +4854,7 @@
           "speaker": "client",
           "sl": "Dobro, hvala. Denver je danes miren.",
           "en": "Fine, thanks. Denver is calm today.",
+          "deliverySL": "[toplo] Dobro, hvala. Denver je danes miren.",
           "next": [
             "n2a"
           ],
@@ -4717,6 +4870,7 @@
           "speaker": "client",
           "sl": "Denver je danes malo nervozen.",
           "en": "Denver is a bit nervous today.",
+          "deliverySL": "[toplo] Denver je danes malo nervozen.",
           "next": [
             "n2b"
           ],
@@ -4731,6 +4885,7 @@
           "speaker": "client",
           "sl": "Dobro, hvala. Pa vaša?",
           "en": "Fine, thanks. And yours?",
+          "deliverySL": "[toplo] Dobro, hvala. Pa vaša?",
           "next": [
             "n2c"
           ],
@@ -4764,6 +4919,7 @@
           "speaker": "client",
           "sl": "Danes je miren.",
           "en": "He's calm today.",
+          "deliverySL": "[toplo] Danes je miren.",
           "next": [
             "n2a"
           ],
@@ -4777,6 +4933,7 @@
           "speaker": "client",
           "sl": "Danes je malo nervozen.",
           "en": "Today he's a bit nervous.",
+          "deliverySL": "[toplo] Danes je malo nervozen.",
           "next": [
             "n2b"
           ],
@@ -4809,6 +4966,7 @@
           "speaker": "client",
           "sl": "Ja, samo igrati se hoče.",
           "en": "Yes, he just wants to play.",
+          "deliverySL": "[toplo] Ja, samo igrati se hoče.",
           "next": [
             "n3"
           ],
@@ -4839,6 +4997,7 @@
           "speaker": "client",
           "sl": "Hvala. Včasih je nervozen ob drugih psih.",
           "en": "Thanks. He's sometimes nervous around other dogs.",
+          "deliverySL": "[toplo] Hvala. Včasih je nervozen ob drugih psih.",
           "next": [
             "n3"
           ],
@@ -4870,6 +5029,7 @@
           "speaker": "client",
           "sl": "Prosim, ne dajte jima hrane. Denver je bil pred kratkim operiran.",
           "en": "Please don't give them food. Denver had an operation recently.",
+          "deliverySL": "[toplo] Prosim, ne dajte jima hrane. Denver je bil pred kratkim operiran.",
           "next": [
             "n4a"
           ],
@@ -4887,6 +5047,7 @@
           "speaker": "client",
           "sl": "Temu lahko, tistemu pa ne.",
           "en": "This one can, but not that one.",
+          "deliverySL": "[toplo] Temu lahko, tistemu pa ne.",
           "next": [
             "n4b"
           ],
@@ -4914,6 +5075,7 @@
           "speaker": "client",
           "sl": "Ja, ampak v redu je.",
           "en": "Yes, but he's all right.",
+          "deliverySL": "[toplo] Ja, ampak v redu je.",
           "next": [
             "nW"
           ],
@@ -4943,6 +5105,7 @@
           "speaker": "client",
           "sl": "Pred kratkim je bil operiran.",
           "en": "He had an operation recently.",
+          "deliverySL": "[toplo] Pred kratkim je bil operiran.",
           "next": [
             "nW"
           ],
@@ -4971,6 +5134,7 @@
           "speaker": "client",
           "sl": "Kaj pomeni kosmatinec?",
           "en": "What does 'kosmatinec' mean?",
+          "deliverySL": "[toplo] Kaj pomeni kosmatinec?",
           "next": [
             "nWa"
           ],
@@ -4982,6 +5146,7 @@
           "speaker": "client",
           "sl": "Ne razumem.",
           "en": "I don't understand.",
+          "deliverySL": "[toplo] Ne razumem.",
           "next": [
             "nWb"
           ],
@@ -4993,6 +5158,7 @@
           "speaker": "client",
           "sl": "Ponovite, prosim.",
           "en": "Please say that again.",
+          "deliverySL": "[toplo] Ponovite, prosim.",
           "next": [
             "nWc"
           ],
@@ -5019,6 +5185,7 @@
           "speaker": "client",
           "sl": "Aha, v redu. Hvala.",
           "en": "Ah, okay. Thanks.",
+          "deliverySL": "[toplo] Aha, v redu. Hvala.",
           "next": [
             "nDog"
           ],
@@ -5045,6 +5212,7 @@
           "speaker": "client",
           "sl": "Ja, je. Hvala.",
           "en": "Yes, he is. Thanks.",
+          "deliverySL": "[toplo] Ja, je. Hvala.",
           "next": [
             "nDog"
           ],
@@ -5069,6 +5237,7 @@
           "speaker": "client",
           "sl": "Kaj pa pomeni?",
           "en": "And what does it mean?",
+          "deliverySL": "[toplo] Kaj pa pomeni?",
           "next": [
             "nWa"
           ],
@@ -5080,6 +5249,7 @@
           "speaker": "client",
           "sl": "Aha, kosmatinec. V redu.",
           "en": "Ah, 'kosmatinec'. Okay.",
+          "deliverySL": "[toplo] Aha, kosmatinec. V redu.",
           "next": [
             "nDog"
           ],
@@ -5106,6 +5276,7 @@
           "speaker": "client",
           "sl": "Tega raje ne, prosim.",
           "en": "Better not this one, please.",
+          "deliverySL": "[toplo] Tega raje ne, prosim.",
           "context": "Denver stiffens as she comes",
           "next": [
             "nD1"
@@ -5118,6 +5289,7 @@
           "speaker": "client",
           "sl": "Lahko se povohata, danes je miren.",
           "en": "They can sniff each other, he's calm today.",
+          "deliverySL": "[toplo] Lahko se povohata, danes je miren.",
           "context": "Denver stays calm",
           "next": [
             "nD2"
@@ -5134,6 +5306,7 @@
           "speaker": "client",
           "sl": "Lahko se povohata, danes je miren.",
           "en": "They can sniff each other, he's calm today.",
+          "deliverySL": "[toplo] Lahko se povohata, danes je miren.",
           "context": "Denver growls after all",
           "next": [
             "nD3"
@@ -5165,6 +5338,7 @@
           "speaker": "client",
           "sl": "Nič hudega. Adijo, lep dan!",
           "en": "No harm done. Bye, have a nice day!",
+          "deliverySL": "[toplo] Nič hudega. Adijo, lep dan!",
           "next": [
             "nByeA"
           ],
@@ -5203,6 +5377,7 @@
           "speaker": "client",
           "sl": "Bravo, Denver! Adijo, lep dan!",
           "en": "Well done, Denver! Bye, have a nice day!",
+          "deliverySL": "[toplo] Bravo, Denver! Adijo, lep dan!",
           "next": [
             "nByeB"
           ],
@@ -5245,6 +5420,7 @@
           "speaker": "client",
           "sl": "Oprostite! Včasih je nervozen ob drugih psih. Adijo!",
           "en": "Sorry! He's sometimes nervous around other dogs. Bye!",
+          "deliverySL": "[toplo] Oprostite! Včasih je nervozen ob drugih psih. Adijo!",
           "next": [
             "nByeC"
           ],
@@ -5274,6 +5450,7 @@
           "speaker": "client",
           "sl": "Oprostite, držim ga. Še mladiček je.",
           "en": "Sorry, I'm holding him. He's still a puppy.",
+          "deliverySL": "[toplo] Oprostite, držim ga. Še mladiček je.",
           "next": [
             "n2aH"
           ],
@@ -5289,6 +5466,7 @@
           "speaker": "client",
           "sl": "Hvala, ampak Enzo je prijazen. Lahko se povohata.",
           "en": "Thanks, but Enzo is friendly. They can sniff each other.",
+          "deliverySL": "[toplo] Hvala, ampak Enzo je prijazen. Lahko se povohata.",
           "next": [
             "n2bE"
           ],
@@ -5305,6 +5483,7 @@
           "speaker": "client",
           "sl": "Enzu pa lahko daste.",
           "en": "You can give Enzo some, though.",
+          "deliverySL": "[toplo] Enzu pa lahko daste.",
           "next": [
             "n4aE"
           ],
@@ -5318,6 +5497,7 @@
           "speaker": "client",
           "sl": "Plašen je.",
           "en": "He's shy.",
+          "deliverySL": "[toplo] Plašen je.",
           "next": [
             "n4bS"
           ],
@@ -5330,6 +5510,7 @@
           "speaker": "client",
           "sl": "Aha! Pa Enzo?",
           "en": "Ah! And Enzo?",
+          "deliverySL": "[toplo] Aha! Pa Enzo?",
           "next": [
             "nWaE"
           ],
@@ -5341,6 +5522,7 @@
           "speaker": "client",
           "sl": "Ja, ampak včasih je nervozen.",
           "en": "Yes, but he's sometimes nervous.",
+          "deliverySL": "[toplo] Ja, ampak včasih je nervozen.",
           "next": [
             "nWbN"
           ],
@@ -5356,6 +5538,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "nByeA"
           ],
@@ -5368,6 +5551,7 @@
           "speaker": "client",
           "sl": "Bravo, fanta! Adijo!",
           "en": "Well done, boys! Bye!",
+          "deliverySL": "[toplo] Bravo, fanta! Adijo!",
           "next": [
             "nByeB"
           ],
@@ -5381,6 +5565,7 @@
           "speaker": "client",
           "sl": "Oprostite! Adijo!",
           "en": "Sorry! Bye!",
+          "deliverySL": "[toplo] Oprostite! Adijo!",
           "next": [
             "nByeC"
           ],
@@ -5578,6 +5763,7 @@
           "speaker": "client",
           "sl": "Dober dan. Ja, seveda. Lahko ga pobožate.",
           "en": "Good day. Yes, of course. You can pet him.",
+          "deliverySL": "[toplo] Dober dan. Ja, seveda. Lahko ga pobožate.",
           "next": [
             "n2y"
           ],
@@ -5593,6 +5779,7 @@
           "speaker": "client",
           "sl": "Ja, ampak nežno. Še mladiček je.",
           "en": "Yes, but gently. He's still a puppy.",
+          "deliverySL": "[toplo] Ja, ampak nežno. Še mladiček je.",
           "next": [
             "n2g"
           ],
@@ -5609,6 +5796,7 @@
           "speaker": "client",
           "sl": "Raje ne, prosim. Rad skače na ljudi.",
           "en": "Better not, please. He likes to jump up at people.",
+          "deliverySL": "[toplo] Raje ne, prosim. Rad skače na ljudi.",
           "context": "she takes it well",
           "next": [
             "n2nA"
@@ -5625,6 +5813,7 @@
           "speaker": "client",
           "sl": "Raje ne, prosim. Rad skače na ljudi.",
           "en": "Better not, please. He likes to jump up at people.",
+          "deliverySL": "[toplo] Raje ne, prosim. Rad skače na ljudi.",
           "context": "she's a bit put out",
           "next": [
             "n2nB"
@@ -5677,6 +5866,7 @@
           "speaker": "client",
           "sl": "Tega raje ne, prosim. Pred kratkim je bil operiran.",
           "en": "Better not this one, please. He had an operation recently.",
+          "deliverySL": "[toplo] Tega raje ne, prosim. Pred kratkim je bil operiran.",
           "next": [
             "n3r"
           ],
@@ -5691,6 +5881,7 @@
           "speaker": "client",
           "sl": "Tega lahko pobožate, tistega pa ne.",
           "en": "You can pet this one, but not that one.",
+          "deliverySL": "[toplo] Tega lahko pobožate, tistega pa ne.",
           "next": [
             "n3t"
           ],
@@ -5717,6 +5908,7 @@
           "speaker": "client",
           "sl": "Nič hudega. Adijo!",
           "en": "No harm done. Bye!",
+          "deliverySL": "[toplo] Nič hudega. Adijo!",
           "next": [
             "n4"
           ],
@@ -5744,6 +5936,7 @@
           "speaker": "client",
           "sl": "Plašen je.",
           "en": "He's shy.",
+          "deliverySL": "[toplo] Plašen je.",
           "next": [
             "n3ts"
           ],
@@ -5756,6 +5949,7 @@
           "speaker": "client",
           "sl": "Pred kratkim je bil operiran.",
           "en": "He had an operation recently.",
+          "deliverySL": "[toplo] Pred kratkim je bil operiran.",
           "next": [
             "n3r"
           ],
@@ -5783,6 +5977,7 @@
           "speaker": "client",
           "sl": "Hvala, adijo!",
           "en": "Thanks, bye!",
+          "deliverySL": "[toplo] Hvala, adijo!",
           "next": [
             "n4"
           ],
@@ -5811,6 +6006,7 @@
           "speaker": "client",
           "sl": "Hvala. Lep dan!",
           "en": "Thank you. Have a nice day!",
+          "deliverySL": "[toplo] Hvala. Lep dan!",
           "next": [
             "n4"
           ],
@@ -5836,6 +6032,7 @@
           "speaker": "client",
           "sl": "Oprostite, še mladiček je. Adijo!",
           "en": "Sorry, he's still a puppy. Bye!",
+          "deliverySL": "[toplo] Oprostite, še mladiček je. Adijo!",
           "next": [
             "n4"
           ],
@@ -5872,6 +6069,7 @@
           "speaker": "client",
           "sl": "Dober dan. Ja. Počakaj! Naj te najprej povoha.",
           "en": "Good day. Yes. (to the girl) Wait! Let him sniff you first.",
+          "deliverySL": "[toplo] Dober dan. Ja. Počakaj! Naj te najprej povoha.",
           "context": "Enzo stays calm",
           "next": [
             "n5ok"
@@ -5889,6 +6087,7 @@
           "speaker": "client",
           "sl": "Dober dan. Ja. Počakaj! Naj te najprej povoha.",
           "en": "Good day. Yes. (to the girl) Wait! Let him sniff you first.",
+          "deliverySL": "[toplo] Dober dan. Ja. Počakaj! Naj te najprej povoha.",
           "context": "Enzo jumps up at her",
           "next": [
             "n5j"
@@ -5906,6 +6105,7 @@
           "speaker": "client",
           "sl": "Danes raje ne, oprostite.",
           "en": "Better not today, sorry.",
+          "deliverySL": "[toplo] Danes raje ne, oprostite.",
           "next": [
             "n5n"
           ],
@@ -5920,6 +6120,7 @@
           "speaker": "client",
           "sl": "Živjo! Tega lahko pobožaš, tistega pa ne.",
           "en": "(to the girl) Hi! You can pet this one, but not that one.",
+          "deliverySL": "[toplo] Živjo! Tega lahko pobožaš, tistega pa ne.",
           "next": [
             "n5t"
           ],
@@ -5948,6 +6149,7 @@
           "speaker": "client",
           "sl": "Bravo! Lahko ga pobožaš. Nežno.",
           "en": "(to the girl) Well done! You can pet him. Gently.",
+          "deliverySL": "[toplo] Bravo! Lahko ga pobožaš. Nežno.",
           "next": [
             "n6ok1"
           ],
@@ -5962,6 +6164,7 @@
           "speaker": "client",
           "sl": "Ali mu hočeš dati priboljšek? Takole, na dlan.",
           "en": "(to the girl) Do you want to give him a treat? Like this, on your palm.",
+          "deliverySL": "[toplo] Ali mu hočeš dati priboljšek? Takole, na dlan.",
           "next": [
             "n6ok2"
           ],
@@ -6005,6 +6208,7 @@
           "speaker": "client",
           "sl": "Bravo!",
           "en": "(to the girl) Well done!",
+          "deliverySL": "[toplo] Bravo!",
           "next": [
             "n7ok"
           ],
@@ -6030,6 +6234,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "n8"
           ],
@@ -6052,6 +6257,7 @@
           "speaker": "client",
           "sl": "Oprosti! Nič hudega, samo igrati se hoče.",
           "en": "(to the girl) Sorry! It's alright, he just wants to play.",
+          "deliverySL": "[toplo] Oprosti! Nič hudega, samo igrati se hoče.",
           "next": [
             "n6j1"
           ],
@@ -6067,6 +6273,7 @@
           "speaker": "client",
           "sl": "Oprostite! Še mladiček je.",
           "en": "(to the mother) Sorry! He's still a puppy.",
+          "deliverySL": "[toplo] Oprostite! Še mladiček je.",
           "next": [
             "n6j2"
           ],
@@ -6127,6 +6334,7 @@
           "speaker": "client",
           "sl": "Oprostite še enkrat. Adijo!",
           "en": "Sorry again. Bye!",
+          "deliverySL": "[toplo] Oprostite še enkrat. Adijo!",
           "next": [
             "n8"
           ],
@@ -6153,6 +6361,7 @@
           "speaker": "client",
           "sl": "Oprosti. Rad skače na ljudi.",
           "en": "(to the girl) Sorry. He likes to jump up at people.",
+          "deliverySL": "[toplo] Oprosti. Rad skače na ljudi.",
           "next": [
             "n6n"
           ],
@@ -6181,6 +6390,7 @@
           "speaker": "client",
           "sl": "Lep dan!",
           "en": "Have a nice day!",
+          "deliverySL": "[toplo] Lep dan!",
           "next": [
             "n8"
           ],
@@ -6207,6 +6417,7 @@
           "speaker": "client",
           "sl": "Plašen je.",
           "en": "(to the girl) He's shy.",
+          "deliverySL": "[toplo] Plašen je.",
           "next": [
             "n6t1"
           ],
@@ -6219,6 +6430,7 @@
           "speaker": "client",
           "sl": "Pred kratkim je bil operiran.",
           "en": "(to the girl) He had an operation recently.",
+          "deliverySL": "[toplo] Pred kratkim je bil operiran.",
           "next": [
             "n6t2"
           ],
@@ -6271,6 +6483,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "n8"
           ],
@@ -6298,6 +6511,7 @@
           "speaker": "client",
           "sl": "Ali ga lahko pokličete, prosim?",
           "en": "Can you call him back, please?",
+          "deliverySL": "[toplo] Ali ga lahko pokličete, prosim?",
           "context": "she's too far away to hear",
           "next": [
             "n9deaf"
@@ -6312,6 +6526,7 @@
           "speaker": "client",
           "sl": "Ali ga lahko pokličete, prosim?",
           "en": "Can you call him back, please?",
+          "deliverySL": "[toplo] Ali ga lahko pokličete, prosim?",
           "context": "she hears, but her dog ignores her",
           "next": [
             "n9ign"
@@ -6326,6 +6541,7 @@
           "speaker": "client",
           "sl": "Ali ga lahko daste na povodec?",
           "en": "Can you put him on the lead?",
+          "deliverySL": "[toplo] Ali ga lahko daste na povodec?",
           "context": "she hears, and her dog comes back at once",
           "next": [
             "n9back"
@@ -6354,6 +6570,7 @@
           "speaker": "client",
           "sl": "Prosim, ali ga lahko pokličete?",
           "en": "(louder) Please, can you call him back?",
+          "deliverySL": "[toplo] Prosim, ali ga lahko pokličete?",
           "context": "now she hears, and her dog comes back",
           "next": [
             "n9back"
@@ -6368,6 +6585,7 @@
           "speaker": "client",
           "sl": "Prosim, ali ga lahko pokličete?",
           "en": "(louder) Please, can you call him back?",
+          "deliverySL": "[toplo] Prosim, ali ga lahko pokličete?",
           "context": "now she hears, but her dog ignores her",
           "next": [
             "n9ign"
@@ -6397,6 +6615,7 @@
           "speaker": "client",
           "sl": "Ja, v redu je. Hvala!",
           "en": "Yes, it's fine. Thanks!",
+          "deliverySL": "[toplo] Ja, v redu je. Hvala!",
           "context": "Denver stayed calm",
           "next": [
             "n10calm"
@@ -6412,6 +6631,7 @@
           "speaker": "client",
           "sl": "Oprostite! Včasih je nervozen ob drugih psih.",
           "en": "Sorry! He's sometimes nervous around other dogs.",
+          "deliverySL": "[toplo] Oprostite! Včasih je nervozen ob drugih psih.",
           "context": "Denver barked at her dog",
           "next": [
             "n10bark"
@@ -6445,6 +6665,7 @@
           "speaker": "client",
           "sl": "Adijo!",
           "en": "Bye!",
+          "deliverySL": "[toplo] Adijo!",
           "next": [
             "n12"
           ],
@@ -6472,6 +6693,7 @@
           "speaker": "client",
           "sl": "Hvala, adijo!",
           "en": "Thanks, bye!",
+          "deliverySL": "[toplo] Hvala, adijo!",
           "next": [
             "n12"
           ],
@@ -6498,6 +6720,7 @@
           "speaker": "client",
           "sl": "Ali lahko pridete ponj, prosim?",
           "en": "Can you come and get him, please?",
+          "deliverySL": "[toplo] Ali lahko pridete ponj, prosim?",
           "next": [
             "n10take"
           ],
@@ -6523,6 +6746,7 @@
           "speaker": "client",
           "sl": "V redu je. Nič hudega.",
           "en": "It's alright. No harm done.",
+          "deliverySL": "[toplo] V redu je. Nič hudega.",
           "context": "Denver stayed calm",
           "next": [
             "n10calm"
@@ -6555,6 +6779,7 @@
           "speaker": "client",
           "sl": "Dober dan. Ali lahko malo počakate, prosim?",
           "en": "Good day. Could you wait a moment, please?",
+          "deliverySL": "[toplo] Dober dan. Ali lahko malo počakate, prosim?",
           "next": [
             "n13w"
           ],
@@ -6570,6 +6795,7 @@
           "speaker": "client",
           "sl": "Gremo na drugo stran.",
           "en": "We'll go over to the other side.",
+          "deliverySL": "[toplo] Gremo na drugo stran.",
           "next": [
             "n13o"
           ],
@@ -6583,6 +6809,7 @@
           "speaker": "client",
           "sl": "Kar pojdite mimo, ju držim.",
           "en": "Go ahead past, I'm holding them both.",
+          "deliverySL": "[toplo] Kar pojdite mimo, ju držim.",
           "context": "she's happy to pass",
           "next": [
             "n13pOk"
@@ -6598,6 +6825,7 @@
           "speaker": "client",
           "sl": "Kar pojdite mimo, ju držim.",
           "en": "Go ahead past, I'm holding them both.",
+          "deliverySL": "[toplo] Kar pojdite mimo, ju držim.",
           "context": "she hesitates",
           "next": [
             "n13pQ"
@@ -6642,6 +6870,7 @@
           "speaker": "client",
           "sl": "Ta je prijazen, tisti pa je včasih nervozen.",
           "en": "This one's friendly, that one is sometimes nervous.",
+          "deliverySL": "[toplo] Ta je prijazen, tisti pa je včasih nervozen.",
           "next": [
             "n14ta"
           ],
@@ -6659,6 +6888,7 @@
           "speaker": "client",
           "sl": "Ta je še mladiček, samo igrati se hoče.",
           "en": "This one's still a puppy, he just wants to play.",
+          "deliverySL": "[toplo] Ta je še mladiček, samo igrati se hoče.",
           "next": [
             "n14ml"
           ],
@@ -6707,6 +6937,7 @@
           "speaker": "client",
           "sl": "Hvala. Adijo!",
           "en": "Thanks. Bye!",
+          "deliverySL": "[toplo] Hvala. Adijo!",
           "next": [
             "n15"
           ],
@@ -6734,6 +6965,7 @@
           "speaker": "client",
           "sl": "Prosim. Adijo!",
           "en": "You're welcome. Bye!",
+          "deliverySL": "[toplo] Prosim. Adijo!",
           "next": [
             "n15"
           ],
@@ -6761,6 +6993,7 @@
           "speaker": "client",
           "sl": "Lep dan!",
           "en": "Have a nice day!",
+          "deliverySL": "[toplo] Lep dan!",
           "next": [
             "n15"
           ],
@@ -6789,6 +7022,7 @@
           "speaker": "client",
           "sl": "Kaj pomeni onemogla?",
           "en": "What does 'onemogla' mean?",
+          "deliverySL": "[toplo] Kaj pomeni onemogla?",
           "next": [
             "n16m"
           ],
@@ -6800,6 +7034,7 @@
           "speaker": "client",
           "sl": "Počasi, prosim.",
           "en": "Slowly, please.",
+          "deliverySL": "[toplo] Počasi, prosim.",
           "next": [
             "n16p"
           ],
@@ -6811,6 +7046,7 @@
           "speaker": "client",
           "sl": "Ponovite, prosim.",
           "en": "Please repeat.",
+          "deliverySL": "[toplo] Ponovite, prosim.",
           "next": [
             "n16r"
           ],
@@ -6870,6 +7106,7 @@
           "speaker": "client",
           "sl": "Oprostite! Držim ga, gremo naprej.",
           "en": "Sorry! I've got him, we'll move on.",
+          "deliverySL": "[toplo] Oprostite! Držim ga, gremo naprej.",
           "next": [
             "n17h"
           ],
@@ -6884,6 +7121,7 @@
           "speaker": "client",
           "sl": "Ali se lahko povohata?",
           "en": "Can they sniff each other?",
+          "deliverySL": "[toplo] Ali se lahko povohata?",
           "context": "her answer is no",
           "next": [
             "n17n"
@@ -6897,6 +7135,7 @@
           "speaker": "client",
           "sl": "Ali se lahko povohata?",
           "en": "Can they sniff each other?",
+          "deliverySL": "[toplo] Ali se lahko povohata?",
           "context": "she says yes, gently",
           "next": [
             "n17y"
@@ -6927,6 +7166,7 @@
           "speaker": "client",
           "sl": "Lep dan!",
           "en": "Have a nice day!",
+          "deliverySL": "[toplo] Lep dan!",
           "next": [
             "n20"
           ],
@@ -6953,6 +7193,7 @@
           "speaker": "client",
           "sl": "Potem pa raje ne. Gremo naprej.",
           "en": "Then better not. We'll move on.",
+          "deliverySL": "[toplo] Potem pa raje ne. Gremo naprej.",
           "next": [
             "n18n"
           ],
@@ -6984,6 +7225,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "n20"
           ],
@@ -7014,6 +7256,7 @@
           "speaker": "client",
           "sl": "Počasi, Enzo! Nežno.",
           "en": "(to Enzo) Slowly, Enzo! Gently.",
+          "deliverySL": "[toplo] Počasi, Enzo! Nežno.",
           "next": [
             "n18y"
           ],
@@ -7041,6 +7284,7 @@
           "speaker": "client",
           "sl": "Bravo, Enzo! Adijo!",
           "en": "Good boy, Enzo! Bye!",
+          "deliverySL": "[toplo] Bravo, Enzo! Adijo!",
           "next": [
             "n20"
           ],
@@ -7070,6 +7314,7 @@
           "speaker": "client",
           "sl": "Ja, oba sta moja.",
           "en": "Yes, both are mine.",
+          "deliverySL": "[toplo] Ja, oba sta moja.",
           "next": [
             "n21a"
           ],
@@ -7084,6 +7329,7 @@
           "speaker": "client",
           "sl": "Ja. Ta je Enzo, tisti pa Denver.",
           "en": "Yes. This one is Enzo, and that one Denver.",
+          "deliverySL": "[toplo] Ja. Ta je Enzo, tisti pa Denver.",
           "next": [
             "n21b"
           ],
@@ -7129,6 +7375,7 @@
           "speaker": "client",
           "sl": "Prosim, ne dajte jima hrane.",
           "en": "Please don't give them food.",
+          "deliverySL": "[toplo] Prosim, ne dajte jima hrane.",
           "context": "she listens",
           "next": [
             "n22b"
@@ -7144,6 +7391,7 @@
           "speaker": "client",
           "sl": "Prosim, ne dajte jima hrane.",
           "en": "Please don't give them food.",
+          "deliverySL": "[toplo] Prosim, ne dajte jima hrane.",
           "context": "she had already slipped Denver a bite",
           "next": [
             "n22late"
@@ -7159,6 +7407,7 @@
           "speaker": "client",
           "sl": "Temu lahko daste malo, tistemu pa ne.",
           "en": "You can give this one a little, but not that one.",
+          "deliverySL": "[toplo] Temu lahko daste malo, tistemu pa ne.",
           "context": "she listens",
           "next": [
             "n22e"
@@ -7173,6 +7422,7 @@
           "speaker": "client",
           "sl": "Temu lahko daste malo, tistemu pa ne.",
           "en": "You can give this one a little, but not that one.",
+          "deliverySL": "[toplo] Temu lahko daste malo, tistemu pa ne.",
           "context": "she had already slipped Denver a bite",
           "next": [
             "n22late"
@@ -7201,6 +7451,7 @@
           "speaker": "client",
           "sl": "Tisti je bil pred kratkim operiran, ta je pa še mladiček.",
           "en": "That one had an operation recently, and this one is still a puppy.",
+          "deliverySL": "[toplo] Tisti je bil pred kratkim operiran, ta je pa še mladiček.",
           "next": [
             "n23b"
           ],
@@ -7237,6 +7488,7 @@
           "speaker": "client",
           "sl": "Hvala. Adijo, lep dan!",
           "en": "Thanks. Bye, have a nice day!",
+          "deliverySL": "[toplo] Hvala. Adijo, lep dan!",
           "next": [
             "nByeB"
           ],
@@ -7274,6 +7526,7 @@
           "speaker": "client",
           "sl": "Bravo, Enzo! Hvala.",
           "en": "Good boy, Enzo! Thank you.",
+          "deliverySL": "[toplo] Bravo, Enzo! Hvala.",
           "next": [
             "n23e"
           ],
@@ -7300,6 +7553,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "nByeE"
           ],
@@ -7340,6 +7594,7 @@
           "speaker": "client",
           "sl": "Prosim, ne dajte mu več hrane. Pred kratkim je bil operiran.",
           "en": "Please don't give him any more food. He had an operation recently.",
+          "deliverySL": "[toplo] Prosim, ne dajte mu več hrane. Pred kratkim je bil operiran.",
           "next": [
             "n23late"
           ],
@@ -7370,6 +7625,7 @@
           "speaker": "client",
           "sl": "Ne skrbite. Adijo!",
           "en": "Don't worry. Bye!",
+          "deliverySL": "[toplo] Ne skrbite. Adijo!",
           "next": [
             "nByeLate"
           ],
@@ -7394,6 +7650,7 @@
           "speaker": "client",
           "sl": "Nič hudega. Lep dan!",
           "en": "No harm done. Have a nice day!",
+          "deliverySL": "[toplo] Nič hudega. Lep dan!",
           "next": [
             "n4"
           ],
@@ -7406,6 +7663,7 @@
           "speaker": "client",
           "sl": "Hvala, lep dan!",
           "en": "Thanks, have a nice day!",
+          "deliverySL": "[toplo] Hvala, lep dan!",
           "next": [
             "n4"
           ],
@@ -7418,6 +7676,7 @@
           "speaker": "client",
           "sl": "Hvala, adijo!",
           "en": "Thanks, bye!",
+          "deliverySL": "[toplo] Hvala, adijo!",
           "next": [
             "n4"
           ],
@@ -7430,6 +7689,7 @@
           "speaker": "client",
           "sl": "Oprostite. Lep dan!",
           "en": "Sorry. Have a nice day!",
+          "deliverySL": "[toplo] Oprostite. Lep dan!",
           "next": [
             "n4"
           ],
@@ -7442,6 +7702,7 @@
           "speaker": "client",
           "sl": "Lahko ga pobožaš. Nežno.",
           "en": "(to the girl) You can pet him. Gently.",
+          "deliverySL": "[toplo] Lahko ga pobožaš. Nežno.",
           "next": [
             "n6ok1"
           ],
@@ -7455,6 +7716,7 @@
           "speaker": "client",
           "sl": "Adijo, Lana!",
           "en": "Bye, Lana!",
+          "deliverySL": "[toplo] Adijo, Lana!",
           "next": [
             "n8"
           ],
@@ -7466,6 +7728,7 @@
           "speaker": "client",
           "sl": "Hvala. Adijo, Lana!",
           "en": "Thanks. Bye, Lana!",
+          "deliverySL": "[toplo] Hvala. Adijo, Lana!",
           "next": [
             "n8"
           ],
@@ -7478,6 +7741,7 @@
           "speaker": "client",
           "sl": "Oprosti, Lana. Adijo!",
           "en": "Sorry, Lana. Bye!",
+          "deliverySL": "[toplo] Oprosti, Lana. Adijo!",
           "next": [
             "n8"
           ],
@@ -7490,6 +7754,7 @@
           "speaker": "client",
           "sl": "No, dobro. Naj te najprej povoha.",
           "en": "(to the girl) Well, all right. Let him sniff you first.",
+          "deliverySL": "[toplo] No, dobro. Naj te najprej povoha.",
           "next": [
             "n5ok"
           ],
@@ -7504,6 +7769,7 @@
           "speaker": "client",
           "sl": "Adijo, Lana!",
           "en": "Bye, Lana!",
+          "deliverySL": "[toplo] Adijo, Lana!",
           "next": [
             "n8"
           ],
@@ -7515,6 +7781,7 @@
           "speaker": "client",
           "sl": "Prosim. Adijo, Lana!",
           "en": "You're welcome. Bye, Lana!",
+          "deliverySL": "[toplo] Prosim. Adijo, Lana!",
           "next": [
             "n8"
           ],
@@ -7527,6 +7794,7 @@
           "speaker": "client",
           "sl": "Hvala! Lep dan!",
           "en": "Thanks! Have a nice day!",
+          "deliverySL": "[toplo] Hvala! Lep dan!",
           "next": [
             "n12"
           ],
@@ -7539,6 +7807,7 @@
           "speaker": "client",
           "sl": "Hvala. Lep dan!",
           "en": "Thanks. Have a nice day!",
+          "deliverySL": "[toplo] Hvala. Lep dan!",
           "next": [
             "n12"
           ],
@@ -7551,6 +7820,7 @@
           "speaker": "client",
           "sl": "Ali ga lahko daste na povodec?",
           "en": "Can you put him on the lead?",
+          "deliverySL": "[toplo] Ali ga lahko daste na povodec?",
           "next": [
             "n10lead"
           ],
@@ -7564,6 +7834,7 @@
           "speaker": "client",
           "sl": "Hvala, lep dan!",
           "en": "Thanks, have a nice day!",
+          "deliverySL": "[toplo] Hvala, lep dan!",
           "next": [
             "n15"
           ],
@@ -7576,6 +7847,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "n15"
           ],
@@ -7588,6 +7860,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "n15"
           ],
@@ -7600,6 +7873,7 @@
           "speaker": "client",
           "sl": "Prosim. Adijo!",
           "en": "You're welcome. Bye!",
+          "deliverySL": "[toplo] Prosim. Adijo!",
           "next": [
             "n15"
           ],
@@ -7612,6 +7886,7 @@
           "speaker": "client",
           "sl": "Prosim. Lep dan!",
           "en": "You're welcome. Have a nice day!",
+          "deliverySL": "[toplo] Prosim. Lep dan!",
           "next": [
             "n20"
           ],
@@ -7624,6 +7899,7 @@
           "speaker": "client",
           "sl": "Samo malo? Držim ga.",
           "en": "Just for a moment? I'm holding him.",
+          "deliverySL": "[toplo] Samo malo? Držim ga.",
           "next": [
             "n18nS"
           ],
@@ -7637,6 +7913,7 @@
           "speaker": "client",
           "sl": "Lep dan!",
           "en": "Have a nice day!",
+          "deliverySL": "[toplo] Lep dan!",
           "next": [
             "n20"
           ],
@@ -7648,6 +7925,7 @@
           "speaker": "client",
           "sl": "Hm, potem pa raje ne. Še mladiček je.",
           "en": "Hm, then better not. He's still a puppy.",
+          "deliverySL": "[toplo] Hm, potem pa raje ne. Še mladiček je.",
           "next": [
             "n18yN"
           ],
@@ -7665,6 +7943,7 @@
           "speaker": "client",
           "sl": "Adijo, lep dan!",
           "en": "Bye, have a nice day!",
+          "deliverySL": "[toplo] Adijo, lep dan!",
           "next": [
             "n20"
           ],
@@ -7677,6 +7956,7 @@
           "speaker": "client",
           "sl": "No, dobro. Temu lahko daste malo.",
           "en": "Well, all right. You can give this one a little.",
+          "deliverySL": "[toplo] No, dobro. Temu lahko daste malo.",
           "next": [
             "n22e"
           ],
@@ -7692,6 +7972,7 @@
           "speaker": "client",
           "sl": "Hvala. Adijo!",
           "en": "Thanks. Bye!",
+          "deliverySL": "[toplo] Hvala. Adijo!",
           "next": [
             "nByeB"
           ],
@@ -7704,6 +7985,7 @@
           "speaker": "client",
           "sl": "Hvala. Samo malo, prosim.",
           "en": "Thanks. Just a little, please.",
+          "deliverySL": "[toplo] Hvala. Samo malo, prosim.",
           "next": [
             "n22eM"
           ],
@@ -7718,6 +8000,7 @@
           "speaker": "client",
           "sl": "Hvala, adijo!",
           "en": "Thanks, bye!",
+          "deliverySL": "[toplo] Hvala, adijo!",
           "next": [
             "nByeE"
           ],
@@ -7730,6 +8013,7 @@
           "speaker": "client",
           "sl": "Nič hudega, malo je v redu.",
           "en": "It's all right, a little is fine.",
+          "deliverySL": "[toplo] Nič hudega, malo je v redu.",
           "next": [
             "n23lateOk"
           ],
@@ -7744,6 +8028,7 @@
           "speaker": "client",
           "sl": "V redu je. Lep dan!",
           "en": "It's alright. Have a nice day!",
+          "deliverySL": "[toplo] V redu je. Lep dan!",
           "next": [
             "nByeLate"
           ],
@@ -7834,6 +8119,7 @@
           "speaker": "client",
           "sl": "Star je pet mesecev. Še mladiček je.",
           "en": "(to the girl) He's five months old. He's still a puppy.",
+          "deliverySL": "[toplo] Star je pet mesecev. Še mladiček je.",
           "next": [
             "n6age1"
           ],
@@ -7848,6 +8134,7 @@
           "speaker": "client",
           "sl": "Pet mesecev. Pa ti?",
           "en": "(to the girl) Five months. And you?",
+          "deliverySL": "[toplo] Pet mesecev. Pa ti?",
           "next": [
             "n6age2"
           ],
@@ -7887,6 +8174,7 @@
           "speaker": "client",
           "sl": "Ime mu je Enzo. Mešanec je.",
           "en": "His name is Enzo. He's a mixed breed.",
+          "deliverySL": "[toplo] Ime mu je Enzo. Mešanec je.",
           "next": [
             "n21aI"
           ],
@@ -7899,6 +8187,7 @@
           "speaker": "client",
           "sl": "Ime mu je Enzo. Lahko ga pobožate.",
           "en": "His name is Enzo. You can pet him.",
+          "deliverySL": "[toplo] Ime mu je Enzo. Lahko ga pobožate.",
           "next": [
             "n21aP"
           ],

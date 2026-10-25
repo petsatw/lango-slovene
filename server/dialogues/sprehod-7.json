@@ -27,7 +27,7 @@
     }
   ],
   "introduces": [],
-  "audio": "pending",
+  "audio": "ready",
   "voices": {
     "npc": "female-speaker",
     "client": "slavko"
@@ -51,6 +51,7 @@
       "speaker": "client",
       "sl": "Oprosti! Tega lahko pobožaš, tistega pa ne.",
       "en": "Sorry! You can pet this one, but not that one.",
+      "deliverySL": "[toplo] Oprosti! Tega lahko pobožaš, tistega pa ne.",
       "next": [
         "n2r"
       ],
@@ -64,6 +65,7 @@
       "speaker": "client",
       "sl": "Oprosti! Tega raje ne.",
       "en": "Sorry! Better not this one.",
+      "deliverySL": "[toplo] Oprosti! Tega raje ne.",
       "next": [
         "n2f"
       ],
@@ -89,6 +91,7 @@
       "speaker": "client",
       "sl": "Ne. Počasi. Naj te najprej povoha.",
       "en": "No. Slowly. Let him sniff you first.",
+      "deliverySL": "[toplo] Ne. Počasi. Naj te najprej povoha.",
       "next": [
         "n4"
       ],
@@ -104,6 +107,7 @@
       "speaker": "client",
       "sl": "Oprosti, danes pa raje ne.",
       "en": "Sorry, better not today after all.",
+      "deliverySL": "[toplo] Oprosti, danes pa raje ne.",
       "context": "enzo backs away behind your legs",
       "next": [
         "nNo"
@@ -133,6 +137,7 @@
       "speaker": "client",
       "sl": "Pred kratkim je bil operiran.",
       "en": "He had an operation recently.",
+      "deliverySL": "[toplo] Pred kratkim je bil operiran.",
       "next": [
         "n3op"
       ],
@@ -146,6 +151,7 @@
       "speaker": "client",
       "sl": "Plašen je.",
       "en": "He's shy.",
+      "deliverySL": "[toplo] Plašen je.",
       "next": [
         "n3sh"
       ],
@@ -191,6 +197,7 @@
       "speaker": "client",
       "sl": "Počasi. Naj te najprej povoha.",
       "en": "Slowly. Let him sniff you first.",
+      "deliverySL": "[toplo] Počasi. Naj te najprej povoha.",
       "next": [
         "n4"
       ],
@@ -205,6 +212,7 @@
       "speaker": "client",
       "sl": "Oprosti, danes raje ne.",
       "en": "Sorry, better not today.",
+      "deliverySL": "[toplo] Oprosti, danes raje ne.",
       "next": [
         "nNo"
       ],
@@ -247,6 +255,7 @@
       "speaker": "client",
       "sl": "V redu. Adijo!",
       "en": "That's fine. Bye!",
+      "deliverySL": "[toplo] V redu. Adijo!",
       "next": [
         "nByeNo"
       ],
@@ -282,6 +291,7 @@
       "speaker": "client",
       "sl": "Ja, takole.",
       "en": "Yes, like this.",
+      "deliverySL": "[toplo] Ja, takole.",
       "context": "enzo sniffs her hand and wags his tail",
       "next": [
         "n5ok"
@@ -295,6 +305,7 @@
       "speaker": "client",
       "sl": "Ja, takole.",
       "en": "Yes, like this.",
+      "deliverySL": "[toplo] Ja, takole.",
       "context": "enzo jumps up at her",
       "next": [
         "n5sc"
@@ -322,6 +333,7 @@
       "speaker": "client",
       "sl": "Ja, lahko ga pobožaš. Nežno.",
       "en": "Yes, you can pet him. Gently.",
+      "deliverySL": "[toplo] Ja, lahko ga pobožaš. Nežno.",
       "next": [
         "nMomOk"
       ],
@@ -365,6 +377,7 @@
       "speaker": "client",
       "sl": "Nič hudega, samo igrati se hoče. Počasi.",
       "en": "It's OK, he just wants to play. Slowly.",
+      "deliverySL": "[toplo] Nič hudega, samo igrati se hoče. Počasi.",
       "next": [
         "nMomBrave"
       ],
@@ -380,6 +393,7 @@
       "speaker": "client",
       "sl": "Nič hudega. Potem pa raje ne.",
       "en": "It's OK. Then better not.",
+      "deliverySL": "[toplo] Nič hudega. Potem pa raje ne.",
       "next": [
         "nMomSc"
       ],
@@ -413,6 +427,7 @@
       "speaker": "client",
       "sl": "Nič hudega. Adijo, lep dan!",
       "en": "No problem. Bye, have a nice day!",
+      "deliverySL": "[toplo] Nič hudega. Adijo, lep dan!",
       "next": [
         "nBye"
       ],
@@ -426,6 +441,7 @@
       "speaker": "client",
       "sl": "Bravo! Adijo!",
       "en": "Well done! Bye!",
+      "deliverySL": "[toplo] Bravo! Adijo!",
       "next": [
         "nByeKid"
       ],
@@ -475,6 +491,7 @@
       "speaker": "client",
       "sl": "Oprostite. Še mladiček je.",
       "en": "Sorry. He's still a puppy.",
+      "deliverySL": "[toplo] Oprostite. Še mladiček je.",
       "next": [
         "nByeSc"
       ],
@@ -500,6 +517,7 @@
       "speaker": "client",
       "sl": "Nič hudega. Adijo!",
       "en": "No problem. Bye!",
+      "deliverySL": "[toplo] Nič hudega. Adijo!",
       "next": [
         "nByeNo"
       ],
@@ -512,6 +530,7 @@
       "speaker": "client",
       "sl": "Ja, ampak nežno. Še mladiček je.",
       "en": "Yes, but gently. He's still a puppy.",
+      "deliverySL": "[toplo] Ja, ampak nežno. Še mladiček je.",
       "next": [
         "nMomOk"
       ],
@@ -528,6 +547,7 @@
       "speaker": "client",
       "sl": "Oprosti! Adijo!",
       "en": "Sorry! Bye! (to the girl)",
+      "deliverySL": "[toplo] Oprosti! Adijo!",
       "next": [
         "nByeSc"
       ],

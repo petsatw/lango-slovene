@@ -41,7 +41,7 @@
     "ta",
     "tega_tistega"
   ],
-  "audio": "pending",
+  "audio": "ready",
   "voices": {
     "npc": "female-speaker",
     "client": "slavko"
@@ -67,6 +67,7 @@
       "speaker": "client",
       "sl": "Tega raje ne, prosim. Plašen je.",
       "en": "Better not this one, please. He's shy.",
+      "deliverySL": "[toplo] Tega raje ne, prosim. Plašen je.",
       "next": [
         "n2"
       ],
@@ -80,6 +81,7 @@
       "speaker": "client",
       "sl": "Tega lahko pobožate, tistega pa ne.",
       "en": "You can pet this one, but not that one.",
+      "deliverySL": "[toplo] Tega lahko pobožate, tistega pa ne.",
       "next": [
         "n3"
       ],
@@ -92,6 +94,7 @@
       "speaker": "client",
       "sl": "Ne, prosim. Pred kratkim je bil operiran.",
       "en": "No, please. He had an operation recently.",
+      "deliverySL": "[toplo] Ne, prosim. Pred kratkim je bil operiran.",
       "next": [
         "n4"
       ],
@@ -120,6 +123,7 @@
       "speaker": "client",
       "sl": "Nič hudega. Tega lahko pobožate.",
       "en": "No problem. You can pet this one.",
+      "deliverySL": "[toplo] Nič hudega. Tega lahko pobožate.",
       "next": [
         "n3"
       ],
@@ -134,6 +138,7 @@
       "speaker": "client",
       "sl": "Nič hudega.",
       "en": "No problem.",
+      "deliverySL": "[toplo] Nič hudega.",
       "next": [
         "n5"
       ],
@@ -161,6 +166,7 @@
       "speaker": "client",
       "sl": "Ja, oba sta moja.",
       "en": "Yes, they're both mine.",
+      "deliverySL": "[toplo] Ja, oba sta moja.",
       "next": [
         "n7"
       ],
@@ -175,6 +181,7 @@
       "speaker": "client",
       "sl": "Ja, oba. Ta je še mladiček.",
       "en": "Yes, both. This one's still a puppy.",
+      "deliverySL": "[toplo] Ja, oba. Ta je še mladiček.",
       "next": [
         "n8"
       ],
@@ -204,6 +211,7 @@
       "speaker": "client",
       "sl": "Hvala. Tega pa lahko pobožate.",
       "en": "Thanks. This one you can pet, though.",
+      "deliverySL": "[toplo] Hvala. Tega pa lahko pobožate.",
       "next": [
         "n3"
       ],
@@ -219,6 +227,7 @@
       "speaker": "client",
       "sl": "Hvala. Adijo!",
       "en": "Thanks. Bye!",
+      "deliverySL": "[toplo] Hvala. Adijo!",
       "next": [
         "nWell"
       ],
@@ -245,6 +254,7 @@
       "speaker": "client",
       "sl": "Star je.",
       "en": "He's old.",
+      "deliverySL": "[toplo] Star je.",
       "next": [
         "n6"
       ],
@@ -257,6 +267,7 @@
       "speaker": "client",
       "sl": "Pred kratkim je bil operiran.",
       "en": "He had an operation recently.",
+      "deliverySL": "[toplo] Pred kratkim je bil operiran.",
       "next": [
         "n4"
       ],
@@ -287,6 +298,7 @@
       "speaker": "client",
       "sl": "Ampak tega lahko pobožate.",
       "en": "But you can pet this one.",
+      "deliverySL": "[toplo] Ampak tega lahko pobožate.",
       "next": [
         "n3"
       ],
@@ -331,6 +343,7 @@
       "speaker": "client",
       "sl": "Adijo, lep dan!",
       "en": "Bye, have a nice day!",
+      "deliverySL": "[toplo] Adijo, lep dan!",
       "next": [
         "nBye"
       ],
@@ -367,6 +380,7 @@
       "speaker": "client",
       "sl": "Hvala, lep dan!",
       "en": "Thanks, have a nice day!",
+      "deliverySL": "[toplo] Hvala, lep dan!",
       "next": [
         "nBye"
       ],
@@ -379,6 +393,7 @@
       "speaker": "client",
       "sl": "Ja, star je pet mesecev. Adijo!",
       "en": "Yes, he's five months old. Bye!",
+      "deliverySL": "[toplo] Ja, star je pet mesecev. Adijo!",
       "next": [
         "nBye"
       ],

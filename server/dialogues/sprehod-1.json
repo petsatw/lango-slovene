@@ -42,7 +42,7 @@
     "takole",
     "tega_raje_ne"
   ],
-  "audio": "pending",
+  "audio": "ready",
   "voices": {
     "npc": "female-speaker",
     "client": "slavko"
@@ -69,6 +69,7 @@
       "speaker": "client",
       "sl": "Dober dan. Ja, seveda. Lahko ga pobožate.",
       "en": "Good day. Yes, of course. You can pet him.",
+      "deliverySL": "[toplo] Dober dan. Ja, seveda. Lahko ga pobožate.",
       "next": [
         "n2yes"
       ],
@@ -84,6 +85,7 @@
       "speaker": "client",
       "sl": "Dober dan. Ja, počasi, prosim.",
       "en": "Good day. Yes, slowly, please.",
+      "deliverySL": "[toplo] Dober dan. Ja, počasi, prosim.",
       "next": [
         "n2slow"
       ],
@@ -97,6 +99,7 @@
       "speaker": "client",
       "sl": "Dober dan. Tega raje ne, prosim.",
       "en": "Good day. I'd rather not, please.",
+      "deliverySL": "[toplo] Dober dan. Tega raje ne, prosim.",
       "next": [
         "n2no"
       ],
@@ -122,6 +125,7 @@
       "speaker": "client",
       "sl": "Še mladiček je.",
       "en": "He's still a puppy.",
+      "deliverySL": "[toplo] Še mladiček je.",
       "next": [
         "n3pup"
       ],
@@ -135,6 +139,7 @@
       "speaker": "client",
       "sl": "Prijazen je.",
       "en": "He's friendly.",
+      "deliverySL": "[toplo] Prijazen je.",
       "next": [
         "n3friend"
       ],
@@ -194,6 +199,7 @@
       "speaker": "client",
       "sl": "Ja, takole.",
       "en": "Yes, like that.",
+      "deliverySL": "[toplo] Ja, takole.",
       "next": [
         "n3slow"
       ],
@@ -222,6 +228,7 @@
       "speaker": "client",
       "sl": "Adijo, lep dan!",
       "en": "Bye, have a nice day!",
+      "deliverySL": "[toplo] Adijo, lep dan!",
       "next": [
         "nByeHappy"
       ],
@@ -234,6 +241,7 @@
       "speaker": "client",
       "sl": "Adijo!",
       "en": "Bye!",
+      "deliverySL": "[toplo] Adijo!",
       "next": [
         "nByeHappy"
       ],
@@ -266,6 +274,7 @@
       "speaker": "client",
       "sl": "Ne, še mladiček je. Skače.",
       "en": "No, he's still a puppy. He jumps.",
+      "deliverySL": "[toplo] Ne, še mladiček je. Skače.",
       "context": "she understands",
       "next": [
         "n3noOk"
@@ -282,6 +291,7 @@
       "speaker": "client",
       "sl": "Ne, še mladiček je. Skače.",
       "en": "No, he's still a puppy. He jumps.",
+      "deliverySL": "[toplo] Ne, še mladiček je. Skače.",
       "context": "she's a little disappointed",
       "next": [
         "n3noSad"
@@ -327,6 +337,7 @@
       "speaker": "client",
       "sl": "Adijo, lep dan!",
       "en": "Bye, have a nice day!",
+      "deliverySL": "[toplo] Adijo, lep dan!",
       "next": [
         "nByeNo"
       ],
@@ -339,6 +350,7 @@
       "speaker": "client",
       "sl": "Adijo!",
       "en": "Bye!",
+      "deliverySL": "[toplo] Adijo!",
       "next": [
         "nByeNo"
       ],
@@ -362,6 +374,7 @@
       "speaker": "client",
       "sl": "Ja, samo nežno.",
       "en": "Yes, just gently.",
+      "deliverySL": "[toplo] Ja, samo nežno.",
       "next": [
         "n3slow"
       ],

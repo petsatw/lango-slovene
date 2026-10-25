@@ -40,7 +40,7 @@
     "star_sem_let",
     "zivahen"
   ],
-  "audio": "pending",
+  "audio": "ready",
   "voices": {
     "npc": "female-speaker",
     "client": "slavko"
@@ -65,6 +65,7 @@
       "speaker": "client",
       "sl": "Dober dan, hvala. Ime mu je Enzo.",
       "en": "Good day, thanks. His name is Enzo.",
+      "deliverySL": "[toplo] Dober dan, hvala. Ime mu je Enzo.",
       "next": [
         "n3"
       ],
@@ -92,6 +93,7 @@
       "speaker": "client",
       "sl": "Star je pet mesecev.",
       "en": "He's five months old.",
+      "deliverySL": "[toplo] Star je pet mesecev.",
       "next": [
         "n4"
       ],
@@ -117,6 +119,7 @@
       "speaker": "client",
       "sl": "Ne, prijazen je.",
       "en": "No, he's friendly.",
+      "deliverySL": "[toplo] Ne, prijazen je.",
       "next": [
         "n5a"
       ],
@@ -130,6 +133,7 @@
       "speaker": "client",
       "sl": "Še mladiček je, živahen je.",
       "en": "He's still a puppy, he's lively.",
+      "deliverySL": "[toplo] Še mladiček je, živahen je.",
       "next": [
         "n5b"
       ],
@@ -177,6 +181,7 @@
       "speaker": "client",
       "sl": "Fant je.",
       "en": "He's a boy.",
+      "deliverySL": "[toplo] Fant je.",
       "next": [
         "n6"
       ],
@@ -204,6 +209,7 @@
       "speaker": "client",
       "sl": "Mešanec je.",
       "en": "He's a mixed breed.",
+      "deliverySL": "[toplo] Mešanec je.",
       "next": [
         "n7"
       ],
@@ -230,6 +236,7 @@
       "speaker": "client",
       "sl": "Oprostite! Samo igrati se hoče.",
       "en": "Sorry! He just wants to play.",
+      "deliverySL": "[toplo] Oprostite! Samo igrati se hoče.",
       "next": [
         "n8a"
       ],
@@ -244,6 +251,7 @@
       "speaker": "client",
       "sl": "Ne skrbite, prijazen je.",
       "en": "Don't worry, he's friendly.",
+      "deliverySL": "[toplo] Ne skrbite, prijazen je.",
       "next": [
         "n8b"
       ],
@@ -292,6 +300,7 @@
       "speaker": "client",
       "sl": "Počasi, prosim.",
       "en": "Slowly, please.",
+      "deliverySL": "[toplo] Počasi, prosim.",
       "next": [
         "n10a"
       ],
@@ -303,6 +312,7 @@
       "speaker": "client",
       "sl": "Ponovite, prosim.",
       "en": "Please repeat.",
+      "deliverySL": "[toplo] Ponovite, prosim.",
       "next": [
         "n10b"
       ],
@@ -314,6 +324,7 @@
       "speaker": "client",
       "sl": "Ne razumem.",
       "en": "I don't understand.",
+      "deliverySL": "[toplo] Ne razumem.",
       "next": [
         "n10c"
       ],
@@ -375,6 +386,7 @@
       "speaker": "client",
       "sl": "Ja, seveda. Gremo.",
       "en": "Yes, sure. Let's go.",
+      "deliverySL": "[toplo] Ja, seveda. Gremo.",
       "next": [
         "nWalk"
       ],
@@ -388,6 +400,7 @@
       "speaker": "client",
       "sl": "Danes ne, gremo naprej. Adijo, lep dan!",
       "en": "Not today, we're going on. Bye, have a nice day!",
+      "deliverySL": "[toplo] Danes ne, gremo naprej. Adijo, lep dan!",
       "next": [
         "nBye"
       ],
@@ -427,6 +440,7 @@
       "speaker": "client",
       "sl": "Dober dan. Ime mu je Enzo, še mladiček je.",
       "en": "Good day. His name is Enzo, he's still a puppy.",
+      "deliverySL": "[toplo] Dober dan. Ime mu je Enzo, še mladiček je.",
       "next": [
         "n2pup"
       ],
@@ -441,6 +455,7 @@
       "speaker": "client",
       "sl": "Star je pet mesecev. Ne skrbite, prijazen je.",
       "en": "He's five months old. Don't worry, he's friendly.",
+      "deliverySL": "[toplo] Star je pet mesecev. Ne skrbite, prijazen je.",
       "next": [
         "n5a"
       ],
@@ -455,6 +470,7 @@
       "speaker": "client",
       "sl": "Fant je. Počasi, Enzo!",
       "en": "He's a boy. Slowly, Enzo!",
+      "deliverySL": "[toplo] Fant je. Počasi, Enzo!",
       "next": [
         "n6a"
       ],
@@ -468,6 +484,7 @@
       "speaker": "client",
       "sl": "Fant je. Prijazen je, samo živahen.",
       "en": "He's a boy. He's friendly, just lively.",
+      "deliverySL": "[toplo] Fant je. Prijazen je, samo živahen.",
       "next": [
         "n6b"
       ],
@@ -483,6 +500,7 @@
       "speaker": "client",
       "sl": "Mešanec je. Lahko ga pobožate.",
       "en": "He's a mixed breed. You can pet him.",
+      "deliverySL": "[toplo] Mešanec je. Lahko ga pobožate.",
       "next": [
         "n7b"
       ],
