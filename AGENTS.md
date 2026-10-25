@@ -28,6 +28,7 @@ Before implementing:
 - No abstractions for single-use code.
 - No "flexibility" or "configurability" that wasn't requested.
 - No error handling for impossible scenarios.
+- Only the comments and specifications essential to the purpose (see 6).
 - If you write 200 lines and it could be 50, rewrite it.
 
 Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
@@ -92,6 +93,19 @@ When diagnosing a problem or analyzing a behavior:
   what was thought and when, and a superseded document there should say so at the top.
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+
+## Working from a slice issue
+
+Work arrives as a GitHub issue labelled `slice` plus its gate (`G0` … `G5`), written from
+[.github/ISSUE_TEMPLATE/slice.md](.github/ISSUE_TEMPLATE/slice.md).
+
+- Build only what the issue's **Goal** and **Gate & ready criterion** need; its **Out of scope** is binding.
+- **One acceptance check per slice** — the cheapest that proves the criterion: an existing script, a
+  headless browser check, or a manual check recorded in the PR. Add an automated test only when it guards
+  behaviour likely to regress and is cheap to keep green. No extra scaffolding, mocks or fixtures.
+- An issue labelled `blocked` waits for the decision it names. If an assumption turns out wrong, stop and
+  say so on the issue.
+- Open the PR against `mvp` (Chris ships `mvp` into `release/*`), link the issue, and paste the acceptance-check output. A human merges.
 
 ## Testing conventions — low abstraction, high fidelity
 
