@@ -18,10 +18,13 @@ labels: slice
 <!-- Files expected to change. -->
 
 ## Acceptance check
-<!-- ONE cheap check that proves the criterion: an existing script, a headless browser check, or a manual check recorded in the PR. -->
+<!-- ONE cheap check that proves the criterion and runs inside the GitHub runner, with no network services: an existing npm script (`lint:*`, `test:*`) or simple local steps (start the server with `tsx`, `curl` the API, inspect files, restart, a headless Chromium check). Its command and output go in the PR. -->
 
 ## Out of scope
 <!-- What not to build in this slice. -->
 
 ## Blocked by
 <!-- "None", or "Decision NNNN" / "#issue". Add the `blocked` label while it is pending. -->
+
+## Follow-up
+<!-- "None", or the linked issue for each post-merge or external step (deploy, secrets, accounts, real users, wording reviews). A follow-up issue says "Follows #N" and carries only the gate label. -->
