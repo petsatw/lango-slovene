@@ -100,9 +100,13 @@ Work arrives as a GitHub issue labelled `slice` plus its gate (`G0` … `G5`), w
 [.github/ISSUE_TEMPLATE/slice.md](.github/ISSUE_TEMPLATE/slice.md).
 
 - Build only what the issue's **Goal** and **Gate & ready criterion** need; its **Out of scope** is binding.
-- **One acceptance check per slice** — the cheapest that proves the criterion: an existing script, a
-  headless browser check, or a manual check recorded in the PR. Add an automated test only when it guards
-  behaviour likely to regress and is cheap to keep green. No extra scaffolding, mocks or fixtures.
+- **One acceptance check per slice** — the cheapest that proves the criterion, run inside the GitHub
+  runner with no network services: an existing npm script (`lint:*`, `test:*`) or simple local steps
+  (start the server with `tsx`, `curl` the API, inspect files, restart, a headless Chromium check). Add an
+  automated test only when it guards behaviour likely to regress and is cheap to keep green. No extra
+  scaffolding, mocks or fixtures.
+- Post-merge and external steps (deploy, secrets, accounts, real users, wording reviews) are separate
+  issues, linked under the slice's **Follow-up**.
 - An issue labelled `blocked` waits for the decision it names. If an assumption turns out wrong, stop and
   say so on the issue.
 - Open the PR against `mvp` (Chris ships `mvp` into `release/*`), link the issue, and paste the acceptance-check output. A human merges.
