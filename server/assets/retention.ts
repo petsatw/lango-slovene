@@ -27,7 +27,7 @@
 
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { ASSET_DIR } from "./store";
+import { DATA_DIR } from "./store";
 import { LOG_PATH as TURNLOG_PATH } from "./turnlog";
 
 const TTL_MS = Math.max(0, Number(process.env.RETENTION_TTL_MIN ?? 240)) * 60_000;
@@ -133,7 +133,7 @@ export function sweep(now = Date.now()): void {
   try {
     const turns = sweepTurnlog(now, stamp);
     const sessions = sweepJsonDir(
-      path.join(ASSET_DIR, "sessions"),
+      path.join(DATA_DIR, "sessions"),
       now,
       stamp,
       (r) => r.updatedAt ?? r.createdAt,
@@ -146,7 +146,7 @@ export function sweep(now = Date.now()): void {
       },
     );
     const live = sweepJsonDir(
-      path.join(ASSET_DIR, "live"),
+      path.join(DATA_DIR, "live"),
       now,
       stamp,
       (r) => r.endedAt ?? r.startedAt,

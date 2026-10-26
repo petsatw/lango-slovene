@@ -8,10 +8,10 @@
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
 import path from "node:path";
-import { ASSET_DIR } from "./store";
+import { DATA_DIR } from "./store";
 import type { LearnableProgress, ObjectiveState } from "../types";
 
-const SESSIONS_DIR = path.join(ASSET_DIR, "sessions");
+const SESSIONS_DIR = path.join(DATA_DIR, "sessions");
 
 // Per spec: only two terminal states. The last write of an incomplete run stays "abandoned"
 // (abandoned-so-far); the completing turn flips it to "completed".

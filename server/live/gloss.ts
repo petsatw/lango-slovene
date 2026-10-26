@@ -10,7 +10,7 @@
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { ASSET_DIR } from "../assets/store";
+import { DATA_DIR } from "../assets/store";
 import { findLearnableBySurface } from "../mastery";
 import { getE2 } from "../adapters/index";
 
@@ -26,7 +26,7 @@ function norm(sl: string): string {
 }
 
 function cachePath(): string {
-  return path.join(ASSET_DIR, "gloss-cache.json");
+  return path.join(DATA_DIR, "gloss-cache.json");
 }
 
 function loadCache(): Record<string, string> {
@@ -41,7 +41,7 @@ function loadCache(): Record<string, string> {
 }
 
 function saveCache(cache: Record<string, string>): void {
-  const dir = ASSET_DIR;
+  const dir = DATA_DIR;
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   writeFileSync(cachePath(), JSON.stringify(cache, null, 2));
 }

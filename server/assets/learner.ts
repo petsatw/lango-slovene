@@ -22,7 +22,7 @@
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { ASSET_DIR } from "./store";
+import { DATA_DIR } from "./store";
 import type { LearnerModel } from "../types";
 
 /** The id a request that names no learner is served under — the operator at their own machine. */
@@ -57,7 +57,7 @@ function shape(raw: any): LearnerModel {
 }
 
 function learnerPath(): string {
-  return process.env.LEARNER_PATH || path.join(ASSET_DIR, "learner.json");
+  return process.env.LEARNER_PATH || path.join(DATA_DIR, "learner.json");
 }
 
 function readFile(p: string): LearnerModel {
@@ -84,7 +84,7 @@ const fileStore: LearnerStore = {
 
 /** `idFrom` has already bounded the id to filename-safe characters, so it is the filename. */
 function learnersPath(id: string): string {
-  return path.join(process.env.LEARNERS_DIR || path.join(ASSET_DIR, "learners"), `${id}.json`);
+  return path.join(process.env.LEARNERS_DIR || path.join(DATA_DIR, "learners"), `${id}.json`);
 }
 
 const dirStore: LearnerStore = {
