@@ -664,13 +664,14 @@ function runIntro() {
   const finish = () => {
     if (finished) return;
     finished = true;
+    localStorage.setItem(introSkipKey(dialogue), "1");
     stopIntro();
     endIntro(card, btn);
   };
 
   const playNow = () => {
     if (introTimer) { clearTimeout(introTimer); introTimer = null; }
-    setIntroButton(btn, "skip", () => { localStorage.setItem(introSkipKey(dialogue), "1"); finish(); });
+    setIntroButton(btn, "skip", finish);
     stopIntro();
     const audio = new Audio(`/intros/${dialogue.intro.audio}`);
     introAudio = audio;
@@ -1171,7 +1172,7 @@ function openTutor(opts = {}) {
   chatFocus = opts.focus || [];
   chatRole = opts.role || null;
   chatContext = opts.context || null;
-  chatLessonId = opts.lessonId || chatLessonId;
+  chatLessonId = opts.lessonId || null;
   tutorReturnTo = currentScreen === "tutor" ? "home" : currentScreen;
   showScreen("tutor");
   openConsent();

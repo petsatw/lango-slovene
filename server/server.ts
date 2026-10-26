@@ -54,6 +54,11 @@ function cachePut(key: string, buf: Buffer): void {
 // the seam accounts arrive on — the id stops being a session id and becomes an account id, and nothing
 // below changes (server/assets/learner.ts).
 const learnerOf = (req: express.Request) => learner.idFrom(req.get("x-learner-id"));
+/** Started = has a credited learnable, or has already been shown the first-run scene (fact `sceneSeen`). */
+const learnerStarted = (id: string) => {
+  const m = learner.load(id);
+  return Object.keys(m.learnables).length > 0 || m.facts.sceneSeen === "1";
+};
 
 // Whether this session agreed to its data being kept — the consent gate's second, optional checkbox.
 // It travels as a header beside the learner id because every writer needs it and a sweep cannot ask the
@@ -115,7 +120,7 @@ app.get("/api/config", (req, res) => {
     session: freshSession(scenario),
     scenarios: SCENARIOS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, status: s.status })),
     // Has this learner produced anything yet? If not, free conversation routes them into the seed.
-    started: Object.keys(learner.load(learnerOf(req)).learnables).length > 0,
+    started: learnerStarted(learnerOf(req)),
   });
 });
 
@@ -150,7 +155,7 @@ app.get("/api/practice", (req, res) => {
   res.json({
     scenarios,
     providers: { e2: getE2().name, e3: getE3().name },
-    started: Object.keys(learner.load(learnerOf(req)).learnables).length > 0,
+    started: learnerStarted(learnerOf(req)),
     scene: sceneScenario?.id ?? null,
   });
 });
@@ -368,6 +373,7 @@ app.post("/api/scene", (req, res) => {
 
   try {
     if (typeof from !== "string") {
+      if (facts.sceneSeen !== "1") learner.setFact(learnerId, "sceneSeen", "1");
       return res.json({ voice: scene.voices.npc, background: scene.background ?? null, backchannel,
                         pacing, frameEN: scene.frameEN ?? [], tutorial: scene.tutorial ?? [],
                         npc: shape(scene.root), done: false,
