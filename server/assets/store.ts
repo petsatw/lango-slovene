@@ -32,6 +32,9 @@ const EXT: Record<AssetType, string> = { audio: "mp3", image: "jpg", align: "jso
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_DIR = path.join(__dirname, "..", "..", "assets");
 export const ASSET_DIR = process.env.ASSET_DIR ? path.resolve(process.env.ASSET_DIR) : DEFAULT_DIR;
+// Learner data and logs (sessions, live logs, gloss cache, learners, turnlog) live under DATA_DIR, which
+// defaults to ASSET_DIR; on a host, point it at a persistent volume while ASSET_DIR keeps the committed clips.
+export const DATA_DIR = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : ASSET_DIR;
 const MANIFEST = path.join(ASSET_DIR, "manifest.jsonl");
 
 export interface AssetMeta {

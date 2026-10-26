@@ -12,10 +12,10 @@
 
 import { appendFileSync, mkdirSync, readdirSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { ASSET_DIR } from "./store";
+import { DATA_DIR } from "./store";
 import * as retention from "./retention";
 
-const DIR = process.env.TURNLOG_DIR || path.join(ASSET_DIR, "turnlog");
+const DIR = process.env.TURNLOG_DIR || path.join(DATA_DIR, "turnlog");
 const MEDIA_DIR = path.join(DIR, "media");
 export const LOG_PATH = path.join(DIR, "turns.jsonl");
 const MEDIA_TTL_MS = Math.max(0, Number(process.env.TURNLOG_MEDIA_TTL_MIN ?? 30)) * 60_000;

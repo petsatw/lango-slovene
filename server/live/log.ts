@@ -9,7 +9,7 @@
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { ASSET_DIR } from "../assets/store";
+import { DATA_DIR } from "../assets/store";
 import type { LearnableProgress } from "../types";
 import type { LiveProvider } from "./types";
 
@@ -53,7 +53,7 @@ export interface LiveSessionLog {
 }
 
 function dir(): string {
-  return path.join(ASSET_DIR, "live");
+  return path.join(DATA_DIR, "live");
 }
 
 export function write(log: LiveSessionLog): void {
