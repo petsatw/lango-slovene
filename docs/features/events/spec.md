@@ -36,7 +36,7 @@ Each accepted event becomes one line in `DATA_DIR/events/events.jsonl`:
 
 - `track(name, props)` in `public/app.js` queues an event.
 - The client sends the queue every 10 seconds, when it reaches 50 events, and on `visibilitychange` to
-  hidden (with `navigator.sendBeacon`). A failed send is dropped.
+  hidden (with `fetch` and `keepalive: true`, so the batch carries the learner headers). A failed send is dropped.
 - The server writes the live events (`gate_passed`, `live_started`, `live_ended`, `live_failed`) itself,
   using the same row.
 
