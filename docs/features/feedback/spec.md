@@ -10,7 +10,7 @@ the event log.
 | `level_end` | the end-of-level screen |
 | `live_end` | the screen after a live session ends |
 | `finder_request` | a "Request this scenario" button on a finder no-match, beside the live card |
-| `header` | a "Feedback" link in the app header, on every screen |
+| `header` | a "Feedback" link in the app header, on every screen that shows the header (lessons take feedback from their end screen) |
 
 - For `finder_request`, the text box asks "What would you like to practise?".
 
