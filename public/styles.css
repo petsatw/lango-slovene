@@ -26,7 +26,9 @@ body {
   flex-direction: column;
 }
 
-header { position: relative; padding: 24px 20px 10px; text-align: center; }
+/* The header sits over the app column: 520px content plus the 12px inset of its corner buttons, so
+   on desktop Home, Settings and Feedback line up with the column edges instead of the window's. */
+header { position: relative; width: 100%; max-width: 544px; margin: 0 auto; padding: 24px 20px 10px; text-align: center; }
 header h1 { margin: 0; font-size: 28px; }
 /* "vadi" wordmark — lowercase, heavy, white with a short green accent stroke (flyer style). */
 .wordmark {
