@@ -28,6 +28,8 @@ Step 3 runs when scoring succeeds, fails or times out. Scoring has a time limit 
 ## 3. What stays
 
 - The learner model keeps the progress credit and lesson score from a successful grade.
+- When scoring fails or times out, the learner model is unchanged: no progress credit and no lesson
+  score are recorded, and step 3 deletes the transcript as usual.
 - The session is absent from the Learning history and produces no improvement copy.
 
 ## 4. Backstop
@@ -35,7 +37,3 @@ Step 3 runs when scoring succeeds, fails or times out. Scoring has a time limit 
 The startup sweep deletes any no-save live log, and its turn-log rows and translations, whose session
 ended or passed `SESSION_TTL_SEC`. This covers a server stop between steps 1 and 3
 ([sweeps](../data-deletion/spec.md#3-sweeps)).
-
-## Open
-
-- Whether progress counts on a no-save session whose scoring failed.
