@@ -117,7 +117,8 @@ Only the tech lead applies `ready-for-claude`, and only to a ready issue.
 
 - Build only what the linked spec section, the **Goal** and the **Gate & ready criterion** need; **Out of
   scope** is binding.
-- When the spec is missing, or unclear for this slice, write `BLOCKED.md` with the question and stop.
+- When the spec is missing or unclear for this slice, or an assumption turns out wrong, write
+  `BLOCKED.md` with the question and stop.
 - **One acceptance check per slice** — the cheapest that proves the criterion, run inside the GitHub
   runner with no network services: an existing npm script (`lint:*`, `test:*`) or simple local steps
   (start the server with `tsx`, `curl` the API, inspect files, restart, a headless Chromium check). Add an
