@@ -49,7 +49,7 @@ The Settings screen, opened from the app header, shows:
 ## 4. Privacy page
 
 - `GET /privacy` returns `public/privacy.html` with status 200. That file is the Vadi privacy policy,
-  in the wording Chris approves.
+  v1.0, effective 27 October 2026, served as-is (one self-contained HTML file).
 - Every screen that names data use (the tutor start screen and Settings) links to `/privacy`.
 - Vadi is for people aged 18 or over. `/privacy` states this.
 - When a policy change affects what happens to voice or conversations, the tutor start screen shows the
@@ -88,7 +88,3 @@ The Settings screen, opened from the app header, shows:
 
   A candidate phrase that `stripPersonal` changes is skipped. Candidate rows hold `surface`, `gloss` and
   `at` only.
-
-## Open
-
-- The policy's effective date, shown on `/privacy`.
