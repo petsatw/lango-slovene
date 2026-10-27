@@ -14,6 +14,7 @@
     <button id="back" class="back" type="button" hidden>‹ Home</button>
     <h1 class="wordmark">vadi</h1>
     <p class="tagline">Learn Slovenian in real-life situations</p>
+    <button id="header-feedback" class="header-feedback" type="button">Feedback</button>
   </header>
 
   <!-- HOME — the three learner destinations, stacked full width. One tap to each; everything else is
@@ -89,6 +90,7 @@
       </button>
       <p id="practice-hint" class="practice-hint"></p>
       <p id="live-state" class="live-state"></p>
+      <button id="live-feedback" class="play-fallback" type="button" hidden>How did that go? Give feedback</button>
       <button id="play-fallback" class="play-fallback" hidden>▶ Tap to hear the tutor</button>
     </div>
   </main>
@@ -209,6 +211,7 @@
         </div>
       </div>
       <button id="scene-phrases-btn" class="scene-close-btn ghost scene-review-btn" type="button">Review</button>
+      <button id="scene-feedback" class="scene-close-btn ghost" type="button">Feedback</button>
       <!-- Carrying on is the default, so it is the only thing here that reads as an action: bigger than
            Review, not merely brighter, and last so it sits under the thumb. -->
       <button id="scene-next" class="scene-close-btn scene-next-btn" type="button">Next lesson</button>
@@ -236,6 +239,22 @@
       <!-- Introduce→reinforce handoff: drop from the rehearsed tree straight into a live chat biased
            toward exactly the learnables this level introduced, where mastery is earned. -->
       <button id="dialogue-handoff" class="dialogue-handoff" type="button" hidden>Now try it for real →</button>
+    </div>
+  </div>
+
+  <!-- Feedback sheet: one sheet for every feedback point (docs/features/feedback/spec.md). -->
+  <div id="feedback" class="story-overlay feedback-overlay" hidden>
+    <div class="story-card feedback-card">
+      <button id="feedback-close" class="story-close" type="button" aria-label="Close">✕</button>
+      <h2 class="consent-title">Feedback</h2>
+      <div class="feedback-rating">
+        <button id="feedback-up" class="feedback-thumb" type="button" aria-label="Thumbs up" aria-pressed="false">👍</button>
+        <button id="feedback-down" class="feedback-thumb" type="button" aria-label="Thumbs down" aria-pressed="false">👎</button>
+      </div>
+      <label id="feedback-prompt" class="consent-body" for="feedback-text">Anything to add? (optional)</label>
+      <textarea id="feedback-text" class="feedback-text" maxlength="1000" rows="4"></textarea>
+      <button id="feedback-send" class="consent-continue" type="button" disabled>Send</button>
+      <p id="feedback-thanks" class="consent-title" hidden>Thanks</p>
     </div>
   </div>
 
