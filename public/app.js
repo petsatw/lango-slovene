@@ -202,9 +202,11 @@ function openA1() { showScreen("a1"); renderA1(); }
 function stopAllAudio() { stopDialogueAudio(); }
 
 // ---- Settings and Learning history (docs/features/consent-privacy/spec.md, learning-history/spec.md). ----
-function openSettings() {
+async function openSettings() {
   showScreen("settings");
-  $("settings-code").textContent = localStorage.getItem("testerCode") || learnerId;
+  $("settings-code").textContent = "—";
+  const { testerCode } = await (await api("/api/me")).json();
+  $("settings-code").textContent = testerCode || learnerId;
 }
 
 async function openHistory() {

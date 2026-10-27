@@ -74,6 +74,16 @@ export function load(id: string): SessionRecord | null {
   return existsSync(p) ? (JSON.parse(readFileSync(p, "utf8")) as SessionRecord) : null;
 }
 
+/** True when a record with this id exists and belongs to another learner. */
+export function heldByOther(id: string, learnerId: string): boolean {
+  try {
+    const rec = load(id);
+    return !!rec && rec.learnerId !== learnerId;
+  } catch {
+    return false;
+  }
+}
+
 function write(rec: SessionRecord): void {
   mkdirSync(SESSIONS_DIR, { recursive: true });
   writeFileSync(fileFor(rec.id), JSON.stringify(rec, null, 2));

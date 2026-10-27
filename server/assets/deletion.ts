@@ -76,7 +76,7 @@ export function listHistory(learnerId: string): HistoryEntry[] {
   const entries: HistoryEntry[] = [];
   for (const f of jsonFiles(LIVE_DIR())) {
     const log = readJson(path.join(LIVE_DIR(), f));
-    if (log?.learnerId === learnerId) entries.push(fromLive(log));
+    if (log?.learnerId === learnerId && log.noSave !== true) entries.push(fromLive(log));
   }
   for (const f of jsonFiles(SESSIONS_DIR())) {
     const rec = readJson(path.join(SESSIONS_DIR(), f));
@@ -122,10 +122,12 @@ export function deleteAllHistory(learnerId: string): void {
   for (const e of listHistory(learnerId)) deleteHistory(learnerId, e.id);
 }
 
-/** Delete everything held about the learner: the model, the history, event rows and improvement copies. */
+/** Delete everything held about the learner: the model, the history, turn-log rows, event rows and
+ *  improvement copies. */
 export function deleteLearner(learnerId: string): void {
   deleteAllHistory(learnerId);
   rmSync(path.join(LEARNERS_DIR(), `${learnerId}.json`), { force: true });
+  dropLines(TURNLOG_PATH, (r) => r.learnerId === learnerId);
   dropLines(EVENTS_PATH, (r) => r.learnerId === learnerId);
   for (const f of jsonFiles(IMPROVE_DIR())) {
     if (readJson(path.join(IMPROVE_DIR(), f))?.learnerId === learnerId) rmSync(path.join(IMPROVE_DIR(), f), { force: true });
