@@ -76,13 +76,13 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
   });
 });
 
-// Tap-to-reveal English for one transcript line. A GET so it caches and retries harmlessly; it takes no
-// session, because a translation is not learner state. Catalog hits and cache hits bill nothing.
+// Tap-to-reveal English for one transcript line. A GET so it caches and retries harmlessly. `session`
+// names the live session whose file remembers the answer. Catalog hits and cache hits bill nothing.
 liveRouter.get("/api/gloss", async (req, res) => {
   const sl = String(req.query.sl ?? "").slice(0, 500);
   if (!sl.trim()) return res.status(400).json({ error: "sl required" });
   try {
-    const { gloss, source } = await glossOf(sl, retention.retainFrom(req.get("x-retain")));
+    const { gloss, source } = await glossOf(sl, String(req.query.session ?? ""), retention.retainFrom(req.get("x-retain")));
     res.json({ sl, gloss, source });
   } catch (err: any) {
     console.error("[gloss] failed:", err?.message);

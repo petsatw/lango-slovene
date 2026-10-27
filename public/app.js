@@ -333,10 +333,9 @@ async function playReplyStreaming(text, opts = {}) {
   if (opts.scenarioId) params.set("scenarioId", opts.scenarioId);
   if (opts.objectiveId) params.set("objectiveId", opts.objectiveId);
   if (opts.voice) params.set("voice", opts.voice);
-  // The tutor's reply is a sentence composed about this learner and can carry their name. A sitting
-  // that declined retention still hears it — it just is not written into the shared clip store, which
-  // is keyed by content and has no way to tell one learner's sentence from an authored lesson line.
-  if (!retainSession) params.set("retain", "0");
+  // The tutor's reply is composed about this learner and can carry their name, so it is streamed and
+  // not written into the shared clip store.
+  params.set("cache", "0");
   audio.src = `/api/speak?${params.toString()}`;
   obs.state("speaking…");
 
@@ -1106,7 +1105,8 @@ const liveParams = new URLSearchParams(location.search);
 let mode = "live";
 let holding = false;       // tap mode: the button is down and the mic is open
 let freeChatBegun = false; // tap mode opens with the tutor speaking first — once per session
-let liveTick = null;       // polls tutor-speaking, which no message reports (see liveSpeaking)
+let liveSessionId = ""; // the live session's id; /api/gloss caches translations with it
+let liveTick = null;      // polls tutor-speaking, which no message reports (see liveSpeaking)
 let liveObjectives = [];   // the Slovene of each line the tutor steers toward, sent at connect
 
 // Going the other way is free: live just starts talking. Going INTO tap hands the learner a button
@@ -1213,8 +1213,8 @@ async function toggleLive() {
   liveBubbles.clear(); // ids are per-session; a stale one would revise last session's bubble
   liveObjectives = [];
   try {
-    await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined,
-                      learnerId, runId, retain: retainSession, noSave, improve });
+    liveSessionId = (await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined,
+                      learnerId, runId, retain: retainSession, noSave, improve })).sessionId;
     // Nothing in the protocol says the tutor has started or stopped speaking — `state` reports when the
     // vendor finished GENERATING, which is well before the audio is heard. So the surface asks the
     // playback queue instead, often enough to look like a response and cheaply enough not to matter.
@@ -1268,7 +1268,7 @@ function addLiveBubble(role, text, id) {
     div.appendChild(s);
     div.classList.add("show-translation");
     try {
-      const res = await api(`/api/gloss?sl=${encodeURIComponent(div.dataset.sl)}`);
+      const res = await api(`/api/gloss?sl=${encodeURIComponent(div.dataset.sl)}&session=${encodeURIComponent(liveSessionId)}`);
       const data = await res.json();
       s.textContent = res.ok ? data.gloss || "(no translation)" : "(translation unavailable)";
     } catch {
