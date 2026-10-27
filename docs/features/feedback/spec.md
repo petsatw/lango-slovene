@@ -1,7 +1,7 @@
 # Feedback
 
-Learners can say how a moment went at the points where it matters. Feedback is the only free text the app
-stores.
+Learners can say how a moment went at the points where it matters. Feedback text is the only free text in
+the event log.
 
 ## 1. Points
 
@@ -12,8 +12,6 @@ stores.
 | `finder_request` | a "Request this scenario" button on a finder no-match, beside the live card |
 | `header` | a "Feedback" link in the app header, on every screen |
 
-- The points appear once the learner has opted in to events
-  ([events opt-in](../consent-privacy/spec.md#2-events-opt-in)), because feedback travels as an event.
 - For `finder_request`, the text box asks "What would you like to practise?".
 
 ## 2. Sheet
@@ -28,5 +26,6 @@ stores.
 
 - Feedback rows sit in the event log ([event row](../events/spec.md#2-row)), with `text` cut to 1000
   characters by the server.
-- Feedback text is kept until G4 ([retention](../consent-privacy/spec.md#5-retention)).
+- Delete my data and the 12-month inactivity sweep remove a learner's feedback
+  ([data deletion](../data-deletion/spec.md#2-what-is-deleted)).
 - Readout: `jq -r 'select(.name == "feedback_submitted") | [.ts, (.testerCode // "-"), .props.surface, .props.rating, (.text // "")] | @tsv' events.jsonl`

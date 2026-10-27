@@ -9,8 +9,6 @@ a funnel across testers. Events hold names, ids, counts and timings. Free text a
 `POST /api/event` with the body `{ "events": [ { "name", "ts", "props", "text"? } ] }`.
 
 - At most 50 events and 16 KB per request. A larger request gets `413`.
-- The server writes events only for requests that carry `x-events: 1`
-  ([consent record](../consent-privacy/spec.md#1-consent-record)).
 - `name` must be in §4, and each prop key must be listed for that name. Prop values are strings
   (at most 64 characters), numbers, booleans or `null`. The server drops unknown names and keys.
 - `text` is accepted only on `feedback_submitted`, and is cut to 1000 characters.
@@ -27,18 +25,16 @@ Each accepted event becomes one line in `DATA_DIR/events/events.jsonl`:
 - `ts` is the client's ISO 8601 UTC timestamp.
 - The server stamps `learnerId` and `testerCode` from the request
   ([tester identity](../tester-identity/spec.md#3-learnerid)). The client never sends them in the body.
-- The file is append-only. Events are kept until G4
-  ([retention](../consent-privacy/spec.md#5-retention)).
+- The file is append-only. Delete my data and the 12-month inactivity sweep remove a learner's rows
+  ([data deletion](../data-deletion/spec.md#2-what-is-deleted)).
 
 ## 3. Delivery
 
 - `track(name, props)` in `public/app.js` queues an event.
-- Until the learner answers the events opt-in, the queue stays in memory. **Yes** sends the queue, and
-  **No** empties it and turns `track` into a no-op.
 - The client sends the queue every 10 seconds, when it reaches 50 events, and on `visibilitychange` to
   hidden (with `navigator.sendBeacon`). A failed send is dropped.
 - The server writes the live events (`gate_passed`, `live_started`, `live_ended`, `live_failed`) itself,
-  using the same row and the same `x-events` rule.
+  using the same row.
 
 ## 4. Event list
 
@@ -53,11 +49,8 @@ Each accepted event becomes one line in `DATA_DIR/events/events.jsonl`:
 | `level_completed` | a level reaches its end | `scenarioId`, `level`, `ms` |
 | `level_abandoned` | the learner leaves a level before its end | `scenarioId`, `level`, `ms`, `nodeId` |
 | `handoff_tapped` | a "practise it live" entry is tapped | `from` (`home`, `finder`, `level`) |
-| `consent_shown` | a consent card opens | `card` (`events`, `tutor`) |
-| `consent_given` | a card is accepted | `card`, `retain` (tutor card) |
-| `consent_closed` | a card is declined or closed | `card` |
 | `gate_passed` | the server grants live access | `via` (`tester_code`, `access_code`) |
-| `live_started` | a live session connects | `lessonId`, `provider` |
+| `live_started` | a live session connects | `lessonId`, `provider`, `noSave` |
 | `live_ended` | a live session ends | `lessonId`, `provider`, `sec`, `reason` (`user`, `ttl`) |
 | `live_failed` | a live session cannot start or drops | `lessonId`, `provider`, `reason` (`error`, `capacity`, `forbidden`) |
 | `finder_query` | a finder search is submitted | `resultCount` |
@@ -91,3 +84,7 @@ jq -s '
       firstLevelSec: (if $open and $done then ($done | t) - ($open | t) else null end),
       feedback: (map(select(.name == "feedback_submitted")) | length) })' events.jsonl
 ```
+
+## Open
+
+- Whether these usage events are strictly necessary for the service.
