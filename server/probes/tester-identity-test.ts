@@ -1,10 +1,13 @@
 // Acceptance check for tester identity: an allowlisted code derives the learnerId whatever the browser
-// id, an unknown code or none falls back to the per-browser id, and every turn-log row carries both.
+// id, an unknown code or none falls back to the per-browser id, and every turn-log row carries both. A
+// fresh browser opening the invite link stores the code, strips ?c= and sends it on its next request.
 //   npx tsx server/probes/tester-identity-test.ts
 import { spawn } from "node:child_process";
-import { mkdtempSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { chromium } from "playwright";
 
 const port = 20000 + Math.floor(Math.random() * 20000);
 const base = `http://127.0.0.1:${port}`;
@@ -49,6 +52,33 @@ try {
     a.testerCode === "TEST-01" && b.testerCode === "TEST-01" && b.learnerId === derived &&
     c.learnerId === "browser-c" && c.testerCode === null &&
     d.learnerId !== derived;
+
+  // The invite link, on a fresh profile.
+  const browser = await chromium.launch();
+  const page = await (await browser.newContext()).newPage();
+  const codes: (string | undefined)[] = [];
+  // The learner-scoped calls; /api/speak and /api/image serve media and name no learner.
+  page.on("request", (r) => {
+    const p = new URL(r.url()).pathname;
+    if (p.startsWith("/api/") && p !== "/api/speak" && p !== "/api/image") codes.push(r.headers()["x-tester-code"]);
+  });
+  const sceneWritten = page.waitForResponse((r) => r.url().endsWith("/api/scene"));
+  await page.goto(`${base}/?c=TEST-01`);
+  await sceneWritten;
+  const stored = await page.evaluate(() => localStorage.getItem("testerCode"));
+  const url = page.url();
+  await browser.close();
+  const expected = "t-" + createHash("sha256").update("TEST-01").digest("hex").slice(0, 16);
+  const learnerFile = path.join(data, "learners", `${expected}.json`);
+  const browserChecks = {
+    "localStorage.testerCode": stored === "TEST-01",
+    "?c= stripped": !new URL(url).searchParams.has("c"),
+    "next requests carry x-tester-code": codes.length > 0 && codes.every((c) => c === "TEST-01"),
+    [`server wrote learner ${expected}`]: existsSync(learnerFile) && derived === expected,
+  };
+  console.log(JSON.stringify({ url, testerCode: stored, apiRequests: codes.length, learnerFile: path.relative(data, learnerFile) }));
+  for (const [name, ok] of Object.entries(browserChecks)) console.log(`${ok ? "PASS" : "FAIL"}  ${name}`);
+  pass = pass && Object.values(browserChecks).every(Boolean);
 } finally {
   child.kill("SIGKILL");
 }
