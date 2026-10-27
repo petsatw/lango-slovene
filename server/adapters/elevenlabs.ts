@@ -23,6 +23,17 @@ const PROFILE_ENV: Record<string, string> = {
   slavko: "ELEVENLABS_VOICE_ID_MALE",
 };
 
+// profile id → the env var holding an ElevenLabs pronunciation dictionary id sent with that profile's
+// requests. Keyed by profile, not voice id: Slavko shares male-speaker's voice but only he needs it.
+const PROFILE_DICT_ENV: Record<string, string> = {
+  slavko: "ELEVENLABS_PRON_DICT_SLAVKO",
+};
+
+function dictLocators(voiceProfile?: string) {
+  const id = voiceProfile && process.env[PROFILE_DICT_ENV[voiceProfile] ?? ""];
+  return id ? { pronunciation_dictionary_locators: [{ pronunciation_dictionary_id: id }] } : {};
+}
+
 function requireKey(): string {
   const key = process.env.ELEVENLABS_API_KEY;
   if (!key) throw new Error("ELEVENLABS_API_KEY is not set (see docs/SECRETS.md)");
@@ -76,6 +87,7 @@ export class ElevenLabsE3 implements E3Adapter {
         text: input.text,
         model_id: this.modelId,
         language_code: this.languageCode,
+        ...dictLocators(input.voiceProfile),
         voice_settings: {
           stability: 0.5,
           similarity_boost: 0.75,
@@ -109,6 +121,7 @@ export class ElevenLabsE3 implements E3Adapter {
         text: input.text,
         model_id: this.modelId,
         language_code: this.languageCode,
+        ...dictLocators(input.voiceProfile),
         voice_settings: { stability: 0.5, similarity_boost: 0.75 },
       }),
     });
