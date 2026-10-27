@@ -5,6 +5,9 @@ title: "[G?] "
 labels: slice
 ---
 
+## Spec
+<!-- Required. Link to the section(s) of docs/features/<feature>/spec.md on mvp that this slice builds, e.g. https://github.com/petsatw/lango-slovene/blob/mvp/docs/features/<feature>/spec.md#<anchor>. -->
+
 ## Goal
 <!-- What changes for the learner or operator, in one or two sentences. Cite current behaviour with file:line. -->
 
@@ -12,7 +15,7 @@ labels: slice
 <!-- Gate label (G0 … G5) and the exact ready criterion from the gate list that this slice proves or moves. One criterion. -->
 
 ## Assumptions
-<!-- What the implementer may take as given. Anything uncertain goes here, not into the code. -->
+<!-- What the implementer may take as given beyond the spec. -->
 
 ## Likely files
 <!-- Files expected to change. -->
@@ -24,7 +27,7 @@ labels: slice
 <!-- What not to build in this slice. -->
 
 ## Blocked by
-<!-- "None", or "Decision NNNN" / "#issue". Add the `blocked` label while it is pending. -->
+<!-- "None", or the issue or PR this waits for (e.g. the spec PR). Add the `blocked` label while it is pending. -->
 
 ## Follow-up
 <!-- "None", or the linked issue for each post-merge or external step (deploy, secrets, accounts, real users, wording reviews). A follow-up issue says "Follows #N" and carries only the gate label. -->

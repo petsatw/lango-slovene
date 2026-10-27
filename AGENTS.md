@@ -80,7 +80,7 @@ When diagnosing a problem or analyzing a behavior:
 
 ### 6. Write What Is
 
-**Comments and docs describe the present. Git holds the history.**
+**Comments describe the present; specs and docs describe the intended state. Git holds the history.**
 
 - **No histories.** "This used to be X", "the old behaviour", "that gate was removed", "(decided
   2026-08-23)" — all of it belongs in the commit message, `docs/research/`, or a handoff brief. A file
@@ -99,7 +99,25 @@ When diagnosing a problem or analyzing a behavior:
 Work arrives as a GitHub issue labelled `slice` plus its gate (`G0` … `G5`), written from
 [.github/ISSUE_TEMPLATE/slice.md](.github/ISSUE_TEMPLATE/slice.md).
 
-- Build only what the issue's **Goal** and **Gate & ready criterion** need; its **Out of scope** is binding.
+**Feature specs.** Each fundamental feature has a folder with its spec: `docs/features/<feature>/spec.md`.
+Specs use stable numbered headings so an issue can link one section. The spec is the source of truth for
+behaviour; the issue picks the slice of it to build.
+
+**Specs and docs describe the intended state**, including behaviour that is not built yet. Write plainly
+and briefly, and state what the feature does (section 6 applies). Every reference resolves inside this
+repo; the commit message records what changed and when.
+
+**Definition of ready.** An issue can start high level. It is ready when it has:
+- a **Spec** field linking a section of `docs/features/<feature>/spec.md` on `mvp` that gives a clear
+  development path;
+- one **Acceptance check** that runs inside the GitHub runner (below);
+- a **Follow-up** field naming the issue for each external or post-merge step.
+
+Only the tech lead applies `ready-for-claude`, and only to a ready issue.
+
+- Build only what the linked spec section, the **Goal** and the **Gate & ready criterion** need; **Out of
+  scope** is binding.
+- When the spec is missing, or unclear for this slice, write `BLOCKED.md` with the question and stop.
 - **One acceptance check per slice** — the cheapest that proves the criterion, run inside the GitHub
   runner with no network services: an existing npm script (`lint:*`, `test:*`) or simple local steps
   (start the server with `tsx`, `curl` the API, inspect files, restart, a headless Chromium check). Add an
@@ -107,8 +125,7 @@ Work arrives as a GitHub issue labelled `slice` plus its gate (`G0` … `G5`), w
   scaffolding, mocks or fixtures.
 - Post-merge and external steps (deploy, secrets, accounts, real users, wording reviews) are separate
   issues, linked under the slice's **Follow-up**.
-- An issue labelled `blocked` waits for the decision it names. If an assumption turns out wrong, stop and
-  say so on the issue.
+- An issue labelled `blocked` waits for what its **Blocked by** names.
 - Open the PR against `mvp` (Chris ships `mvp` into `release/*`), link the issue, and paste the acceptance-check output. A human merges.
 
 ## Testing conventions — low abstraction, high fidelity
