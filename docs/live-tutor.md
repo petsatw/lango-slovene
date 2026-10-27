@@ -46,7 +46,7 @@ Server → client: binary audio, plus
 `{"type":"state","status":"connected"|"listening"|"speaking"|"ended"}`,
 `{"type":"error","code":"vendor_connect"|"vendor_setup"|"vendor_audio"|"ended"}`,
 `{"type":"objectives","items":[{"sl":…}]}` — once, when the prompt is built, before the vendor connects.
-`{"type":"progress","objectives":[{"id":…,"name":…}]|null}` — once, after `ended`, when the session's
+`{"type":"progress","ending":"ended"|"time","objectives":[{"id":…,"name":…}]|null}` — once, after `ended`, when the session's
 progress check settles; the server closes the socket after it
 ([progress result](features/live-session/spec.md#3-progress-result)).
 

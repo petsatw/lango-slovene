@@ -19,12 +19,19 @@ controls.
 
 ### 2.1 Title
 
-| The session ended by | Title |
+The title follows the `ending` field of the progress message (§3):
+
+| `ending` | Title |
 |---|---|
-| the learner pressing "End session" | "Session ended" |
-| the lesson-completion signal ({xref: lesson-completion signal, docs/features/live-session/spec.md section TBD}) | "Session complete" |
-| the session time limit, `SESSION_TTL_SEC` | {title: time-limit ending, TBD} |
-| a provider error | {title: provider-error ending, TBD} |
+| `"ended"` | "Session ended" |
+| `"time"` | "Session time reached" |
+
+A later lesson-completion signal ({xref: lesson-completion signal, docs/features/live-session/spec.md
+section TBD}) adds `ending: "complete"`, which shows "Session complete".
+
+Until the progress message arrives, the title is "Session ended" after the learner pressed "End
+session", and empty otherwise. When the socket closes before a progress message, the title is "Session
+ended".
 
 ### 2.2 Lines
 
@@ -60,12 +67,16 @@ lessons screen, through the tutor start screen
   `server/live/prompt.ts` resolves it.
 - After `{"type":"state","status":"ended"}` the server keeps the socket open while `settleSession`
   checks the session ([session end](../no-save-session/spec.md#2-session-end)), at most
-  `LIVE_GRADE_TIMEOUT_SEC` (default 60). It then sends one message and closes the socket:
-  - `{"type":"progress","objectives":[{"id","name"}…]}` when the check completes. The list holds the
-    session's objectives (the learnables in its `objectives` message) whose learnable has a `success`
+  `LIVE_GRADE_TIMEOUT_SEC` (default 60). It then sends one progress message and closes the socket.
+- The progress message carries `ending`: `"time"` when the session time limit (`SESSION_TTL_SEC`)
+  ended it (`ttlHit` in `finish()`, `server/live/index.ts`), and `"ended"` for every other ending
+  (End session, a provider error, the socket closing).
+- It carries `objectives`:
+  - `{"type":"progress","ending":…,"objectives":[{"id","name"}…]}` when the check completes. The list
+    holds the session's objectives (the learnables in its `objectives` message) whose learnable has a `success`
     verdict in the session's credit. A session with no learner speech gets `objectives: []`.
-  - `{"type":"progress","objectives":null}` when the check fails or times out. The learner model is
-    unchanged ([what stays](../no-save-session/spec.md#3-what-stays)).
+  - `{"type":"progress","ending":…,"objectives":null}` when the check fails or times out. The learner
+    model is unchanged ([what stays](../no-save-session/spec.md#3-what-stays)).
 - An objective's `name` is its learnable's `sl` in `server/catalog/learnables.json`, the line the
   objectives overlay shows.
 - The result comes from the check in memory, so a no-save session gets its result while its files are
