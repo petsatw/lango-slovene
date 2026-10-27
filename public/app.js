@@ -82,21 +82,32 @@ function openFeedback(surface) {
   $("feedback-text").value = "";
   $("feedback-send").disabled = true;
   $("feedback-thanks").hidden = true;
-  $("feedback-prompt").textContent = surface === "finder_request" ? "What would you like to practise?" : "Anything to add? (optional)";
+  const request = surface === "finder_request";
+  $("feedback-title").textContent = request ? "Request a scenario" : "Feedback";
+  $("feedback-prompt").textContent = request ? "What would you like to practise?" : "Anything to add? (optional)";
+  $("feedback-text").placeholder = request ? "For example, ordering at a bakery" : "";
+  $("feedback-rating-label").hidden = !request;
+  // Rating sheet: thumbs lead. Request sheet: the text leads and the thumbs follow it.
+  if (request) $("feedback-send").before($("feedback-rating-label"), $("feedback-up").parentElement);
+  else $("feedback-prompt").before($("feedback-up").parentElement);
   $("feedback").hidden = false;
 }
 function setFeedbackRating(r) {
   feedbackRating = r;
   $("feedback-up").setAttribute("aria-pressed", String(r === "up"));
   $("feedback-down").setAttribute("aria-pressed", String(r === "down"));
-  $("feedback-send").disabled = false;
+  updateFeedbackSend();
 }
+function updateFeedbackSend() {
+  $("feedback-send").disabled = feedbackSurface === "finder_request" ? !$("feedback-text").value.trim() : !feedbackRating;
+}
+$("feedback-text").addEventListener("input", updateFeedbackSend);
 $("feedback-up").addEventListener("click", () => setFeedbackRating("up"));
 $("feedback-down").addEventListener("click", () => setFeedbackRating("down"));
 $("feedback-close").addEventListener("click", () => { $("feedback").hidden = true; });
 $("feedback-send").addEventListener("click", () => {
-  if (!feedbackRating) return;
   const text = $("feedback-text").value.trim().slice(0, 1000);
+  if (feedbackSurface === "finder_request" ? !text : !feedbackRating) return;
   track("feedback_submitted", { surface: feedbackSurface, rating: feedbackRating, hasText: !!text }, text);
   $("feedback-send").disabled = true;
   $("feedback-thanks").hidden = false;
