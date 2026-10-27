@@ -4,7 +4,7 @@
 // correction, and the per-learnable credit verdicts). Text is logged IN FULL and kept.
 //
 // The input recording is never written: the row keeps its mime type and the marker "(not retained)".
-// `sweepMedia` only clears clips left under media/ by earlier versions.
+// `sweepMedia` deletes any clip under media/ older than TURNLOG_MEDIA_TTL_MIN.
 //
 // Local-only: lives under the gitignored /assets/ next to learner.json. Best-effort by design — a
 // logging failure is caught and never breaks a turn. Disable entirely with TURNLOG=0.

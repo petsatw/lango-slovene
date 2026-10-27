@@ -57,7 +57,7 @@ export async function glossOf(
    *  cache and writes nothing (server/assets/retention.ts). Catalog hits are free and unaffected. */
   retain = true,
 ): Promise<{ gloss: string; source: GlossSource }> {
-  const session = sessionId && /^[\w-]+$/.test(sessionId) ? sessionId : undefined;
+  const session = sessionId && /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(sessionId) ? sessionId : undefined;
   const key = norm(sl);
   if (!key) return { gloss: "", source: "catalog" };
 

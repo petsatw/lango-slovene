@@ -138,11 +138,15 @@ check("a second sweep changes nothing", rows()[0].redactedAt, swept[0].redactedA
 
 console.log("\nnew phrases");
 const candidates = await import("../assets/candidates");
-candidates.record([{ surface: "Sem Kris", gloss: "I am Kris" }, { surface: "dober dan", gloss: "good day" }]);
+candidates.record([
+  { surface: "Sem Kris", gloss: "I am Kris" },
+  { surface: "dober dan", gloss: "good day" },
+  { surface: "lahko dobim kavo", gloss: "can I have a coffee" },
+]);
 const queued = readFileSync(CANDIDATES, "utf8").trim().split("\n").map((l) => JSON.parse(l));
-check("the phrase naming Kris is skipped and the plain one stored with surface, gloss, at only",
-  queued.map((q) => Object.keys(q).sort().join(",")), ["at,gloss,surface"]);
-check("the stored phrase is the plain one", queued[0].surface, "dober dan");
+check("the phrase naming Kris is skipped and the plain ones stored with surface, gloss, at only",
+  queued.map((q) => Object.keys(q).sort().join(",")), ["at,gloss,surface", "at,gloss,surface"]);
+check("the stored phrases are the plain ones, an English \"I\" included", queued.map((q) => q.surface), ["dober dan", "lahko dobim kavo"]);
 
 console.log("\nnothing entered the shared stores (real server, vendor calls stubbed)");
 const port = 20000 + Math.floor(Math.random() * 20000);

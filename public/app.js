@@ -227,8 +227,8 @@ function addBubble(role, text, sub, replayOpts = {}) {
   div.appendChild(span);
 
   // Tutor bubbles get a replay icon. What it replays depends on where the line came from, and the two
-  // are NOT interchangeable: a tap-to-speak reply was synthesized by ElevenLabs and is cached on disk,
-  // so re-streaming it is free and returns the same voice. A live line was improvised by the vendor in
+  // are NOT interchangeable: a tap-to-speak reply was synthesized by ElevenLabs and the server holds it in
+  // memory, so re-streaming it returns the same voice. A live line was improvised by the vendor in
   // the vendor's own voice and never went through /api/speak at all — re-synthesizing it would bill a
   // fresh call and answer in a different voice than the learner just heard. So the live surface hands
   // in its own player over the audio it kept.
