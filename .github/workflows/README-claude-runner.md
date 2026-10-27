@@ -39,17 +39,19 @@ the issue gets a comment with `BLOCKED.md` and the PR link. A run that ends with
 **Secret.** Repo secret `CLAUDE_CODE_OAUTH_TOKEN` (Pro/Max subscription; create it with
 `claude setup-token`).
 
-**Block alert.** When the run labels an issue `blocked` or `grok-handoff`, it POSTs JSON to the URL in
-repo secret `CLAUDE_BLOCK_WEBHOOK_URL`, with header `Authorization: <CLAUDE_BLOCK_WEBHOOK_KEY>`. The key
-secret holds the whole Authorization header value, exactly as the receiver gives it. Chris adds both
-secrets. Body:
+**Run alert.** When the run labels an issue `pr-open`, `blocked` or `grok-handoff`, it POSTs JSON to the
+URL in repo secret `CLAUDE_BLOCK_WEBHOOK_URL`, with header `Authorization: <CLAUDE_BLOCK_WEBHOOK_KEY>`.
+The key secret holds the whole Authorization header value, exactly as the receiver gives it. Chris adds
+both secrets. Body:
 
 ```json
-{"issue": 24, "label": "blocked", "comment_url": "<issue comment html_url>", "question": "<first line of BLOCKED.md without its prefix>",
- "pr_url": "<draft PR url>", "run_url": "<run url>", "repo": "petsatw/lango-slovene"}
+{"issue": 24, "label": "pr-open" | "blocked" | "grok-handoff", "comment_url": "<issue comment html_url>",
+ "question": "<first line of BLOCKED.md without its prefix>", "pr_url": "<PR url>", "run_url": "<run url>",
+ "repo": "petsatw/lango-slovene"}
 ```
 
-A missing secret or a failed POST logs a line and leaves the run's outcome unchanged.
+On `pr-open`, `comment_url` and `question` are `null` and `pr_url` is the ready PR. A missing secret or a
+failed POST logs a line and leaves the run's outcome unchanged.
 
 **Retry.** Answer the question on the issue, then add `ready-for-claude` again. The run continues from
 `claude/issue-N` and the same PR. Each label is a fresh run; attempts are not counted.

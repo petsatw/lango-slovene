@@ -110,39 +110,42 @@ jobs:
             fi
           fi
 
+          comment_url=
+          question=
           if [ "$outcome" = passed ] && [ -n "$pr" ]; then
+            label="pr-open"
             gh pr ready "$pr" || true
-            gh api "repos/$GH_REPO/issues/$N/labels" -f "labels[]=pr-open" --silent
-            exit 0
-          fi
-          [ -z "$pr" ] || gh pr ready "$pr" --undo || true
-          { cat /tmp/out.md; [ -z "$pr" ] || printf '\nDraft PR with the work so far: %s\n' "$pr"; printf '\nRun: %s\n' "$RUN_URL"; } > /tmp/comment.md
-          comment_url=$(gh api "repos/$GH_REPO/issues/$N/comments" -F body=@/tmp/comment.md -q .html_url)
-          if [ "$outcome" = handoff ]; then
-            label=grok-handoff
-            gh label create grok-handoff --color 5319E7 --description "Claude built the slice; the tech lead agent runs or fixes the acceptance check" 2>/dev/null || true
           else
-            label=blocked
+            [ -z "$pr" ] || gh pr ready "$pr" --undo || true
+            { cat /tmp/out.md; [ -z "$pr" ] || printf '\nDraft PR with the work so far: %s\n' "$pr"; printf '\nRun: %s\n' "$RUN_URL"; } > /tmp/comment.md
+            comment_url=$(gh api "repos/$GH_REPO/issues/$N/comments" -F body=@/tmp/comment.md -q .html_url)
+            question=$(head -n1 /tmp/out.md | sed -E 's/^(BLOCKED|HANDOFF):[[:space:]]*//')
+            if [ "$outcome" = handoff ]; then
+              label=grok-handoff
+              gh label create grok-handoff --color 5319E7 --description "Claude built the slice; the tech lead agent runs or fixes the acceptance check" 2>/dev/null || true
+            else
+              label=blocked
+            fi
           fi
           gh api "repos/$GH_REPO/issues/$N/labels" -f "labels[]=$label" --silent
 
-          # Block alert webhook. It never fails the run.
+          # Run alert webhook. It never fails the run.
           if [ -z "$CLAUDE_BLOCK_WEBHOOK_URL" ] || [ -z "$CLAUDE_BLOCK_WEBHOOK_KEY" ]; then
-            echo "Block webhook secrets are not set; no alert sent."
+            echo "Run alert webhook secrets are not set; no alert sent."
             exit 0
           fi
           set +x
           # The webhook auth header, sent from this file only. The secret holds the whole header value.
           printf 'Authorization: %s\n' "$CLAUDE_BLOCK_WEBHOOK_KEY" > /tmp/webhook-headers
-          question=$(head -n1 /tmp/out.md | sed -E 's/^(BLOCKED|HANDOFF):[[:space:]]*//')
           jq -n --argjson issue "$N" --arg label "$label" --arg comment_url "$comment_url" --arg question "$question" \
             --arg pr_url "$pr" --arg run_url "$RUN_URL" --arg repo "$GH_REPO" \
-            '{issue: $issue, label: $label, comment_url: $comment_url, question: $question,
-              pr_url: (if $pr_url == "" then null else $pr_url end), run_url: $run_url, repo: $repo}' > /tmp/alert.json || true
+            'def nullable: if . == "" then null else . end;
+              {issue: $issue, label: $label, comment_url: ($comment_url | nullable), question: ($question | nullable),
+               pr_url: ($pr_url | nullable), run_url: $run_url, repo: $repo}' > /tmp/alert.json || true
           code=$(curl -sS --max-time 10 -X POST -H 'Content-Type: application/json' -H @/tmp/webhook-headers \
             --data-binary @/tmp/alert.json -o /dev/null -w '%{http_code}' "$CLAUDE_BLOCK_WEBHOOK_URL") || true
           rm -f /tmp/webhook-headers
           case "$code" in
-            2??) echo "Block alert sent (HTTP $code)." ;;
-            *) echo "::warning::Block alert webhook failed (HTTP ${code:-none}); the run carries on." ;;
+            2??) echo "Run alert sent (HTTP $code)." ;;
+            *) echo "::warning::Run alert webhook failed (HTTP ${code:-none}); the run carries on." ;;
           esac
