@@ -6,8 +6,9 @@ the code across browsers and devices, Safari and the iOS home-screen app include
 ## 1. Invite link
 
 - The invite link carries the code as `?c=<code>`. The client stores it in `localStorage.testerCode`,
-  removes `?c=` from the address bar, and sends it as the `x-tester-code` header on every request,
-  including the live session create call.
+  removes `?c=` from the address bar, and sends it as the `x-tester-code` header on every API call
+  that reads or writes learner data, including the live session create call. Media loads
+  (`/api/speak`, `/api/image`) are shared across learners and carry no learner headers.
 - A code in a later link replaces the stored one.
 
 ## 2. Allowlist
@@ -30,8 +31,9 @@ The server resolves every request to one learner:
   model and one learning history (`/api/learner` returns the same model in both).
 - An `x-learner-id` with the `t-` prefix is treated as absent, so a derived id is reachable only through
   its code.
-- `learnerOf(req)` in `server/server.ts` returns the resolved id, and a `testerCodeOf(req)` helper next
-  to it returns the code or `null`. Every writer uses these two helpers.
+- `learner.resolveId(code, learnerId)` and `learner.testerCodeFrom(code)` in `server/assets/learner.ts`
+  resolve the id and return the code or `null`. Every writer resolves through these two functions;
+  `server/server.ts` wraps them as `learnerOf(req)` and `testerCodeOf(req)`.
 
 ## 4. Records carry the learner
 
