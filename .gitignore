@@ -38,3 +38,6 @@ scenario-assets-*.tgz
 # May later be promoted to a shippable/synced library; gitignored during build-up.
 # Root-anchored so it does NOT match the source dir server/assets/.
 /assets/
+
+# Claude runner: the issue text the workflow writes for Claude
+.claude/issue.md

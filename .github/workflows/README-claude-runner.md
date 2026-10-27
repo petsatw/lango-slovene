@@ -9,6 +9,11 @@ repo owner, a member or a collaborator; for anyone else it removes the label and
 continue from it. At the end the workflow commits everything Claude wrote except `PR.md` and
 `BLOCKED.md`, pushes the branch and opens or updates one PR to `mvp` with `Closes #N`.
 
+**Issue text.** Before Claude starts, the workflow writes the issue's title, labels, body and all comments
+to `.claude/issue.md` with `gh` and the job's `GITHUB_TOKEN`. Claude reads the issue from that file and
+does not call `gh` for it. The file is gitignored and listed in `.git/info/exclude`, so no commit
+includes it.
+
 **Acceptance check.** One in-repo script, `npx tsx server/probes/<name>.ts`, that Claude writes as part
 of the slice. It starts the server with its own env, uses `fetch`, and drives headless Chromium through
 the repo's `playwright` (the workflow installs Chromium).
@@ -24,6 +29,10 @@ the repo's `playwright` (the workflow installs Chromium).
 On both `BLOCKED.md` outcomes the work so far is saved in a draft PR whose body is `BLOCKED.md`, and
 the issue gets a comment with `BLOCKED.md` and the PR link. A run that ends without either file counts as
 `BLOCKED:`.
+
+**Run status.** A run that ends with `pr-open` is green. A `blocked` or `grok-handoff` run is red: after the
+comment, the label and the run alert, its last step fails and names the outcome, the question and the
+comment link.
 
 **Labels.**
 
