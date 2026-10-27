@@ -17,6 +17,7 @@ import * as registry from "./registry";
 import * as learner from "../assets/learner";
 import * as retention from "../assets/retention";
 import * as liveLog from "./log";
+import * as events from "../events";
 import { glossOf } from "./gloss";
 import { creditSession } from "./grader";
 import { keytermsFor } from "./match";
@@ -33,12 +34,25 @@ export const liveRouter = express.Router();
 liveRouter.post("/v1/live/sessions", (req, res) => {
   const { lessonId, accessCode, provider: requested, runId } = req.body ?? {};
 
-  if (!registry.accessCodeOk(accessCode)) return res.status(403).json({ error: "forbidden" });
+  const who = {
+    learnerId: learner.resolveId(req.get("x-tester-code"), req.get("x-learner-id")),
+    testerCode: learner.testerCodeFrom(req.get("x-tester-code")),
+  };
+  const failed = (reason: string) =>
+    events.emit("live_failed", who, { lessonId: typeof lessonId === "string" ? lessonId : null, provider: null, reason });
+  if (!registry.accessCodeOk(accessCode)) {
+    failed("forbidden");
+    return res.status(403).json({ error: "forbidden" });
+  }
+  events.emit("gate_passed", who, { via: "access_code" });
   if (typeof lessonId !== "string" || !lessonExists(lessonId)) {
     return res.status(400).json({ error: "unknown lessonId" });
   }
   // The cap is what keeps an unattended tab, or a tester who opens five, from running up minutes.
-  if (registry.atCapacity()) return res.status(429).json({ error: "live sessions at capacity" });
+  if (registry.atCapacity()) {
+    failed("capacity");
+    return res.status(429).json({ error: "live sessions at capacity" });
+  }
 
   const provider = registry.resolveProvider(requested);
   if (!providerReady(provider)) return res.status(503).json({ error: "live tutor unavailable" });
@@ -46,8 +60,7 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
   const s = registry.create({
     lessonId,
     provider,
-    learnerId: learner.resolveId(req.get("x-tester-code"), req.get("x-learner-id")),
-    testerCode: learner.testerCodeFrom(req.get("x-tester-code")),
+    ...who,
     runId: typeof runId === "string" && runId.trim() ? runId : null,
     retain: retention.retainFrom(req.get("x-retain")),
   });
@@ -100,6 +113,9 @@ export function attachLive(server: HttpServer): void {
 function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & object): void {
   const { sessionId, lessonId, provider, learnerId, testerCode, runId, retain } = pending;
   const startedAt = new Date().toISOString();
+  const who = { learnerId, testerCode };
+  events.emit("live_started", who, { lessonId, provider, noSave: !retain });
+  let ttlHit = false;
   const transcripts: LiveTranscript[] = [];
   /** id → the entry in `transcripts`, so a revision overwrites rather than appends. */
   const byId = new Map<string, LiveTranscript>();
@@ -157,7 +173,10 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
 
   // The session ceiling. It is a hard stop rather than a warning: an abandoned tab with an open mic is
   // exactly the shape of an unattended bill, and the learner losing a session is the cheaper failure.
-  const ttl = setTimeout(() => finish("ended"), registry.SESSION_TTL_SEC * 1000);
+  const ttl = setTimeout(() => {
+    ttlHit = true;
+    finish("ended");
+  }, registry.SESSION_TTL_SEC * 1000);
 
   function finish(code: LiveErrorCode): void {
     if (done) return;
@@ -166,6 +185,11 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
     clearTimeout(ttl);
     adapter.close();
     registry.markEnded(sessionId);
+    if (failure) events.emit("live_failed", who, { lessonId, provider, reason: "error" });
+    else {
+      const sec = Math.round((Date.now() - Date.parse(startedAt)) / 1000);
+      events.emit("live_ended", who, { lessonId, provider, sec, reason: ttlHit ? "ttl" : "user" });
+    }
     const log = {
       sessionId,
       learnerId,

@@ -29,6 +29,7 @@ import { getLearnable, LEARNABLES } from "./learnables";
 import { buildGalleryHtml } from "./scripts/gallery";
 import { frameFor } from "./scripts/dialogue-lib";
 import { liveRouter, attachLive } from "./live/index";
+import * as events from "./events";
 import { buildIndex, matchSituation, SYNONYMS, STOP, MATCH_THRESHOLD } from "./match";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -72,6 +73,7 @@ const retainOf = (req: express.Request) => retention.retainFrom(req.get("x-retai
 app.use(express.json({ limit: "25mb" }));
 app.get("/privacy", (_req, res) => res.sendFile(path.join(__dirname, "..", "public", "privacy.html")));
 app.use(express.static(path.join(__dirname, "..", "public")));
+app.post("/api/event", events.handle);
 
 // The live tutor's one HTTP surface (POST /v1/live/sessions). Its WebSocket half is attached to the
 // http server at the bottom of this file — Express does not see upgrades.

@@ -49,13 +49,61 @@ function setStartChoices(ns, im) {
   retainSession = !noSave;
 }
 
+// Core-journey events (docs/features/events/spec.md). `track` queues; the queue goes out every 10 s, at 50
+// events, and when the page is hidden. It goes through `api` with `keepalive` rather than sendBeacon,
+// because a beacon cannot carry the x-tester-code header that stamps the row. A failed send is dropped.
+const eventQueue = [];
+function flushEvents() {
+  if (!eventQueue.length) return;
+  const events = eventQueue.splice(0, 50);
+  api("/api/event", {
+    method: "POST",
+    keepalive: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ events }),
+  }).catch(() => {});
+}
+function track(name, props = {}) {
+  eventQueue.push({ name, ts: new Date().toISOString(), props });
+  if (eventQueue.length >= 50) flushEvents();
+}
+setInterval(flushEvents, 10_000);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushEvents(); });
+track("app_open", {
+  standalone: !!(navigator.standalone || matchMedia("(display-mode: standalone)").matches),
+  isFirstOpen: !localStorage.getItem("opened"),
+  path: location.pathname,
+});
+localStorage.setItem("opened", "1");
+
+// One level at a time is in play. `endLevelRun` records how it ended; a run left open when the next one
+// begins was abandoned.
+let levelRun = null;
+function beginLevelRun(scenarioId, level) {
+  endLevelRun(false);
+  levelRun = { scenarioId, level, t0: Date.now() };
+  track("level_started", { scenarioId, level });
+}
+function endLevelRun(completed, nodeId) {
+  if (!levelRun) return;
+  const { scenarioId, level, t0 } = levelRun;
+  nodeId = nodeId ?? levelRun.nodeId;
+  levelRun = null;
+  const ms = Date.now() - t0;
+  if (completed) track("level_completed", { scenarioId, level, ms });
+  else track("level_abandoned", { scenarioId, level, ms, nodeId: nodeId ?? null });
+}
+
 // The invite link carries the tester code as ?c=<code>. It is stored, taken out of the address bar, and
 // sent on every call; a code in a later link replaces the stored one (docs/features/tester-identity/spec.md).
 {
   const url = new URL(location.href);
   const linked = url.searchParams.get("c");
   if (linked !== null) {
-    if (linked.trim()) localStorage.setItem("testerCode", linked.trim());
+    if (linked.trim()) {
+      localStorage.setItem("testerCode", linked.trim());
+      track("tester_code_seen");
+    }
     url.searchParams.delete("c");
     window.history.replaceState(null, "", url);
   }
@@ -102,6 +150,7 @@ function showScreen(id) {
     if (liveActive()) stopLive();
   }
   currentScreen = id;
+  track("screen_viewed", { screen: id });
   for (const s of SCREENS) $(s).hidden = s !== id;
   $("back").hidden = id === "home" || id === "scene";
   $("obs").hidden = id !== "tutor" || !obsEnabled; // dev affordance, opt-in per tab — see obsEnabled
@@ -494,7 +543,7 @@ function renderFinder(matches, live, note) {
     card.querySelector(".level-title").textContent = `${m.scenarioName} — ${m.levelTitle}`;
     card.querySelector(".scenario-meta").textContent = m.reason || "";
     if (m.snippet) card.querySelector(".level-main").appendChild(finderSnippetEl(m.snippet));
-    card.addEventListener("click", () => openFinderMatch(m));
+    card.addEventListener("click", () => { track("finder_match_opened", { scenarioId: m.scenarioId }); openFinderMatch(m); });
     el.appendChild(card);
   }
   if (live) {
@@ -503,7 +552,10 @@ function renderFinder(matches, live, note) {
     card.type = "button";
     card.innerHTML = `<span class="level-main"><span class="level-title"></span><span class="scenario-meta">Live AI tutor plays the scene with you</span></span><span class="level-chevron">›</span>`;
     card.querySelector(".level-title").textContent = `Practise this live: “${live.query}”`;
-    card.addEventListener("click", () => openTutor({ focus: [], role: live.role, context: { scene: live.scene, practiced: [] } }));
+    card.addEventListener("click", () => {
+      track("handoff_tapped", { from: "finder" });
+      openTutor({ focus: [], role: live.role, context: { scene: live.scene, practiced: [] } });
+    });
     el.appendChild(card);
   }
 }
@@ -568,6 +620,12 @@ $("finder-input").addEventListener("input", (e) => {
   renderFinder(matches, null, "Press Enter to search by meaning");
 });
 
+// A submitted search records that it happened and how it came out; the query text stays in the browser.
+function trackFinder(resultCount) {
+  track("finder_query", { resultCount });
+  if (!resultCount) track("finder_no_match");
+}
+
 $("finder").addEventListener("submit", async (e) => {
   e.preventDefault();
   const text = $("finder-input").value.trim();
@@ -581,10 +639,12 @@ $("finder").addEventListener("submit", async (e) => {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    trackFinder(data.matches.length);
     const note = data.matches.length ? "" : "No lessons match that yet — try practising it live!";
     renderFinder(data.matches, { query: text, ...data.fallback }, note);
   } catch (err) {
     const matches = finderIndex ? finderSuggest(text) : [];
+    trackFinder(matches.length);
     const note = matches.length ? `Search failed (${err.message})` : "No lessons match that yet — try practising it live!";
     renderFinder(matches, { query: text, scene: `The learner wants to practise: ${text}`, role: null }, note);
   }
@@ -635,6 +695,7 @@ function openLevel(i) {
   // A spoken level is a lesson the app plays, not a tree to click through — same authored data, a
   // different surface. Which one is named by the level's own advance mode.
   if ((dialogue.advance ?? "tap") === "audio") { openScene(dialogue.scenarioId, dialogue.level); return; }
+  beginLevelRun(dialogue.scenarioId, dialogue.level);
   applyDialogueBackground(); // apply the scene background first so the intro can show it alone
   $("dialogue").hidden = false;
   if (dialogue.intro) runIntro();
@@ -675,9 +736,10 @@ function runIntro() {
   btn.hidden = false;
 
   let finished = false;
-  const finish = () => {
+  const finish = (quit = true) => {
     if (finished) return;
     finished = true;
+    track(quit ? "intro_quit" : "intro_completed", { kind: "level", id: dialogue.id });
     localStorage.setItem(introSkipKey(dialogue), "1");
     stopIntro();
     endIntro(card, btn);
@@ -689,7 +751,7 @@ function runIntro() {
     stopIntro();
     const audio = new Audio(`/intros/${dialogue.intro.audio}`);
     introAudio = audio;
-    const done = () => { if (introAudio === audio) introAudio = null; finish(); };
+    const done = () => { if (introAudio === audio) introAudio = null; finish(false); };
     audio.onended = done;
     audio.onerror = done;
     audio.play().catch(done);
@@ -793,6 +855,7 @@ async function presentNpcNode(nodeId) {
   const node = dialogue.nodes[nodeId];
   if (!node) return;
   const gen = treeGen;
+  if (levelRun) levelRun.nodeId = nodeId;
   dialogueBubble(node);
   if (dialogue.audio === "ready") await playDialogueLine(node);
   if (gen !== treeGen) return;
@@ -807,6 +870,7 @@ function renderChoices(npcNode) {
   const choices = choiceIds.map((cid) => dialogue.nodes[cid]);
 
   if (!choices.length) {
+    endLevelRun(true);
     wrap.classList.add("is-terminal"); // drop the panel chrome — a lone restart button, no hint
     const btn = document.createElement("button");
     btn.className = "dialogue-choice restart";
@@ -933,6 +997,7 @@ function startDialogueTree() {
 }
 
 function closeDialogue() {
+  endLevelRun(false);
   treeGen++;
   stopIntro();
   stopDialogueAudio();
@@ -2053,6 +2118,7 @@ async function sceneStep(from, ack, answer) {
 function sceneFinish() {
   sceneClearStalls();
   scene.armed = false;
+  endLevelRun(true);
   // Nothing is playing and there is nothing after this line. `«` stays live — the goodbye is exactly
   // where someone realises they missed the line before it — and so does ✕, which is the way out from a
   // close screen whose other button is "Next lesson".
@@ -2079,6 +2145,7 @@ function sceneFinish() {
   $("scene-deeper-read").onclick = () => openPracticeDialogue(scene.practice);
   $("scene-deeper-speak").onclick = () => {
     const h = scene.handoff;
+    track("handoff_tapped", { from: "level" });
     sceneCancel();
     sceneReleaseClips();
     openTutor(h ? { focus: h.focus, role: h.role, context: h.context, lessonId: h.lessonId } : {});
@@ -2192,6 +2259,7 @@ async function openScene(scenarioId, level = null) {
   scene = { scenarioId, level, voice: null, audio: null, node: null, stalls: [], armed: false,
             choosing: false, backchannel: null, pacing: null, nextLevel: null, keyPhrases: null,
             trail: [], trailAt: -1 };
+  beginLevelRun(scenarioId, level);
   showScreen("scene");
   $("scene-tutorial").hidden = true;
   $("scene-chips").classList.remove("tutorial");
@@ -2302,7 +2370,7 @@ function wireSceneChips() {
   });
 
   // Leave: the same exit as "Done" on the close screen.
-  $("scene-quit").addEventListener("click", () => { sceneCancel(); sceneReleaseClips(); openHome(); });
+  $("scene-quit").addEventListener("click", () => { endLevelRun(false, scene.node?.id); sceneCancel(); sceneReleaseClips(); openHome(); });
 }
 
 // ---- ③ A1 Readiness — the coverage map (the only place progress is visible). A hand-authored
@@ -2397,7 +2465,7 @@ async function init() {
     t.addEventListener("click", () => {
       const go = t.dataset.go;
       if (go === "practice") openPractice();
-      else if (go === "tutor") openTutor();
+      else if (go === "tutor") { track("handoff_tapped", { from: "home" }); openTutor(); }
       else if (go === "a1") openA1();
     }),
   );
