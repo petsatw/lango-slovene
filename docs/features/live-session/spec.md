@@ -26,9 +26,6 @@ The title follows the `ending` field of the progress message (§3):
 | `"ended"` | "Session ended" |
 | `"time"` | "Session time reached" |
 
-A later lesson-completion signal ({xref: lesson-completion signal, docs/features/live-session/spec.md
-section TBD}) adds `ending: "complete"`, which shows "Session complete".
-
 Until the progress message arrives, the title is "Session ended" after the learner pressed "End
 session", and empty otherwise. When the socket closes before a progress message, the title is "Session
 ended".
