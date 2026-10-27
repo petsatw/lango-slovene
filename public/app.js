@@ -38,14 +38,15 @@ const learnerId = (() => {
   return minted;
 })();
 
-// Whether this sitting agreed to its data being kept — the consent gate's second, optional box, which
-// starts ticked. Held for one sitting: a reload keeps the answer, closing the tab forgets it. Unticked,
-// the server empties this session's records a few hours after it ends and never writes its speech into
-// the shared audio, gloss and candidate stores at all (server/assets/retention.ts).
-let retainSession = sessionStorage.getItem("retainSession") !== "0";
-function setRetain(on) {
-  retainSession = !!on;
-  sessionStorage.setItem("retainSession", retainSession ? "1" : "0");
+// The start screen's two answers for this session. Both start unticked each time the screen opens.
+// `retainSession` (the x-retain header and retain param) follows "Don't save this session".
+let noSave = false;
+let improve = false;
+let retainSession = true;
+function setStartChoices(ns, im) {
+  noSave = !!ns;
+  improve = !!im;
+  retainSession = !noSave;
 }
 
 // Every call names the learner it is about, and whether this sitting is being kept. One wrapper, so no
@@ -1056,6 +1057,12 @@ async function toggleLive() {
     stopLive();
     return;
   }
+  if (!startAcknowledged) {
+    startLiveAfterStart = true;
+    openConsent();
+    return;
+  }
+  startAcknowledged = false;
   const lessonId = liveParams.get("lesson") || chatLessonId;
   if (!lessonId) {
     $("live-state").textContent = "rehearse a lesson first, or add ?lesson=<id>";
@@ -1076,7 +1083,7 @@ async function toggleLive() {
   liveObjectives = [];
   try {
     await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined,
-                      learnerId, runId, retain: retainSession });
+                      learnerId, runId, retain: retainSession, noSave, improve });
     // Nothing in the protocol says the tutor has started or stopped speaking — `state` reports when the
     // vendor finished GENERATING, which is well before the audio is heard. So the surface asks the
     // playback queue instead, often enough to look like a response and cheaply enough not to matter.
@@ -1178,14 +1185,16 @@ function openTutor(opts = {}) {
   openConsent();
 }
 
-// The gate appears EVERY time, because nothing about the tester is remembered between sessions and a
-// consent nobody stored is a consent that has to be asked for again. Two clicks clears it.
+// The start screen appears on every tutor entry and before every live session; Start acknowledges it
+// for one live session.
+let startAcknowledged = false;
+let startLiveAfterStart = false;
 function openConsent() {
-  $("consent-agree").checked = false;
-  // The optional box comes back on whatever this sitting last answered, so a learner who turned it off
-  // is not quietly re-asked to turn it back on every time the gate reappears.
-  $("consent-improve").checked = retainSession;
-  $("consent-continue").disabled = true;
+  $("start-nosave").checked = false;
+  $("start-improve").checked = false;
+  $("start-nosave").disabled = false;
+  $("start-improve").disabled = false;
+  setStartChoices(false, false);
   $("consent").hidden = false;
   $("mode-switch").hidden = true; // a session left mid-question must not come back to the answer
   $("practice-talk").disabled = true;
@@ -2390,20 +2399,26 @@ async function init() {
   $("dialogue-close").addEventListener("click", closeDialogue);
   $("dialogue-handoff").addEventListener("click", reinforceFromDialogue);
 
-  // Consent gate. The required acknowledgement is the only thing that gates Continue; the tutorial
-  // skip never does.
-  // Leaving the gate unanswered. showScreen hides the overlay on the way out of the tutor surface, and
+  // Closing the start screen unanswered. showScreen hides the overlay on the way out of the tutor surface, and
   // no session has been opened yet, so there is nothing to tear down — the learner is simply put back
   // where they were, on the close screen of the lesson that offered them the tutor in the first place.
   $("consent-close").addEventListener("click", () => showScreen(tutorReturnTo));
-  $("consent-agree").addEventListener("change", (e) => { $("consent-continue").disabled = !e.target.checked; });
+  // Ticking either box unticks and disables the other; unticking enables it again, unticked.
+  for (const [mine, other] of [["start-nosave", "start-improve"], ["start-improve", "start-nosave"]]) {
+    $(mine).addEventListener("change", (e) => {
+      $(other).checked = false;
+      $(other).disabled = e.target.checked;
+    });
+  }
   $("consent-continue").addEventListener("click", () => {
-    if (!$("consent-agree").checked) return;
-    // Read the optional box HERE rather than on change: what the learner leaves it on when they press
-    // Continue is the answer, and it has to be recorded before the first call goes out.
-    setRetain($("consent-improve").checked);
+    setStartChoices($("start-nosave").checked, $("start-improve").checked);
     $("consent").hidden = true;
+    startAcknowledged = true;
     startTutorSession();
+    if (startLiveAfterStart) {
+      startLiveAfterStart = false;
+      toggleLive();
+    }
   });
 
   $("mode-toggle").addEventListener("click", (e) => {

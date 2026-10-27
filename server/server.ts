@@ -68,6 +68,7 @@ const retainOf = (req: express.Request) => retention.retainFrom(req.get("x-retai
 
 // Audio clips arrive as base64 JSON — allow a generous body size.
 app.use(express.json({ limit: "25mb" }));
+app.get("/privacy", (_req, res) => res.sendFile(path.join(__dirname, "..", "public", "privacy.html")));
 app.use(express.static(path.join(__dirname, "..", "public")));
 
 // The live tutor's one HTTP surface (POST /v1/live/sessions). Its WebSocket half is attached to the

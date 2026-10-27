@@ -212,7 +212,7 @@ function stopPlayback() {
 
 // ---- session ----
 
-export async function startLive({ lessonId, accessCode, provider, learnerId, runId, retain = true }) {
+export async function startLive({ lessonId, accessCode, provider, learnerId, runId, retain = true, noSave = false, improve = false }) {
   if (ws) return; // one live session per tab, by construction
 
   // `learnerId` is whose palette the session's prompt is built from; `runId` is the sitting, and it is
@@ -226,7 +226,7 @@ export async function startLive({ lessonId, accessCode, provider, learnerId, run
       "x-learner-id": learnerId,
       ...(retain ? {} : { "x-retain": "0" }),
     },
-    body: JSON.stringify({ lessonId, accessCode, provider, runId }),
+    body: JSON.stringify({ lessonId, accessCode, provider, runId, ...(noSave && { noSave }), ...(improve && { improve }) }),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
