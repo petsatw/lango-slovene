@@ -46,6 +46,9 @@ Server → client: binary audio, plus
 `{"type":"state","status":"connected"|"listening"|"speaking"|"ended"}`,
 `{"type":"error","code":"vendor_connect"|"vendor_setup"|"vendor_audio"|"ended"}`,
 `{"type":"objectives","items":[{"sl":…}]}` — once, when the prompt is built, before the vendor connects.
+`{"type":"progress","objectives":[{"id":…,"name":…}]|null}` — once, after `ended`, when the session's
+progress check settles; the server closes the socket after it
+([progress result](features/live-session/spec.md#3-progress-result)).
 
 The objectives are the lines the tutor steers toward, in Slovene, a pattern as its frame with `___`: a
 lesson's targets, a scene's day's lines, or a tree handoff's tree lines. The grader may score a larger set
@@ -123,7 +126,7 @@ The harness replaces the shared body for that session. The app appends what it o
   `close` line, said once.
 
 The close line ends the lesson, not the session. The learner can keep talking; everything they say is
-credited once, when the socket closes, like any live session.
+credited once, when the session ends, like any live session.
 
 ```bash
 npm run prompt:live -- trznica
@@ -151,8 +154,9 @@ line.
 ## Crediting a live session — one grader, the whole catalog
 
 The session is over before any of this runs. Nothing blocks, nothing gates the learner's turn, and no
-extra response is asked for mid-conversation; when the socket closes and the transcript is written,
-[server/live/grader.ts](../server/live/grader.ts) reads it.
+extra response is asked for mid-conversation; when the session ends and the transcript is written,
+[server/live/grader.ts](../server/live/grader.ts) reads it, and the app shows the learner the session's
+objectives it found progress on ([progress result](features/live-session/spec.md#3-progress-result)).
 
 **The lesson steers; it does not bound the credit.** Every catalog learnable the learner produced is
 credited, in the lesson or not. The lesson's own targets are counted separately as the **lesson score**:
@@ -210,8 +214,8 @@ Credit rides the same firewall tap mode uses (`mastery.creditFromEvidence`: allo
 Slovene → the cited span is in the transcript → success or attempt), and the same store, with the whole
 catalog as the allowlist. Live gains credit, not a second way of granting it. Two records come out of it:
 
-- `assets/live/<sessionId>.json` gains `credit` — the per-learnable verdicts the session earned — and
-  `lessonScore`.
+- `assets/live/<sessionId>.json` gains `credit` (the per-learnable verdicts the session earned),
+  `progressed` (the session's objectives with a `success` verdict) and `lessonScore`.
 - one `path: "live"` row in `assets/turnlog/turns.jsonl`, carrying the grader's input, what it read for
   every learnable produced, the lesson score, and the durable counts after crediting.
 

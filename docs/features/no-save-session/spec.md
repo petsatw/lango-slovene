@@ -1,7 +1,7 @@
 # No-save session
 
-Before every live session the learner can choose not to save it. A no-save session is scored and then
-removed, whatever the scoring outcome.
+Before every live session the learner can choose not to save it. A no-save session is checked for progress
+and then removed, whatever the outcome of the check.
 
 ## 1. Switch
 
@@ -17,20 +17,22 @@ removed, whatever the scoring outcome.
 
 `finish()` in `server/live/index.ts` runs these steps in order:
 1. Write the live log, as for every session.
-2. Run `creditSession`: score the transcript and credit the learner model.
+2. Run `creditSession`: grade the transcript and credit the learner model.
 3. In a `finally` after step 2, for a no-save session, delete:
    - `DATA_DIR/live/<sessionId>.json`
    - the turn-log rows with that `sessionId`
    - `DATA_DIR/live/<sessionId>.gloss.json`
+4. Send the progress result and close the socket
+   ([progress result](../live-session/spec.md#3-progress-result)).
 
-Step 3 runs when scoring succeeds, fails or times out. Scoring has a time limit of
+Step 3 runs when grading succeeds, fails or times out. Grading has a time limit of
 `LIVE_GRADE_TIMEOUT_SEC` (default 60).
 
 ## 3. What stays
 
-- The learner model keeps the progress credit and lesson score from a successful grade.
-- When scoring fails or times out, the learner model is unchanged: no progress credit and no lesson
-  score are recorded, and step 3 deletes the transcript as usual.
+- The learner model keeps the progress credit from a successful grade.
+- When grading fails or times out, the learner model is unchanged and step 3 deletes the transcript as
+  usual.
 - The session is absent from the Learning history and produces no improvement copy.
 
 ## 4. Backstop

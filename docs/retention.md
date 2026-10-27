@@ -9,7 +9,7 @@ so the learner's own deletes, Delete my data and the sweeps can find it.
 
 | # | Where | Field(s) | Saved session | No-save session | Ends |
 |---|---|---|---|---|---|
-| 1 | `live/<sessionId>.json` | `transcripts[].text` (both roles), lesson, score | learning history | deleted right after scoring | per-session delete, Delete my data, 12-month sweep |
+| 1 | `live/<sessionId>.json` | `transcripts[].text` (both roles), lesson, progressed objectives | learning history | deleted right after scoring | per-session delete, Delete my data, 12-month sweep |
 | 2 | `turnlog/turns.jsonl` | `output.userVerbatim`, `output.userSaid`, `output.tutorReply`, `output.correction`, `input.history[].text`, `witness.*`, `live.channels[].said` | learning history | the session's rows are deleted right after scoring | with its session |
 | 3 | `sessions/<runId>.json` | `turns[].text`, `turns[].userVerbatim`, `turns[].audioKey` | learning history | — | with its session |
 | 4 | `live/<sessionId>.gloss.json` | translations of the session's lines | learning history | deleted right after scoring | with its session |

@@ -7,8 +7,16 @@ delete one or all.
 
 - A history entry is a saved live session (`DATA_DIR/live/<sessionId>.json`) or a saved tap-to-speak
   session (`DATA_DIR/sessions/<runId>.json`) whose `learnerId` is the requester's.
-- Each entry has: `id`, `kind` (`live` or `tap`), `lessonId`, `startedAt`, `endedAt`, `score`
-  (or `null`), and `transcripts` (`[{ ts, role, text }]`).
+- Each entry has: `id`, `kind` (`live` or `tap`), `lessonId`, `scenario`, `startedAt`, `endedAt`,
+  `progressed`, and `transcripts` (`[{ ts, role, text }]`).
+- `scenario` is the name of the scenario the lesson belongs to.
+- `progressed` lists the learner-facing names of the objectives the session made progress on, `[]` when
+  there are none:
+  - live: the live log's `progressed` ids
+    ([progress result](../live-session/spec.md#3-progress-result)), each named by its learnable's `sl`
+    in `server/catalog/learnables.json`
+  - tap: the session record's `finalObjectives` with status `completed`, each named by its objective's
+    `label` in `server/scenarios/<scenarioId>.json`
 
 ## 2. Endpoints
 
@@ -25,7 +33,10 @@ All endpoints act on the requester's learner, resolved by `learnerOf(req)`
 ## 3. Screen
 
 - "Learning history" opens from Settings
-  ([Settings](../consent-privacy/spec.md#3-settings)) and lists the entries: lesson, date and score.
+  ([Settings](../consent-privacy/spec.md#3-settings)) and lists the entries, two lines each:
+  1. "{scenario} · {date}": the entry's `scenario`, and `startedAt` as a date in the learner's locale.
+  2. "Progress on {objective}, {objective}": the entry's `progressed` names joined by ", ". An entry
+     with `progressed: []` shows "Practice".
 - Tapping an entry shows its transcript.
 - Each entry has a Delete action, and the list has "Delete all". Both ask for confirmation first.
 
