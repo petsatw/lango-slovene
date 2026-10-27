@@ -38,7 +38,8 @@ All endpoints act on the requester's learner, resolved by `learnerOf(req)`
   2. "Progress on {objective}, {objective}": the entry's `progressed` names joined by ", ". An entry
      with `progressed: []` shows "Practice".
 - Tapping an entry shows its transcript.
-- Each entry has a Delete action, and the list has "Delete all". Both ask for confirmation first.
+- Each entry has a Delete action. It asks "Delete this session? Your progress stays." first.
+- The list has "Delete all". It asks "Delete all your saved sessions? Your progress stays." first.
 
 ## 4. What a delete removes
 
@@ -48,7 +49,7 @@ For each entry:
 - its translations (`DATA_DIR/live/<sessionId>.gloss.json`)
 - its improvement copy (`DATA_DIR/improve/<sessionId>.json`)
 
-The learner model keeps the progress credit.
+The learner model `DATA_DIR/learners/<learnerId>.json` stays, with its progress credit.
 
 ## 5. Owner access
 
