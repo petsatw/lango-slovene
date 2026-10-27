@@ -401,6 +401,7 @@ main {
 .history-entry { width: 100%; max-width: 520px; margin: 0 0 10px; }
 .history-entry-body { display: block; margin: 8px 4px; color: var(--muted); font-size: 14px; }
 .feedback-overlay { z-index: 30; }
+.access-code { width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 12px; font-size: 16px; border-radius: 10px; border: 1px solid #3a4452; background: #11151b; color: #fff; }
 .story-card.feedback-card { text-align: left; max-width: 420px; }
 .feedback-rating { display: flex; justify-content: center; gap: 16px; margin: 0 0 14px; }
 .feedback-thumb {

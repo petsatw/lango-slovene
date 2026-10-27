@@ -1265,14 +1265,14 @@ async function toggleLive() {
     $("live-state").textContent = "rehearse a lesson first, or add ?lesson=<id>";
     return;
   }
-  // One shared code for the internal group. Kept in localStorage so a tester types it once; it is a
-  // gate on metered vendor minutes, not a login, and it protects no learner data.
-  let code = localStorage.getItem("liveAccessCode");
-  if (!code) {
-    code = window.prompt("Access code for the live tutor:") || "";
-    if (!code) return;
-    localStorage.setItem("liveAccessCode", code);
-  }
+  // One shared code for the internal group, kept in localStorage so a tester types it once. A browser
+  // holding a tester code needs none. It is a gate on metered vendor minutes, not a login.
+  const code = localStorage.getItem("liveAccessCode");
+  if (!code && !localStorage.getItem("testerCode")) { openAccessSheet(lessonId); return; }
+  await connectLive(lessonId, code);
+}
+
+async function connectLive(lessonId, code) {
   const btn = $("practice-talk");
   btn.disabled = true;
   $("live-state").textContent = "connecting…";
@@ -1288,13 +1288,38 @@ async function toggleLive() {
     liveTick = setInterval(renderPractice, 150);
   } catch (err) {
     // A rejected code is the one failure worth un-remembering, or the tester is stuck retrying it.
-    if (/forbidden/i.test(err.message)) localStorage.removeItem("liveAccessCode");
-    $("live-state").textContent = err.message;
+    if (/forbidden/i.test(err.message)) {
+      localStorage.removeItem("liveAccessCode");
+      $("live-state").textContent = "";
+      openAccessSheet(lessonId, Boolean(code));
+    } else {
+      $("live-state").textContent = err.message;
+    }
   } finally {
     btn.disabled = false;
     renderPractice();
   }
 }
+
+let accessSheetLesson = null;
+function openAccessSheet(lessonId, rejected = false) {
+  accessSheetLesson = lessonId;
+  $("access-code").value = "";
+  $("access-unlock").disabled = true;
+  $("access-error").hidden = !rejected;
+  $("access").hidden = false;
+  $("access-code").focus();
+}
+$("access-code").addEventListener("input", () => { $("access-unlock").disabled = !$("access-code").value; });
+$("access-close").addEventListener("click", () => { $("access").hidden = true; });
+$("access-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const code = $("access-code").value;
+  if (!code) return;
+  localStorage.setItem("liveAccessCode", code);
+  $("access").hidden = true;
+  connectLive(accessSheetLesson, code);
+});
 
 // A live transcript line revises itself as the vendor firms it up, so a bubble is addressed by id and
 // its text is REPLACED — one bubble per utterance, not one per revision.
