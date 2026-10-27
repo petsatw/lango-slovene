@@ -146,23 +146,24 @@ export function purgeSession(sessionId: string): void {
   }
 }
 
-/** Purge every no-save live log whose session ended (past the grading window, which a session still
- *  being scored sits inside) or passed SESSION_TTL_SEC. */
+/** Sessions this process is scoring right now. Their end step deletes them, so the sweep skips them. */
+export const settling = new Set<string>();
+
+/** Purge every no-save live log whose session ended or passed SESSION_TTL_SEC, except one this process
+ *  is still scoring. */
 function sweepNoSave(now: number): number {
   const dir = path.join(DATA_DIR, "live");
   if (!existsSync(dir)) return 0;
   const ttlMs = Number(process.env.SESSION_TTL_SEC || 600) * 1000;
-  const gradeMs = Math.max(1, Number(process.env.LIVE_GRADE_TIMEOUT_SEC ?? 60)) * 1000;
   let purged = 0;
   for (const name of readdirSync(dir)) {
     if (!name.endsWith(".json") || name.endsWith(".gloss.json")) continue;
     try {
       const rec = JSON.parse(readFileSync(path.join(dir, name), "utf8"));
-      if (rec.noSave !== true) continue;
-      const ended = Date.parse(rec.endedAt);
-      const started = Date.parse(rec.startedAt);
-      if (now - ended > gradeMs || now - started > ttlMs || !Number.isFinite(ended)) {
-        purgeSession(rec.sessionId ?? name.slice(0, -5));
+      const sessionId = rec.sessionId ?? name.slice(0, -5);
+      if (rec.noSave !== true || settling.has(sessionId)) continue;
+      if (Number.isFinite(Date.parse(rec.endedAt)) || now - Date.parse(rec.startedAt) > ttlMs) {
+        purgeSession(sessionId);
         purged++;
       }
     } catch {

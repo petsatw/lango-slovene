@@ -28,7 +28,7 @@ import type { LearnerModel, LiveTargetReading, TargetEvidence, WitnessResult } f
 import { getE2 } from "../adapters/index";
 import * as learner from "../assets/learner";
 import * as turnlog from "../assets/turnlog";
-import { purgeSession } from "../assets/retention";
+import { purgeSession, settling } from "../assets/retention";
 import { countsFor, creditFromEvidence, isMastered } from "../mastery";
 import * as liveLog from "./log";
 import type { LessonScore, LiveSessionLog, LiveTranscript } from "./log";
@@ -253,6 +253,7 @@ export async function creditSession(args: {
  *  whatever the scoring outcome (docs/features/no-save-session/spec.md#2-session-end). */
 export async function settleSession(args: Parameters<typeof creditSession>[0]): Promise<void> {
   const { log } = args;
+  if (log.noSave) settling.add(log.sessionId);
   try {
     liveLog.write(log);
   } catch (err: any) {
@@ -263,6 +264,9 @@ export async function settleSession(args: Parameters<typeof creditSession>[0]): 
   } catch (err: any) {
     console.error("[live] credit failed:", err?.message);
   } finally {
-    if (log.noSave) purgeSession(log.sessionId);
+    if (log.noSave) {
+      settling.delete(log.sessionId);
+      purgeSession(log.sessionId);
+    }
   }
 }

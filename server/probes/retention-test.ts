@@ -179,11 +179,12 @@ check("the learner model is unchanged", modelOf(), modelBefore);
 
 console.log("\nthe sweep removes a no-save log left from before startup");
 leave("ns-left");
-const longAgo = new Date(Date.now() - 3600_000).toISOString();
-liveLog.write(sessionLog("ns-left", { noSave: true, startedAt: longAgo, endedAt: longAgo }) as any);
+liveLog.write(sessionLog("ns-left", { noSave: true }) as any);
 leave("ns-running");
 liveLog.write(sessionLog("ns-running", { noSave: true }) as any);
+retention.settling.add("ns-running");
 retention.sweep();
+retention.settling.delete("ns-running");
 check("left-over: log, rows and translations are gone",
   [existsSync(liveFile("ns-left")), rowsFor("ns-left"), existsSync(glossFile("ns-left"))], [false, 0, false]);
 check("a no-save session still being scored is left to finish", existsSync(liveFile("ns-running")), true);
