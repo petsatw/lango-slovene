@@ -63,11 +63,45 @@ function flushEvents() {
     body: JSON.stringify({ events }),
   }).catch(() => {});
 }
-function track(name, props = {}) {
-  eventQueue.push({ name, ts: new Date().toISOString(), props });
+function track(name, props = {}, text) {
+  eventQueue.push({ name, ts: new Date().toISOString(), props, ...(text ? { text } : {}) });
   if (eventQueue.length >= 50) flushEvents();
 }
 setInterval(flushEvents, 10_000);
+
+// ---- Feedback sheet (docs/features/feedback/spec.md): thumbs + optional text; closing records nothing. ----
+let feedbackSurface = null;
+let feedbackRating = null;
+function openFeedback(surface) {
+  feedbackSurface = surface;
+  feedbackRating = null;
+  $("feedback-up").setAttribute("aria-pressed", "false");
+  $("feedback-down").setAttribute("aria-pressed", "false");
+  $("feedback-text").value = "";
+  $("feedback-send").disabled = true;
+  $("feedback-thanks").hidden = true;
+  $("feedback-prompt").textContent = surface === "finder_request" ? "What would you like to practise?" : "Anything to add? (optional)";
+  $("feedback").hidden = false;
+}
+function setFeedbackRating(r) {
+  feedbackRating = r;
+  $("feedback-up").setAttribute("aria-pressed", String(r === "up"));
+  $("feedback-down").setAttribute("aria-pressed", String(r === "down"));
+  $("feedback-send").disabled = false;
+}
+$("feedback-up").addEventListener("click", () => setFeedbackRating("up"));
+$("feedback-down").addEventListener("click", () => setFeedbackRating("down"));
+$("feedback-close").addEventListener("click", () => { $("feedback").hidden = true; });
+$("feedback-send").addEventListener("click", () => {
+  if (!feedbackRating) return;
+  const text = $("feedback-text").value.trim().slice(0, 1000);
+  track("feedback_submitted", { surface: feedbackSurface, rating: feedbackRating, hasText: !!text }, text);
+  $("feedback-thanks").hidden = false;
+  setTimeout(() => { $("feedback").hidden = true; }, 1200);
+});
+$("header-feedback").addEventListener("click", () => openFeedback("header"));
+$("scene-feedback").addEventListener("click", () => openFeedback("level_end"));
+$("live-feedback").addEventListener("click", () => openFeedback("live_end"));
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushEvents(); });
 track("app_open", {
   standalone: !!(navigator.standalone || matchMedia("(display-mode: standalone)").matches),
@@ -557,6 +591,15 @@ function renderFinder(matches, live, note) {
       openTutor({ focus: [], role: live.role, context: { scene: live.scene, practiced: [] } });
     });
     el.appendChild(card);
+    if (!matches.length) {
+      const req = document.createElement("button");
+      req.className = "level-card";
+      req.type = "button";
+      req.id = "finder-request";
+      req.innerHTML = `<span class="level-main"><span class="level-title">Request this scenario</span></span><span class="level-chevron">›</span>`;
+      req.addEventListener("click", () => openFeedback("finder_request"));
+      el.appendChild(req);
+    }
   }
 }
 
@@ -878,6 +921,13 @@ function renderChoices(npcNode) {
     btn.textContent = "↻ Start over";
     btn.addEventListener("click", startDialogueTree);
     wrap.appendChild(btn);
+    const fb = document.createElement("button");
+    fb.className = "dialogue-choice";
+    fb.type = "button";
+    fb.id = "level-feedback";
+    fb.textContent = "Feedback";
+    fb.addEventListener("click", () => openFeedback("level_end"));
+    wrap.appendChild(fb);
     return;
   }
   wrap.classList.remove("is-terminal");
@@ -1234,10 +1284,12 @@ onLive("state", (status) => {
     clearInterval(liveTick);
     liveTick = null;
     $("live-state").textContent = liveError ? `live error: ${liveError}` : "";
+    $("live-feedback").hidden = false;
     renderPractice();
     return;
   }
   liveError = null;
+  $("live-feedback").hidden = true;
   $("live-state").textContent = status;
   renderPractice();
 });

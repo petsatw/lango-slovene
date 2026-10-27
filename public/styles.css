@@ -375,6 +375,28 @@ main {
 }
 .consent-continue:disabled { opacity: 0.35; cursor: default; }
 
+/* ---- Feedback sheet ---------------------------------------------------------------------------- */
+.header-feedback {
+  position: absolute; right: 12px; top: 24px;
+  background: transparent; color: var(--muted);
+  border: 1px solid #2b2f38; border-radius: 999px;
+  padding: 6px 14px; font-size: 14px; cursor: pointer;
+}
+.header-feedback:hover { color: var(--text); border-color: var(--green); }
+.feedback-overlay { z-index: 30; }
+.story-card.feedback-card { text-align: left; max-width: 420px; }
+.feedback-rating { display: flex; justify-content: center; gap: 16px; margin: 0 0 14px; }
+.feedback-thumb {
+  font-size: 28px; padding: 8px 20px; cursor: pointer;
+  background: transparent; border: 2px solid #2b2f38; border-radius: 14px;
+}
+.feedback-thumb[aria-pressed="true"] { border-color: var(--green); background: rgba(11, 110, 79, 0.25); }
+.feedback-text {
+  width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 10px;
+  background: var(--panel); color: inherit; font: inherit;
+  border: 1px solid #2b2f38; border-radius: 10px; resize: vertical;
+}
+
 /* ---- Mode switch ----------------------------------------------------------------------------- */
 .story-card.switch-card { text-align: left; max-width: 420px; }
 .switch-title { font-size: 20px; margin: 4px 0 10px; text-align: center; }
