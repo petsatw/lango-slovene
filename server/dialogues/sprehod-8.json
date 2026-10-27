@@ -40,7 +40,7 @@
       "speaker": "npc",
       "sl": "Dober dan. Oho, kako se gledajo.",
       "en": "Good day. Oh, look at them eyeing each other.",
-      "deliverySL": "[toplo] Dober dan. Oho, kako se gledajo.",
+      "deliverySL": "[warmly] Dober dan. Oho, kako se gledajo.",
       "next": [
         "c1a",
         "c1b",
@@ -54,7 +54,7 @@
       "speaker": "client",
       "sl": "Dober dan. Ali je vaš pes prijazen?",
       "en": "Good day. Is your dog friendly?",
-      "deliverySL": "[toplo] Dober dan. Ali je vaš pes prijazen?",
+      "deliverySL": "[warmly] Dober dan. Ali je vaš pes prijazen?",
       "next": [
         "n2a"
       ],
@@ -71,7 +71,7 @@
       "speaker": "client",
       "sl": "Dober dan. Ali se lahko povohata?",
       "en": "Good day. Can they sniff each other?",
-      "deliverySL": "[toplo] Dober dan. Ali se lahko povohata?",
+      "deliverySL": "[warmly] Dober dan. Ali se lahko povohata?",
       "next": [
         "n2b"
       ],
@@ -85,7 +85,7 @@
       "speaker": "client",
       "sl": "Dober dan. Oprostite, gremo naprej.",
       "en": "Good day. Sorry, we're moving on.",
-      "deliverySL": "[toplo] Dober dan. Oprostite, gremo naprej.",
+      "deliverySL": "[warmly] Dober dan. Oprostite, gremo naprej.",
       "next": [
         "nDecl"
       ],
@@ -100,7 +100,7 @@
       "speaker": "npc",
       "sl": "Ni problema, midve greva kar na drugo stran. Adijo!",
       "en": "No problem, the two of us will just take the other side. Bye!",
-      "deliverySL": "[toplo] Ni problema, midve greva kar na drugo stran. Adijo!",
+      "deliverySL": "[warmly] Ni problema, midve greva kar na drugo stran. Adijo!",
       "next": [],
       "learnables": [
         "adijo",
@@ -115,7 +115,7 @@
       "speaker": "npc",
       "sl": "Odvisno. A je vaš prijazen?",
       "en": "Depends. Is yours friendly?",
-      "deliverySL": "[toplo] Odvisno. A je vaš prijazen?",
+      "deliverySL": "[warmly] Odvisno. A je vaš prijazen?",
       "next": [
         "c2ok",
         "c2old",
@@ -131,7 +131,7 @@
       "speaker": "npc",
       "sl": "Najprej mi povejte, a je vaš prijazen?",
       "en": "First tell me, is yours friendly?",
-      "deliverySL": "[toplo] Najprej mi povejte, a je vaš prijazen?",
+      "deliverySL": "[warmly] Najprej mi povejte, a je vaš prijazen?",
       "next": [
         "c2ok",
         "c2old",
@@ -148,7 +148,7 @@
       "speaker": "client",
       "sl": "Ja, ampak še mladiček je.",
       "en": "Yes, but he's still a puppy.",
-      "deliverySL": "[toplo] Ja, ampak še mladiček je.",
+      "deliverySL": "[warmly] Ja, ampak še mladiček je.",
       "context": "her dog is friendly",
       "next": [
         "n3ok"
@@ -165,7 +165,7 @@
       "speaker": "client",
       "sl": "Ja, ampak še mladiček je.",
       "en": "Yes, but he's still a puppy.",
-      "deliverySL": "[toplo] Ja, ampak še mladiček je.",
+      "deliverySL": "[warmly] Ja, ampak še mladiček je.",
       "context": "her dog is old and shy",
       "next": [
         "n3old"
@@ -182,7 +182,7 @@
       "speaker": "client",
       "sl": "Ja, ampak še mladiček je.",
       "en": "Yes, but he's still a puppy.",
-      "deliverySL": "[toplo] Ja, ampak še mladiček je.",
+      "deliverySL": "[warmly] Ja, ampak še mladiček je.",
       "context": "her dog doesn't like other dogs",
       "next": [
         "n3no"
@@ -199,7 +199,7 @@
       "speaker": "npc",
       "sl": "Ja, tudi moja je prijazna. Kar naj se povohata.",
       "en": "Yes, mine's friendly too. Let them have a sniff.",
-      "deliverySL": "[toplo] Ja, tudi moja je prijazna. Kar naj se povohata.",
+      "deliverySL": "[warmly] Ja, tudi moja je prijazna. Kar naj se povohata.",
       "next": [
         "c3play",
         "c3wild"
@@ -218,7 +218,7 @@
       "speaker": "client",
       "sl": "Dobro. Počasi, Enzo.",
       "en": "Good. Slowly, Enzo.",
-      "deliverySL": "[toplo] Dobro. Počasi, Enzo.",
+      "deliverySL": "[warmly] Dobro. Počasi, Enzo.",
       "context": "the dogs sniff and play nicely",
       "next": [
         "n4play"
@@ -232,7 +232,7 @@
       "speaker": "client",
       "sl": "Dobro. Počasi, Enzo.",
       "en": "Good. Slowly, Enzo.",
-      "deliverySL": "[toplo] Dobro. Počasi, Enzo.",
+      "deliverySL": "[warmly] Dobro. Počasi, Enzo.",
       "context": "enzo jumps all over her dog",
       "next": [
         "n4wild"
@@ -246,7 +246,7 @@
       "speaker": "npc",
       "sl": "Glejte, že se igrata. Kaj pa ta?",
       "en": "Look, they're already playing. And that one?",
-      "deliverySL": "[toplo] Glejte, že se igrata. Kaj pa ta?",
+      "deliverySL": "[warmly] Glejte, že se igrata. Kaj pa ta?",
       "next": [
         "c4d1",
         "c4d2"
@@ -261,7 +261,7 @@
       "speaker": "client",
       "sl": "Ta je danes miren. Lahko se povohata.",
       "en": "This one is calm today. They can sniff each other.",
-      "deliverySL": "[toplo] Ta je danes miren. Lahko se povohata.",
+      "deliverySL": "[warmly] Ta je danes miren. Lahko se povohata.",
       "next": [
         "n5dYes"
       ],
@@ -278,7 +278,7 @@
       "speaker": "client",
       "sl": "Tega raje ne. Včasih je nervozen ob drugih psih.",
       "en": "Better not this one. He's sometimes nervous around other dogs.",
-      "deliverySL": "[toplo] Tega raje ne. Včasih je nervozen ob drugih psih.",
+      "deliverySL": "[warmly] Tega raje ne. Včasih je nervozen ob drugih psih.",
       "next": [
         "n5dNo"
       ],
@@ -295,7 +295,7 @@
       "speaker": "npc",
       "sl": "Kako lepo, vsi trije se razumejo.",
       "en": "How lovely, all three get along.",
-      "deliverySL": "[veselo] Kako lepo, vsi trije se razumejo.",
+      "deliverySL": "[cheerfully] Kako lepo, vsi trije se razumejo.",
       "next": [
         "cz1",
         "cz2"
@@ -306,7 +306,7 @@
       "speaker": "npc",
       "sl": "Seveda, saj ni treba. Ta dva se itak igrata.",
       "en": "Of course, no need. Those two are playing anyway.",
-      "deliverySL": "[toplo] Seveda, saj ni treba. Ta dva se itak igrata.",
+      "deliverySL": "[warmly] Seveda, saj ni treba. Ta dva se itak igrata.",
       "next": [
         "cz1",
         "cz2"
@@ -322,7 +322,7 @@
       "speaker": "npc",
       "sl": "Joj! Malo preveč živahen je zanjo.",
       "en": "Oh dear! He's a bit too lively for her.",
-      "deliverySL": "[oklevajoče] Joj! Malo preveč živahen je zanjo.",
+      "deliverySL": "[hesitantly] Joj! Malo preveč živahen je zanjo.",
       "next": [
         "c4w1",
         "c4w2"
@@ -337,7 +337,7 @@
       "speaker": "client",
       "sl": "Oprostite! Gremo naprej.",
       "en": "Sorry! We're moving on.",
-      "deliverySL": "[toplo] Oprostite! Gremo naprej.",
+      "deliverySL": "[warmly] Oprostite! Gremo naprej.",
       "next": [
         "nWildBye"
       ],
@@ -351,7 +351,7 @@
       "speaker": "client",
       "sl": "Samo igrati se hoče. Držim ga.",
       "en": "He just wants to play. I'm holding him.",
-      "deliverySL": "[toplo] Samo igrati se hoče. Držim ga.",
+      "deliverySL": "[warmly] Samo igrati se hoče. Držim ga.",
       "next": [
         "n5hold"
       ],
@@ -366,7 +366,7 @@
       "speaker": "npc",
       "sl": "Nič hudega, saj je še mlad. Adijo!",
       "en": "No harm done, he's only young. Bye!",
-      "deliverySL": "[toplo] Nič hudega, saj je še mlad. Adijo!",
+      "deliverySL": "[warmly] Nič hudega, saj je še mlad. Adijo!",
       "next": [],
       "learnables": [
         "adijo",
@@ -379,7 +379,7 @@
       "speaker": "npc",
       "sl": "Saj vem, mladički so taki. Hvala, ker ga držite. Adijo!",
       "en": "I know, puppies are like that. Thanks for holding him. Bye!",
-      "deliverySL": "[toplo] Saj vem, mladički so taki. Hvala, ker ga držite. Adijo!",
+      "deliverySL": "[warmly] Saj vem, mladički so taki. Hvala, ker ga držite. Adijo!",
       "next": [],
       "learnables": [
         "adijo",
@@ -393,7 +393,7 @@
       "speaker": "npc",
       "sl": "Oh, moja je pa že stara. Malo je plašna.",
       "en": "Oh, mine's old already. She's a bit shy.",
-      "deliverySL": "[oklevajoče] Oh, moja je pa že stara. Malo je plašna.",
+      "deliverySL": "[hesitantly] Oh, moja je pa že stara. Malo je plašna.",
       "next": [
         "cRaje",
         "c3oDen"
@@ -411,7 +411,7 @@
       "speaker": "npc",
       "sl": "Moja žal ne mara drugih psov.",
       "en": "Mine doesn't like other dogs, I'm afraid.",
-      "deliverySL": "[oklevajoče] Moja žal ne mara drugih psov.",
+      "deliverySL": "[hesitantly] Moja žal ne mara drugih psov.",
       "next": [
         "cRaje",
         "c3nDen"
@@ -427,7 +427,7 @@
       "speaker": "client",
       "sl": "Potem pa raje ne. Gremo naprej.",
       "en": "Then better not. We'll move on.",
-      "deliverySL": "[toplo] Potem pa raje ne. Gremo naprej.",
+      "deliverySL": "[warmly] Potem pa raje ne. Gremo naprej.",
       "next": [
         "nByeNo"
       ],
@@ -444,7 +444,7 @@
       "speaker": "client",
       "sl": "Tega lahko povoha, tistega pa ne. Ta je miren.",
       "en": "She can sniff this one, but not that one. This one's calm.",
-      "deliverySL": "[toplo] Tega lahko povoha, tistega pa ne. Ta je miren.",
+      "deliverySL": "[warmly] Tega lahko povoha, tistega pa ne. Ta je miren.",
       "next": [
         "n4oDen"
       ],
@@ -459,7 +459,7 @@
       "speaker": "client",
       "sl": "Tega lahko povoha, tistega pa ne. Ta je miren.",
       "en": "She can sniff this one, but not that one. This one's calm.",
-      "deliverySL": "[toplo] Tega lahko povoha, tistega pa ne. Ta je miren.",
+      "deliverySL": "[warmly] Tega lahko povoha, tistega pa ne. Ta je miren.",
       "next": [
         "n4nDen"
       ],
@@ -474,7 +474,7 @@
       "speaker": "npc",
       "sl": "Ja, z mirnim bo v redu. Glejte, kako lepo se vohata.",
       "en": "Yes, a calm one will be fine. Look how nicely they're sniffing.",
-      "deliverySL": "[toplo] Ja, z mirnim bo v redu. Glejte, kako lepo se vohata.",
+      "deliverySL": "[warmly] Ja, z mirnim bo v redu. Glejte, kako lepo se vohata.",
       "next": [
         "cOkDen",
         "cOkDenx"
@@ -488,7 +488,7 @@
       "speaker": "client",
       "sl": "Dobro, hvala. Adijo!",
       "en": "Good, thanks. Bye!",
-      "deliverySL": "[toplo] Dobro, hvala. Adijo!",
+      "deliverySL": "[warmly] Dobro, hvala. Adijo!",
       "next": [
         "nBye"
       ],
@@ -502,7 +502,7 @@
       "speaker": "npc",
       "sl": "Oh, oprostite, tudi mirnih ne mara. Raje ne.",
       "en": "Oh, sorry, she doesn't like calm ones either. Better not.",
-      "deliverySL": "[v zadregi] Oh, oprostite, tudi mirnih ne mara. Raje ne.",
+      "deliverySL": "[sheepishly] Oh, oprostite, tudi mirnih ne mara. Raje ne.",
       "next": [
         "cNoDen",
         "cNoDenx"
@@ -517,7 +517,7 @@
       "speaker": "client",
       "sl": "V redu. Adijo!",
       "en": "OK. Bye!",
-      "deliverySL": "[toplo] V redu. Adijo!",
+      "deliverySL": "[warmly] V redu. Adijo!",
       "next": [
         "nByeNo"
       ],
@@ -530,7 +530,7 @@
       "speaker": "npc",
       "sl": "Hvala za razumevanje. Pa lep sprehod!",
       "en": "Thanks for understanding. Have a nice walk!",
-      "deliverySL": "[toplo] Hvala za razumevanje. Pa lep sprehod!",
+      "deliverySL": "[warmly] Hvala za razumevanje. Pa lep sprehod!",
       "next": [],
       "learnables": [
         "hvala",
@@ -541,7 +541,7 @@
       "speaker": "client",
       "sl": "Adijo, lep dan!",
       "en": "Bye, have a nice day!",
-      "deliverySL": "[toplo] Adijo, lep dan!",
+      "deliverySL": "[warmly] Adijo, lep dan!",
       "next": [
         "nBye"
       ],
@@ -554,7 +554,7 @@
       "speaker": "client",
       "sl": "Hvala, adijo!",
       "en": "Thanks, bye!",
-      "deliverySL": "[toplo] Hvala, adijo!",
+      "deliverySL": "[warmly] Hvala, adijo!",
       "next": [
         "nBye"
       ],
@@ -567,7 +567,7 @@
       "speaker": "npc",
       "sl": "Adijo! Še kaj pridite, bo vesela.",
       "en": "Bye! Come by again, she'll be glad.",
-      "deliverySL": "[toplo] Adijo! Še kaj pridite, bo vesela.",
+      "deliverySL": "[warmly] Adijo! Še kaj pridite, bo vesela.",
       "next": [],
       "learnables": [
         "adijo",
@@ -578,7 +578,7 @@
       "speaker": "client",
       "sl": "Bravo, Denver! Adijo!",
       "en": "Well done, Denver! Bye!",
-      "deliverySL": "[toplo] Bravo, Denver! Adijo!",
+      "deliverySL": "[warmly] Bravo, Denver! Adijo!",
       "next": [
         "nBye"
       ],
@@ -591,7 +591,7 @@
       "speaker": "client",
       "sl": "Nič hudega. Adijo!",
       "en": "No problem. Bye!",
-      "deliverySL": "[toplo] Nič hudega. Adijo!",
+      "deliverySL": "[warmly] Nič hudega. Adijo!",
       "next": [
         "nByeNo"
       ],
