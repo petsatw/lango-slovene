@@ -175,7 +175,7 @@ let chatLessonId = null;     // go-live: which lesson's plan the realtime tutor 
 let runId = null;            // THIS sitting on the practice surface — both modes record under it (npm run runs)
 
 // ---- Screen router — one screen visible at a time; the tree + obs are overlays on top. ----
-const SCREENS = ["home", "practice", "levels", "tutor", "a1", "scene"];
+const SCREENS = ["home", "practice", "levels", "tutor", "a1", "scene", "settings", "history"];
 let currentScreen = "home";
 
 function showScreen(id) {
@@ -200,6 +200,76 @@ function openPractice() { showScreen("practice"); loadPractice(); }
 function openA1() { showScreen("a1"); renderA1(); }
 
 function stopAllAudio() { stopDialogueAudio(); }
+
+// ---- Settings and Learning history (docs/features/consent-privacy/spec.md, learning-history/spec.md). ----
+function openSettings() {
+  showScreen("settings");
+  $("settings-code").textContent = localStorage.getItem("testerCode") || learnerId;
+  $("settings-note").hidden = true;
+}
+
+async function openHistory() {
+  showScreen("history");
+  const list = $("history-list");
+  list.textContent = "";
+  const { entries } = await (await api("/api/history")).json();
+  $("history-delete-all").hidden = !entries.length;
+  if (!entries.length) list.textContent = "No saved sessions.";
+  for (const e of entries) {
+    const row = document.createElement("div");
+    row.className = "history-entry";
+    row.dataset.id = e.id;
+    const open = document.createElement("button");
+    open.type = "button";
+    open.className = "settings-btn history-open";
+    const score = e.score ? `${e.score.succeeded.length}/${e.score.total}` : "no score";
+    open.textContent = `${e.lessonId} · ${new Date(e.startedAt).toLocaleDateString()} · ${score}`;
+    const body = document.createElement("div");
+    body.className = "history-entry-body";
+    body.hidden = true;
+    open.addEventListener("click", async () => {
+      if (!body.hidden) { body.hidden = true; return; }
+      const full = await (await api(`/api/history/${encodeURIComponent(e.id)}`)).json();
+      body.textContent = "";
+      for (const t of full.transcripts) {
+        const line = document.createElement("p");
+        line.className = "history-line";
+        line.textContent = `${t.role === "user" ? "You" : "Tutor"}: ${t.text}`;
+        body.append(line);
+      }
+      body.hidden = false;
+    });
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "settings-btn history-delete";
+    del.textContent = "Delete";
+    del.addEventListener("click", async () => {
+      if (!confirm("Delete this session?")) return;
+      await api(`/api/history/${encodeURIComponent(e.id)}`, { method: "DELETE" });
+      openHistory();
+    });
+    row.append(open, body, del);
+    list.append(row);
+  }
+}
+
+$("header-settings").addEventListener("click", openSettings);
+$("settings-history").addEventListener("click", openHistory);
+$("history-delete-all").addEventListener("click", async () => {
+  if (!confirm("Delete all your saved sessions?")) return;
+  await api("/api/history", { method: "DELETE" });
+  openHistory();
+});
+$("settings-improve").addEventListener("click", async () => {
+  const res = await api("/api/me/improve", { method: "DELETE" });
+  $("settings-note").textContent = res.ok ? "Done. None of your sessions are used to improve Vadi." : "That did not work. Try again later.";
+  $("settings-note").hidden = false;
+});
+$("settings-delete").addEventListener("click", async () => {
+  if (!confirm("Delete all your data? This cannot be undone.")) return;
+  const res = await api("/api/me", { method: "DELETE" });
+  if (res.ok) { learnerStarted = false; openHome(); }
+});
 
 // A readable, filesystem-safe run id: <prefix>-<timestamp>-<rand>. One run per tutor session, so leaving
 // and re-entering the live tutor starts a fresh replayable record.
@@ -2532,6 +2602,7 @@ async function init() {
   // Back: levels → practice; everything else → home.
   $("back").addEventListener("click", () => {
     if (currentScreen === "levels") showScreen("practice");
+    else if (currentScreen === "history") openSettings();
     else openHome();
   });
 
