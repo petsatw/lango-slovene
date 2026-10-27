@@ -28,6 +28,7 @@ import type { LearnerModel, LiveTargetReading, TargetEvidence, WitnessResult } f
 import { getE2 } from "../adapters/index";
 import * as learner from "../assets/learner";
 import * as turnlog from "../assets/turnlog";
+import { purgeSession } from "../assets/retention";
 import { countsFor, creditFromEvidence, isMastered } from "../mastery";
 import * as liveLog from "./log";
 import type { LessonScore, LiveSessionLog, LiveTranscript } from "./log";
@@ -197,7 +198,14 @@ export async function creditSession(args: {
   log: LiveSessionLog;
 }): Promise<void> {
   const { log, targets } = args;
-  const grade = await gradeSession(log.transcripts, targets);
+  const timeoutMs = Math.max(1, Number(process.env.LIVE_GRADE_TIMEOUT_SEC ?? 60)) * 1000;
+  let timer: NodeJS.Timeout | undefined;
+  const grade = await Promise.race([
+    gradeSession(log.transcripts, targets),
+    new Promise<never>((_, reject) => {
+      timer = setTimeout(() => reject(new Error(`grade timed out after ${timeoutMs / 1000}s`)), timeoutMs);
+    }),
+  ]).finally(() => clearTimeout(timer));
   if (!grade) return;
 
   // The same firewall the tap mode runs on: allowlist → produced → Slovene → the span is in the
@@ -239,4 +247,22 @@ export async function creditSession(args: {
   });
 
   liveLog.write({ ...log, lessonScore: grade.lessonScore, ...(credit.progress.length ? { credit: credit.progress } : {}) });
+}
+
+/** The end of a live session: write the log, score it, and for a no-save session delete what it left
+ *  whatever the scoring outcome (docs/features/no-save-session/spec.md#2-session-end). */
+export async function settleSession(args: Parameters<typeof creditSession>[0]): Promise<void> {
+  const { log } = args;
+  try {
+    liveLog.write(log);
+  } catch (err: any) {
+    console.error("[live] session log failed:", err?.message);
+  }
+  try {
+    await creditSession(args);
+  } catch (err: any) {
+    console.error("[live] credit failed:", err?.message);
+  } finally {
+    if (log.noSave) purgeSession(log.sessionId);
+  }
 }

@@ -25,7 +25,7 @@
 // A record that says nothing about retention is a record from before this existed, and it is KEPT — the
 // default is today's behaviour in both directions.
 
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { DATA_DIR } from "./store";
 import { LOG_PATH as TURNLOG_PATH } from "./turnlog";
@@ -124,10 +124,60 @@ function sweepJsonDir(
   return changed;
 }
 
+/** Delete what a no-save live session left: its log, its turn-log rows and its translations
+ *  (docs/features/no-save-session/spec.md#2-session-end). Idempotent; best-effort. */
+export function purgeSession(sessionId: string): void {
+  try {
+    const live = path.join(DATA_DIR, "live");
+    rmSync(path.join(live, `${sessionId}.json`), { force: true });
+    rmSync(path.join(live, `${sessionId}.gloss.json`), { force: true });
+    if (!existsSync(TURNLOG_PATH)) return;
+    const lines = readFileSync(TURNLOG_PATH, "utf8").split("\n").filter((raw) => {
+      if (!raw.trim()) return false;
+      try {
+        return JSON.parse(raw).sessionId !== sessionId;
+      } catch {
+        return true;
+      }
+    });
+    writeFileSync(TURNLOG_PATH, lines.length ? lines.join("\n") + "\n" : "");
+  } catch (err: any) {
+    console.error("[retention] purge failed:", err?.message);
+  }
+}
+
+/** Purge every no-save live log whose session ended (past the grading window, which a session still
+ *  being scored sits inside) or passed SESSION_TTL_SEC. */
+function sweepNoSave(now: number): number {
+  const dir = path.join(DATA_DIR, "live");
+  if (!existsSync(dir)) return 0;
+  const ttlMs = Number(process.env.SESSION_TTL_SEC || 600) * 1000;
+  const gradeMs = Math.max(1, Number(process.env.LIVE_GRADE_TIMEOUT_SEC ?? 60)) * 1000;
+  let purged = 0;
+  for (const name of readdirSync(dir)) {
+    if (!name.endsWith(".json") || name.endsWith(".gloss.json")) continue;
+    try {
+      const rec = JSON.parse(readFileSync(path.join(dir, name), "utf8"));
+      if (rec.noSave !== true) continue;
+      const ended = Date.parse(rec.endedAt);
+      const started = Date.parse(rec.startedAt);
+      if (now - ended > gradeMs || now - started > ttlMs || !Number.isFinite(ended)) {
+        purgeSession(rec.sessionId ?? name.slice(0, -5));
+        purged++;
+      }
+    } catch {
+      /* unreadable record — leave it alone */
+    }
+  }
+  return purged;
+}
+
 /** Redact every expired record whose session declined retention. Best-effort and idempotent: a failure
  *  here must never break a turn, and a record already stamped is skipped. Called at startup and on every
  *  turn log write, the same shape `sweepMedia` uses — no cron, no scheduler. */
 export function sweep(now = Date.now()): void {
+  const purged = sweepNoSave(now);
+  if (purged) console.log(`[retention] deleted ${purged} no-save live sessions`);
   if (TTL_MS <= 0) return;
   const stamp = new Date(now).toISOString();
   try {
