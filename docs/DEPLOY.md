@@ -48,6 +48,7 @@ ELEVENLABS_MODEL_ID=eleven_v3
 ELEVENLABS_VOICE_ID=fSzEIez35vDdOs4DQwVh              # female-speaker
 ELEVENLABS_VOICE_ID_MALE=Jcyy5bkqt86ud0xdZhfW        # male-speaker
 ELEVENLABS_VOICE_ID_SHOP_ASSISTANT=MMDUS1hxcZnX8i9ZdqNf  # shop-assistant
+ELEVENLABS_PRON_DICT_SLAVKO=7d9Sl7deMSItYrLgVhEC        # slavko's pronunciation dictionary
 ```
 
 These voice ids are **identifiers, not secrets** — they belong in deploy config. They must equal the values

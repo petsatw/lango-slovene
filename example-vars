@@ -20,6 +20,8 @@ ELEVENLABS_VOICE_ID=
 # across onboarding, rehearsal dialogues, and the live tutor (see server/adapters/elevenlabs.ts).
 ELEVENLABS_VOICE_ID_MALE=
 ELEVENLABS_VOICE_ID_SHOP_ASSISTANT=
+# Pronunciation dictionary sent only with the `slavko` profile's requests (fixes his "Adijo").
+ELEVENLABS_PRON_DICT_SLAVKO=
 
 # --- E4: xAI Grok image generation (scenario story-frame + scene images) ---
 # Endpoint is OpenAI-compatible (https://api.x.ai/v1/images/generations). grok-imagine-image-quality
