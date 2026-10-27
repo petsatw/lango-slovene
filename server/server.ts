@@ -705,12 +705,10 @@ app.get("/api/speak", async (req, res) => {
 
   // A conversational reply is a sentence the tutor composed about THIS learner — "Živjo, Kris! Si
   // študent?" — and persisting it would leave a permanent recording of their name in a store shared by
-  // every learner and every authored lesson clip. So a caller that declines retention asks for the
-  // clip with `retain=0` and it is streamed but never written: nothing enters a content-addressed
-  // store that a later sweep would then have to guess its way back out of. The in-memory cache still
-  // serves it for the rest of the process, and reads are untouched — an authored clip is still a hit.
-  // Authored text carries no such content and does not send the parameter.
-  const persist = String(req.query.retain ?? "") !== "0";
+  // every learner and every authored lesson clip. So its caller asks for `cache=0` and the clip is
+  // streamed but never written to the audio store or its manifest. The in-memory cache still serves it
+  // for the rest of the process, and reads are untouched — an authored clip is still a hit.
+  const persist = String(req.query.cache ?? "") !== "0";
 
   try {
     res.setHeader("Content-Type", "audio/mpeg");
