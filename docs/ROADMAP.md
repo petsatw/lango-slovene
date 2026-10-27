@@ -108,7 +108,7 @@ Item 12 (a+b) is built; what remains is auto-selecting which dialogue comes next
 10. **Motivation & retention.** Incentives, streaks, the game of coming back. Duolingo shows this can
     carry a product even when the underlying acquisition is weak. It comes after the acquisition
     mechanics (memory, leading, real practice). Until this item, the learner model tracks mastery
-    internally and surfaces no scores, streaks, or progress framing.
+    internally and surfaces progress as A1 coverage and the objectives a session made progress on.
 11. **Pronunciation review on record-and-compare.** Add a pronunciation-feedback feature to the existing
     record-and-compare practice. Record-and-compare is local and unassessed today, so it does not feed
     the mastery loop; this would give it its own pronunciation review.

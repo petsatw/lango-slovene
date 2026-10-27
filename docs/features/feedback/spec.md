@@ -8,7 +8,7 @@ the event log.
 | `surface` | Where |
 |---|---|
 | `level_end` | the end-of-level screen |
-| `live_end` | the screen after a live session ends |
+| `live_end` | the "Give feedback" button on the live wrap-up ([wrap-up](../live-session/spec.md#22-lines)) |
 | `finder_request` | a "Request this scenario" button on a finder no-match, beside the live card |
 | `header` | a "Feedback" link in the app header, on every screen that shows the header (lessons take feedback from their end screen) |
 
