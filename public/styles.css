@@ -370,6 +370,8 @@ main {
   margin: 0 0 12px; cursor: pointer;
 }
 .consent-check input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--green); flex: none; }
+.consent-check:has(input:disabled) { opacity: .45; cursor: default; }
+.consent-check input:disabled { cursor: default; }
 .consent-continue {
   width: 100%; border: none; border-radius: 12px;
   background: var(--green); color: #fff;
@@ -386,7 +388,7 @@ main {
 }
 .header-feedback:hover { color: var(--text); border-color: var(--green); }
 .header-settings {
-  position: absolute; right: 100px; top: 24px;
+  position: absolute; right: 106px; top: 24px;
   background: transparent; color: var(--muted);
   border: 1px solid #2b2f38; border-radius: 999px;
   padding: 6px 14px; font-size: 14px; cursor: pointer;
