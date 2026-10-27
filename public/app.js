@@ -2415,7 +2415,10 @@ async function init() {
   // Closing the start screen unanswered. showScreen hides the overlay on the way out of the tutor surface, and
   // no session has been opened yet, so there is nothing to tear down — the learner is simply put back
   // where they were, on the close screen of the lesson that offered them the tutor in the first place.
-  $("consent-close").addEventListener("click", () => showScreen(tutorReturnTo));
+  $("consent-close").addEventListener("click", () => {
+    startLiveAfterStart = false;
+    showScreen(tutorReturnTo);
+  });
   // Ticking either box unticks and disables the other; unticking enables it again, unticked.
   for (const [mine, other] of [["start-nosave", "start-improve"], ["start-improve", "start-nosave"]]) {
     $(mine).addEventListener("change", (e) => {

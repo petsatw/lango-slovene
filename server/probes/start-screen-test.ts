@@ -106,6 +106,16 @@ async function main() {
   body = await start();
   check("create body carries improve: true", body?.improve === true && !("noSave" in body), JSON.stringify(body));
 
+  // 5. Closing the start screen that the talk button opened leaves no live session pending.
+  await page.click("#practice-talk");
+  await page.waitForSelector("#consent:not([hidden])");
+  await page.click("#consent-close");
+  await enter();
+  const n = bodies.length;
+  await page.click("#consent-continue");
+  await page.waitForTimeout(1000);
+  check("Start after a closed start screen opens no live session", bodies.length === n);
+
   await browser.close();
 }
 
