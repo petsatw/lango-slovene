@@ -34,6 +34,7 @@ the issue gets a comment with `BLOCKED.md` and the PR link. A run that ends with
 | `pr-open` | The PR from `claude/issue-N` is ready for review, with the acceptance-check output. |
 | `blocked` | Claude asked a question. The comment and the draft PR body hold it. |
 | `grok-handoff` | The tech lead agent takes over: it fixes the check or the runner setup and re-runs, or runs the check itself and finishes the PR. The workflow creates the label on first use. |
+| `reviewed` | On a PR: the tech lead agent reviewed it and it is ready for Chris to merge. The tech lead removes it when new commits land, and re-adds it after reviewing them. Chris merges only PRs that carry it. |
 
 **Secret.** Repo secret `CLAUDE_CODE_OAUTH_TOKEN` (Pro/Max subscription; create it with
 `claude setup-token`).

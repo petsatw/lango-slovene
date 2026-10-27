@@ -115,6 +115,8 @@ repo; the commit message records what changed and when.
 - a **Follow-up** field naming the issue for each external or post-merge step.
 
 Only the tech lead applies `ready-for-claude`, and only to a ready issue.
+The tech lead reviews every PR and labels it `reviewed` when the review passes; new commits remove the
+label until the tech lead reviews them. Chris merges only PRs labelled `reviewed`.
 
 - Build only what the linked spec section, the **Goal** and the **Gate & ready criterion** need; **Out of
   scope** is binding.
