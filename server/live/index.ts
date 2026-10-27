@@ -55,7 +55,10 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
   }
 
   const provider = registry.resolveProvider(requested);
-  if (!providerReady(provider)) return res.status(503).json({ error: "live tutor unavailable" });
+  if (!providerReady(provider)) {
+    failed("error");
+    return res.status(503).json({ error: "live tutor unavailable" });
+  }
 
   const s = registry.create({
     lessonId,

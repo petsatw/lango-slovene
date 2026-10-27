@@ -2098,7 +2098,11 @@ async function sceneStep(from, ack, answer) {
   if (data.backchannel) scene.backchannel = data.backchannel;
   if (data.background) $("scene-bg").style.backgroundImage = `url(/backgrounds/${data.background})`;
   if (ack) await ack;
-  if (data.frameEN?.length) await scenePlayFrame(data.frameEN);
+  if (data.frameEN?.length) {
+    const id = scene.scenarioId;
+    await scenePlayFrame(data.frameEN);
+    track(gen === sceneGen ? "intro_completed" : "intro_quit", { kind: "scene", id });
+  }
   if (gen !== sceneGen) return;   // the on-ramp is skippable, so a ✕ during it must not land on a beat
   // After the on-ramp and before the first line: the learner knows what this is, and has not yet been
   // given anything to miss.

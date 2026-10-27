@@ -6,7 +6,6 @@ import { appendFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import type express from "express";
 import { DATA_DIR } from "./assets/store";
-import * as learner from "./assets/learner";
 
 const DIR = path.join(DATA_DIR, "events");
 export const EVENTS_PATH = path.join(DIR, "events.jsonl");
@@ -40,15 +39,10 @@ const EVENTS: Record<string, string[]> = {
 type Who = { learnerId: string; testerCode: string | null };
 type Prop = string | number | boolean | null;
 
-const whoOf = (req: express.Request): Who => ({
-  learnerId: learner.resolveId(req.get("x-tester-code"), req.get("x-learner-id")),
-  testerCode: learner.testerCodeFrom(req.get("x-tester-code")),
-});
-
 function cleanProps(name: string, raw: unknown): Record<string, Prop> {
   const props: Record<string, Prop> = {};
   if (!raw || typeof raw !== "object") return props;
-  for (const key of EVENTS[name]) {
+  for (const key of EVENTS[name] ?? []) {
     const v = (raw as Record<string, unknown>)[key];
     if (typeof v === "string") props[key] = v.slice(0, MAX_VALUE);
     else if (typeof v === "number" && Number.isFinite(v)) props[key] = v;
@@ -73,13 +67,13 @@ export function emit(name: string, who: Who, props: Record<string, Prop>): void 
   append([{ name, ts: new Date().toISOString(), ...who, props: cleanProps(name, props) }]);
 }
 
-export function handle(req: express.Request, res: express.Response): void {
+/** A client batch, stamped with the learner the route resolved (`learnerOf` / `testerCodeOf`). */
+export function handle(req: express.Request, res: express.Response, who: Who): void {
   const events = req.body?.events;
   if (!Array.isArray(events)) return void res.status(400).json({ error: "events required" });
   if (events.length > MAX_EVENTS || Buffer.byteLength(JSON.stringify(req.body)) > MAX_BYTES) {
     return void res.status(413).json({ error: "too many events" });
   }
-  const who = whoOf(req);
   const rows: object[] = [];
   for (const e of events) {
     if (!e || typeof e.name !== "string" || !Object.hasOwn(EVENTS, e.name)) continue;
