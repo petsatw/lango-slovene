@@ -8,8 +8,8 @@ removed, whatever the scoring outcome.
 - "Don't save this session" sits on the tutor start screen
   ([tutor start screen](../consent-privacy/spec.md#1-tutor-start-screen)), shown before every live
   session.
-- It starts unticked each time the start screen opens. Ticking it unticks and disables the improve box, and ticking the improve box
-  unticks and disables it ([improvement consent](../consent-privacy/spec.md#2-improvement-consent)).
+- It starts unticked each time the start screen opens. Ticking it unticks and disables the improve
+  box, and ticking the improve box unticks and disables it ([improvement consent](../consent-privacy/spec.md#2-improvement-consent)).
 - The live session create body carries `noSave: true` when it is on. The session log records
   `noSave: true`.
 
