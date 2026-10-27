@@ -72,7 +72,9 @@ setInterval(flushEvents, 10_000);
 // ---- Feedback sheet (docs/features/feedback/spec.md): thumbs + optional text; closing records nothing. ----
 let feedbackSurface = null;
 let feedbackRating = null;
+let feedbackCloseTimer = null;
 function openFeedback(surface) {
+  clearTimeout(feedbackCloseTimer);
   feedbackSurface = surface;
   feedbackRating = null;
   $("feedback-up").setAttribute("aria-pressed", "false");
@@ -96,8 +98,9 @@ $("feedback-send").addEventListener("click", () => {
   if (!feedbackRating) return;
   const text = $("feedback-text").value.trim().slice(0, 1000);
   track("feedback_submitted", { surface: feedbackSurface, rating: feedbackRating, hasText: !!text }, text);
+  $("feedback-send").disabled = true;
   $("feedback-thanks").hidden = false;
-  setTimeout(() => { $("feedback").hidden = true; }, 1200);
+  feedbackCloseTimer = setTimeout(() => { $("feedback").hidden = true; }, 1200);
 });
 $("header-feedback").addEventListener("click", () => openFeedback("header"));
 $("scene-feedback").addEventListener("click", () => openFeedback("level_end"));
