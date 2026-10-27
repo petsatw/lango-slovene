@@ -27,6 +27,10 @@ ELEVENLABS_VOICE_ID_SHOP_ASSISTANT=
 GROK_API_KEY=
 GROK_IMAGE_MODEL=grok-imagine-image-quality
 
+# --- TESTERS: comma-separated allowlist of invite codes, one per tester (e.g. TEST-01,TEST-02). A request
+#     carrying a listed code is that code's learner on every browser (docs/features/tester-identity/spec.md). ---
+TESTER_CODES=
+
 # --- LIVE TUTOR (continuous speech; "Go live"). Internal testing only — this is the one surface that
 #     meters a vendor BY THE MINUTE, so it stays closed until LIVE_ACCESS_CODE is set, and the real
 #     ceiling is a provider-side spend cap in the vendor console, not anything in this file. ---

@@ -21,6 +21,7 @@
 // in both directions. Adding a field is a three-file edit (types.ts and both halves here).
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { DATA_DIR } from "./store";
 import type { LearnerModel } from "../types";
@@ -35,6 +36,26 @@ const TTL_MS = Number(process.env.LEARNER_TTL_MIN || 180) * 60_000;
 export function idFrom(supplied: unknown): string {
   const cleaned = String(supplied ?? "").replace(/[^A-Za-z0-9._-]/g, "").slice(0, 64);
   return cleaned && !cleaned.startsWith(".") ? cleaned : DEFAULT_LEARNER_ID;
+}
+
+/** The allowlist: `TESTER_CODES`, comma-separated. */
+function allowedCodes(): string[] {
+  return (process.env.TESTER_CODES || "").split(",").map((c) => c.trim()).filter(Boolean);
+}
+
+/** The code a request carries when it is on the allowlist, else null. */
+export function testerCodeFrom(header: unknown): string | null {
+  const code = String(header ?? "").trim();
+  return code && allowedCodes().includes(code) ? code : null;
+}
+
+/** The learner a request is about: derived from an allowlisted code, else the per-browser id. A supplied
+ *  id with the derived `t-` prefix is treated as absent, so a derived id is reachable only through its code. */
+export function resolveId(codeHeader: unknown, learnerHeader: unknown): string {
+  const code = testerCodeFrom(codeHeader);
+  if (code) return "t-" + createHash("sha256").update(code).digest("hex").slice(0, 16);
+  const supplied = String(learnerHeader ?? "");
+  return idFrom(supplied.startsWith("t-") ? "" : supplied);
 }
 
 function emptyModel(): LearnerModel {

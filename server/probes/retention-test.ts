@@ -37,7 +37,7 @@ const MINUTES_AGO_5 = new Date(Date.now() - 5 * 60_000).toISOString();
 function turnFor(retain: boolean | undefined, verbatim: string) {
   return {
     path: "free" as const,
-    retain,
+    retain, learnerId: "probe", testerCode: null,
     provider: "probe",
     e2Ms: 1,
     systemPrompt: "the prompt",
@@ -74,7 +74,7 @@ const { writeFileSync } = await import("node:fs");
 writeFileSync(turnlog.LOG_PATH, aged.map((r) => JSON.stringify(r)).join("\n") + "\n");
 
 sessions.appendTurns({
-  id: "declined", scenarioId: "free-chat", retain: false, finalObjectives: [], complete: false,
+  id: "declined", scenarioId: "free-chat", retain: false, learnerId: "probe", testerCode: null, finalObjectives: [], complete: false,
   turns: [
     { role: "student", text: "I am Kris", userVerbatim: "Sem Kris", audioKey: "abc",
       learnableProgress: [{ id: "sem_ime", result: "success" }] },
@@ -82,7 +82,7 @@ sessions.appendTurns({
   ],
 });
 sessions.appendTurns({
-  id: "agreed", scenarioId: "free-chat", finalObjectives: [], complete: false,
+  id: "agreed", scenarioId: "free-chat", learnerId: "probe", testerCode: null, finalObjectives: [], complete: false,
   turns: [{ role: "student", text: "I am Ana", userVerbatim: "Sem Ana" }],
 });
 // Both records were written just now; the sweep must not touch the one still inside its window either.
@@ -92,13 +92,13 @@ declined.createdAt = HOURS_AGO_5;
 writeFileSync(path.join(DIR, "sessions", "declined.json"), JSON.stringify(declined, null, 2));
 
 liveLog.write({
-  sessionId: "live-declined", runId: "sitting", lessonId: "demo-l1", provider: "grok",
+  sessionId: "live-declined", learnerId: "probe", testerCode: null, runId: "sitting", lessonId: "demo-l1", provider: "grok",
   startedAt: HOURS_AGO_5, endedAt: HOURS_AGO_5, error: null, retain: false,
   transcripts: [{ ts: HOURS_AGO_5, role: "user", text: "Živjo, sem Kris" }],
   credit: [{ id: "zivjo", result: "success" }],
 });
 liveLog.write({
-  sessionId: "live-fresh", runId: "sitting", lessonId: "demo-l1", provider: "grok",
+  sessionId: "live-fresh", learnerId: "probe", testerCode: null, runId: "sitting", lessonId: "demo-l1", provider: "grok",
   startedAt: MINUTES_AGO_5, endedAt: MINUTES_AGO_5, error: null, retain: false,
   transcripts: [{ ts: MINUTES_AGO_5, role: "user", text: "Živjo, sem Kris" }],
 });

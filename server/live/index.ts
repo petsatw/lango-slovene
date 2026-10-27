@@ -46,7 +46,8 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
   const s = registry.create({
     lessonId,
     provider,
-    learnerId: learner.idFrom(req.get("x-learner-id")),
+    learnerId: learner.resolveId(req.get("x-tester-code"), req.get("x-learner-id")),
+    testerCode: learner.testerCodeFrom(req.get("x-tester-code")),
     runId: typeof runId === "string" && runId.trim() ? runId : null,
     retain: retention.retainFrom(req.get("x-retain")),
   });
@@ -97,7 +98,7 @@ export function attachLive(server: HttpServer): void {
 }
 
 function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & object): void {
-  const { sessionId, lessonId, provider, learnerId, runId, retain } = pending;
+  const { sessionId, lessonId, provider, learnerId, testerCode, runId, retain } = pending;
   const startedAt = new Date().toISOString();
   const transcripts: LiveTranscript[] = [];
   /** id → the entry in `transcripts`, so a revision overwrites rather than appends. */
@@ -167,6 +168,8 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
     registry.markEnded(sessionId);
     const log = {
       sessionId,
+      learnerId,
+      testerCode,
       runId,
       lessonId,
       provider,
