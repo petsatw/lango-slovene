@@ -21,7 +21,7 @@ const live = path.join(data, "live");
 const learners = path.join(data, "learners");
 mkdirSync(live, { recursive: true });
 mkdirSync(learners, { recursive: true });
-for (const [code, line] of [["TEST-01", "Dober dan"], ["TEST-02", "Hvala lepa"]]) {
+for (const [code, line] of [["TEST-01", "Dober dan"], ["TEST-02", "Hvala lepa"]] as const) {
   const sessionId = `live-${code}`;
   writeFileSync(path.join(live, `${sessionId}.json`), JSON.stringify({
     sessionId, learnerId: idOf(code), testerCode: code, runId: null, lessonId: "fixture-lesson", provider: "grok",

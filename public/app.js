@@ -205,7 +205,6 @@ function stopAllAudio() { stopDialogueAudio(); }
 function openSettings() {
   showScreen("settings");
   $("settings-code").textContent = localStorage.getItem("testerCode") || learnerId;
-  $("settings-note").hidden = true;
 }
 
 async function openHistory() {
@@ -259,11 +258,6 @@ $("history-delete-all").addEventListener("click", async () => {
   if (!confirm("Delete all your saved sessions?")) return;
   await api("/api/history", { method: "DELETE" });
   openHistory();
-});
-$("settings-improve").addEventListener("click", async () => {
-  const res = await api("/api/me/improve", { method: "DELETE" });
-  $("settings-note").textContent = res.ok ? "Done. None of your sessions are used to improve Vadi." : "That did not work. Try again later.";
-  $("settings-note").hidden = false;
 });
 $("settings-delete").addEventListener("click", async () => {
   if (!confirm("Delete all your data? This cannot be undone.")) return;
