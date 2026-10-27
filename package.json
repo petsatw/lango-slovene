@@ -19,6 +19,7 @@
     "probe:converse": "tsx server/probes/converse-probe.ts",
     "probe:live-credit": "tsx server/probes/live-credit-probe.ts",
     "learner": "tsx server/scripts/learner-show.ts",
+    "delete-learner": "tsx server/scripts/delete-learner.ts",
     "turnlog": "tsx server/scripts/turnlog-show.ts",
     "runs": "tsx server/scripts/runs.ts",
     "fetch:assets": "tsx server/scripts/fetch-assets.ts",

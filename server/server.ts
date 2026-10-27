@@ -15,6 +15,7 @@ import * as store from "./assets/store";
 import * as sessions from "./assets/sessions";
 import * as learner from "./assets/learner";
 import * as retention from "./assets/retention";
+import * as deletion from "./assets/deletion";
 import { inspect, statusOf, applyCredit } from "./mastery";
 import { A1_MAP } from "./a1";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
@@ -462,11 +463,40 @@ app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
 // Operator inspection of the durable learner model (US-17) — read-only, derived, bills nothing. The
 // engine stays invisible to the learner; this is for whoever runs the system.
-app.get("/api/learner", (req, res) => res.json(inspect(learner.load(learnerOf(req)))));
+// `?id=` reads another learner only with OPERATOR_TOOLS=1; a derived `t-` id is reached through its code.
+app.get("/api/learner", (req, res) => {
+  const other = typeof req.query.id === "string" ? req.query.id : "";
+  res.json(inspect(learner.load(other && process.env.OPERATOR_TOOLS === "1" ? other : learnerOf(req))));
+});
+
+// The requester's own learning history and data (docs/features/learning-history/spec.md).
+app.get("/api/history", (req, res) => {
+  const entries = deletion.listHistory(learnerOf(req)).map(({ transcripts, ...rest }) => rest);
+  res.json({ entries });
+});
+app.get("/api/history/:id", (req, res) => {
+  const entry = deletion.getHistory(learnerOf(req), req.params.id);
+  if (!entry) return res.status(404).json({ error: "no such session" });
+  res.json(entry);
+});
+app.delete("/api/history/:id", (req, res) => {
+  if (!deletion.deleteHistory(learnerOf(req), req.params.id)) return res.status(404).json({ error: "no such session" });
+  res.status(204).end();
+});
+app.delete("/api/history", (req, res) => {
+  deletion.deleteAllHistory(learnerOf(req));
+  res.status(204).end();
+});
+app.get("/api/me", (req, res) => res.json({ testerCode: testerCodeOf(req) }));
+app.delete("/api/me", (req, res) => {
+  deletion.deleteLearner(learnerOf(req));
+  res.status(204).end();
+});
 
 // One conversational turn — E2 only. Returns text fast; audio is fetched from /api/speak.
 app.post("/api/turn", async (req, res) => {
   const { audioBase64, mimeType, history, session, runId } = req.body ?? {};
+  if (runId && sessions.heldByOther(String(runId), learnerOf(req))) return res.status(404).json({ error: "no such session" });
   if (!audioBase64 || !mimeType) {
     return res.status(400).json({ error: "audioBase64 and mimeType are required" });
   }
@@ -531,6 +561,7 @@ app.post("/api/turn", async (req, res) => {
 // fetched from /api/speak exactly like /api/turn (voice=character is irrelevant here → teacher voice).
 app.post("/api/converse", async (req, res) => {
   const { audioBase64, mimeType, history, level, seedId, begin, role, focusLearnables, context, runId, e2 } = req.body ?? {};
+  if (runId && sessions.heldByOther(String(runId), learnerOf(req))) return res.status(404).json({ error: "no such session" });
   // Every turn needs audio EXCEPT an opening (begin): the seed's step 0 or free chat's "Začnemo?" line
   // is the tutor speaking first, with no learner audio yet.
   if (!begin && (!audioBase64 || !mimeType)) {

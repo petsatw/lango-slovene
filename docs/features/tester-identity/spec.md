@@ -55,5 +55,6 @@ These fields are how the learning history, Delete my data and an emailed request
 ## 6. Code in Settings
 
 - Settings shows the stored code ([Settings](../consent-privacy/spec.md#3-settings)), or the learnerId
-  when the browser has no allowlisted code.
+  when the browser has no allowlisted code. `GET /api/me` returns `{ testerCode }`: the allowlisted code,
+  or `null`.
 - Opening the invite link in another browser reconnects that browser to the same progress and history.

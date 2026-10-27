@@ -16,6 +16,7 @@ months without use.
 - the learner model `DATA_DIR/learners/<learnerId>.json`, with progress and gender
 - every history entry and what it removes
   ([what a delete removes](../learning-history/spec.md#4-what-a-delete-removes))
+- all of the learner's turn-log rows
 - the learner's rows in `DATA_DIR/events/events.jsonl`, feedback included
 - the learner's improvement copies
 
