@@ -22,11 +22,13 @@ learning history, and they control it from Settings.
 - Below the copy there are two boxes, using this copy:
   - ☐ Don't save this session
   - ☐ Use this session to improve Vadi
-- Both boxes start unticked each time the screen opens. Each choice covers that one session.
+- Both boxes are optional and start unticked each time the screen opens. Each choice covers that one
+  session. Start works with neither box ticked: the session is saved to the learning history and is
+  not used to improve Vadi.
 - The first box is the per-session switch ([no-save session](../no-save-session/spec.md#1-switch)).
 - The second box is the improvement consent for that session (§2).
-- Ticking "Don't save this session" unticks the improve box and disables it. Unticking "Don't save"
-  enables it again, unticked.
+- The two boxes exclude each other. Ticking either one unticks and disables the other. Unticking it
+  enables the other again, unticked.
 - Below the boxes sit the "Start" button and a "Privacy policy" link that opens `/privacy`
   (§4).
 
