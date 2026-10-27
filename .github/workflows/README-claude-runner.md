@@ -40,9 +40,9 @@ the issue gets a comment with `BLOCKED.md` and the PR link. A run that ends with
 `claude setup-token`).
 
 **Run alert.** When the run labels an issue `pr-open`, `blocked` or `grok-handoff`, it POSTs JSON to the
-URL in repo secret `CLAUDE_BLOCK_WEBHOOK_URL`, with header `Authorization: <CLAUDE_BLOCK_WEBHOOK_KEY>`.
-The key secret holds the whole Authorization header value, exactly as the receiver gives it. Chris adds
-both secrets. Body:
+URL in repo secret `CLAUDE_BLOCK_WEBHOOK_URL`. Repo secret `CLAUDE_BLOCK_WEBHOOK_KEY` holds either the full
+Authorization header line (`Authorization: Bearer abc123`) or only its value (`Bearer abc123`). The run sends
+one `Authorization:` header from it. Chris adds both secrets. Body:
 
 ```json
 {"issue": 24, "label": "pr-open" | "blocked" | "grok-handoff", "comment_url": "<issue comment html_url>",
