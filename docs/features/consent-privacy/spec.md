@@ -6,28 +6,28 @@ learning history, and they control it from Settings.
 
 ## 1. Tutor start screen
 
-- The start screen opens on every tutor entry and before every live session. Its Start session button
-  begins the session.
+- The start screen opens on every tutor entry and before every live session. Its Start button begins
+  the session.
 - It shows this copy verbatim:
 
-  > Voice is streamed live to Google (Gemini) or xAI (Grok) so the tutor can hear and answer. Vadi never
-  > stores audio.
+  > Your voice goes live to Google or xAI so the tutor can answer. Audio is never stored.
   >
-  > Each conversation is saved as text in the learning history and can be deleted at any time in
-  > Settings.
+  > Conversations are saved to your history, unless you choose "Don't save this session" to opt out.
+  > Delete conversations anytime in Settings.
   >
-  > Information shared in a session is the responsibility of the person sharing it and is subject to
-  > Google's and xAI's terms and privacy policies.
+  > What you share is covered by Google's and xAI's privacy policies.
 
+- In that copy, "Google's" links to https://policies.google.com/privacy and "xAI's privacy policies"
+  links to https://x.ai/legal/privacy-policy. Both open in a new tab.
 - Below the copy there are two boxes, using this copy:
-  - ☐ Don't save this session (the transcript is deleted when the session ends)
-  - ☐ This session can be used to improve Vadi (optional; unavailable when "Don't save" is selected)
+  - ☐ Don't save this session
+  - ☐ Use this session to improve Vadi
 - Both boxes start unticked each time the screen opens. Each choice covers that one session.
 - The first box is the per-session switch ([no-save session](../no-save-session/spec.md#1-switch)).
 - The second box is the improvement consent for that session (§2).
 - Ticking "Don't save this session" unticks the improve box and disables it. Unticking "Don't save"
   enables it again, unticked.
-- Below the boxes sit the "Start session" button and a "Privacy policy" link that opens `/privacy`
+- Below the boxes sit the "Start" button and a "Privacy policy" link that opens `/privacy`
   (§4).
 
 ## 2. Improvement consent
