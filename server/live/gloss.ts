@@ -25,12 +25,14 @@ function norm(sl: string): string {
     .trim();
 }
 
-function cachePath(): string {
-  return path.join(DATA_DIR, "gloss-cache.json");
+/** A translation of a live line is learner content, so it is cached with its session and goes when the
+ *  session does. `gloss-cache.json` holds catalog lines only. */
+function cachePath(sessionId: string): string {
+  return path.join(DATA_DIR, "live", `${sessionId}.gloss.json`);
 }
 
-function loadCache(): Record<string, string> {
-  const p = cachePath();
+function loadCache(sessionId: string): Record<string, string> {
+  const p = cachePath(sessionId);
   if (!existsSync(p)) return {};
   try {
     const raw = JSON.parse(readFileSync(p, "utf8"));
@@ -40,20 +42,22 @@ function loadCache(): Record<string, string> {
   }
 }
 
-function saveCache(cache: Record<string, string>): void {
-  const dir = DATA_DIR;
+function saveCache(sessionId: string, cache: Record<string, string>): void {
+  const dir = path.join(DATA_DIR, "live");
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-  writeFileSync(cachePath(), JSON.stringify(cache, null, 2));
+  writeFileSync(cachePath(sessionId), JSON.stringify(cache, null, 2));
 }
 
 export async function glossOf(
   sl: string,
-  /** Whether an answer from the model may be REMEMBERED. The cache is keyed by content and shared by
-   *  every learner, so an entry a sweep found later could not be told apart from a catalog-derived one
-   *  it must never touch — a session that declined retention therefore reads it and writes nothing
-   *  (server/assets/retention.ts). Catalog hits are free and unaffected either way. */
+  /** The live session the line belongs to; only a UUID names a cache file. Without one the answer is
+   *  not remembered. */
+  sessionId: string | undefined,
+  /** Whether an answer from the model may be REMEMBERED. A session that declined retention reads its
+   *  cache and writes nothing (server/assets/retention.ts). Catalog hits are free and unaffected. */
   retain = true,
 ): Promise<{ gloss: string; source: GlossSource }> {
+  const session = sessionId && /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(sessionId) ? sessionId : undefined;
   const key = norm(sl);
   if (!key) return { gloss: "", source: "catalog" };
 
@@ -63,16 +67,16 @@ export async function glossOf(
   if (known) return { gloss: known.gloss, source: "catalog" };
 
   // 2. Asked before. The English for a given Slovene string does not change, so this is durable.
-  const cache = loadCache();
+  const cache = session ? loadCache(session) : {};
   if (cache[key]) return { gloss: cache[key], source: "cache" };
 
   // 3. Ask the model, then remember the answer.
   const e2 = getE2();
   if (!e2.gloss) throw new Error(`E2 provider "${e2.name}" cannot translate`);
   const gloss = await e2.gloss(sl);
-  if (gloss && retain) {
+  if (gloss && retain && session) {
     cache[key] = gloss;
-    saveCache(cache);
+    saveCache(session, cache);
   }
   return { gloss, source: "model" };
 }

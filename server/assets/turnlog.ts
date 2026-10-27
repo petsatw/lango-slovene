@@ -3,14 +3,13 @@
 // the system prompt, the history, and the model's complete output (verbatim transcription, reply,
 // correction, and the per-learnable credit verdicts). Text is logged IN FULL and kept.
 //
-// The resource-heavy AUDIO clip (the input recording) is written alongside under media/ but SWEPT on
-// a short TTL (TURNLOG_MEDIA_TTL_MIN, default 30 min) so the log stays light — the JSONL keeps only a
-// pointer + byte size, never the bytes inline.
+// The input recording is never written: the row keeps its mime type and the marker "(not retained)".
+// `sweepMedia` deletes any clip under media/ older than TURNLOG_MEDIA_TTL_MIN.
 //
 // Local-only: lives under the gitignored /assets/ next to learner.json. Best-effort by design — a
 // logging failure is caught and never breaks a turn. Disable entirely with TURNLOG=0.
 
-import { appendFileSync, mkdirSync, readdirSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { appendFileSync, mkdirSync, readdirSync, statSync, unlinkSync } from "node:fs";
 import path from "node:path";
 import { DATA_DIR } from "./store";
 import * as retention from "./retention";
@@ -22,17 +21,6 @@ const MEDIA_TTL_MS = Math.max(0, Number(process.env.TURNLOG_MEDIA_TTL_MIN ?? 30)
 const ENABLED = process.env.TURNLOG !== "0";
 
 let seq = 0;
-
-const EXT: Record<string, string> = {
-  "audio/webm": "webm",
-  "audio/mp4": "mp4",
-  "audio/m4a": "m4a",
-  "audio/mpeg": "mp3",
-  "audio/mp3": "mp3",
-  "audio/ogg": "ogg",
-  "audio/wav": "wav",
-  "audio/x-wav": "wav",
-};
 
 export interface TurnLogInput {
   path: "free" | "seed" | "scenario" | "live";
@@ -52,7 +40,7 @@ export interface TurnLogInput {
   e2Ms: number;
   systemPrompt: string;
   history: { role: string; text: string }[];
-  // The heavy input clip — bytes are persisted to media/ (swept), only a pointer is kept in the line.
+  // The input clip — only its mime type is kept in the line.
   audio?: { mimeType: string; base64?: string };
   // The model's full text output for the turn.
   output: {
@@ -134,24 +122,8 @@ export function record(input: TurnLogInput): void {
     const ts = new Date().toISOString();
     const id = `${Date.now().toString(36)}-${(seq++).toString(36)}`;
 
-    // A recording of a voice is identifying on its own, so a session that declined retention leaves no
-    // clip at all rather than one waiting on the media TTL.
-    let audioRef: { file: string; mimeType: string; bytes: number } | undefined;
-    if (input.audio?.base64 && MEDIA_TTL_MS > 0 && input.retain !== false) {
-      try {
-        mkdirSync(MEDIA_DIR, { recursive: true });
-        const ext = EXT[input.audio.mimeType] ?? "bin";
-        const buf = Buffer.from(input.audio.base64, "base64");
-        const file = `${id}.${ext}`;
-        writeFileSync(path.join(MEDIA_DIR, file), buf);
-        audioRef = { file: path.join("media", file), mimeType: input.audio.mimeType, bytes: buf.length };
-      } catch (mediaErr: any) {
-        // The text record still goes out even if the clip couldn't be written.
-        audioRef = { file: "(write failed)", mimeType: input.audio.mimeType, bytes: 0 };
-      }
-    } else if (input.audio) {
-      audioRef = { file: "(not retained)", mimeType: input.audio.mimeType, bytes: 0 };
-    }
+    // A recording of a voice is identifying on its own, so no clip is written.
+    const audioRef = input.audio ? { file: "(not retained)", mimeType: input.audio.mimeType, bytes: 0 } : undefined;
 
     const line = {
       id,

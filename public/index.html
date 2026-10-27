@@ -14,6 +14,7 @@
     <button id="back" class="back" type="button" hidden>‹ Home</button>
     <h1 class="wordmark">vadi</h1>
     <p class="tagline">Learn Slovenian in real-life situations</p>
+    <button id="header-settings" class="header-settings" type="button">Settings</button>
     <button id="header-feedback" class="header-feedback" type="button">Feedback</button>
   </header>
 
@@ -222,6 +223,22 @@
   <main id="a1" class="screen" hidden>
     <h2 class="screen-title">A1 Readiness</h2>
     <div id="a1-body" class="a1-body"></div>
+  </main>
+
+  <!-- SETTINGS — the learner's code and control over their data (docs/features/consent-privacy/spec.md). -->
+  <main id="settings" class="screen" hidden>
+    <h2 class="screen-title">Settings</h2>
+    <p class="settings-row">Your code: <b id="settings-code">—</b></p>
+    <button id="settings-history" class="settings-btn" type="button">Learning history</button>
+    <button id="settings-delete" class="settings-btn" type="button">Delete my data</button>
+    <a class="settings-row" href="/privacy">Privacy policy</a>
+  </main>
+
+  <!-- LEARNING HISTORY — the learner's saved sessions, their transcripts, and delete. -->
+  <main id="history" class="screen" hidden>
+    <h2 class="screen-title">Learning history</h2>
+    <div id="history-list" class="level-list"></div>
+    <button id="history-delete-all" class="settings-btn" type="button" hidden>Delete all</button>
   </main>
 
   <!-- Rehearsal tree overlay: click through the predetermined branching dialogue. Tap a line to reveal

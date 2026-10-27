@@ -52,8 +52,21 @@ These fields are how the learning history, Delete my data and an emailed request
 - `LIVE_ACCESS_CODE` is the operator override. It opens live for a request without an allowlisted code.
 - A request with neither gets `403` with a message that names the invite link.
 
+### 5.1 Access code sheet
+
+- **Go Live** starts the session straight away when the browser holds a tester code or a stored access
+  code (`localStorage.liveAccessCode`). Otherwise it opens the access code sheet.
+- The access code sheet is an in-app sheet with one masked field (`type="password"`) labelled "Live tutor
+  access code", with no placeholder, and an **Unlock** button that is enabled once the field has text.
+  Closing the sheet starts nothing.
+- **Unlock** stores the code in `localStorage.liveAccessCode`, closes the sheet and starts the session
+  with it.
+- A `403` on the create call clears the stored access code and opens the sheet with an empty field. When
+  the call carried an access code, the sheet shows "That code isn't recognised." under the field.
+
 ## 6. Code in Settings
 
 - Settings shows the stored code ([Settings](../consent-privacy/spec.md#3-settings)), or the learnerId
-  when the browser has no allowlisted code.
+  when the browser has no allowlisted code. `GET /api/me` returns `{ testerCode }`: the allowlisted code,
+  or `null`.
 - Opening the invite link in another browser reconnects that browser to the same progress and history.

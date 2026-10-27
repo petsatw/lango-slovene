@@ -6,7 +6,8 @@
 // Bills nothing and touches no real asset dir: ASSET_DIR and TURNLOG_DIR are pointed at a temp path
 // before anything is imported.
 
-import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
+import { spawn } from "node:child_process";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -14,6 +15,8 @@ const DIR = mkdtempSync(path.join(tmpdir(), "retention-"));
 process.env.ASSET_DIR = DIR;
 process.env.TURNLOG_DIR = path.join(DIR, "turnlog");
 process.env.RETENTION_TTL_MIN = "240";
+const CANDIDATES = path.join(DIR, "catalog-candidates.jsonl");
+process.env.CANDIDATES_PATH = CANDIDATES;
 
 const sessions = await import("../assets/sessions");
 const turnlog = await import("../assets/turnlog");
@@ -62,7 +65,8 @@ turnlog.record(turnFor(undefined, "Sem Bo"));
 const rows = () =>
   readFileSync(turnlog.LOG_PATH, "utf8").trim().split("\n").map((l) => JSON.parse(l));
 check("the declining turn keeps no clip", rows()[0].audio.file, "(not retained)");
-check("the agreeing turn keeps its clip", rows()[1].audio.file.startsWith("media/"), true);
+check("the agreeing turn keeps no clip either", rows()[1].audio.file, "(not retained)");
+check("turnlog/media/ is empty", existsSync(path.join(DIR, "turnlog", "media")) ? readdirSync(path.join(DIR, "turnlog", "media")) : [], []);
 check("the row is marked", [rows()[0].retain, rows()[1].retain, rows()[2].retain], [false, undefined, undefined]);
 
 // Age the declining row past the window; the other two stay where they are.
@@ -70,7 +74,6 @@ const aged = rows();
 aged[0].ts = HOURS_AGO_5;
 aged[1].ts = HOURS_AGO_5;
 aged[2].ts = HOURS_AGO_5;
-const { writeFileSync } = await import("node:fs");
 writeFileSync(turnlog.LOG_PATH, aged.map((r) => JSON.stringify(r)).join("\n") + "\n");
 
 sessions.appendTurns({
@@ -133,8 +136,151 @@ console.log("\nidempotence");
 retention.sweep();
 check("a second sweep changes nothing", rows()[0].redactedAt, swept[0].redactedAt);
 
-console.log("\nnothing entered the shared stores");
-check("no manifest written", readdirSync(DIR).includes("manifest.jsonl"), false);
+console.log("\nnew phrases");
+const candidates = await import("../assets/candidates");
+candidates.record([
+  { surface: "Sem Kris", gloss: "I am Kris" },
+  { surface: "dober dan", gloss: "good day" },
+  { surface: "lahko dobim kavo", gloss: "can I have a coffee" },
+]);
+const queued = readFileSync(CANDIDATES, "utf8").trim().split("\n").map((l) => JSON.parse(l));
+check("the phrase naming Kris is skipped and the plain ones stored with surface, gloss, at only",
+  queued.map((q) => Object.keys(q).sort().join(",")), ["at,gloss,surface", "at,gloss,surface"]);
+check("the stored phrases are the plain ones, an English \"I\" included", queued.map((q) => q.surface), ["dober dan", "lahko dobim kavo"]);
+
+console.log("\nnothing entered the shared stores (real server, vendor calls stubbed)");
+const port = 20000 + Math.floor(Math.random() * 20000);
+const base = `http://127.0.0.1:${port}`;
+const stub = path.join(DIR, "stub.mjs");
+writeFileSync(stub, `const real = globalThis.fetch;
+globalThis.fetch = (url, init) => {
+  const u = String(url);
+  if (u.includes("elevenlabs.io")) return Promise.resolve(new Response(new Uint8Array([1, 2, 3, 4]), { headers: { "content-type": "audio/mpeg" } }));
+  if (u.includes("generativelanguage.googleapis.com")) return Promise.resolve(Response.json({ candidates: [{ content: { parts: [{ text: "stub gloss" }] } }] }));
+  return real(url, init);
+};`);
+const server = spawn(process.execPath, ["--import", "tsx", "--import", stub, "server/server.ts"], {
+  env: { ...process.env, PORT: String(port), ELEVENLABS_API_KEY: "x", ELEVENLABS_VOICE_ID: "v", GEMINI_API_KEY: "x" },
+  stdio: "ignore",
+});
+for (let i = 0; i < 120; i++) {
+  try { if ((await fetch(`${base}/api/learner`)).ok) break; } catch {}
+  await new Promise((r) => setTimeout(r, 500));
+}
+const speak = async (q: string) => {
+  const res = await fetch(`${base}/api/speak?${q}`);
+  await res.arrayBuffer();
+  return res.status;
+};
+check("a cache=0 speak streams audio", await speak("text=" + encodeURIComponent("Živjo, Kris!") + "&cache=0"), 200);
+await new Promise((r) => setTimeout(r, 300));
+check("a cache=0 speak adds no manifest line", existsSync(path.join(DIR, "manifest.jsonl")), false);
+check("a cache=0 speak adds no audio file", existsSync(path.join(DIR, "audio")), false);
+check("a speak without cache=0 streams audio", await speak("text=" + encodeURIComponent("Dober dan")), 200);
+await new Promise((r) => setTimeout(r, 300));
+check("a speak without cache=0 does (the check can fail)", existsSync(path.join(DIR, "manifest.jsonl")), true);
+
+writeFileSync(path.join(DIR, "gloss-cache.json"), "{}");
+const sid = "11111111-2222-3333-4444-555555555555";
+const gloss = await (await fetch(`${base}/api/gloss?sl=${encodeURIComponent("zxq pqr")}&session=${sid}`)).json();
+check("a live gloss answers", gloss.gloss, "stub gloss");
+check("it is written to live/<id>.gloss.json", JSON.parse(readFileSync(path.join(DIR, "live", `${sid}.gloss.json`), "utf8")), { "zxq pqr": "stub gloss" });
+check("gloss-cache.json is unchanged", readFileSync(path.join(DIR, "gloss-cache.json"), "utf8"), "{}");
+server.kill("SIGKILL");
+
+// ---- no-save sessions: scored, then deleted whatever the scoring outcome ----
+// Scoring needs Gemini; with the key unset it fails, which is the case the spec says must still delete.
+delete process.env.GEMINI_API_KEY;
+// A block, so these names stay local to the no-save checks.
+{
+  const { existsSync, mkdirSync } = await import("node:fs");
+  const { settleSession } = await import("../live/grader");
+  const learnerStore = await import("../assets/learner");
+
+  const liveDir = path.join(DIR, "live");
+  const liveFile = (id: string) => path.join(liveDir, `${id}.json`);
+  const glossFile = (id: string) => path.join(liveDir, `${id}.gloss.json`);
+  const rowsFor = (id: string) => rows().filter((r: any) => r.sessionId === id).length;
+  function leave(id: string): void {
+    mkdirSync(liveDir, { recursive: true });
+    writeFileSync(glossFile(id), "{}");
+    turnlog.record({ ...turnFor(undefined, "Sem Kris"), path: "live", sessionId: id } as any);
+  }
+  const sessionLog = (id: string, extra: object = {}) => ({
+    sessionId: id, learnerId: "nosave-probe", testerCode: null, runId: null, lessonId: "demo-l1", provider: "grok" as const,
+    startedAt: new Date().toISOString(), endedAt: new Date().toISOString(), error: null,
+    transcripts: [{ ts: new Date().toISOString(), role: "user" as const, text: "Živjo, sem Kris" }],
+    ...extra,
+  });
+
+  console.log("\nsession end with scoring failing (GEMINI_API_KEY unset)");
+  const modelOf = () => {
+    const { learnables, facts } = learnerStore.load("nosave-probe");
+    return JSON.stringify({ learnables, facts });
+  };
+  const modelBefore = modelOf();
+  leave("ns-gone");
+  leave("ns-kept");
+  const ending = settleSession({ learnerId: "nosave-probe", instructions: "", targets: [], log: sessionLog("ns-gone", { noSave: true }) });
+  check("the no-save log records noSave: true", JSON.parse(readFileSync(liveFile("ns-gone"), "utf8")).noSave, true);
+  await ending;
+  await settleSession({ learnerId: "nosave-probe", instructions: "", targets: [], log: sessionLog("ns-kept") });
+  check("no-save: live log, turn-log rows and translations are gone",
+    [existsSync(liveFile("ns-gone")), rowsFor("ns-gone"), existsSync(glossFile("ns-gone"))], [false, 0, false]);
+  check("saved: live log, turn-log rows and translations remain",
+    [existsSync(liveFile("ns-kept")), rowsFor("ns-kept"), existsSync(glossFile("ns-kept"))], [true, 1, true]);
+  check("the learner model is unchanged", modelOf(), modelBefore);
+
+  console.log("\nthe sweep removes a no-save log left from before startup");
+  leave("ns-left");
+  liveLog.write(sessionLog("ns-left", { noSave: true }) as any);
+  leave("ns-running");
+  liveLog.write(sessionLog("ns-running", { noSave: true }) as any);
+  retention.settling.add("ns-running");
+  retention.sweep();
+  retention.settling.delete("ns-running");
+  check("left-over: log, rows and translations are gone",
+    [existsSync(liveFile("ns-left")), rowsFor("ns-left"), existsSync(glossFile("ns-left"))], [false, 0, false]);
+  check("a no-save session still being scored is left to finish", existsSync(liveFile("ns-running")), true);
+  check("a saved log is left alone", existsSync(liveFile("ns-kept")), true);
+
+  console.log("\nthe create body's noSave reaches the session");
+  const { spawn } = await import("node:child_process");
+  const { WebSocket } = await import("ws");
+  const port = 20000 + Math.floor(Math.random() * 20000);
+  const base = `http://127.0.0.1:${port}`;
+  const env = { ...process.env, PORT: String(port), DATA_DIR: DIR, LIVE_ACCESS_CODE: "probe", XAI_API_KEY: "probe-unreachable" };
+  const child = spawn(process.execPath, ["--import", "tsx", "server/server.ts"], { env, stdio: "ignore" });
+  try {
+    let up = false;
+    for (let i = 0; i < 120 && !up; i++) {
+      up = await fetch(`${base}/api/learner`).then((r) => r.ok, () => false);
+      if (!up) await new Promise((r) => setTimeout(r, 500));
+    }
+    check("the server started", up, true);
+    const res = await fetch(`${base}/v1/live/sessions`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-learner-id": "nosave-http" },
+      body: JSON.stringify({ lessonId: "demo-l1", accessCode: "probe", provider: "grok", noSave: true }),
+    });
+    const created: any = await res.json().catch(() => ({}));
+    check("create answers 201", res.status, 201);
+    if (res.status === 201) {
+      const sock = new WebSocket(created.wsUrl);
+      sock.on("error", () => {});
+      await new Promise((r) => { sock.on("close", r); setTimeout(r, 15_000); });
+      const eventsFile = path.join(DIR, "events", "events.jsonl");
+      const started = existsSync(eventsFile)
+        ? readFileSync(eventsFile, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((e) => e.name === "live_started")
+        : [];
+      check("live_started carries noSave: true", started.map((e) => e.props?.noSave ?? e.noSave), [true]);
+      await new Promise((r) => setTimeout(r, 1000));
+      check("the ended session leaves no log", existsSync(liveFile(created.sessionId)), false);
+    }
+  } finally {
+    child.kill("SIGKILL");
+  }
+}
 
 rmSync(DIR, { recursive: true, force: true });
 console.log(failures ? `\n❌ ${failures} failed\n` : "\n✅ all passed\n");

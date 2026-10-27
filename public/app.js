@@ -175,7 +175,7 @@ let chatLessonId = null;     // go-live: which lesson's plan the realtime tutor 
 let runId = null;            // THIS sitting on the practice surface — both modes record under it (npm run runs)
 
 // ---- Screen router — one screen visible at a time; the tree + obs are overlays on top. ----
-const SCREENS = ["home", "practice", "levels", "tutor", "a1", "scene"];
+const SCREENS = ["home", "practice", "levels", "tutor", "a1", "scene", "settings", "history"];
 let currentScreen = "home";
 
 function showScreen(id) {
@@ -200,6 +200,72 @@ function openPractice() { showScreen("practice"); loadPractice(); }
 function openA1() { showScreen("a1"); renderA1(); }
 
 function stopAllAudio() { stopDialogueAudio(); }
+
+// ---- Settings and Learning history (docs/features/consent-privacy/spec.md, learning-history/spec.md). ----
+async function openSettings() {
+  showScreen("settings");
+  $("settings-code").textContent = "—";
+  const { testerCode } = await (await api("/api/me")).json();
+  $("settings-code").textContent = testerCode || learnerId;
+}
+
+async function openHistory() {
+  showScreen("history");
+  const list = $("history-list");
+  list.textContent = "";
+  const { entries } = await (await api("/api/history")).json();
+  $("history-delete-all").hidden = !entries.length;
+  if (!entries.length) list.textContent = "No saved sessions.";
+  for (const e of entries) {
+    const row = document.createElement("div");
+    row.className = "history-entry";
+    row.dataset.id = e.id;
+    const open = document.createElement("button");
+    open.type = "button";
+    open.className = "settings-btn history-open";
+    const score = e.score ? `${e.score.succeeded.length}/${e.score.total}` : "no score";
+    open.textContent = `${e.lessonId} · ${new Date(e.startedAt).toLocaleDateString()} · ${score}`;
+    const body = document.createElement("div");
+    body.className = "history-entry-body";
+    body.hidden = true;
+    open.addEventListener("click", async () => {
+      if (!body.hidden) { body.hidden = true; return; }
+      const full = await (await api(`/api/history/${encodeURIComponent(e.id)}`)).json();
+      body.textContent = "";
+      for (const t of full.transcripts) {
+        const line = document.createElement("p");
+        line.className = "history-line";
+        line.textContent = `${t.role === "user" ? "You" : "Tutor"}: ${t.text}`;
+        body.append(line);
+      }
+      body.hidden = false;
+    });
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "settings-btn history-delete";
+    del.textContent = "Delete";
+    del.addEventListener("click", async () => {
+      if (!confirm("Delete this session?")) return;
+      await api(`/api/history/${encodeURIComponent(e.id)}`, { method: "DELETE" });
+      openHistory();
+    });
+    row.append(open, body, del);
+    list.append(row);
+  }
+}
+
+$("header-settings").addEventListener("click", openSettings);
+$("settings-history").addEventListener("click", openHistory);
+$("history-delete-all").addEventListener("click", async () => {
+  if (!confirm("Delete all your saved sessions?")) return;
+  await api("/api/history", { method: "DELETE" });
+  openHistory();
+});
+$("settings-delete").addEventListener("click", async () => {
+  if (!confirm("Delete all your data? This cannot be undone.")) return;
+  const res = await api("/api/me", { method: "DELETE" });
+  if (res.ok) { learnerStarted = false; openHome(); }
+});
 
 // A readable, filesystem-safe run id: <prefix>-<timestamp>-<rand>. One run per tutor session, so leaving
 // and re-entering the live tutor starts a fresh replayable record.
@@ -227,8 +293,8 @@ function addBubble(role, text, sub, replayOpts = {}) {
   div.appendChild(span);
 
   // Tutor bubbles get a replay icon. What it replays depends on where the line came from, and the two
-  // are NOT interchangeable: a tap-to-speak reply was synthesized by ElevenLabs and is cached on disk,
-  // so re-streaming it is free and returns the same voice. A live line was improvised by the vendor in
+  // are NOT interchangeable: a tap-to-speak reply was synthesized by ElevenLabs and the server holds it in
+  // memory, so re-streaming it returns the same voice. A live line was improvised by the vendor in
   // the vendor's own voice and never went through /api/speak at all — re-synthesizing it would bill a
   // fresh call and answer in a different voice than the learner just heard. So the live surface hands
   // in its own player over the audio it kept.
@@ -333,10 +399,9 @@ async function playReplyStreaming(text, opts = {}) {
   if (opts.scenarioId) params.set("scenarioId", opts.scenarioId);
   if (opts.objectiveId) params.set("objectiveId", opts.objectiveId);
   if (opts.voice) params.set("voice", opts.voice);
-  // The tutor's reply is a sentence composed about this learner and can carry their name. A sitting
-  // that declined retention still hears it — it just is not written into the shared clip store, which
-  // is keyed by content and has no way to tell one learner's sentence from an authored lesson line.
-  if (!retainSession) params.set("retain", "0");
+  // The tutor's reply is composed about this learner and can carry their name, so it is streamed and
+  // not written into the shared clip store.
+  params.set("cache", "0");
   audio.src = `/api/speak?${params.toString()}`;
   obs.state("speaking…");
 
@@ -1106,7 +1171,8 @@ const liveParams = new URLSearchParams(location.search);
 let mode = "live";
 let holding = false;       // tap mode: the button is down and the mic is open
 let freeChatBegun = false; // tap mode opens with the tutor speaking first — once per session
-let liveTick = null;       // polls tutor-speaking, which no message reports (see liveSpeaking)
+let liveSessionId = ""; // the live session's id; /api/gloss caches translations with it
+let liveTick = null;      // polls tutor-speaking, which no message reports (see liveSpeaking)
 let liveObjectives = [];   // the Slovene of each line the tutor steers toward, sent at connect
 
 // Going the other way is free: live just starts talking. Going INTO tap hands the learner a button
@@ -1213,8 +1279,8 @@ async function toggleLive() {
   liveBubbles.clear(); // ids are per-session; a stale one would revise last session's bubble
   liveObjectives = [];
   try {
-    await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined,
-                      learnerId, runId, retain: retainSession, noSave, improve });
+    liveSessionId = (await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined,
+                      learnerId, runId, retain: retainSession, noSave, improve })).sessionId;
     // Nothing in the protocol says the tutor has started or stopped speaking — `state` reports when the
     // vendor finished GENERATING, which is well before the audio is heard. So the surface asks the
     // playback queue instead, often enough to look like a response and cheaply enough not to matter.
@@ -1268,7 +1334,7 @@ function addLiveBubble(role, text, id) {
     div.appendChild(s);
     div.classList.add("show-translation");
     try {
-      const res = await api(`/api/gloss?sl=${encodeURIComponent(div.dataset.sl)}`);
+      const res = await api(`/api/gloss?sl=${encodeURIComponent(div.dataset.sl)}&session=${encodeURIComponent(liveSessionId)}`);
       const data = await res.json();
       s.textContent = res.ok ? data.gloss || "(no translation)" : "(translation unavailable)";
     } catch {
@@ -2532,6 +2598,7 @@ async function init() {
   // Back: levels → practice; everything else → home.
   $("back").addEventListener("click", () => {
     if (currentScreen === "levels") showScreen("practice");
+    else if (currentScreen === "history") openSettings();
     else openHome();
   });
 
