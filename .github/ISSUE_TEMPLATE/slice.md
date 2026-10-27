@@ -21,7 +21,7 @@ labels: slice
 <!-- Files expected to change. -->
 
 ## Acceptance check
-<!-- ONE cheap check that proves the criterion and runs inside the GitHub runner, with no network services: an existing npm script (`lint:*`, `test:*`) or simple local steps (start the server with `tsx`, `curl` the API, inspect files, restart, a headless Chromium check). Its command and output go in the PR. -->
+<!-- ONE cheap check that proves the criterion and runs inside the GitHub runner, with no network services: one in-repo script, `npx tsx server/probes/<name>.ts`, written with the slice (or an existing `npm run lint:*` / `test:*` script). The script starts the server with its own env, uses `fetch` for the API, `node:fs` for files and the repo's `playwright` for headless Chromium. List its steps and expected results. Its command and output go in the PR. -->
 
 ## Out of scope
 <!-- What not to build in this slice. -->
