@@ -28,6 +28,9 @@ export interface LessonScore {
 
 export interface LiveSessionLog {
   sessionId: string;
+  /** Whose session this is and the allowlisted code it came in on (server/assets/learner.ts `resolveId`). */
+  learnerId: string;
+  testerCode: string | null;
   /** The sitting: the id the same tester's tap-to-speak turns are recorded under, so one run of a lesson
    *  can be read next to the other (server/scripts/runs.ts). Null when the client named none. */
   runId: string | null;

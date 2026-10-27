@@ -25,6 +25,8 @@ interface PendingSession {
   provider: LiveProvider;
   /** Whose palette the prompt is built from, and whose sitting the log belongs to. */
   learnerId: string;
+  /** The allowlisted tester code the create call carried, or null. */
+  testerCode: string | null;
   /** The sitting this session belongs to — the same id the tap-to-speak turns are recorded under, so
    *  the two modes can be lined up afterwards (server/scripts/runs.ts). */
   runId: string | null;
@@ -70,6 +72,7 @@ export function create(args: {
   lessonId: string;
   provider: LiveProvider;
   learnerId: string;
+  testerCode: string | null;
   runId: string | null;
   retain: boolean;
 }): PendingSession {
@@ -80,6 +83,7 @@ export function create(args: {
     lessonId: args.lessonId,
     provider: args.provider,
     learnerId: args.learnerId,
+    testerCode: args.testerCode,
     runId: args.runId,
     retain: args.retain,
     // The token has to survive only the round trip from the create call to the WS open, so it expires

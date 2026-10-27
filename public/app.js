@@ -49,6 +49,18 @@ function setStartChoices(ns, im) {
   retainSession = !noSave;
 }
 
+// The invite link carries the tester code as ?c=<code>. It is stored, taken out of the address bar, and
+// sent on every call; a code in a later link replaces the stored one (docs/features/tester-identity/spec.md).
+{
+  const url = new URL(location.href);
+  const linked = url.searchParams.get("c");
+  if (linked !== null) {
+    if (linked.trim()) localStorage.setItem("testerCode", linked.trim());
+    url.searchParams.delete("c");
+    window.history.replaceState(null, "", url);
+  }
+}
+
 // Every call names the learner it is about, and whether this sitting is being kept. One wrapper, so no
 // call site has to remember to.
 function api(url, opts = {}) {
@@ -57,6 +69,7 @@ function api(url, opts = {}) {
     headers: {
       ...(opts.headers || {}),
       "x-learner-id": learnerId,
+      ...(localStorage.getItem("testerCode") ? { "x-tester-code": localStorage.getItem("testerCode") } : {}),
       ...(retainSession ? {} : { "x-retain": "0" }),
     },
   });

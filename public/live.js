@@ -224,6 +224,7 @@ export async function startLive({ lessonId, accessCode, provider, learnerId, run
     headers: {
       "Content-Type": "application/json",
       "x-learner-id": learnerId,
+      ...(localStorage.getItem("testerCode") ? { "x-tester-code": localStorage.getItem("testerCode") } : {}),
       ...(retain ? {} : { "x-retain": "0" }),
     },
     body: JSON.stringify({ lessonId, accessCode, provider, runId, ...(noSave && { noSave }), ...(improve && { improve }) }),

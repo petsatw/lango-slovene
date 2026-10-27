@@ -43,6 +43,9 @@ export interface SessionRecord {
   /** Which provider answered these turns. The live log has carried its provider since it shipped; a run
    *  of the other mode is only comparable to it if it says the same thing (server/scripts/runs.ts). */
   provider?: string;
+  /** Whose run this is and the allowlisted code it came in on (server/assets/learner.ts `resolveId`). */
+  learnerId?: string;
+  testerCode?: string | null;
   /** Did this sitting agree to its data being kept. `false` marks the record for the retention sweep,
    *  which empties the spoken text and leaves the run's shape and credit
    *  (server/assets/retention.ts). Omitted = kept. */
@@ -94,6 +97,8 @@ export function appendTurns(args: {
   complete: boolean;
   provider?: string;
   retain?: boolean;
+  learnerId: string;
+  testerCode: string | null;
 }): SessionRecord {
   const ts = nowIso();
   const rec: SessionRecord = load(args.id) ?? {
@@ -108,6 +113,8 @@ export function appendTurns(args: {
   let next = rec.turns.length;
   for (const t of args.turns) rec.turns.push({ ...t, index: next++ });
   rec.finalObjectives = args.finalObjectives;
+  rec.learnerId = args.learnerId;
+  rec.testerCode = args.testerCode;
   if (args.provider) rec.provider = args.provider;
   if (args.retain === false) rec.retain = false;
   rec.status = args.complete ? "completed" : "abandoned";

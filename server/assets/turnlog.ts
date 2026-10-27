@@ -39,6 +39,11 @@ export interface TurnLogInput {
   /** Did this session agree to its data being kept. `false` marks the row for the retention sweep,
    *  which empties its text and leaves the credit (server/assets/retention.ts). Omitted = kept. */
   retain?: boolean;
+  /** Whose turn this is, the allowlisted code it came in on, and the sitting it belongs to. */
+  learnerId: string;
+  testerCode: string | null;
+  sessionId?: string;
+  runId?: string;
   level?: 1 | 2;
   scenarioId?: string;
   seedId?: string;
@@ -152,6 +157,10 @@ export function record(input: TurnLogInput): void {
       id,
       ts,
       path: input.path,
+      learnerId: input.learnerId,
+      testerCode: input.testerCode,
+      sessionId: input.sessionId,
+      runId: input.runId,
       ...(input.retain === false ? { retain: false } : {}),
       level: input.level,
       scenarioId: input.scenarioId,

@@ -53,7 +53,9 @@ function cachePut(key: string, buf: Buffer): void {
 // it on every call; a request that names none is served as the operator at their own machine. This is
 // the seam accounts arrive on — the id stops being a session id and becomes an account id, and nothing
 // below changes (server/assets/learner.ts).
-const learnerOf = (req: express.Request) => learner.idFrom(req.get("x-learner-id"));
+const learnerOf = (req: express.Request) => learner.resolveId(req.get("x-tester-code"), req.get("x-learner-id"));
+/** The allowlisted tester code the request carries, or null. */
+const testerCodeOf = (req: express.Request) => learner.testerCodeFrom(req.get("x-tester-code"));
 /** Started = has a credited learnable, or has already been shown the first-run scene (fact `sceneSeen`). */
 const learnerStarted = (id: string) => {
   const m = learner.load(id);
@@ -473,6 +475,8 @@ app.post("/api/turn", async (req, res) => {
       history: Array.isArray(history) ? history : [],
       session,
       learnerId: learnerOf(req),
+      testerCode: testerCodeOf(req),
+      runId: typeof runId === "string" ? runId : undefined,
       retain: retainOf(req),
     });
 
@@ -506,6 +510,8 @@ app.post("/api/turn", async (req, res) => {
           finalObjectives: result.session.objectives,
           complete: result.session.complete,
           retain: retainOf(req),
+          learnerId: learnerOf(req),
+          testerCode: testerCodeOf(req),
         });
       } catch (capErr: any) {
         console.error("[capture] failed:", capErr?.message);
@@ -551,6 +557,8 @@ app.post("/api/converse", async (req, res) => {
             }
           : null,
       learnerId: learnerOf(req),
+      testerCode: testerCodeOf(req),
+      runId: typeof runId === "string" ? runId : undefined,
       retain: retainOf(req),
       // A tester may name the provider for this turn; everyone else gets the configured one. The live
       // surface has taken a per-session provider since it shipped — this is the same affordance on the
@@ -589,6 +597,8 @@ app.post("/api/converse", async (req, res) => {
           complete: false, // a free chat is never "complete" — it stays open until the learner exits
           provider: result.providers.e2, // who answered, so this run can be read against a live one
           retain: retainOf(req),
+          learnerId: learnerOf(req),
+          testerCode: testerCodeOf(req),
         });
       } catch (capErr: any) {
         console.error("[converse capture] failed:", capErr?.message);
