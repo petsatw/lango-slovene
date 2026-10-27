@@ -51,6 +51,7 @@ The Settings screen, opened from the app header, shows:
 - `GET /privacy` returns `public/privacy.html` with status 200. That file is the Vadi privacy policy,
   in the wording Chris approves.
 - Every screen that names data use (the tutor start screen and Settings) links to `/privacy`.
+- Vadi is for people aged 18 or over. `/privacy` states this.
 - When a policy change affects what happens to voice or conversations, the tutor start screen shows the
   new terms before the next session. It already shows its copy before every session.
 
@@ -90,5 +91,4 @@ The Settings screen, opened from the app header, shows:
 
 ## Open
 
-- Minimum age: 18+ or 15+. The privacy page states it.
 - The policy's effective date, shown on `/privacy`.

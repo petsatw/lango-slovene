@@ -4,6 +4,10 @@ The app records which screens and steps each tester uses, so the team can read o
 a funnel across testers. Events hold names, ids, counts and timings. Free text appears only in
 `feedback_submitted`.
 
+Events are first-party and pseudonymous. They are keyed to the learnerId and code, and nothing is sent
+to a third-party analytics service. They are strictly necessary to run the alpha and are recorded
+under legitimate interests, from the first app open.
+
 ## 1. Endpoint
 
 `POST /api/event` with the body `{ "events": [ { "name", "ts", "props", "text"? } ] }`.
@@ -84,7 +88,3 @@ jq -s '
       firstLevelSec: (if $open and $done then ($done | t) - ($open | t) else null end),
       feedback: (map(select(.name == "feedback_submitted")) | length) })' events.jsonl
 ```
-
-## Open
-
-- Whether these usage events are strictly necessary for the service.
