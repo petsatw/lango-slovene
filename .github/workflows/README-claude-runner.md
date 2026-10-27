@@ -9,7 +9,7 @@ repo owner, a member or a collaborator; for anyone else it removes the label and
 continue from it. At the end the workflow commits everything Claude wrote except `PR.md` and
 `BLOCKED.md`, pushes the branch and opens or updates one PR to `mvp` with `Closes #N`.
 
-**Issue text.** Before Claude starts, the workflow writes the issue's title, labels, body and all comments
+**Issue text.** Before Claude starts, the workflow writes the issue's title, labels, body and the comments by petsatw
 to `.claude/issue.md` with `gh` and the job's `GITHUB_TOKEN`. Claude reads the issue from that file and
 does not call `gh` for it. The file is gitignored and listed in `.git/info/exclude`, so no commit
 includes it.
