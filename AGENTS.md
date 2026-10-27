@@ -110,7 +110,8 @@ repo; the commit message records what changed and when.
 **Definition of ready.** An issue can start high level. It is ready when it has:
 - a **Spec** field linking a section of `docs/features/<feature>/spec.md` on `mvp` that gives a clear
   development path;
-- one **Acceptance check** that runs inside the GitHub runner (below);
+- one **Acceptance check**: an in-repo script, `npx tsx server/probes/<name>.ts`, that runs inside the
+  GitHub runner (below);
 - a **Follow-up** field naming the issue for each external or post-merge step.
 
 Only the tech lead applies `ready-for-claude`, and only to a ready issue.
@@ -118,16 +119,21 @@ Only the tech lead applies `ready-for-claude`, and only to a ready issue.
 - Build only what the linked spec section, the **Goal** and the **Gate & ready criterion** need; **Out of
   scope** is binding.
 - When the spec is missing or unclear for this slice, or an assumption turns out wrong, write
-  `BLOCKED.md` with the question and stop.
+  `BLOCKED.md` with `BLOCKED: <question>` as its first line and stop.
 - **One acceptance check per slice** — the cheapest that proves the criterion, run inside the GitHub
-  runner with no network services: an existing npm script (`lint:*`, `test:*`) or simple local steps
-  (start the server with `tsx`, `curl` the API, inspect files, restart, a headless Chromium check). Add an
-  automated test only when it guards behaviour likely to regress and is cheap to keep green. No extra
-  scaffolding, mocks or fixtures.
+  runner with no network services. It is one TypeScript script in `server/probes/`, named in the issue
+  and written with the slice, run as `npx tsx server/probes/<name>.ts` (or an existing `npm run lint:*` /
+  `test:*` script). The script starts the server it needs with its own env (as
+  `server/probes/data-dir-check.ts` does), calls it with `fetch`, inspects files with `node:fs`, and drives
+  headless Chromium through the repo's `playwright`. Add an automated test only when it guards behaviour
+  likely to regress and is cheap to keep green. No extra scaffolding, mocks or fixtures.
+- When the slice is built and a check needed for acceptance cannot run in the runner, write `BLOCKED.md`
+  with `HANDOFF: <reason>` as its first line, plus the exact command and what it must show. The tech
+  lead agent picks it up (`grok-handoff`). This is rare: make the in-repo check run first.
 - Post-merge and external steps (deploy, secrets, accounts, real users, wording reviews) are separate
   issues, linked under the slice's **Follow-up**.
 - An issue labelled `blocked` waits for what its **Blocked by** names.
-- Open the PR against `mvp` (Chris ships `mvp` into `release/*`), link the issue, and paste the acceptance-check output. A human merges.
+- Open the PR against `mvp` (Chris ships `mvp` into `release/*`), link the issue, and paste the acceptance-check command and output. A human merges. In the Claude runner the workflow opens it from `PR.md` ([README](.github/workflows/README-claude-runner.md)).
 
 ## Testing conventions — low abstraction, high fidelity
 
