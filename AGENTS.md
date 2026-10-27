@@ -112,7 +112,7 @@ repo; the commit message records what changed and when.
   development path;
 - one **Acceptance check**: an in-repo script, `npx tsx server/probes/<name>.ts`, that runs inside the
   GitHub runner (below);
-- a **Follow-up** field naming the issue for each external or post-merge step.
+- a **Follow-up** field naming the issue for each config, secrets, accounts or ops step.
 
 Only the tech lead applies `ready-for-claude`, and only to a ready issue.
 The tech lead reviews every PR and labels it `reviewed` when the review passes; new commits remove the
@@ -132,8 +132,10 @@ label until the tech lead reviews them. Chris merges only PRs labelled `reviewed
 - When the slice is built and a check needed for acceptance cannot run in the runner, write `BLOCKED.md`
   with `HANDOFF: <reason>` as its first line, plus the exact command and what it must show. The tech
   lead agent picks it up (`grok-handoff`). This is rare: make the in-repo check run first.
-- Post-merge and external steps (deploy, secrets, accounts, real users, wording reviews) are separate
-  issues, linked under the slice's **Follow-up**.
+- Config, secrets, accounts and ops steps are separate issues, linked under the slice's **Follow-up**.
+  These are the only follow-up issues.
+- A check that needs a live provider or a real user goes on Chris's staging walkthrough checklist. The
+  slice's PR names that check and says it is left for the walkthrough.
 - An issue labelled `blocked` waits for what its **Blocked by** names.
 - Open the PR against `mvp` (Chris ships `mvp` into `release/*`), link the issue, and paste the acceptance-check command and output. A human merges. In the Claude runner the workflow opens it from `PR.md` ([README](.github/workflows/README-claude-runner.md)).
 

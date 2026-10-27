@@ -30,4 +30,4 @@ labels: slice
 <!-- "None", or the issue or PR this waits for (e.g. the spec PR). Add the `blocked` label while it is pending. -->
 
 ## Follow-up
-<!-- "None", or the linked issue for each post-merge or external step (deploy, secrets, accounts, real users, wording reviews). A follow-up issue says "Follows #N" and carries only the gate label. -->
+<!-- "None", or the linked issue for each config, secrets, accounts or ops step. A follow-up issue says "Follows #N" and carries only the gate label. A check that needs a live provider or a real user goes on Chris's staging walkthrough checklist, and the PR says that check is left for the walkthrough. -->
