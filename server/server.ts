@@ -29,6 +29,7 @@ import { getLearnable, LEARNABLES } from "./learnables";
 import { buildGalleryHtml } from "./scripts/gallery";
 import { frameFor } from "./scripts/dialogue-lib";
 import { liveRouter, attachLive } from "./live/index";
+import * as events from "./events";
 import { buildIndex, matchSituation, SYNONYMS, STOP, MATCH_THRESHOLD } from "./match";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -53,7 +54,9 @@ function cachePut(key: string, buf: Buffer): void {
 // it on every call; a request that names none is served as the operator at their own machine. This is
 // the seam accounts arrive on — the id stops being a session id and becomes an account id, and nothing
 // below changes (server/assets/learner.ts).
-const learnerOf = (req: express.Request) => learner.idFrom(req.get("x-learner-id"));
+const learnerOf = (req: express.Request) => learner.resolveId(req.get("x-tester-code"), req.get("x-learner-id"));
+/** The allowlisted tester code the request carries, or null. */
+const testerCodeOf = (req: express.Request) => learner.testerCodeFrom(req.get("x-tester-code"));
 /** Started = has a credited learnable, or has already been shown the first-run scene (fact `sceneSeen`). */
 const learnerStarted = (id: string) => {
   const m = learner.load(id);
@@ -68,7 +71,9 @@ const retainOf = (req: express.Request) => retention.retainFrom(req.get("x-retai
 
 // Audio clips arrive as base64 JSON — allow a generous body size.
 app.use(express.json({ limit: "25mb" }));
+app.get("/privacy", (_req, res) => res.sendFile(path.join(__dirname, "..", "public", "privacy.html")));
 app.use(express.static(path.join(__dirname, "..", "public")));
+app.post("/api/event", (req, res) => events.handle(req, res, { learnerId: learnerOf(req), testerCode: testerCodeOf(req) }));
 
 // The live tutor's one HTTP surface (POST /v1/live/sessions). Its WebSocket half is attached to the
 // http server at the bottom of this file — Express does not see upgrades.
@@ -472,6 +477,8 @@ app.post("/api/turn", async (req, res) => {
       history: Array.isArray(history) ? history : [],
       session,
       learnerId: learnerOf(req),
+      testerCode: testerCodeOf(req),
+      runId: typeof runId === "string" ? runId : undefined,
       retain: retainOf(req),
     });
 
@@ -505,6 +512,8 @@ app.post("/api/turn", async (req, res) => {
           finalObjectives: result.session.objectives,
           complete: result.session.complete,
           retain: retainOf(req),
+          learnerId: learnerOf(req),
+          testerCode: testerCodeOf(req),
         });
       } catch (capErr: any) {
         console.error("[capture] failed:", capErr?.message);
@@ -550,6 +559,8 @@ app.post("/api/converse", async (req, res) => {
             }
           : null,
       learnerId: learnerOf(req),
+      testerCode: testerCodeOf(req),
+      runId: typeof runId === "string" ? runId : undefined,
       retain: retainOf(req),
       // A tester may name the provider for this turn; everyone else gets the configured one. The live
       // surface has taken a per-session provider since it shipped — this is the same affordance on the
@@ -588,6 +599,8 @@ app.post("/api/converse", async (req, res) => {
           complete: false, // a free chat is never "complete" — it stays open until the learner exits
           provider: result.providers.e2, // who answered, so this run can be read against a live one
           retain: retainOf(req),
+          learnerId: learnerOf(req),
+          testerCode: testerCodeOf(req),
         });
       } catch (capErr: any) {
         console.error("[converse capture] failed:", capErr?.message);

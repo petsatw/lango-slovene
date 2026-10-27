@@ -38,14 +38,112 @@ const learnerId = (() => {
   return minted;
 })();
 
-// Whether this sitting agreed to its data being kept — the consent gate's second, optional box, which
-// starts ticked. Held for one sitting: a reload keeps the answer, closing the tab forgets it. Unticked,
-// the server empties this session's records a few hours after it ends and never writes its speech into
-// the shared audio, gloss and candidate stores at all (server/assets/retention.ts).
-let retainSession = sessionStorage.getItem("retainSession") !== "0";
-function setRetain(on) {
-  retainSession = !!on;
-  sessionStorage.setItem("retainSession", retainSession ? "1" : "0");
+// The start screen's two answers for this session. Both start unticked each time the screen opens.
+// `retainSession` (the x-retain header and retain param) follows "Don't save this session".
+let noSave = false;
+let improve = false;
+let retainSession = true;
+function setStartChoices(ns, im) {
+  noSave = !!ns;
+  improve = !!im;
+  retainSession = !noSave;
+}
+
+// Core-journey events (docs/features/events/spec.md). `track` queues; the queue goes out every 10 s, at 50
+// events, and when the page is hidden. It goes through `api` with `keepalive` rather than sendBeacon,
+// because a beacon cannot carry the x-tester-code header that stamps the row. A failed send is dropped.
+const eventQueue = [];
+function flushEvents() {
+  if (!eventQueue.length) return;
+  const events = eventQueue.splice(0, 50);
+  api("/api/event", {
+    method: "POST",
+    keepalive: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ events }),
+  }).catch(() => {});
+}
+function track(name, props = {}, text) {
+  eventQueue.push({ name, ts: new Date().toISOString(), props, ...(text ? { text } : {}) });
+  if (eventQueue.length >= 50) flushEvents();
+}
+setInterval(flushEvents, 10_000);
+
+// ---- Feedback sheet (docs/features/feedback/spec.md): thumbs + optional text; closing records nothing. ----
+let feedbackSurface = null;
+let feedbackRating = null;
+let feedbackCloseTimer = null;
+function openFeedback(surface) {
+  clearTimeout(feedbackCloseTimer);
+  feedbackSurface = surface;
+  feedbackRating = null;
+  $("feedback-up").setAttribute("aria-pressed", "false");
+  $("feedback-down").setAttribute("aria-pressed", "false");
+  $("feedback-text").value = "";
+  $("feedback-send").disabled = true;
+  $("feedback-thanks").hidden = true;
+  $("feedback-prompt").textContent = surface === "finder_request" ? "What would you like to practise?" : "Anything to add? (optional)";
+  $("feedback").hidden = false;
+}
+function setFeedbackRating(r) {
+  feedbackRating = r;
+  $("feedback-up").setAttribute("aria-pressed", String(r === "up"));
+  $("feedback-down").setAttribute("aria-pressed", String(r === "down"));
+  $("feedback-send").disabled = false;
+}
+$("feedback-up").addEventListener("click", () => setFeedbackRating("up"));
+$("feedback-down").addEventListener("click", () => setFeedbackRating("down"));
+$("feedback-close").addEventListener("click", () => { $("feedback").hidden = true; });
+$("feedback-send").addEventListener("click", () => {
+  if (!feedbackRating) return;
+  const text = $("feedback-text").value.trim().slice(0, 1000);
+  track("feedback_submitted", { surface: feedbackSurface, rating: feedbackRating, hasText: !!text }, text);
+  $("feedback-send").disabled = true;
+  $("feedback-thanks").hidden = false;
+  feedbackCloseTimer = setTimeout(() => { $("feedback").hidden = true; }, 1200);
+});
+$("header-feedback").addEventListener("click", () => openFeedback("header"));
+$("scene-feedback").addEventListener("click", () => openFeedback("level_end"));
+$("live-feedback").addEventListener("click", () => openFeedback("live_end"));
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushEvents(); });
+track("app_open", {
+  standalone: !!(navigator.standalone || matchMedia("(display-mode: standalone)").matches),
+  isFirstOpen: !localStorage.getItem("opened"),
+  path: location.pathname,
+});
+localStorage.setItem("opened", "1");
+
+// One level at a time is in play. `endLevelRun` records how it ended; a run left open when the next one
+// begins was abandoned.
+let levelRun = null;
+function beginLevelRun(scenarioId, level) {
+  endLevelRun(false);
+  levelRun = { scenarioId, level, t0: Date.now() };
+  track("level_started", { scenarioId, level });
+}
+function endLevelRun(completed, nodeId) {
+  if (!levelRun) return;
+  const { scenarioId, level, t0 } = levelRun;
+  nodeId = nodeId ?? levelRun.nodeId;
+  levelRun = null;
+  const ms = Date.now() - t0;
+  if (completed) track("level_completed", { scenarioId, level, ms });
+  else track("level_abandoned", { scenarioId, level, ms, nodeId: nodeId ?? null });
+}
+
+// The invite link carries the tester code as ?c=<code>. It is stored, taken out of the address bar, and
+// sent on every call; a code in a later link replaces the stored one (docs/features/tester-identity/spec.md).
+{
+  const url = new URL(location.href);
+  const linked = url.searchParams.get("c");
+  if (linked !== null) {
+    if (linked.trim()) {
+      localStorage.setItem("testerCode", linked.trim());
+      track("tester_code_seen");
+    }
+    url.searchParams.delete("c");
+    window.history.replaceState(null, "", url);
+  }
 }
 
 // Every call names the learner it is about, and whether this sitting is being kept. One wrapper, so no
@@ -56,6 +154,7 @@ function api(url, opts = {}) {
     headers: {
       ...(opts.headers || {}),
       "x-learner-id": learnerId,
+      ...(localStorage.getItem("testerCode") ? { "x-tester-code": localStorage.getItem("testerCode") } : {}),
       ...(retainSession ? {} : { "x-retain": "0" }),
     },
   });
@@ -88,6 +187,7 @@ function showScreen(id) {
     if (liveActive()) stopLive();
   }
   currentScreen = id;
+  track("screen_viewed", { screen: id });
   for (const s of SCREENS) $(s).hidden = s !== id;
   $("back").hidden = id === "home" || id === "scene";
   $("obs").hidden = id !== "tutor" || !obsEnabled; // dev affordance, opt-in per tab — see obsEnabled
@@ -480,7 +580,7 @@ function renderFinder(matches, live, note) {
     card.querySelector(".level-title").textContent = `${m.scenarioName} — ${m.levelTitle}`;
     card.querySelector(".scenario-meta").textContent = m.reason || "";
     if (m.snippet) card.querySelector(".level-main").appendChild(finderSnippetEl(m.snippet));
-    card.addEventListener("click", () => openFinderMatch(m));
+    card.addEventListener("click", () => { track("finder_match_opened", { scenarioId: m.scenarioId }); openFinderMatch(m); });
     el.appendChild(card);
   }
   if (live) {
@@ -489,8 +589,20 @@ function renderFinder(matches, live, note) {
     card.type = "button";
     card.innerHTML = `<span class="level-main"><span class="level-title"></span><span class="scenario-meta">Live AI tutor plays the scene with you</span></span><span class="level-chevron">›</span>`;
     card.querySelector(".level-title").textContent = `Practise this live: “${live.query}”`;
-    card.addEventListener("click", () => openTutor({ focus: [], role: live.role, context: { scene: live.scene, practiced: [] } }));
+    card.addEventListener("click", () => {
+      track("handoff_tapped", { from: "finder" });
+      openTutor({ focus: [], role: live.role, context: { scene: live.scene, practiced: [] } });
+    });
     el.appendChild(card);
+    if (!matches.length) {
+      const req = document.createElement("button");
+      req.className = "level-card";
+      req.type = "button";
+      req.id = "finder-request";
+      req.innerHTML = `<span class="level-main"><span class="level-title">Request this scenario</span></span><span class="level-chevron">›</span>`;
+      req.addEventListener("click", () => openFeedback("finder_request"));
+      el.appendChild(req);
+    }
   }
 }
 
@@ -554,6 +666,12 @@ $("finder-input").addEventListener("input", (e) => {
   renderFinder(matches, null, "Press Enter to search by meaning");
 });
 
+// A submitted search records that it happened and how it came out; the query text stays in the browser.
+function trackFinder(resultCount) {
+  track("finder_query", { resultCount });
+  if (!resultCount) track("finder_no_match");
+}
+
 $("finder").addEventListener("submit", async (e) => {
   e.preventDefault();
   const text = $("finder-input").value.trim();
@@ -567,10 +685,12 @@ $("finder").addEventListener("submit", async (e) => {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    trackFinder(data.matches.length);
     const note = data.matches.length ? "" : "No lessons match that yet — try practising it live!";
     renderFinder(data.matches, { query: text, ...data.fallback }, note);
   } catch (err) {
     const matches = finderIndex ? finderSuggest(text) : [];
+    trackFinder(matches.length);
     const note = matches.length ? `Search failed (${err.message})` : "No lessons match that yet — try practising it live!";
     renderFinder(matches, { query: text, scene: `The learner wants to practise: ${text}`, role: null }, note);
   }
@@ -621,6 +741,7 @@ function openLevel(i) {
   // A spoken level is a lesson the app plays, not a tree to click through — same authored data, a
   // different surface. Which one is named by the level's own advance mode.
   if ((dialogue.advance ?? "tap") === "audio") { openScene(dialogue.scenarioId, dialogue.level); return; }
+  beginLevelRun(dialogue.scenarioId, dialogue.level);
   applyDialogueBackground(); // apply the scene background first so the intro can show it alone
   $("dialogue").hidden = false;
   if (dialogue.intro) runIntro();
@@ -661,9 +782,10 @@ function runIntro() {
   btn.hidden = false;
 
   let finished = false;
-  const finish = () => {
+  const finish = (quit = true) => {
     if (finished) return;
     finished = true;
+    track(quit ? "intro_quit" : "intro_completed", { kind: "level", id: dialogue.id });
     localStorage.setItem(introSkipKey(dialogue), "1");
     stopIntro();
     endIntro(card, btn);
@@ -675,7 +797,7 @@ function runIntro() {
     stopIntro();
     const audio = new Audio(`/intros/${dialogue.intro.audio}`);
     introAudio = audio;
-    const done = () => { if (introAudio === audio) introAudio = null; finish(); };
+    const done = () => { if (introAudio === audio) introAudio = null; finish(false); };
     audio.onended = done;
     audio.onerror = done;
     audio.play().catch(done);
@@ -779,6 +901,7 @@ async function presentNpcNode(nodeId) {
   const node = dialogue.nodes[nodeId];
   if (!node) return;
   const gen = treeGen;
+  if (levelRun) levelRun.nodeId = nodeId;
   dialogueBubble(node);
   if (dialogue.audio === "ready") await playDialogueLine(node);
   if (gen !== treeGen) return;
@@ -793,6 +916,7 @@ function renderChoices(npcNode) {
   const choices = choiceIds.map((cid) => dialogue.nodes[cid]);
 
   if (!choices.length) {
+    endLevelRun(true);
     wrap.classList.add("is-terminal"); // drop the panel chrome — a lone restart button, no hint
     const btn = document.createElement("button");
     btn.className = "dialogue-choice restart";
@@ -800,6 +924,13 @@ function renderChoices(npcNode) {
     btn.textContent = "↻ Start over";
     btn.addEventListener("click", startDialogueTree);
     wrap.appendChild(btn);
+    const fb = document.createElement("button");
+    fb.className = "dialogue-choice";
+    fb.type = "button";
+    fb.id = "level-feedback";
+    fb.textContent = "Feedback";
+    fb.addEventListener("click", () => openFeedback("level_end"));
+    wrap.appendChild(fb);
     return;
   }
   wrap.classList.remove("is-terminal");
@@ -919,6 +1050,7 @@ function startDialogueTree() {
 }
 
 function closeDialogue() {
+  endLevelRun(false);
   treeGen++;
   stopIntro();
   stopDialogueAudio();
@@ -1056,6 +1188,12 @@ async function toggleLive() {
     stopLive();
     return;
   }
+  if (!startAcknowledged) {
+    startLiveAfterStart = true;
+    openConsent();
+    return;
+  }
+  startAcknowledged = false;
   const lessonId = liveParams.get("lesson") || chatLessonId;
   if (!lessonId) {
     $("live-state").textContent = "rehearse a lesson first, or add ?lesson=<id>";
@@ -1076,7 +1214,7 @@ async function toggleLive() {
   liveObjectives = [];
   try {
     await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined,
-                      learnerId, runId, retain: retainSession });
+                      learnerId, runId, retain: retainSession, noSave, improve });
     // Nothing in the protocol says the tutor has started or stopped speaking — `state` reports when the
     // vendor finished GENERATING, which is well before the audio is heard. So the surface asks the
     // playback queue instead, often enough to look like a response and cheaply enough not to matter.
@@ -1149,10 +1287,12 @@ onLive("state", (status) => {
     clearInterval(liveTick);
     liveTick = null;
     $("live-state").textContent = liveError ? `live error: ${liveError}` : "";
+    $("live-feedback").hidden = false;
     renderPractice();
     return;
   }
   liveError = null;
+  $("live-feedback").hidden = true;
   $("live-state").textContent = status;
   renderPractice();
 });
@@ -1178,14 +1318,16 @@ function openTutor(opts = {}) {
   openConsent();
 }
 
-// The gate appears EVERY time, because nothing about the tester is remembered between sessions and a
-// consent nobody stored is a consent that has to be asked for again. Two clicks clears it.
+// The start screen appears on every tutor entry and before every live session; Start acknowledges it
+// for one live session.
+let startAcknowledged = false;
+let startLiveAfterStart = false;
 function openConsent() {
-  $("consent-agree").checked = false;
-  // The optional box comes back on whatever this sitting last answered, so a learner who turned it off
-  // is not quietly re-asked to turn it back on every time the gate reappears.
-  $("consent-improve").checked = retainSession;
-  $("consent-continue").disabled = true;
+  $("start-nosave").checked = false;
+  $("start-improve").checked = false;
+  $("start-nosave").disabled = false;
+  $("start-improve").disabled = false;
+  setStartChoices(false, false);
   $("consent").hidden = false;
   $("mode-switch").hidden = true; // a session left mid-question must not come back to the answer
   $("practice-talk").disabled = true;
@@ -2011,7 +2153,11 @@ async function sceneStep(from, ack, answer) {
   if (data.backchannel) scene.backchannel = data.backchannel;
   if (data.background) $("scene-bg").style.backgroundImage = `url(/backgrounds/${data.background})`;
   if (ack) await ack;
-  if (data.frameEN?.length) await scenePlayFrame(data.frameEN);
+  if (data.frameEN?.length) {
+    const id = scene.scenarioId;
+    await scenePlayFrame(data.frameEN);
+    track(gen === sceneGen ? "intro_completed" : "intro_quit", { kind: "scene", id });
+  }
   if (gen !== sceneGen) return;   // the on-ramp is skippable, so a ✕ during it must not land on a beat
   // After the on-ramp and before the first line: the learner knows what this is, and has not yet been
   // given anything to miss.
@@ -2031,6 +2177,7 @@ async function sceneStep(from, ack, answer) {
 function sceneFinish() {
   sceneClearStalls();
   scene.armed = false;
+  endLevelRun(true);
   // Nothing is playing and there is nothing after this line. `«` stays live — the goodbye is exactly
   // where someone realises they missed the line before it — and so does ✕, which is the way out from a
   // close screen whose other button is "Next lesson".
@@ -2057,6 +2204,7 @@ function sceneFinish() {
   $("scene-deeper-read").onclick = () => openPracticeDialogue(scene.practice);
   $("scene-deeper-speak").onclick = () => {
     const h = scene.handoff;
+    track("handoff_tapped", { from: "level" });
     sceneCancel();
     sceneReleaseClips();
     openTutor(h ? { focus: h.focus, role: h.role, context: h.context, lessonId: h.lessonId } : {});
@@ -2170,6 +2318,7 @@ async function openScene(scenarioId, level = null) {
   scene = { scenarioId, level, voice: null, audio: null, node: null, stalls: [], armed: false,
             choosing: false, backchannel: null, pacing: null, nextLevel: null, keyPhrases: null,
             trail: [], trailAt: -1 };
+  beginLevelRun(scenarioId, level);
   showScreen("scene");
   $("scene-tutorial").hidden = true;
   $("scene-chips").classList.remove("tutorial");
@@ -2280,7 +2429,7 @@ function wireSceneChips() {
   });
 
   // Leave: the same exit as "Done" on the close screen.
-  $("scene-quit").addEventListener("click", () => { sceneCancel(); sceneReleaseClips(); openHome(); });
+  $("scene-quit").addEventListener("click", () => { endLevelRun(false, scene.node?.id); sceneCancel(); sceneReleaseClips(); openHome(); });
 }
 
 // ---- ③ A1 Readiness — the coverage map (the only place progress is visible). A hand-authored
@@ -2375,7 +2524,7 @@ async function init() {
     t.addEventListener("click", () => {
       const go = t.dataset.go;
       if (go === "practice") openPractice();
-      else if (go === "tutor") openTutor();
+      else if (go === "tutor") { track("handoff_tapped", { from: "home" }); openTutor(); }
       else if (go === "a1") openA1();
     }),
   );
@@ -2390,20 +2539,29 @@ async function init() {
   $("dialogue-close").addEventListener("click", closeDialogue);
   $("dialogue-handoff").addEventListener("click", reinforceFromDialogue);
 
-  // Consent gate. The required acknowledgement is the only thing that gates Continue; the tutorial
-  // skip never does.
-  // Leaving the gate unanswered. showScreen hides the overlay on the way out of the tutor surface, and
+  // Closing the start screen unanswered. showScreen hides the overlay on the way out of the tutor surface, and
   // no session has been opened yet, so there is nothing to tear down — the learner is simply put back
   // where they were, on the close screen of the lesson that offered them the tutor in the first place.
-  $("consent-close").addEventListener("click", () => showScreen(tutorReturnTo));
-  $("consent-agree").addEventListener("change", (e) => { $("consent-continue").disabled = !e.target.checked; });
+  $("consent-close").addEventListener("click", () => {
+    startLiveAfterStart = false;
+    showScreen(tutorReturnTo);
+  });
+  // Ticking either box unticks and disables the other; unticking enables it again, unticked.
+  for (const [mine, other] of [["start-nosave", "start-improve"], ["start-improve", "start-nosave"]]) {
+    $(mine).addEventListener("change", (e) => {
+      $(other).checked = false;
+      $(other).disabled = e.target.checked;
+    });
+  }
   $("consent-continue").addEventListener("click", () => {
-    if (!$("consent-agree").checked) return;
-    // Read the optional box HERE rather than on change: what the learner leaves it on when they press
-    // Continue is the answer, and it has to be recorded before the first call goes out.
-    setRetain($("consent-improve").checked);
+    setStartChoices($("start-nosave").checked, $("start-improve").checked);
     $("consent").hidden = true;
+    startAcknowledged = true;
     startTutorSession();
+    if (startLiveAfterStart) {
+      startLiveAfterStart = false;
+      toggleLive();
+    }
   });
 
   $("mode-toggle").addEventListener("click", (e) => {

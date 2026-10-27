@@ -48,6 +48,7 @@ ELEVENLABS_MODEL_ID=eleven_v3
 ELEVENLABS_VOICE_ID=fSzEIez35vDdOs4DQwVh              # female-speaker
 ELEVENLABS_VOICE_ID_MALE=Jcyy5bkqt86ud0xdZhfW        # male-speaker
 ELEVENLABS_VOICE_ID_SHOP_ASSISTANT=MMDUS1hxcZnX8i9ZdqNf  # shop-assistant
+ELEVENLABS_PRON_DICT_SLAVKO=7d9Sl7deMSItYrLgVhEC        # slavko's pronunciation dictionary
 ```
 
 These voice ids are **identifiers, not secrets** — they belong in deploy config. They must equal the values
@@ -169,3 +170,12 @@ Check cheapest-first; the packaging check is a git fact and needs no running ser
 
 A useful signal: intro narration plays from `public/intros/` regardless of the store or env, so "intro plays,
 dialogue doesn't" points at packaging (1–2) or the voice env (3), never at the intro path.
+
+---
+
+## Reading the events log
+
+Core-journey events land in `$DATA_DIR/events/events.jsonl` ([events spec](features/events/spec.md)). Read the
+file from the volume; `jq` prints the timeline and the per-learner funnel
+([readout](features/events/spec.md#5-readout)). `npx tsx server/probes/events-test.ts` prints the timeline for
+a throwaway run.

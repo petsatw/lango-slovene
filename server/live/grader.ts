@@ -210,6 +210,10 @@ export async function creditSession(args: {
   turnlog.record({
     path: "live",
     retain: log.retain,
+    learnerId: log.learnerId,
+    testerCode: log.testerCode,
+    sessionId: log.sessionId,
+    runId: log.runId ?? undefined,
     provider: grade.provider,
     model: process.env.GEMINI_MODEL,
     e2Ms: grade.gradeMs,

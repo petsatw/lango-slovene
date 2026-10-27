@@ -61,6 +61,8 @@ export async function understand(input: {
   history: ConversationTurn[];
   session?: SessionState;
   learnerId: string;
+  testerCode?: string | null;
+  runId?: string;
   /** Did this session agree to its data being kept (server/assets/retention.ts). */
   retain?: boolean;
 }): Promise<UnderstandResult> {
@@ -94,6 +96,9 @@ export async function understand(input: {
   turnlog.record({
     path: "scenario",
     retain: input.retain,
+    learnerId: input.learnerId,
+    testerCode: input.testerCode ?? null,
+    runId: input.runId,
     scenarioId: scenario.id,
     provider: e2.name,
     model: process.env.GEMINI_MODEL,
@@ -130,6 +135,8 @@ export async function converse(input: {
   focusLearnables?: string[]; // rehearsal→free-chat handoff: bias this turn's targets toward these ids
   context?: ScenarioContext | null; // rehearsal→free-chat handoff: the scene + practiced objectives (English priming)
   learnerId: string;
+  testerCode?: string | null;
+  runId?: string;
   e2Provider?: string; // a tester naming the understand+tutor provider for THIS turn (adapters/index.ts)
   /** Did this session agree to its data being kept (server/assets/retention.ts). */
   retain?: boolean;
@@ -147,6 +154,9 @@ export async function converse(input: {
     turnlog.record({
       path: "seed",
       retain: input.retain,
+      learnerId: input.learnerId,
+      testerCode: input.testerCode ?? null,
+      runId: input.runId,
       seedId: input.seedId,
       provider: "scripted-seed",
       e2Ms: 0,
@@ -215,6 +225,9 @@ export async function converse(input: {
   turnlog.record({
     path: "free",
     retain: input.retain,
+    learnerId: input.learnerId,
+    testerCode: input.testerCode ?? null,
+    runId: input.runId,
     level,
     provider: e2.name,
     model: process.env.GEMINI_MODEL,

@@ -20,12 +20,18 @@ ELEVENLABS_VOICE_ID=
 # across onboarding, rehearsal dialogues, and the live tutor (see server/adapters/elevenlabs.ts).
 ELEVENLABS_VOICE_ID_MALE=
 ELEVENLABS_VOICE_ID_SHOP_ASSISTANT=
+# Pronunciation dictionary sent only with the `slavko` profile's requests (fixes his "Adijo").
+ELEVENLABS_PRON_DICT_SLAVKO=
 
 # --- E4: xAI Grok image generation (scenario story-frame + scene images) ---
 # Endpoint is OpenAI-compatible (https://api.x.ai/v1/images/generations). grok-imagine-image-quality
 # is the current recommended model (grok-imagine-image-pro was deprecated 2026-05-15).
 GROK_API_KEY=
 GROK_IMAGE_MODEL=grok-imagine-image-quality
+
+# --- TESTERS: comma-separated allowlist of invite codes, one per tester (e.g. TEST-01,TEST-02). A request
+#     carrying a listed code is that code's learner on every browser (docs/features/tester-identity/spec.md). ---
+TESTER_CODES=
 
 # --- LIVE TUTOR (continuous speech; "Go live"). Internal testing only — this is the one surface that
 #     meters a vendor BY THE MINUTE, so it stays closed until LIVE_ACCESS_CODE is set, and the real
