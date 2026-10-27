@@ -51,6 +51,9 @@ export interface LiveSessionLog {
    *  which empties the transcript text and leaves the shape and the credit
    *  (server/assets/retention.ts). Omitted = kept. */
   retain?: boolean;
+  /** The learner chose "Don't save this session": the session is deleted once scoring ends, and the
+   *  startup sweep removes a log left behind (server/assets/retention.ts). Omitted = saved. */
+  noSave?: true;
   /** When the sweep emptied this log's transcripts. Present only on a redacted log. */
   redactedAt?: string;
 }

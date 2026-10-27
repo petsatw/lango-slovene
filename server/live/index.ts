@@ -16,10 +16,9 @@ import { buildLessonPrompt, lessonExists } from "./prompt";
 import * as registry from "./registry";
 import * as learner from "../assets/learner";
 import * as retention from "../assets/retention";
-import * as liveLog from "./log";
 import * as events from "../events";
 import { glossOf } from "./gloss";
-import { creditSession } from "./grader";
+import { settleSession } from "./grader";
 import { keytermsFor } from "./match";
 import type { LiveState, LiveErrorCode } from "./types";
 import type { LiveTranscript } from "./log";
@@ -32,7 +31,7 @@ export const liveRouter = express.Router();
 // Open a session. The response carries a wsUrl and NOT the provider — the app cannot know, and cannot
 // accidentally start branching on, which vendor it is talking to.
 liveRouter.post("/v1/live/sessions", (req, res) => {
-  const { lessonId, accessCode, provider: requested, runId } = req.body ?? {};
+  const { lessonId, accessCode, provider: requested, runId, noSave } = req.body ?? {};
 
   const who = {
     learnerId: learner.resolveId(req.get("x-tester-code"), req.get("x-learner-id")),
@@ -66,6 +65,7 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
     ...who,
     runId: typeof runId === "string" && runId.trim() ? runId : null,
     retain: retention.retainFrom(req.get("x-retain")),
+    noSave: noSave === true,
   });
   const host = req.get("host");
   const scheme = req.protocol === "https" || req.get("x-forwarded-proto") === "https" ? "wss" : "ws";
@@ -114,10 +114,10 @@ export function attachLive(server: HttpServer): void {
 }
 
 function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & object): void {
-  const { sessionId, lessonId, provider, learnerId, testerCode, runId, retain } = pending;
+  const { sessionId, lessonId, provider, learnerId, testerCode, runId, retain, noSave } = pending;
   const startedAt = new Date().toISOString();
   const who = { learnerId, testerCode };
-  events.emit("live_started", who, { lessonId, provider, noSave: !retain });
+  events.emit("live_started", who, { lessonId, provider, noSave });
   let ttlHit = false;
   const transcripts: LiveTranscript[] = [];
   /** id → the entry in `transcripts`, so a revision overwrites rather than appends. */
@@ -205,20 +205,16 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
       transcripts,
       error: failure,
       ...(retain ? {} : { retain: false }),
+      ...(noSave ? { noSave: true as const } : {}),
     };
-    try {
-      liveLog.write(log);
-    } catch (err: any) {
-      console.error("[live] session log failed:", err?.message);
-    }
     sendJson({ type: "state", status: "ended" });
     if (ws.readyState === WebSocket.OPEN) ws.close();
 
-    // Crediting reads the transcript that was just written and moves the learner model. It starts only
-    // once the socket is closed and the learner is gone: assessment is never on the hot path, and a
-    // grade that fails is a session with no credit, not a session that hung.
-    void creditSession({ learnerId, instructions, targets, log }).catch((err: any) =>
-      console.error("[live] credit failed:", err?.message),
+    // Writing the log and crediting start only once the socket is closed and the learner is gone:
+    // assessment is never on the hot path, and a grade that fails is a session with no credit, not a
+    // session that hung.
+    void settleSession({ learnerId, instructions, targets, log }).catch((err: any) =>
+      console.error("[live] session end failed:", err?.message),
     );
   }
 

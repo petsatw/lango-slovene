@@ -33,6 +33,9 @@ interface PendingSession {
   /** Did this session agree to its data being kept. Carried from the create call to the session log,
    *  because a sweep cannot ask the browser after the fact (server/assets/retention.ts). */
   retain: boolean;
+  /** The learner ticked "Don't save this session": the session is scored, then deleted
+   *  (docs/features/no-save-session/spec.md). */
+  noSave: boolean;
   expiresAt: number;
 }
 
@@ -75,6 +78,7 @@ export function create(args: {
   testerCode: string | null;
   runId: string | null;
   retain: boolean;
+  noSave: boolean;
 }): PendingSession {
   sweep();
   const s: PendingSession = {
@@ -86,6 +90,7 @@ export function create(args: {
     testerCode: args.testerCode,
     runId: args.runId,
     retain: args.retain,
+    noSave: args.noSave,
     // The token has to survive only the round trip from the create call to the WS open, so it expires
     // far sooner than the session it authorizes.
     expiresAt: Date.now() + 60_000,
