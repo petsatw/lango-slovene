@@ -40,7 +40,7 @@ Every server record carries `learnerId` and `testerCode`:
 - session records (`server/assets/sessions.ts`)
 - live session logs (`server/live/log.ts`)
 - events ([events spec](../events/spec.md#2-row))
-- improvement copies ([improvement opt-in](../consent-privacy/spec.md#2-improvement-opt-in))
+- improvement copies ([improvement consent](../consent-privacy/spec.md#2-improvement-consent))
 
 These fields are how the learning history, Delete my data and an emailed request find a learner's data.
 

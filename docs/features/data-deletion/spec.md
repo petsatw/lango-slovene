@@ -13,7 +13,7 @@ months without use.
 ## 2. What is deleted
 
 `deleteLearner(learnerId)` in `server/assets/deletion.ts` removes:
-- the learner model `DATA_DIR/learners/<learnerId>.json`, with progress, gender and `improve`
+- the learner model `DATA_DIR/learners/<learnerId>.json`, with progress and gender
 - every history entry and what it removes
   ([what a delete removes](../learning-history/spec.md#4-what-a-delete-removes))
 - the learner's rows in `DATA_DIR/events/events.jsonl`, feedback included

@@ -1,47 +1,53 @@
 # Consent and privacy
 
 The learner sees what happens to their voice and words before every tutor session, and chooses per
-session whether it is saved. Their conversations are their learning history, and they control it from
-Settings. Helping to improve Vadi is a separate choice, off until they switch it on.
+session whether it is saved and whether it can be used to improve Vadi. Their conversations are their
+learning history, and they control it from Settings.
 
 ## 1. Tutor start screen
 
-- The start screen opens on every tutor entry and before every live session. Its Start button begins
-  the session.
+- The start screen opens on every tutor entry and before every live session. Its Start session button
+  begins the session.
 - It shows this copy verbatim:
 
-  > Your voice is sent live to Google (Gemini) or xAI (Grok) so the tutor can hear and answer you. Vadi
-  > never stores your audio. Each conversation is saved as text in your learning history, so you can
-  > look back on past sessions and see how you've improved. You can delete any session, or all of them,
-  > in Settings. Please don't share sensitive personal details, like health, finances, or full addresses.
+  > Voice is streamed live to Google (Gemini) or xAI (Grok) so the tutor can hear and answer. Vadi never
+  > stores audio.
+  >
+  > Each conversation is saved as text in the learning history and can be deleted at any time in
+  > Settings.
+  >
+  > Information shared in a session is the responsibility of the person sharing it and is subject to
+  > Google's and xAI's terms and privacy policies.
 
 - Below the copy there are two boxes, using this copy:
   - ☐ Don't save this session (the transcript is deleted when the session ends)
-  - ☐ Also let Vadi use my saved conversations to improve the tutor (optional, off by default)
-- The first box is the per-session switch ([no-save session](../no-save-session/spec.md#1-switch)). It
-  appears before every live session.
-- The second box shows and sets the improvement opt-in (§2).
-- A "Privacy policy" link opens `/privacy` (§4).
-- The client keeps the last position of both boxes in `localStorage` (`noSave`, `improve`), and the
-  boxes start at those positions.
+  - ☐ This session can be used to improve Vadi (optional; unavailable when "Don't save" is selected)
+- Both boxes start unticked each time the screen opens. Each choice covers that one session.
+- The first box is the per-session switch ([no-save session](../no-save-session/spec.md#1-switch)).
+- The second box is the improvement consent for that session (§2).
+- Ticking "Don't save this session" unticks the improve box and disables it. Unticking "Don't save"
+  enables it again, unticked.
+- Below the boxes sit the "Start session" button and a "Privacy policy" link that opens `/privacy`
+  (§4).
 
-## 2. Improvement opt-in
+## 2. Improvement consent
 
-- The opt-in starts off. The learner switches it on or off on the tutor start screen or in Settings
-  (§3). The server holds it on the learner model as `improve: { on, at }`, set with
-  `PUT /api/me/improve` and the body `{ on }`.
-- While it is on, the end of each saved session writes a pseudonymised copy to
-  `DATA_DIR/improve/<sessionId>.json`: `{ learnerId, sessionId, createdAt, transcripts }`. Each transcript
-  line passes through `stripPersonal` (§6) first.
+- The learner gives it per session, with the improve box on the tutor start screen (§1). The live
+  session create body carries `improve: true` when the box is ticked, and the session log records
+  `improve: true`.
+- At the end of a saved session with `improve: true`, the server writes a pseudonymised copy to
+  `DATA_DIR/improve/<sessionId>.json`: `{ learnerId, sessionId, createdAt, transcripts }`. Each
+  transcript line passes through `stripPersonal` (§6) first.
 - Copies are deleted after 90 days ([sweeps](../data-deletion/spec.md#3-sweeps)). They are also deleted
-  when the learner switches the opt-in off, deletes the session, or deletes their data.
-- No-save sessions produce no copy.
+  when the learner deletes the session or deletes their data, or withdraws consent.
+- Withdrawing: Settings has a "Stop using my sessions to improve Vadi" button. It calls
+  `DELETE /api/me/improve`, which deletes all of the learner's improvement copies.
 
 ## 3. Settings
 
 The Settings screen, opened from the app header, shows:
 - the learner's code ([tester identity](../tester-identity/spec.md#6-code-in-settings))
-- the improvement opt-in toggle (§2)
+- the "Stop using my sessions to improve Vadi" button (§2)
 - a link to the Learning history screen ([learning history](../learning-history/spec.md#3-screen))
 - the "Delete my data" button ([data deletion](../data-deletion/spec.md#1-delete-my-data))
 - a "Privacy policy" link to `/privacy`
@@ -62,7 +68,7 @@ The Settings screen, opened from the app header, shows:
 | Learning progress and gender | until 12 months after last use, or until Delete my data |
 | Learning history: live logs, session records, turn-log rows, translations of session lines | until 12 months after last use, or until the learner deletes the session or all sessions |
 | No-save session: live log, turn-log row, translations | deleted at session end, right after scoring, whatever the scoring outcome |
-| Improvement copies | 90 days, or until the opt-in goes off |
+| Improvement copies | 90 days, or until the learner withdraws consent |
 | Audio, both live and tap-to-speak | streamed and processed in memory, never written to disk |
 | Tutor speech for conversational replies | played, never written to the audio store |
 | New phrases (`catalog-candidates.jsonl`) | 12 months, with personal context removed and no code or learnerId |
