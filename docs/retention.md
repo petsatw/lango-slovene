@@ -7,13 +7,13 @@ anonymous data from this session to be used to improve the app*.
 | | ticked | unticked |
 |---|---|---|
 | what the learner learned | kept | **kept** |
-| everything that could name them | kept | erased within `RETENTION_TTL_MIN` (default **240 min**) |
+| everything that could name them | kept until G4, then deleted | erased within `RETENTION_TTL_MIN` (default **240 min**) |
 
-Ticked is the app's whole prior behaviour, unchanged. Unticked, a tester leaves behind learnable counts
+Ticked, the session is kept until G4 and then deleted. Unticked, a tester leaves behind learnable counts
 and nothing that could name them.
 
 There are no accounts here, so this is not a data-subject request mechanism and there is no per-user
-export or deletion. It is one switch, answered once, at the start of a sitting.
+export or deletion. It is one switch, answered once per browser and asked again when the consent version changes ([consent spec](features/consent-privacy/spec.md#1-consent-record)).
 
 ---
 
@@ -91,7 +91,7 @@ The flag is then **persisted on each record** — `retain: false` on the turnlog
 the live session log — because a sweep cannot ask the browser after the fact.
 
 ```
-consent gate ─► sessionStorage ─┬─► x-retain header ─► retainOf(req) ─┬─► turnlog row     ─┐
+consent gate ─► consent record ─┬─► x-retain header ─► retainOf(req) ─┬─► turnlog row     ─┐
                                 │                                     ├─► session record  ─┤
                                 └─► create body ─► PendingSession ────►└─► live session log ┴─► sweep
                                                                        └─► candidates / gloss cache (skip write)
