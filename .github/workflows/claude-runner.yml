@@ -130,13 +130,23 @@ jobs:
           gh api "repos/$GH_REPO/issues/$N/labels" -f "labels[]=$label" --silent
 
           # Run alert webhook. It never fails the run.
-          if [ -z "$CLAUDE_BLOCK_WEBHOOK_URL" ] || [ -z "$CLAUDE_BLOCK_WEBHOOK_KEY" ]; then
+          # The key is the Authorization header value: trim surrounding whitespace and one leading "Authorization:".
+          set +x
+          key=$CLAUDE_BLOCK_WEBHOOK_KEY
+          key="${key#"${key%%[![:space:]]*}"}"
+          key="${key%"${key##*[![:space:]]}"}"
+          shopt -s nocasematch
+          if [[ $key == authorization:* ]]; then
+            key="${key:14}"
+            key="${key#"${key%%[![:space:]]*}"}"
+          fi
+          shopt -u nocasematch
+          if [ -z "$CLAUDE_BLOCK_WEBHOOK_URL" ] || [ -z "$key" ]; then
             echo "Run alert webhook secrets are not set; no alert sent."
             exit 0
           fi
-          set +x
-          # The webhook auth header, sent from this file only. The secret holds the whole header value.
-          printf 'Authorization: %s\n' "$CLAUDE_BLOCK_WEBHOOK_KEY" > /tmp/webhook-headers
+          # The webhook auth header, sent from this file only.
+          printf 'Authorization: %s\n' "$key" > /tmp/webhook-headers
           jq -n --argjson issue "$N" --arg label "$label" --arg comment_url "$comment_url" --arg question "$question" \
             --arg pr_url "$pr" --arg run_url "$RUN_URL" --arg repo "$GH_REPO" \
             'def nullable: if . == "" then null else . end;
