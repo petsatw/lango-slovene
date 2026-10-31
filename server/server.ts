@@ -10,6 +10,7 @@ import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { understand, converse } from "./orchestrator";
+import { teamRouter } from "./team";
 import { getE2, getE3, getE4 } from "./adapters/index";
 import * as store from "./assets/store";
 import * as sessions from "./assets/sessions";
@@ -79,6 +80,7 @@ app.post("/api/event", (req, res) => events.handle(req, res, { learnerId: learne
 // The live tutor's one HTTP surface (POST /v1/live/sessions). Its WebSocket half is attached to the
 // http server at the bottom of this file — Express does not see upgrades.
 app.use(liveRouter);
+app.use(teamRouter);
 
 // Live catalog gallery — rebuilt from the CURRENT catalog + on-disk renders on every request, so you
 // can just refresh http://localhost:PORT/gallery after rendering or adding assets. Read-only, bills
