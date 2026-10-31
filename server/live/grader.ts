@@ -24,7 +24,7 @@
 // gaining a second crediting path to keep in step.
 
 import { LEARNABLES, type Learnable } from "../learnables";
-import type { LearnerModel, LiveTargetReading, TargetEvidence, WitnessResult } from "../types";
+import type { LearnableProgress, LearnerModel, LiveTargetReading, TargetEvidence, WitnessResult } from "../types";
 import { getE2 } from "../adapters/index";
 import * as learner from "../assets/learner";
 import * as turnlog from "../assets/turnlog";
@@ -183,6 +183,12 @@ export function creditable(model: LearnerModel, grade: LiveGrade): WitnessResult
   };
 }
 
+/** The objectives the session made progress on: those with a `success` entry in the credit. */
+export function progressedIds(objectives: string[], progress: LearnableProgress[]): string[] {
+  const won = new Set(progress.filter((p) => p.result === "success").map((p) => p.id));
+  return objectives.filter((id) => won.has(id));
+}
+
 /** Grade a session that has just ended and move the learner model with it.
  *
  *  It runs AFTER teardown, on nothing the learner is waiting for: the socket is closed, the transcript
@@ -195,8 +201,10 @@ export async function creditSession(args: {
    *  that produced the conversation. */
   instructions: string;
   targets: Learnable[];
+  /** What the tutor steered toward (`buildLessonPrompt(...).objectives`). */
+  objectives: Learnable[];
   log: LiveSessionLog;
-}): Promise<void> {
+}): Promise<string[]> {
   const { log, targets } = args;
   const timeoutMs = Math.max(1, Number(process.env.LIVE_GRADE_TIMEOUT_SEC ?? 60)) * 1000;
   let timer: NodeJS.Timeout | undefined;
@@ -206,7 +214,11 @@ export async function creditSession(args: {
       timer = setTimeout(() => reject(new Error(`grade timed out after ${timeoutMs / 1000}s`)), timeoutMs);
     }),
   ]).finally(() => clearTimeout(timer));
-  if (!grade) return;
+  // No learner speech: a completed check with nothing progressed, so the log still says so.
+  if (!grade) {
+    liveLog.write({ ...log, progressed: [] });
+    return [];
+  }
 
   // The same firewall the tap mode runs on: allowlist → produced → Slovene → the span is in the
   // transcript → success or attempt. The allowlist is the whole catalog, because the lesson does not
@@ -246,12 +258,23 @@ export async function creditSession(args: {
     creditedCounts: countsFor(saved, credit.progress),
   });
 
-  liveLog.write({ ...log, lessonScore: grade.lessonScore, ...(credit.progress.length ? { credit: credit.progress } : {}) });
+  const progressed = progressedIds(args.objectives.map((l) => l.id), credit.progress);
+  liveLog.write({
+    ...log,
+    lessonScore: grade.lessonScore,
+    progressed,
+    ...(credit.progress.length ? { credit: credit.progress } : {}),
+  });
+  return progressed;
 }
 
 /** The end of a live session: write the log, score it, and for a no-save session delete what it left
- *  whatever the scoring outcome (docs/features/no-save-session/spec.md#2-session-end). */
-export async function settleSession(args: Parameters<typeof creditSession>[0]): Promise<void> {
+ *  whatever the scoring outcome (docs/features/no-save-session/spec.md#2-session-end).
+ *  Resolves to the session's progressed objectives, `[]` when there was no learner speech, `null` when
+ *  the check failed or timed out. */
+export async function settleSession(
+  args: Parameters<typeof creditSession>[0],
+): Promise<{ id: string; name: string }[] | null> {
   const { log } = args;
   if (log.noSave) settling.add(log.sessionId);
   try {
@@ -259,8 +282,9 @@ export async function settleSession(args: Parameters<typeof creditSession>[0]): 
   } catch (err: any) {
     console.error("[live] session log failed:", err?.message);
   }
+  let progressed: string[] | null = null;
   try {
-    await creditSession(args);
+    progressed = await creditSession(args);
   } catch (err: any) {
     console.error("[live] credit failed:", err?.message);
   } finally {
@@ -269,4 +293,5 @@ export async function settleSession(args: Parameters<typeof creditSession>[0]): 
       purgeSession(log.sessionId);
     }
   }
+  return progressed && progressed.map((id) => ({ id, name: LEARNABLES[id]?.sl ?? id }));
 }

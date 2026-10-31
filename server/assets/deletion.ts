@@ -7,17 +7,34 @@ import path from "node:path";
 import { DATA_DIR } from "./store";
 import { LOG_PATH as TURNLOG_PATH } from "./turnlog";
 import { EVENTS_PATH } from "../events";
-import type { LessonScore, LiveTranscript } from "../live/log";
+import type { LiveTranscript } from "../live/log";
+import { DIALOGUES } from "../dialogues";
+import { LEARNABLES } from "../learnables";
+import { SCENARIOS } from "../scenarios";
 
 export interface HistoryEntry {
   id: string;
   kind: "live" | "tap";
   lessonId: string;
+  /** The name of the scenario the lesson belongs to; the lessonId when none resolves. */
+  scenario: string;
   startedAt: string;
   endedAt: string;
-  score: LessonScore | null;
+  /** Learner-facing names of the objectives the session made progress on. */
+  progressed: string[];
   transcripts: LiveTranscript[];
 }
+
+/** A lesson id is a scenario id (a scene) or a dialogue id (a tree of a scenario). */
+function scenarioOf(lessonId: string) {
+  const scenarioId = Object.values(DIALOGUES).flat().find((d) => d.id === lessonId)?.scenarioId ?? lessonId;
+  return SCENARIOS.find((s) => s.id === scenarioId);
+}
+
+export const scenarioName = (lessonId: string): string => {
+  const s = scenarioOf(lessonId);
+  return s ? s.name ?? s.title : lessonId;
+};
 
 const LIVE_DIR = () => path.join(DATA_DIR, "live");
 const SESSIONS_DIR = () => path.join(DATA_DIR, "sessions");
@@ -41,9 +58,10 @@ function fromLive(log: any): HistoryEntry {
     id: log.sessionId,
     kind: "live",
     lessonId: log.lessonId,
+    scenario: scenarioName(log.lessonId),
     startedAt: log.startedAt,
     endedAt: log.endedAt,
-    score: log.lessonScore ?? null,
+    progressed: ((log.progressed ?? []) as string[]).map((id) => LEARNABLES[id]?.sl ?? id),
     transcripts: log.transcripts ?? [],
   };
 }
@@ -54,15 +72,12 @@ function fromTap(rec: any): HistoryEntry {
     id: rec.id,
     kind: "tap",
     lessonId: rec.scenarioId,
+    scenario: scenarioName(rec.scenarioId),
     startedAt: rec.createdAt,
     endedAt: rec.updatedAt,
-    score: objectives.length
-      ? {
-          total: objectives.length,
-          succeeded: objectives.filter((o) => o.status === "completed").map((o) => o.id),
-          attempted: objectives.filter((o) => o.status !== "pending").map((o) => o.id),
-        }
-      : null,
+    progressed: objectives
+      .filter((o) => o.status === "completed")
+      .map((o) => scenarioOf(rec.scenarioId)?.objectives.find((x) => x.id === o.id)?.label ?? o.id),
     transcripts: (rec.turns ?? []).map((t: any) => ({
       ts: rec.createdAt,
       role: t.role === "student" ? "user" : "tutor",

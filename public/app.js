@@ -3,7 +3,7 @@
 // The live tutor is the single production surface (push-to-talk → /api/converse). Rehearsal trees are
 // exposure only (no mic, no credit). The "engine" stays invisible everywhere except A1 Readiness.
 
-import { startLive, stopLive, liveActive, onLive, hasLiveAudio, playLiveUtterance, liveSpeaking } from "/live.js";
+import { startLive, stopLive, abandonLive, liveActive, onLive, hasLiveAudio, playLiveUtterance, liveSpeaking } from "/live.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -195,7 +195,7 @@ function showScreen(id) {
   // that was granted for it does not carry to the next visit.
   if (currentScreen === "tutor" && id !== "tutor") {
     $("consent").hidden = true;
-    if (liveActive()) stopLive();
+    if (liveActive()) abandonLive();
   }
   currentScreen = id;
   track("screen_viewed", { screen: id });
@@ -234,8 +234,13 @@ async function openHistory() {
     const open = document.createElement("button");
     open.type = "button";
     open.className = "settings-btn history-open";
-    const score = e.score ? `${e.score.succeeded.length}/${e.score.total}` : "no score";
-    open.textContent = `${e.lessonId} · ${new Date(e.startedAt).toLocaleDateString()} · ${score}`;
+    const head = document.createElement("span");
+    head.className = "history-head";
+    head.textContent = `${e.scenario} · ${new Date(e.startedAt).toLocaleDateString()}`;
+    const sub = document.createElement("span");
+    sub.className = "history-progress";
+    sub.textContent = e.progressed.length ? `Progress on ${e.progressed.join(", ")}` : "Practice";
+    open.append(head, sub);
     const body = document.createElement("div");
     body.className = "history-entry-body";
     body.hidden = true;
@@ -256,7 +261,7 @@ async function openHistory() {
     del.className = "settings-btn history-delete";
     del.textContent = "Delete";
     del.addEventListener("click", async () => {
-      if (!confirm("Delete this session?")) return;
+      if (!confirm("Delete this session? Your progress stays.")) return;
       await api(`/api/history/${encodeURIComponent(e.id)}`, { method: "DELETE" });
       openHistory();
     });
@@ -268,12 +273,12 @@ async function openHistory() {
 $("header-settings").addEventListener("click", openSettings);
 $("settings-history").addEventListener("click", openHistory);
 $("history-delete-all").addEventListener("click", async () => {
-  if (!confirm("Delete all your saved sessions?")) return;
+  if (!confirm("Delete all your saved sessions? Your progress stays.")) return;
   await api("/api/history", { method: "DELETE" });
   openHistory();
 });
 $("settings-delete").addEventListener("click", async () => {
-  if (!confirm("Delete all your data? This cannot be undone.")) return;
+  if (!confirm("Delete all your data? This removes your sessions and your progress, and can't be undone.")) return;
   const res = await api("/api/me", { method: "DELETE" });
   if (res.ok) { learnerStarted = false; openHome(); }
 });
@@ -1219,7 +1224,7 @@ function renderPractice() {
   btn.classList.toggle("speaking", mode === "live" && live && liveSpeaking());
   btn.classList.toggle("listening", mode === "live" && live && !liveSpeaking());
 
-  if (mode === "live") label.textContent = live ? "Cancel" : "Go Live";
+  if (mode === "live") label.textContent = live ? "End session" : "Go Live";
   else label.textContent = holding ? "Listening…" : "🎤 Hold to Speak";
 
   $("practice-hint").textContent = seedActive
@@ -1263,6 +1268,7 @@ $("objectives").addEventListener("click", () => setObjectivesOpen(false));
 async function toggleLive() {
   if (liveActive()) {
     stopLive();
+    openWrapUp(true);
     return;
   }
   if (!startAcknowledged) {
@@ -1289,15 +1295,20 @@ async function connectLive(lessonId, code) {
   $("live-state").textContent = "connecting…";
   liveBubbles.clear(); // ids are per-session; a stale one would revise last session's bubble
   liveObjectives = [];
+  resetWrapUp();
   try {
-    liveSessionId = (await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined,
-                      learnerId, runId, retain: retainSession, noSave, improve })).sessionId;
-    // Nothing in the protocol says the tutor has started or stopped speaking — `state` reports when the
-    // vendor finished GENERATING, which is well before the audio is heard. So the surface asks the
-    // playback queue instead, often enough to look like a response and cheaply enough not to matter.
-    clearInterval(liveTick);
-    liveTick = setInterval(renderPractice, 150);
+    const started = await startLive({ lessonId, accessCode: code, provider: liveParams.get("provider") || undefined,
+                      learnerId, runId, retain: retainSession, noSave, improve });
+    if (started) {
+      liveSessionId = started.sessionId;
+      // Nothing in the protocol says the tutor has started or stopped speaking — `state` reports when the
+      // vendor finished GENERATING, which is well before the audio is heard. So the surface asks the
+      // playback queue instead, often enough to look like a response and cheaply enough not to matter.
+      clearInterval(liveTick);
+      liveTick = setInterval(renderPractice, 150);
+    }
   } catch (err) {
+    abandonLive();
     // A rejected code is the one failure worth un-remembering, or the tester is stuck retrying it.
     if (/forbidden/i.test(err.message)) {
       localStorage.removeItem("liveAccessCode");
@@ -1379,29 +1390,71 @@ function addLiveBubble(role, text, id) {
   });
   return div;
 }
-// An error is always followed by the session ending, so "ended" must not wipe the reason off the
-// screen — otherwise every failure looks identical to a clean finish, which is the one thing a tester
-// comparing two vendors cannot afford.
-let liveError = null;
+// ---- The wrap-up (docs/features/live-session/spec.md#2-wrap-up) ----
+let liveScenario = "";
+let wrapUp = null; // { pressed, scenario, noSave, result: {ending, objectives} | null, closed }
+
+onLive("created", ({ scenario }) => {
+  liveScenario = scenario || "";
+  $("practice-talk").disabled = false;
+  renderPractice();
+});
+
+function resetWrapUp() {
+  wrapUp = null;
+  $("live-wrapup").hidden = true;
+  document.querySelector(".practice-surface").classList.remove("wrapped");
+}
+
+function openWrapUp(pressed) {
+  if (!wrapUp) wrapUp = { pressed, scenario: liveScenario, noSave, result: null, closed: false };
+  else if (pressed) wrapUp.pressed = true;
+  clearInterval(liveTick);
+  liveTick = null;
+  document.querySelector(".practice-surface").classList.add("wrapped");
+  $("live-wrapup").hidden = false;
+  renderWrapUp();
+  renderPractice();
+}
+
+function renderWrapUp() {
+  const w = wrapUp;
+  const objectives = w.result?.objectives;
+  $("wrapup-title").textContent = w.result
+    ? (w.result.ending === "time" ? "Session time reached" : "Session ended")
+    : (w.pressed || w.closed ? "Session ended" : "");
+  $("wrapup-scenario").textContent = w.scenario ? `You practised: ${w.scenario}` : "";
+  const block = $("wrapup-progress");
+  const line = (text) => { const p = document.createElement("p"); p.textContent = text; return p; };
+  if (objectives?.length) {
+    const ul = document.createElement("ul");
+    ul.append(...objectives.map((o) => { const li = document.createElement("li"); li.textContent = o.name; return li; }));
+    block.replaceChildren(line("You made progress on"), ul);
+  } else if (objectives) block.replaceChildren(line("This session was practice."));
+  else if (w.result || w.closed) block.replaceChildren(line("Progress couldn't be checked for this session."));
+  else block.replaceChildren(line("Checking your progress…"));
+  $("wrapup-nosave").hidden = !w.noSave;
+}
 
 onLive("state", (status) => {
-  if (status === "ended") {
-    clearInterval(liveTick);
-    liveTick = null;
-    $("live-state").textContent = liveError ? `live error: ${liveError}` : "";
-    $("live-feedback").hidden = false;
-    renderPractice();
-    return;
-  }
-  liveError = null;
-  $("live-feedback").hidden = true;
+  if (status === "ended") return openWrapUp(false);
   $("live-state").textContent = status;
   renderPractice();
 });
+onLive("progress", (msg) => {
+  openWrapUp(false);
+  wrapUp.result = { ending: msg.ending, objectives: msg.objectives };
+  renderWrapUp();
+});
+onLive("closed", () => {
+  openWrapUp(false);
+  wrapUp.closed = true;
+  renderWrapUp();
+});
 onLive("error", (code) => {
-  liveError = code;
   $("live-state").textContent = `live error: ${code}`;
 });
+$("wrapup-next").addEventListener("click", openPractice);
 
 // ---- ② Live AI tutor: the one practice surface. Consent gate → optional tutorial → either mode. ----
 /** Where declining the gate puts the learner back. Captured on the way IN, so the answer is always the
@@ -1425,6 +1478,7 @@ function openTutor(opts = {}) {
 let startAcknowledged = false;
 let startLiveAfterStart = false;
 function openConsent() {
+  resetWrapUp();
   $("start-nosave").checked = false;
   $("start-improve").checked = false;
   $("start-nosave").disabled = false;
@@ -2534,7 +2588,8 @@ function wireSceneChips() {
   $("scene-quit").addEventListener("click", () => { endLevelRun(false, scene.node?.id); sceneCancel(); sceneReleaseClips(); openHome(); });
 }
 
-// ---- ③ A1 Readiness — the coverage map (the only place progress is visible). A hand-authored
+// ---- ③ A1 Readiness — the coverage map (the learner's map of A1 coverage; progressed objectives show on the live
+// wrap-up and in the Learning history, docs/MVP.md). A hand-authored
 // competency → scenarios mapping; progress read from the durable learner model. List → drill-down. ----
 let a1Competencies = [];
 

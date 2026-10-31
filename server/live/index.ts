@@ -19,6 +19,7 @@ import * as retention from "../assets/retention";
 import * as events from "../events";
 import { glossOf } from "./gloss";
 import { settleSession } from "./grader";
+import { scenarioName } from "../assets/deletion";
 import { keytermsFor } from "./match";
 import type { LiveState, LiveErrorCode } from "./types";
 import type { LiveTranscript } from "./log";
@@ -74,6 +75,7 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
     sessionId: s.sessionId,
     wsUrl: `${scheme}://${host}/v1/live/sessions/${s.sessionId}?token=${s.token}`,
     ttlSec: registry.SESSION_TTL_SEC,
+    scenario: scenarioName(lessonId),
   });
 });
 
@@ -90,6 +92,12 @@ liveRouter.get("/api/gloss", async (req, res) => {
     res.status(502).json({ error: "translation unavailable" });
   }
 });
+
+/** The last frame of a session: why it ended, and the objectives it progressed (`null` when the check
+ *  failed). `ttlHit` is the session time limit. */
+export function progressMessage(ttlHit: boolean, objectives: { id: string; name: string }[] | null) {
+  return { type: "progress" as const, ending: ttlHit ? ("time" as const) : ("ended" as const), objectives };
+}
 
 export function attachLive(server: HttpServer): void {
   const wss = new WebSocketServer({ noServer: true });
@@ -128,6 +136,7 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
   // The prompt and the set it was built from, filled in below and read again by the grader at teardown.
   let instructions = "";
   let targets: Learnable[] = [];
+  let objectives: Learnable[] = [];
 
   registry.markActive(sessionId);
 
@@ -209,14 +218,19 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
       ...(noSave ? { noSave: true as const } : {}),
     };
     sendJson({ type: "state", status: "ended" });
-    if (ws.readyState === WebSocket.OPEN) ws.close();
 
-    // Writing the log and crediting start only once the socket is closed and the learner is gone:
-    // assessment is never on the hot path, and a grade that fails is a session with no credit, not a
+    // The socket stays open while the session is graded (at most LIVE_GRADE_TIMEOUT_SEC): the progress
+    // frame goes out, then the socket closes. A grade that fails is a session with no credit, not a
     // session that hung.
-    void settleSession({ learnerId, instructions, targets, log }).catch((err: any) =>
-      console.error("[live] session end failed:", err?.message),
-    );
+    void settleSession({ learnerId, instructions, targets, objectives, log })
+      .catch((err: any) => {
+        console.error("[live] session end failed:", err?.message);
+        return null;
+      })
+      .then((progressed) => {
+        sendJson(progressMessage(ttlHit, progressed));
+        if (ws.readyState === WebSocket.OPEN) ws.close();
+      });
   }
 
   ws.on("message", (data, isBinary) => {
@@ -243,6 +257,7 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
     const built = buildLessonPrompt(lessonId, learnerId);
     instructions = built.instructions;
     targets = built.targets;
+    objectives = built.objectives;
     // What the objectives overlay lists. Sent before the vendor connects, so it arrives even when the
     // vendor never does.
     sendJson({ type: "objectives", items: built.objectives.map((l) => ({ sl: l.sl })) });

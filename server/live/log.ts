@@ -47,6 +47,9 @@ export interface LiveSessionLog {
   credit?: LearnableProgress[];
   /** The lesson score, written by the same pass. Absent on a session with no speech or a failed grade. */
   lessonScore?: LessonScore;
+  /** Ids of the session's objectives the learner made progress on; `[]` when none. Written with the
+   *  score; absent when the grade failed. */
+  progressed?: string[];
   /** Did this session agree to its data being kept. `false` marks the log for the retention sweep,
    *  which empties the transcript text and leaves the shape and the credit
    *  (server/assets/retention.ts). Omitted = kept. */

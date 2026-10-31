@@ -79,6 +79,10 @@ map per-scenario through the dialogue's `voices` block, then confirm with recipe
   ([live-tutor.md](live-tutor.md)), the one surface that meters a vendor by the minute; unset, the create
   call 403s and no vendor socket can be opened. Its WebSocket rides the same port Railway already injects,
   so turning it on needs no hosting change — but it does need a provider-side spend cap first.
+- `TEAM_READ_KEY` — the bearer key for `GET /v1/team/events`, the team's read-only pull of the event log and
+  live session summaries ([team readout](features/team-readout/spec.md)). Unset or empty, the route answers
+  404. Set it on staging to at least 32 random bytes (`openssl rand -base64 32`), pasted into the Railway
+  dashboard, and keep it in the team's secret store. Redeploying with a new value retires the old one.
 - Provider **API keys** (`ELEVENLABS_API_KEY`, `GEMINI_API_KEY`) — omit for a pregenerated alpha. Add a key
   only when you intend that provider to be metered live; pair it with a provider-side spend cap
   ([SECRETS.md](SECRETS.md) §6), because `/api/speak`, `/api/turn`, and `/api/converse` are unauthenticated.

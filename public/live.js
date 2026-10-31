@@ -47,6 +47,9 @@ let loudFrames = 0;
 let muteUntil = 0; // context-time until which the upstream stays closed (half duplex tail)
 let speechStarted = false; // has the learner made a sound since the tutor stopped?
 let listeners = {};
+let starting = false; // the session is created but its socket is not open yet
+let ending = false; // End session was pressed
+let abandoned = false; // the learner left the tutor screen while the session was still starting
 
 // The tutor's speech is kept, per utterance, so ▶ on a bubble replays THE LINE THE LEARNER HEARD.
 // Nothing else can: this audio is improvised by the live vendor in the vendor's own voice and never
@@ -232,11 +235,18 @@ export async function startLive({ lessonId, accessCode, provider, learnerId, run
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
 
+  // From here until the socket closes the session is live, and End session works at every step.
+  starting = true;
+  ending = false;
+  abandoned = false;
+  emit("created", { scenario: data.scenario });
+
   // Echo cancellation is not optional here: the mic is open while the tutor is speaking through the
   // speakers, and without it the tutor hears itself and answers itself.
   micStream = await navigator.mediaDevices.getUserMedia({
     audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
   });
+  if (ending || abandoned) return abortStart();
 
   // ONE AudioContext for both directions. This is not tidiness — it is what makes echo cancellation
   // work. On two contexts the browser has no reliable reference for what it is playing, so the mic
@@ -257,6 +267,7 @@ export async function startLive({ lessonId, accessCode, provider, learnerId, run
   speakingId = null;
 
   await audioCtx.audioWorklet.addModule("/live-capture-worklet.js");
+  if (ending || abandoned) return abortStart();
   const frameSize = Math.round((audioCtx.sampleRate * FRAME_MS) / 1000);
   const node = new AudioWorkletNode(audioCtx, "live-capture", { processorOptions: { frameSize } });
   audioCtx.createMediaStreamSource(micStream).connect(node);
@@ -268,6 +279,10 @@ export async function startLive({ lessonId, accessCode, provider, learnerId, run
 
   ws = new WebSocket(data.wsUrl);
   ws.binaryType = "arraybuffer";
+  starting = false;
+  ws.onopen = () => {
+    if (ending) ws.send(JSON.stringify({ type: "end" }));
+  };
 
   node.port.onmessage = (e) => {
     const raw = new Float32Array(e.data);
@@ -330,20 +345,46 @@ export async function startLive({ lessonId, accessCode, provider, learnerId, run
       // tutor line in the first real session. Only barge-in cuts the tutor off.
       emit("state", msg.status);
     } else if (msg.type === "objectives") emit("objectives", msg.items);
+    else if (msg.type === "progress") emit("progress", msg);
     else if (msg.type === "error") emit("error", msg.code);
   };
 
   ws.onclose = () => {
     teardown();
-    emit("state", "ended");
+    emit("closed");
   };
   ws.onerror = () => emit("error", "vendor_connect");
 
   return { sessionId: data.sessionId, ttlSec: data.ttlSec };
 }
 
+// End pressed (or the screen left) before the socket existed: nothing was opened, so the session is
+// over. Only End session opens a wrap-up.
+function abortStart() {
+  const left = abandoned;
+  abandoned = false;
+  teardown();
+  if (!left) emit("closed");
+}
+
+/** End session: tell the server, stop the mic and playback, and keep the socket open — the server closes
+ *  it after the progress frame. */
 export function stopLive() {
+  ending = true;
   if (isOpen()) ws.send(JSON.stringify({ type: "end" }));
+  stopPlayback();
+  micStream?.getTracks().forEach((t) => t.stop());
+  micStream = null;
+  audioCtx?.close().catch(() => {});
+  audioCtx = null;
+  playGain = null;
+}
+
+/** Leave the session with no wrap-up: close everything now. */
+export function abandonLive() {
+  if (ws) ws.onclose = null;
+  if (starting) abandoned = true; // startLive is between awaits: it stops at the next one
+  starting = false;
   teardown();
 }
 
@@ -355,6 +396,7 @@ function teardown() {
     /* already closing */
   }
   ws = null;
+  starting = false;
   micStream?.getTracks().forEach((t) => t.stop());
   micStream = null;
   audioCtx?.close().catch(() => {});
@@ -362,4 +404,4 @@ function teardown() {
   playGain = null;
 }
 
-export const liveActive = () => !!ws;
+export const liveActive = () => !!ws || starting;

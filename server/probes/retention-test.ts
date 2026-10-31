@@ -221,10 +221,10 @@ delete process.env.GEMINI_API_KEY;
   const modelBefore = modelOf();
   leave("ns-gone");
   leave("ns-kept");
-  const ending = settleSession({ learnerId: "nosave-probe", instructions: "", targets: [], log: sessionLog("ns-gone", { noSave: true }) });
+  const ending = settleSession({ learnerId: "nosave-probe", instructions: "", targets: [], objectives: [], log: sessionLog("ns-gone", { noSave: true }) });
   check("the no-save log records noSave: true", JSON.parse(readFileSync(liveFile("ns-gone"), "utf8")).noSave, true);
   await ending;
-  await settleSession({ learnerId: "nosave-probe", instructions: "", targets: [], log: sessionLog("ns-kept") });
+  await settleSession({ learnerId: "nosave-probe", instructions: "", targets: [], objectives: [], log: sessionLog("ns-kept") });
   check("no-save: live log, turn-log rows and translations are gone",
     [existsSync(liveFile("ns-gone")), rowsFor("ns-gone"), existsSync(glossFile("ns-gone"))], [false, 0, false]);
   check("saved: live log, turn-log rows and translations remain",

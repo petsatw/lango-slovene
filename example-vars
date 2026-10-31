@@ -53,6 +53,11 @@ XAI_API_KEY=
 XAI_MODEL=grok-voice-think-fast-2.0
 XAI_VOICE=eve
 
+# --- TEAM READOUT: the bearer key for GET /v1/team/events, the team's read-only pull of the event log and
+#     live session summaries (docs/features/team-readout/spec.md). Unset or empty = the route is absent.
+#     At least 32 random bytes; set it on the host in an editor or the host dashboard, never in the shell. ---
+TEAM_READ_KEY=
+
 # --- Optional alternates for the blind A/B (leave blank until needed) ---
 # OPENAI_API_KEY=
 

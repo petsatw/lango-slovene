@@ -286,6 +286,11 @@ main {
  * if they are also two layouts. */
 .practice-surface { display: flex; flex-direction: column; align-items: stretch; }
 .practice-surface .dialogue-convo { text-align: left; }
+.practice-surface.wrapped > :not(.live-wrapup) { display: none; }
+.live-wrapup { display: flex; flex-direction: column; gap: 10px; text-align: left; }
+.live-wrapup[hidden] { display: none; }
+.live-wrapup p,.live-wrapup h2 { margin: 0; }
+.live-wrapup ul { margin: 4px 0 0; padding-left: 20px; }
 
 /* The session's objectives: the hint pill's look, above the transcript, and a sheet it drops over the
  * transcript. The frame holds both so the sheet covers exactly the conversation. */
@@ -403,6 +408,8 @@ main {
 }
 .settings-btn:hover { border-color: var(--green); }
 .history-entry { width: 100%; max-width: 520px; margin: 0 0 10px; }
+.history-head, .history-progress { display: block; }
+.history-progress { color: var(--muted); font-size: 13px; }
 .history-entry-body { display: block; margin: 8px 4px; color: var(--muted); font-size: 14px; }
 .feedback-overlay { z-index: 30; }
 .access-code { width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 12px; font-size: 16px; border-radius: 10px; border: 1px solid #3a4452; background: #11151b; color: #fff; }

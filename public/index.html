@@ -91,7 +91,15 @@
       </button>
       <p id="practice-hint" class="practice-hint"></p>
       <p id="live-state" class="live-state"></p>
-      <button id="live-feedback" class="play-fallback" type="button" hidden>How did that go? Give feedback</button>
+      <!-- The wrap-up: replaces the transcript and the talk controls when a live session ends. -->
+      <section id="live-wrapup" class="live-wrapup" hidden>
+        <h2 id="wrapup-title" class="wrapup-title"></h2>
+        <p id="wrapup-scenario"></p>
+        <div id="wrapup-progress"></div>
+        <p id="wrapup-nosave" hidden>This conversation wasn't saved.</p>
+        <button id="live-feedback" class="play-fallback" type="button">Give feedback</button>
+        <button id="wrapup-next" class="play-fallback" type="button">What next</button>
+      </section>
       <button id="play-fallback" class="play-fallback" hidden>▶ Tap to hear the tutor</button>
     </div>
   </main>
@@ -191,10 +199,10 @@
       <p id="scene-tutorial-text" class="scene-tutorial-text"></p>
       <p id="scene-tutorial-next" class="scene-tutorial-next"></p>
     </div>
-    <!-- The close: his last line stays up, unglossed. No counts, no badges, nothing that reads as a
-         measure. ONE door, not two — the phrases and both ways of taking them further live behind a
-         single "Review", so the closed screen holds exactly two controls and nothing is positioned
-         beside anything. -->
+    <!-- The close: his last line stays up, unglossed. Progress shows as progressed objectives on the
+         live wrap-up, in the Learning history and on A1 Readiness (docs/MVP.md). ONE door, not two —
+         the phrases and both ways of taking them further live behind a single "Review", so the closed
+         screen holds exactly two controls and nothing is positioned beside anything. -->
     <div id="scene-close" class="scene-close" hidden>
       <div id="scene-review" class="scene-review" hidden>
         <div id="scene-phrases" class="scene-phrases"></div>

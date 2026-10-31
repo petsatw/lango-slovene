@@ -93,6 +93,9 @@ What the author needs is to **understand how the bands are derived** so they can
 level; the determination happens post-authoring. Ordinal `level` (for tab ordering) is likewise derived —
 order dialogues by ascending band.
 
+The app shows each `levelLabel` as a Beginner, Intermediate or Advanced chip on the level card
+([dialogue lesson](features/dialogue-lesson/spec.md#1-difficulty-chip)).
+
 ## 5. Trees support more than two choices
 
 - A node may offer **more than two client choices**.
