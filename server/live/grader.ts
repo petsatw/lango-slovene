@@ -214,7 +214,11 @@ export async function creditSession(args: {
       timer = setTimeout(() => reject(new Error(`grade timed out after ${timeoutMs / 1000}s`)), timeoutMs);
     }),
   ]).finally(() => clearTimeout(timer));
-  if (!grade) return [];
+  // No learner speech: a completed check with nothing progressed, so the log still says so.
+  if (!grade) {
+    liveLog.write({ ...log, progressed: [] });
+    return [];
+  }
 
   // The same firewall the tap mode runs on: allowlist → produced → Slovene → the span is in the
   // transcript → success or attempt. The allowlist is the whole catalog, because the lesson does not
