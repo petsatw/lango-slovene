@@ -96,3 +96,14 @@ The Settings screen, opened from the app header, shows:
 
   A candidate phrase that `stripPersonal` changes is skipped. Candidate rows hold `surface`, `gloss` and
   `at` only.
+
+## 7. Team access
+
+- The team reads the event log, feedback text included, and a summary of each saved live session
+  through the [team readout](../team-readout/spec.md), a read-only endpoint behind the `TEAM_READ_KEY`
+  key.
+- A session summary holds the lesson, provider, start and end, how the session ended and the
+  progressed objectives. It holds no transcript.
+- A no-save session has no summary. Its live events stay in the event log, as for every session.
+- Rows carry the `learnerId` and whether the learner came in on a tester code, never the code itself.
+  A learner's rows leave the readout when their data is deleted (§5).

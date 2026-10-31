@@ -2,7 +2,8 @@
 
 The app records which screens and steps each tester uses, so the team can read one tester's timeline and
 a funnel across testers. Events hold names, ids, counts and timings. Free text appears only in
-`feedback_submitted`.
+`feedback_submitted`. The team reads the log, with a summary of each live session, through the
+[team readout](../team-readout/spec.md).
 
 Events are first-party and pseudonymous. They are keyed to the learnerId and code, and nothing is sent
 to a third-party analytics service. They are strictly necessary to run the alpha and are recorded
@@ -69,10 +70,12 @@ The finder events record that a search happened and its outcome. The query text 
 
 ## 5. Readout
 
-`jq` reads the log straight from the volume. Timeline, one row per event:
+The team pulls the rows from `GET /v1/team/events` ([team readout](../team-readout/spec.md)). Saved as
+one row per line (`jq -c '.rows[]'` on each page, into `rows.jsonl`), the event rows give a timeline, one
+row per event:
 
 ```bash
-jq -r '[.ts, .learnerId, (.testerCode // "-"), .name, (.props|tojson)] | @tsv' events.jsonl
+jq -r 'select(.kind == "event") | [.ts, .learnerId, .tester, .name, (.props|tojson)] | @tsv' rows.jsonl
 ```
 
 Funnel per learner (`app_open` → `level_started` → `level_completed` → `handoff_tapped` →
@@ -82,12 +85,12 @@ Funnel per learner (`app_open` → `level_started` → `level_completed` → `ha
 jq -s '
   ["app_open","level_started","level_completed","handoff_tapped","live_started"] as $steps |
   def t: sub("\\.[0-9]+Z$"; "Z") | fromdate;
-  group_by(.learnerId) | map(
+  map(select(.kind == "event")) | group_by(.learnerId) | map(
     (map(select(.name == "app_open"))[0].ts) as $open |
     (map(select(.name == "level_completed"))[0].ts) as $done |
     { learnerId: .[0].learnerId,
-      testerCode: .[0].testerCode,
+      tester: .[0].tester,
       funnel: (. as $ev | reduce $steps[] as $n ({}; .[$n] = ($ev | map(select(.name == $n)) | length))),
       firstLevelSec: (if $open and $done then ($done | t) - ($open | t) else null end),
-      feedback: (map(select(.name == "feedback_submitted")) | length) })' events.jsonl
+      feedback: (map(select(.name == "feedback_submitted")) | length) })' rows.jsonl
 ```
