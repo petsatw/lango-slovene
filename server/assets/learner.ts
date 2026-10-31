@@ -151,6 +151,15 @@ export function touch(id: string): void {
   const now = Date.now();
   if (now - (touched.get(key) ?? 0) < SEEN_EVERY_MS) return;
   touched.set(key, now);
+  // A dir-store file that is there but does not parse is left as it is: a stamp would rewrite it as an
+  // empty model and lose the progress in it, and the sweep leaves an unreadable file alone too.
+  if (store() === dirStore && existsSync(learnersPath(key))) {
+    try {
+      JSON.parse(readFileSync(learnersPath(key), "utf8"));
+    } catch {
+      return;
+    }
+  }
   const model = load(key);
   if (model.lastSeenAt && now - Date.parse(model.lastSeenAt) < SEEN_EVERY_MS) return;
   save(key, { ...model, lastSeenAt: new Date(now).toISOString() });

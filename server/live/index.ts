@@ -46,6 +46,8 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
     return res.status(403).json({ error: "forbidden" });
   }
   events.emit("gate_passed", who, { via });
+  // Starting a live session is use of the app: stamp lastSeenAt (docs/features/data-deletion/spec.md#3-sweeps).
+  learner.touch(who.learnerId);
   if (typeof lessonId !== "string" || !lessonExists(lessonId)) {
     return res.status(400).json({ error: "unknown lessonId" });
   }

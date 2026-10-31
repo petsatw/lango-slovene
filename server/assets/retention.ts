@@ -1,7 +1,7 @@
 // What the server keeps, and when it lets go (docs/features/data-deletion/spec.md#3-sweeps).
 //
 // `sweep()` runs at startup and every 24 hours and handles four cases:
-//   - a learner whose `lastSeenAt` is more than 12 months ago: `deleteLearner`
+//   - a learner whose `lastSeenAt` (or a later `updatedAt`) is more than 12 months ago: `deleteLearner`
 //   - an improvement copy more than 90 days old: deleted
 //   - a no-save live log whose session ended or passed SESSION_TTL_SEC: deleted with its turn-log rows
 //     and translations
@@ -19,10 +19,9 @@ import { DATA_DIR } from "./store";
 import { LOG_PATH as TURNLOG_PATH } from "./turnlog";
 import { CANDIDATES_PATH } from "./candidates";
 import { deleteLearner } from "./deletion";
+import { idFrom } from "./learner";
 
 const DAY_MS = 86_400_000;
-const LEARNER_LIMIT_MS = 365 * DAY_MS;
-const CANDIDATE_LIMIT_MS = 365 * DAY_MS;
 const IMPROVE_LIMIT_MS = 90 * DAY_MS;
 
 /** The header a request carries when the learner declined. Absent means keep, so nothing that predates
@@ -83,16 +82,29 @@ function sweepNoSave(now: number): number {
 const jsonIn = (dir: string) =>
   existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith(".json") && !f.endsWith(".gloss.json")) : [];
 
-/** Delete every learner whose `lastSeenAt` is over 12 months old. */
+/** The instant `months` calendar months before `now`, in UTC. 12 months is a calendar year, so a leap
+ *  year is counted as 366 days rather than cutting a learner off a day early. */
+function monthsBefore(now: number, months: number): number {
+  const d = new Date(now);
+  d.setUTCMonth(d.getUTCMonth() - months);
+  return d.getTime();
+}
+
+/** Delete every learner whose last use is over 12 months old. Last use is the later of `lastSeenAt` and
+ *  `updatedAt` (every save writes `updatedAt`, so a model credited after its last stamp is not stale).
+ *  A file that does not parse, has no readable date, or whose name is not a learner id is left alone. */
 function sweepLearners(now: number): number {
   const dir = process.env.LEARNERS_DIR || path.join(DATA_DIR, "learners");
+  const cutoff = monthsBefore(now, 12);
   let deleted = 0;
   for (const name of jsonIn(dir)) {
+    const id = name.slice(0, -5);
+    if (idFrom(id) !== id) continue;
     try {
       const rec = JSON.parse(readFileSync(path.join(dir, name), "utf8"));
-      const seen = Date.parse(rec.lastSeenAt ?? rec.updatedAt);
-      if (Number.isFinite(seen) && now - seen > LEARNER_LIMIT_MS) {
-        deleteLearner(name.slice(0, -5));
+      const dates = [rec?.lastSeenAt, rec?.updatedAt].map((d) => Date.parse(d)).filter(Number.isFinite);
+      if (dates.length && Math.max(...dates) < cutoff) {
+        deleteLearner(id);
         deleted++;
       }
     } catch {
@@ -123,10 +135,11 @@ function sweepImprove(now: number): number {
 /** Drop every candidate row over 12 months old; a line that does not parse is kept. */
 function sweepCandidates(now: number): number {
   if (!existsSync(CANDIDATES_PATH)) return 0;
+  const cutoff = monthsBefore(now, 12);
   const lines = readFileSync(CANDIDATES_PATH, "utf8").split("\n").filter((raw) => raw.trim());
   const kept = lines.filter((raw) => {
     try {
-      return !(now - Date.parse(JSON.parse(raw).at) > CANDIDATE_LIMIT_MS);
+      return !(Date.parse(JSON.parse(raw).at) < cutoff);
     } catch {
       return true;
     }
