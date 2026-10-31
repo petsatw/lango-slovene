@@ -49,8 +49,8 @@ In this order:
    The block updates in place when the result arrives.
 4. "This conversation wasn't saved.", for a session started with "Don't save this session" ticked
    ([no-save session](../no-save-session/spec.md#1-switch)).
-5. A "Give feedback" button. It opens the rating sheet with surface `live_end`
-   ([feedback](../feedback/spec.md#1-points)). Closing or sending the sheet returns to the wrap-up.
+5. A "Give feedback" button. It opens the feedback sheet with surface `live_end`
+   ([feedback](../feedback/spec.md#21-feedback-sheet)). Closing or sending the sheet returns to the wrap-up.
 6. A "What next" button. It opens the lessons screen.
 
 The wrap-up shows these lines and nothing else, for every ending. A new live session starts from the
@@ -81,3 +81,16 @@ lessons screen, through the tutor start screen
 - After a completed check, a saved session's live log (`DATA_DIR/live/<sessionId>.json`) holds
   `progressed`: the ids in that list. The learning history reads it
   ([sessions](../learning-history/spec.md#1-sessions)).
+
+## 4. Feedback during a session
+
+- The floating "Feedback" chip ([feedback chip](../feedback/spec.md#4-feedback-chip)) is on the tutor
+  screen from the create response until the learner leaves the wrap-up, beside the header "Feedback"
+  link. The chip floats over the screen and is not one of the wrap-up lines (§2.2).
+- The chip and the header link open the feedback sheet over the session. The session keeps running
+  while the sheet is open: the socket stays open, the microphone keeps streaming, the tutor's speech
+  keeps playing and the transcript keeps updating behind the sheet. Closing or sending the sheet
+  returns to the session as it is by then.
+- Opening the sheet sends nothing on the session socket and has no effect on the session time limit.
+- The `feedback_submitted` event carries `screen: "live"` and the session's `lessonId`
+  ([context](../feedback/spec.md#3-context)).
