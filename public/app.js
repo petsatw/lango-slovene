@@ -234,8 +234,13 @@ async function openHistory() {
     const open = document.createElement("button");
     open.type = "button";
     open.className = "settings-btn history-open";
-    const score = e.score ? `${e.score.succeeded.length}/${e.score.total}` : "no score";
-    open.textContent = `${e.lessonId} · ${new Date(e.startedAt).toLocaleDateString()} · ${score}`;
+    const head = document.createElement("span");
+    head.className = "history-head";
+    head.textContent = `${e.scenario} · ${new Date(e.startedAt).toLocaleDateString()}`;
+    const sub = document.createElement("span");
+    sub.className = "history-progress";
+    sub.textContent = e.progressed.length ? `Progress on ${e.progressed.join(", ")}` : "Practice";
+    open.append(head, sub);
     const body = document.createElement("div");
     body.className = "history-entry-body";
     body.hidden = true;
@@ -2534,7 +2539,8 @@ function wireSceneChips() {
   $("scene-quit").addEventListener("click", () => { endLevelRun(false, scene.node?.id); sceneCancel(); sceneReleaseClips(); openHome(); });
 }
 
-// ---- ③ A1 Readiness — the coverage map (the only place progress is visible). A hand-authored
+// ---- ③ A1 Readiness — the coverage map (the learner's map of A1 coverage; progressed objectives show on the live
+// wrap-up and in the Learning history, docs/MVP.md). A hand-authored
 // competency → scenarios mapping; progress read from the durable learner model. List → drill-down. ----
 let a1Competencies = [];
 

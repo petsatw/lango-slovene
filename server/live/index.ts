@@ -128,6 +128,7 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
   // The prompt and the set it was built from, filled in below and read again by the grader at teardown.
   let instructions = "";
   let targets: Learnable[] = [];
+  let objectives: Learnable[] = [];
 
   registry.markActive(sessionId);
 
@@ -214,7 +215,7 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
     // Writing the log and crediting start only once the socket is closed and the learner is gone:
     // assessment is never on the hot path, and a grade that fails is a session with no credit, not a
     // session that hung.
-    void settleSession({ learnerId, instructions, targets, log }).catch((err: any) =>
+    void settleSession({ learnerId, instructions, targets, objectives, log }).catch((err: any) =>
       console.error("[live] session end failed:", err?.message),
     );
   }
@@ -243,6 +244,7 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
     const built = buildLessonPrompt(lessonId, learnerId);
     instructions = built.instructions;
     targets = built.targets;
+    objectives = built.objectives;
     // What the objectives overlay lists. Sent before the vendor connects, so it arrives even when the
     // vendor never does.
     sendJson({ type: "objectives", items: built.objectives.map((l) => ({ sl: l.sl })) });
