@@ -32,7 +32,7 @@ export const liveRouter = express.Router();
 // Open a session. The response carries a wsUrl and NOT the provider — the app cannot know, and cannot
 // accidentally start branching on, which vendor it is talking to.
 liveRouter.post("/v1/live/sessions", (req, res) => {
-  const { lessonId, accessCode, provider: requested, runId, noSave } = req.body ?? {};
+  const { lessonId, accessCode, provider: requested, runId, noSave, improve } = req.body ?? {};
 
   const who = {
     learnerId: learner.resolveId(req.get("x-tester-code"), req.get("x-learner-id")),
@@ -46,6 +46,8 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
     return res.status(403).json({ error: "forbidden" });
   }
   events.emit("gate_passed", who, { via });
+  // Starting a live session is use of the app: stamp lastSeenAt (docs/features/data-deletion/spec.md#3-sweeps).
+  learner.touch(who.learnerId);
   if (typeof lessonId !== "string" || !lessonExists(lessonId)) {
     return res.status(400).json({ error: "unknown lessonId" });
   }
@@ -68,6 +70,7 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
     runId: typeof runId === "string" && runId.trim() ? runId : null,
     retain: retention.retainFrom(req.get("x-retain")),
     noSave: noSave === true,
+    improve: improve === true && noSave !== true,
   });
   const host = req.get("host");
   const scheme = req.protocol === "https" || req.get("x-forwarded-proto") === "https" ? "wss" : "ws";
@@ -123,7 +126,7 @@ export function attachLive(server: HttpServer): void {
 }
 
 function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & object): void {
-  const { sessionId, lessonId, provider, learnerId, testerCode, runId, retain, noSave } = pending;
+  const { sessionId, lessonId, provider, learnerId, testerCode, runId, retain, noSave, improve } = pending;
   const startedAt = new Date().toISOString();
   const who = { learnerId, testerCode };
   events.emit("live_started", who, { lessonId, provider, noSave });
@@ -216,6 +219,7 @@ function bridge(ws: WebSocket, pending: ReturnType<typeof registry.redeem> & obj
       error: failure,
       ...(retain ? {} : { retain: false }),
       ...(noSave ? { noSave: true as const } : {}),
+      ...(improve ? { improve: true as const } : {}),
     };
     sendJson({ type: "state", status: "ended" });
 

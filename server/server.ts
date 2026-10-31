@@ -56,7 +56,11 @@ function cachePut(key: string, buf: Buffer): void {
 // it on every call; a request that names none is served as the operator at their own machine. This is
 // the seam accounts arrive on — the id stops being a session id and becomes an account id, and nothing
 // below changes (server/assets/learner.ts).
-const learnerOf = (req: express.Request) => learner.resolveId(req.get("x-tester-code"), req.get("x-learner-id"));
+const learnerOf = (req: express.Request) => {
+  const id = learner.resolveId(req.get("x-tester-code"), req.get("x-learner-id"));
+  learner.touch(id);
+  return id;
+};
 /** The allowlisted tester code the request carries, or null. */
 const testerCodeOf = (req: express.Request) => learner.testerCodeFrom(req.get("x-tester-code"));
 /** Started = has a credited learnable, or has already been shown the first-run scene (fact `sceneSeen`). */
@@ -490,6 +494,10 @@ app.delete("/api/history", (req, res) => {
   res.status(204).end();
 });
 app.get("/api/me", (req, res) => res.json({ testerCode: testerCodeOf(req) }));
+app.delete("/api/me/improve", (req, res) => {
+  deletion.deleteImprove(learnerOf(req));
+  res.status(204).end();
+});
 app.delete("/api/me", (req, res) => {
   deletion.deleteLearner(learnerOf(req));
   res.status(204).end();
@@ -827,9 +835,8 @@ const port = Number(process.env.PORT || 8787);
 const server = createServer(app);
 attachLive(server);
 
-// Records left behind by a session that declined retention are redacted here as well as on every turn
-// log write — a server that was restarted before the timer came round would otherwise never sweep them.
 retention.sweep();
+setInterval(() => retention.sweep(), 24 * 3600_000).unref();
 
 server.listen(port, () => {
   console.log(`▶ lango-slovenian demo on http://localhost:${port}`);

@@ -57,6 +57,9 @@ export interface LiveSessionLog {
   /** The learner chose "Don't save this session": the session is deleted once scoring ends, and the
    *  startup sweep removes a log left behind (server/assets/retention.ts). Omitted = saved. */
   noSave?: true;
+  /** The learner ticked "Use this session to improve Vadi": a saved session writes a pseudonymised
+   *  improvement copy at its end. Omitted = not shared. */
+  improve?: true;
   /** When the sweep emptied this log's transcripts. Present only on a redacted log. */
   redactedAt?: string;
 }

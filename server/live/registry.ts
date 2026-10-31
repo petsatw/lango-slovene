@@ -36,6 +36,8 @@ interface PendingSession {
   /** The learner ticked "Don't save this session": the session is scored, then deleted
    *  (docs/features/no-save-session/spec.md). */
   noSave: boolean;
+  /** The learner ticked "Use this session to improve Vadi". */
+  improve: boolean;
   expiresAt: number;
 }
 
@@ -79,6 +81,7 @@ export function create(args: {
   runId: string | null;
   retain: boolean;
   noSave: boolean;
+  improve: boolean;
 }): PendingSession {
   sweep();
   const s: PendingSession = {
@@ -91,6 +94,7 @@ export function create(args: {
     runId: args.runId,
     retain: args.retain,
     noSave: args.noSave,
+    improve: args.improve,
     // The token has to survive only the round trip from the create call to the WS open, so it expires
     // far sooner than the session it authorizes.
     expiresAt: Date.now() + 60_000,

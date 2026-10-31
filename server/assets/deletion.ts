@@ -2,9 +2,10 @@
 // docs/features/data-deletion/spec.md). Every function takes the learnerId and touches only that
 // learner's records.
 
-import { existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { DATA_DIR } from "./store";
+import { stripPersonal } from "./pseudonymise";
 import { LOG_PATH as TURNLOG_PATH } from "./turnlog";
 import { EVENTS_PATH } from "../events";
 import type { LiveTranscript } from "../live/log";
@@ -144,7 +145,25 @@ export function deleteLearner(learnerId: string): void {
   rmSync(path.join(LEARNERS_DIR(), `${learnerId}.json`), { force: true });
   dropLines(TURNLOG_PATH, (r) => r.learnerId === learnerId);
   dropLines(EVENTS_PATH, (r) => r.learnerId === learnerId);
+  deleteImprove(learnerId);
+}
+
+/** Delete all of the learner's improvement copies. */
+export function deleteImprove(learnerId: string): void {
   for (const f of jsonFiles(IMPROVE_DIR())) {
     if (readJson(path.join(IMPROVE_DIR(), f))?.learnerId === learnerId) rmSync(path.join(IMPROVE_DIR(), f), { force: true });
   }
+}
+
+/** Write the pseudonymised copy of a saved session the learner agreed to share
+ *  (docs/features/consent-privacy/spec.md#2-improvement-consent). */
+export function writeImprove(log: { sessionId: string; learnerId: string; transcripts: LiveTranscript[] }): void {
+  mkdirSync(IMPROVE_DIR(), { recursive: true });
+  const copy = {
+    learnerId: log.learnerId,
+    sessionId: log.sessionId,
+    createdAt: new Date().toISOString(),
+    transcripts: log.transcripts.map((t) => ({ ...t, text: stripPersonal(t.text) })),
+  };
+  writeFileSync(path.join(IMPROVE_DIR(), `${log.sessionId}.json`), JSON.stringify(copy, null, 2));
 }
