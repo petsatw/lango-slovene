@@ -20,7 +20,6 @@ chip follows the level's `levelLabel`, which `lint:a1` computes from the level's
 | `Above A1` | Advanced |
 
 - A level with any other `levelLabel`, or none, shows Beginner.
-- The chip reflects the band only. The number of lines in a level plays no part in it.
 
 ## 2. Controls
 
