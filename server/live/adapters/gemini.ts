@@ -65,7 +65,7 @@ export class GeminiAdapter implements LiveAdapter {
             model: `models/${MODEL}`,
             generationConfig: { responseModalities: ["AUDIO"] },
             inputAudioTranscription: {
-              languageCodes: ["sl"],
+              languageCodes: ["sl-SI"],
               ...(keyterms.length ? { customVocabulary: keyterms } : {}),
             },
             outputAudioTranscription: {},

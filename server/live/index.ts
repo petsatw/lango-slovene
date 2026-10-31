@@ -39,11 +39,12 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
   };
   const failed = (reason: string) =>
     events.emit("live_failed", who, { lessonId: typeof lessonId === "string" ? lessonId : null, provider: null, reason });
-  if (!registry.accessCodeOk(accessCode)) {
+  const via = who.testerCode ? "tester_code" : registry.accessCodeOk(accessCode) ? "access_code" : null;
+  if (!via) {
     failed("forbidden");
     return res.status(403).json({ error: "forbidden" });
   }
-  events.emit("gate_passed", who, { via: "access_code" });
+  events.emit("gate_passed", who, { via });
   if (typeof lessonId !== "string" || !lessonExists(lessonId)) {
     return res.status(400).json({ error: "unknown lessonId" });
   }

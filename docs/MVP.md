@@ -13,8 +13,11 @@ Legacy is preserved: the full app lives on `main` (and `feat/dialogue-intro-free
 ## North star
 
 **Crisp, simple, obvious.** The things a learner wants most are one tap away, never buried in a busy
-mess. Every screen earns its place. When in doubt, cut. The "engine" stays invisible everywhere except
-the A1 screen — no scores, streaks, or progress bars in the tutor or the rehearsal surfaces.
+mess. Every screen earns its place. When in doubt, cut. Vadi is mastery-first: the learner sees the
+objectives they made progress on, on the A1 screen, the live session wrap-up
+([live session](features/live-session/spec.md#2-wrap-up)) and the Learning history
+([learning history](features/learning-history/spec.md#3-screen)). The tutor and the rehearsal surfaces
+show the conversation alone.
 
 The learner's default journey is **linear** — *rehearse a scenario level → go live in free chat with that
 scenario as context → (later) see A1 progress → repeat or advance* — but from anywhere they can jump
@@ -94,8 +97,9 @@ The next session will see legacy code that **contradicts the MVP intent**. These
    the scenario experience anymore. A "scenario" the learner touches = a rehearsal dialogue tree.
 2. **Free chat now persists a session.** Legacy `converse` writes no session; the MVP captures one so
    Replays works. This is a real behavioral change to the converse path.
-3. **Progress is visible only in A1 Readiness.** Everywhere else the engine stays invisible (unchanged
-   maxim — see `docs/free-conversation.md`).
+3. **Progress is visible in A1 Readiness, the live session wrap-up and the Learning history**, as the
+   objectives a learner made progress on. Inside a conversation the engine stays invisible (see
+   `docs/free-conversation.md`).
 4. **No learner-facing "level".** The L1/L2 ceiling is an internal selection input, not UI.
 5. **Rehearsal still credits nothing.** Mastery is earned only in the live tutor. The witness contract
    holds (`docs/free-conversation.md`).

@@ -26,7 +26,9 @@ body {
   flex-direction: column;
 }
 
-header { position: relative; padding: 24px 20px 10px; text-align: center; }
+/* The header sits over the app column: 520px content plus the 12px inset of its corner buttons, so
+   on desktop Home, Settings and Feedback line up with the column edges instead of the window's. */
+header { position: relative; width: 100%; max-width: 544px; margin: 0 auto; padding: 24px 20px 10px; text-align: center; }
 header h1 { margin: 0; font-size: 28px; }
 /* "vadi" wordmark — lowercase, heavy, white with a short green accent stroke (flyer style). */
 .wordmark {
@@ -368,6 +370,8 @@ main {
   margin: 0 0 12px; cursor: pointer;
 }
 .consent-check input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--green); flex: none; }
+.consent-check:has(input:disabled) { opacity: .45; cursor: default; }
+.consent-check input:disabled { cursor: default; }
 .consent-continue {
   width: 100%; border: none; border-radius: 12px;
   background: var(--green); color: #fff;
@@ -384,7 +388,7 @@ main {
 }
 .header-feedback:hover { color: var(--text); border-color: var(--green); }
 .header-settings {
-  position: absolute; right: 100px; top: 24px;
+  position: absolute; right: 106px; top: 24px;
   background: transparent; color: var(--muted);
   border: 1px solid #2b2f38; border-radius: 999px;
   padding: 6px 14px; font-size: 14px; cursor: pointer;
@@ -401,6 +405,7 @@ main {
 .history-entry { width: 100%; max-width: 520px; margin: 0 0 10px; }
 .history-entry-body { display: block; margin: 8px 4px; color: var(--muted); font-size: 14px; }
 .feedback-overlay { z-index: 30; }
+.access-code { width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 12px; font-size: 16px; border-radius: 10px; border: 1px solid #3a4452; background: #11151b; color: #fff; }
 .story-card.feedback-card { text-align: left; max-width: 420px; }
 .feedback-rating { display: flex; justify-content: center; gap: 16px; margin: 0 0 14px; }
 .feedback-thumb {

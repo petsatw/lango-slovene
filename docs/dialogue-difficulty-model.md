@@ -29,10 +29,10 @@ core and/or A1-tagged. It answers *which life domain does this item serve, and h
 in that domain* — it does **not** answer *is this core*. It is many-to-many by design (`hvala` serves both
 `pragmatics` and `personal_relations`), which is exactly the right shape for coverage.
 
-Its one live product job is `GET /api/a1`, the **A1 Readiness screen** — the only place progress is visible
-to the learner, and the finite map the no-measures invariant promises. So a core/A1-tagged item that reaches
-the catalog without landing in the map can be mastered with nothing moving on screen; `lint:a1` fails on
-exactly that.
+Its one live product job is `GET /api/a1`, the **A1 Readiness screen** — the learner's map of A1
+coverage, beside the progressed objectives on the live wrap-up and in the Learning history. So a
+core/A1-tagged item that reaches the catalog without landing in the map can be mastered with nothing
+moving on the A1 screen; `lint:a1` fails on exactly that.
 
 ## 3. The three bands — measured PER LINE, not per level
 
