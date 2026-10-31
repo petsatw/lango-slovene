@@ -31,7 +31,7 @@ function scenarioOf(lessonId: string) {
   return SCENARIOS.find((s) => s.id === scenarioId);
 }
 
-const scenarioName = (lessonId: string): string => {
+export const scenarioName = (lessonId: string): string => {
   const s = scenarioOf(lessonId);
   return s ? s.name ?? s.title : lessonId;
 };

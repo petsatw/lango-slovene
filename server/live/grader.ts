@@ -204,7 +204,7 @@ export async function creditSession(args: {
   /** What the tutor steered toward (`buildLessonPrompt(...).objectives`). */
   objectives: Learnable[];
   log: LiveSessionLog;
-}): Promise<void> {
+}): Promise<string[]> {
   const { log, targets } = args;
   const timeoutMs = Math.max(1, Number(process.env.LIVE_GRADE_TIMEOUT_SEC ?? 60)) * 1000;
   let timer: NodeJS.Timeout | undefined;
@@ -214,7 +214,7 @@ export async function creditSession(args: {
       timer = setTimeout(() => reject(new Error(`grade timed out after ${timeoutMs / 1000}s`)), timeoutMs);
     }),
   ]).finally(() => clearTimeout(timer));
-  if (!grade) return;
+  if (!grade) return [];
 
   // The same firewall the tap mode runs on: allowlist → produced → Slovene → the span is in the
   // transcript → success or attempt. The allowlist is the whole catalog, because the lesson does not
@@ -254,17 +254,23 @@ export async function creditSession(args: {
     creditedCounts: countsFor(saved, credit.progress),
   });
 
+  const progressed = progressedIds(args.objectives.map((l) => l.id), credit.progress);
   liveLog.write({
     ...log,
     lessonScore: grade.lessonScore,
-    progressed: progressedIds(args.objectives.map((l) => l.id), credit.progress),
+    progressed,
     ...(credit.progress.length ? { credit: credit.progress } : {}),
   });
+  return progressed;
 }
 
 /** The end of a live session: write the log, score it, and for a no-save session delete what it left
- *  whatever the scoring outcome (docs/features/no-save-session/spec.md#2-session-end). */
-export async function settleSession(args: Parameters<typeof creditSession>[0]): Promise<void> {
+ *  whatever the scoring outcome (docs/features/no-save-session/spec.md#2-session-end).
+ *  Resolves to the session's progressed objectives, `[]` when there was no learner speech, `null` when
+ *  the check failed or timed out. */
+export async function settleSession(
+  args: Parameters<typeof creditSession>[0],
+): Promise<{ id: string; name: string }[] | null> {
   const { log } = args;
   if (log.noSave) settling.add(log.sessionId);
   try {
@@ -272,8 +278,9 @@ export async function settleSession(args: Parameters<typeof creditSession>[0]): 
   } catch (err: any) {
     console.error("[live] session log failed:", err?.message);
   }
+  let progressed: string[] | null = null;
   try {
-    await creditSession(args);
+    progressed = await creditSession(args);
   } catch (err: any) {
     console.error("[live] credit failed:", err?.message);
   } finally {
@@ -282,4 +289,5 @@ export async function settleSession(args: Parameters<typeof creditSession>[0]): 
       purgeSession(log.sessionId);
     }
   }
+  return progressed && progressed.map((id) => ({ id, name: LEARNABLES[id]?.sl ?? id }));
 }
