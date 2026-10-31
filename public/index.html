@@ -275,6 +275,17 @@
     </div>
   </div>
 
+  <!-- Live access code sheet (docs/features/tester-identity/spec.md#51-access-code-sheet). -->
+  <div id="access" class="story-overlay feedback-overlay" hidden>
+    <form id="access-form" class="story-card feedback-card">
+      <button id="access-close" class="story-close" type="button" aria-label="Close">✕</button>
+      <label class="consent-body" for="access-code">Live tutor access code</label>
+      <input id="access-code" class="access-code" type="password" autocomplete="off">
+      <p id="access-error" class="consent-body" role="alert" hidden>That code isn't recognised.</p>
+      <button id="access-unlock" class="consent-continue" type="submit" disabled>Unlock</button>
+    </form>
+  </div>
+
   <!-- Observability overlay — dev only, opt in with ?obs=1. It prints transcripts and raw model
        timings, so it stays off the practice surface unless someone has asked for it by URL. -->
   <section id="obs" class="obs" hidden>
