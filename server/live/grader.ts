@@ -183,18 +183,18 @@ export function creditable(model: LearnerModel, grade: LiveGrade): WitnessResult
   };
 }
 
-/** Grade a session that has just ended and move the learner model with it.
- *
- *  It runs AFTER teardown, on nothing the learner is waiting for: the socket is closed, the transcript
- *  is written, and the only thing still outstanding is the bookkeeping. Best-effort by the same
- *  discipline the rest of the live path keeps — a grade that fails leaves the session log exactly as it
- *  was written and costs the learner nothing. */
 /** The objectives the session made progress on: those with a `success` entry in the credit. */
 export function progressedIds(objectives: string[], progress: LearnableProgress[]): string[] {
   const won = new Set(progress.filter((p) => p.result === "success").map((p) => p.id));
   return objectives.filter((id) => won.has(id));
 }
 
+/** Grade a session that has just ended and move the learner model with it.
+ *
+ *  It runs AFTER teardown, on nothing the learner is waiting for: the socket is closed, the transcript
+ *  is written, and the only thing still outstanding is the bookkeeping. Best-effort by the same
+ *  discipline the rest of the live path keeps — a grade that fails leaves the session log exactly as it
+ *  was written and costs the learner nothing. */
 export async function creditSession(args: {
   learnerId: string;
   /** The instructions the tutor actually ran on — logged so a verdict can be read against the prompt

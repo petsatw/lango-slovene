@@ -78,7 +78,7 @@ try {
     check(`3. ${id} has scenario and progressed`, !!e && e.scenario === want.scenario && same(e.progressed, want.progressed),
       JSON.stringify(e && { scenario: e.scenario, progressed: e.progressed }));
   }
-  check("3. no entry has score", entries.length === 4 && entries.every((e: any) => !("score" in e)));
+  check("3. no entry has a score", entries.length === 4 && entries.every((e: any) => !/score/i.test(JSON.stringify(e))));
 
   const browser = await chromium.launch();
   const page = await (await browser.newContext()).newPage();
@@ -88,15 +88,19 @@ try {
   await page.click("#settings-history");
   await page.waitForSelector(".history-entry");
   for (const [id, want] of Object.entries(expected)) {
-    const row = await page.$eval(`.history-entry[data-id="${id}"] .history-open`, (el) => ({
+    const row = await page.$eval(`.history-entry[data-id="${id}"]`, (el) => ({
       head: el.querySelector(".history-head")!.textContent,
       sub: el.querySelector(".history-progress")!.textContent,
-      text: el.textContent!,
+      // Everything the row shows or announces: its text and every element's aria-label, title and alt.
+      text: [el.textContent ?? "", ...[el, ...el.querySelectorAll("*")].flatMap((n) =>
+        ["aria-label", "title", "alt"].map((a) => n.getAttribute(a) ?? ""))].join(" "),
     }));
     const startedAt = entries.find((x: any) => x.id === id).startedAt;
     const date = await page.evaluate((s) => new Date(s).toLocaleDateString(), startedAt);
-    check(`4. ${id} row reads "${want.scenario} · ${date}" over "${want.second}"`,
-      row.head === `${want.scenario} · ${date}` && row.sub === want.second && !/\d+\/\d+|score/i.test(row.sub!) && !/score/i.test(row.text),JSON.stringify(row));
+    // The whole row carries no score: the formatted date (e.g. 10/4/2026) is the only number-slash-number allowed.
+    const scoreFree = !/\d+\s*\/\s*\d+|%|score/i.test(row.text.split(date).join(" "));
+    check(`4. ${id} row reads "${want.scenario} · ${date}" over "${want.second}", and no score`,
+      row.head === `${want.scenario} · ${date}` && row.sub === want.second && scoreFree, JSON.stringify(row));
   }
   await browser.close();
 } finally {
