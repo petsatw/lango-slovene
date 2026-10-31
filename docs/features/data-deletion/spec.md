@@ -5,8 +5,9 @@ months without use.
 
 ## 1. Delete my data
 
-- "Delete my data" in Settings ([Settings](../consent-privacy/spec.md#3-settings)) asks for
-  confirmation, then calls `DELETE /api/me`.
+- "Delete my data" in Settings ([Settings](../consent-privacy/spec.md#3-settings)) asks "Delete all
+  your data? This removes your sessions and your progress, and can't be undone." first, then calls
+  `DELETE /api/me`.
 - The server deletes the learner's data (§2) and returns `204`. The app then shows the home screen with
   a fresh learner. The stored code stays, so the code continues to work.
 
