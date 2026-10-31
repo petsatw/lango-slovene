@@ -21,7 +21,8 @@ built is auto-selecting which dialogue comes next (roadmap item 5).
   and difficulty.
 - The **NPC line** (`npc`) as a left bubble, then **2 client-reply choices** as buttons. Picking one
   drops it in as a right bubble and advances to the NPC's response — branches **re-converge** onto shared
-  later nodes so the tree stays finite. A terminal node offers **↻ Start over**.
+  later nodes so the tree stays finite. **↻ Start over**, **Back** and **Next** sit at the lower left
+  for the whole level ([dialogue lesson](features/dialogue-lesson/spec.md#2-controls)).
 - **Tap any line** to reveal its English (same click-to-reveal as the live transcript).
 - **Per-line audio** once built: the customer line plays, then the NPC replies — a single audio channel,
   so the two voices never overlap. While a level's audio is unbuilt the play buttons are hidden, so a

@@ -52,6 +52,7 @@ Each accepted event becomes one line in `DATA_DIR/events/events.jsonl`:
 | `level_started` | a level opens | `scenarioId`, `level` |
 | `level_completed` | a level reaches its end | `scenarioId`, `level`, `ms` |
 | `level_abandoned` | the learner leaves a level before its end | `scenarioId`, `level`, `ms`, `nodeId` |
+| `level_restarted` | the learner presses "↻ Start over" in a tap dialogue or spoken lesson ([dialogue lesson](../dialogue-lesson/spec.md#23-start-over)) | `scenarioId`, `level`, `nodeId` |
 | `handoff_tapped` | a "practise it live" entry is tapped | `from` (`home`, `finder`, `level`) |
 | `gate_passed` | the server grants live access | `via` (`tester_code`, `access_code`) |
 | `live_started` | a live session connects | `lessonId`, `provider`, `noSave` |
@@ -60,7 +61,9 @@ Each accepted event becomes one line in `DATA_DIR/events/events.jsonl`:
 | `finder_query` | a finder search is submitted | `resultCount` |
 | `finder_no_match` | a submitted search shows no lessons | — |
 | `finder_match_opened` | a finder result is opened | `scenarioId` |
-| `feedback_submitted` | a feedback sheet is sent | `surface`, `rating`, `hasText`, plus `text` ([feedback](../feedback/spec.md#2-sheet)) |
+| `feedback_submitted` | a feedback sheet is sent | `surface`, `screen`, `scenarioId`, `level`, `lessonId`, plus `text` ([feedback](../feedback/spec.md#3-context)) |
+
+Back and Next in a tap dialogue record no event.
 
 The finder events record that a search happened and its outcome. The query text stays in the browser.
 
