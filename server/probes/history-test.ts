@@ -27,7 +27,7 @@ for (const [code, line] of [["TEST-01", "Dober dan"], ["TEST-02", "Hvala lepa"]]
     sessionId, learnerId: idOf(code), testerCode: code, runId: null, lessonId: "fixture-lesson", provider: "grok",
     startedAt: "2026-10-01T10:00:00.000Z", endedAt: "2026-10-01T10:05:00.000Z", error: null,
     transcripts: [{ ts: "2026-10-01T10:00:01.000Z", role: "tutor", text: line }],
-    lessonScore: { total: 3, succeeded: ["a"], attempted: ["a", "b"] },
+    progressed: [],
   }));
   writeFileSync(path.join(learners, `${idOf(code)}.json`), JSON.stringify({ learnables: { x: { attempts: 1, successes: 1 } }, facts: {} }));
 }
@@ -35,7 +35,7 @@ for (const [code, line] of [["TEST-01", "Dober dan"], ["TEST-02", "Hvala lepa"]]
 writeFileSync(path.join(live, "nosave-TEST-01.json"), JSON.stringify({
   sessionId: "nosave-TEST-01", learnerId: idOf("TEST-01"), testerCode: "TEST-01", runId: null, lessonId: "fixture-lesson",
   provider: "grok", startedAt: "2026-10-01T11:00:00.000Z", endedAt: "2026-10-01T11:05:00.000Z", error: null,
-  transcripts: [], lessonScore: null, noSave: true,
+  transcripts: [], progressed: [], noSave: true,
 }));
 // Turn-log rows: a seed-tutorial row of TEST-01 with no session id, and a row of TEST-02.
 const turnlog = path.join(data, "turnlog", "turns.jsonl");

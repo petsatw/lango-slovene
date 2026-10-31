@@ -403,6 +403,8 @@ main {
 }
 .settings-btn:hover { border-color: var(--green); }
 .history-entry { width: 100%; max-width: 520px; margin: 0 0 10px; }
+.history-head, .history-progress { display: block; }
+.history-progress { color: var(--muted); font-size: 13px; }
 .history-entry-body { display: block; margin: 8px 4px; color: var(--muted); font-size: 14px; }
 .feedback-overlay { z-index: 30; }
 .access-code { width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 12px; font-size: 16px; border-radius: 10px; border: 1px solid #3a4452; background: #11151b; color: #fff; }

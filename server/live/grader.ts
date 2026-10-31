@@ -24,7 +24,7 @@
 // gaining a second crediting path to keep in step.
 
 import { LEARNABLES, type Learnable } from "../learnables";
-import type { LearnerModel, LiveTargetReading, TargetEvidence, WitnessResult } from "../types";
+import type { LearnableProgress, LearnerModel, LiveTargetReading, TargetEvidence, WitnessResult } from "../types";
 import { getE2 } from "../adapters/index";
 import * as learner from "../assets/learner";
 import * as turnlog from "../assets/turnlog";
@@ -189,12 +189,20 @@ export function creditable(model: LearnerModel, grade: LiveGrade): WitnessResult
  *  is written, and the only thing still outstanding is the bookkeeping. Best-effort by the same
  *  discipline the rest of the live path keeps — a grade that fails leaves the session log exactly as it
  *  was written and costs the learner nothing. */
+/** The objectives the session made progress on: those with a `success` entry in the credit. */
+export function progressedIds(objectives: string[], progress: LearnableProgress[]): string[] {
+  const won = new Set(progress.filter((p) => p.result === "success").map((p) => p.id));
+  return objectives.filter((id) => won.has(id));
+}
+
 export async function creditSession(args: {
   learnerId: string;
   /** The instructions the tutor actually ran on — logged so a verdict can be read against the prompt
    *  that produced the conversation. */
   instructions: string;
   targets: Learnable[];
+  /** What the tutor steered toward (`buildLessonPrompt(...).objectives`). */
+  objectives: Learnable[];
   log: LiveSessionLog;
 }): Promise<void> {
   const { log, targets } = args;
@@ -246,7 +254,12 @@ export async function creditSession(args: {
     creditedCounts: countsFor(saved, credit.progress),
   });
 
-  liveLog.write({ ...log, lessonScore: grade.lessonScore, ...(credit.progress.length ? { credit: credit.progress } : {}) });
+  liveLog.write({
+    ...log,
+    lessonScore: grade.lessonScore,
+    progressed: progressedIds(args.objectives.map((l) => l.id), credit.progress),
+    ...(credit.progress.length ? { credit: credit.progress } : {}),
+  });
 }
 
 /** The end of a live session: write the log, score it, and for a no-save session delete what it left
