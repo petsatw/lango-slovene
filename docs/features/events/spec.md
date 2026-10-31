@@ -63,7 +63,7 @@ Each accepted event becomes one line in `DATA_DIR/events/events.jsonl`:
 | `finder_match_opened` | a finder result is opened | `scenarioId` |
 | `feedback_submitted` | a feedback sheet is sent | `surface`, `screen`, `scenarioId`, `level`, `lessonId`, plus `text` ([feedback](../feedback/spec.md#3-context)) |
 
-Back and Forward in a tap dialogue record no event.
+Back and Next in a tap dialogue record no event.
 
 The finder events record that a search happened and its outcome. The query text stays in the browser.
 

@@ -23,28 +23,30 @@ chip follows the level's `levelLabel`, which `lint:a1` computes from the level's
 
 ## 2. Controls
 
-A tap dialogue has three controls, "↻ Start over", "Back" and "Forward", in one row at the lower left of
+A tap dialogue has three controls, "↻ Start over", "Back" and "Next", in one row at the lower left of
 the dialogue card. They are on screen from the moment the conversation starts (after the intro, when the
 level has one) until the overlay closes, including at the level's end.
+
+Each control's accessible name is its plain word: "Start over", "Back" and "Next".
 
 ### 2.1 Steps
 
 - A step is one choice the learner taps: their line, and the character's reply that follows it.
 - The dialogue keeps the steps taken in this walk, in order, and a position in that list.
 - Tapping a choice adds a step at the position. Any steps after the position are dropped first, so
-  Forward only ever re-walks steps the learner has already taken on the current path.
+  Next only ever re-walks steps the learner has already taken on the current path.
 
-### 2.2 Back and Forward
+### 2.2 Back and Next
 
 - **Back** goes one step back: the conversation shows as it stood before the last step, with that fork's
   choices offered again. Back is disabled when no step has been taken.
-- **Forward** re-takes the next step that Back undid: the learner's line and the character's reply
-  appear, then the next fork's choices, or the end of the level. Forward is disabled when there is no
+- **Next** re-takes the next step that Back undid: the learner's line and the character's reply
+  appear, then the next fork's choices, or the end of the level. Next is disabled when there is no
   undone step to re-take.
 - Both stop any line that is playing. Restored lines appear at once, without playing their audio; each
   line's play button and tap-to-reveal English work as usual.
 - Back from the end of the level returns to the last fork.
-- Back and Forward record no event, no attempt and no credit.
+- Back and Next record no event, no attempt and no credit.
 
 ### 2.3 Start over
 
@@ -56,9 +58,9 @@ level has one) until the overlay closes, including at the level's end.
 
 ### 2.4 Level run
 
-- Start over, Back and Forward keep the level's run going: they neither start nor end it.
+- Start over, Back and Next keep the level's run going: they neither start nor end it.
 - `level_completed` fires once per run, the first time the run reaches the end of the level. Reaching the
-  end again after Back, Forward or Start over records nothing more.
+  end again after Back, Next or Start over records nothing more.
 - At the end of the level, the choices area shows the "Feedback" button
   ([feedback](../feedback/spec.md#1-points)); starting over is the "↻ Start over" control (§2).
 
