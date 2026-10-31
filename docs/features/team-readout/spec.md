@@ -100,8 +100,8 @@ One row per saved live log, `DATA_DIR/live/<sessionId>.json`
   `SESSION_TTL_SEC`, and `user` otherwise.
 - `error` is the log's error code, or `null`.
 - `progressed` lists the log's `progressed` ids, each with `name`: its learnable's `sl` in
-  `server/catalog/learnables.json`, as the wrap-up shows it. It is `null` when the log has no
-  `progressed` (the check failed).
+  `server/catalog/learnables.json`, as the wrap-up shows it. It is `null` when the log holds no
+  `progressed`.
 - `tester` follows §6.1.
 - The row holds these fields only: no `transcripts`, `credit`, `lessonScore`, `runId` or `retain`.
 - A log with `noSave: true` gives no row ([no-save session](../no-save-session/spec.md#2-session-end)).
