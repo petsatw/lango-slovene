@@ -101,6 +101,8 @@ const after = (a: { ts: string; k: string }, b: { ts: string; k: string }) =>
   a.ts !== b.ts ? a.ts > b.ts : a.k > b.k;
 
 teamRouter.get("/v1/team/events", (req, res, next) => {
+  // Express routes HEAD to a GET handler; the readout is GET only (spec §1), so HEAD falls through to 404.
+  if (req.method !== "GET") return next();
   const key = process.env.TEAM_READ_KEY;
   const auth = req.get("authorization");
   if (!key || !auth || !auth.startsWith("Bearer ")) return next();
@@ -132,7 +134,7 @@ teamRouter.get("/v1/team/events", (req, res, next) => {
   if (q.cursor !== undefined) {
     try {
       const c = JSON.parse(Buffer.from(String(q.cursor), "base64url").toString("utf8"));
-      if (typeof c?.ts !== "string" || typeof c?.k !== "string") throw new Error("shape");
+      if (typeof c?.ts !== "string" || typeof c?.k !== "string" || Number.isNaN(Date.parse(c.ts))) throw new Error("shape");
       cursor = { ts: c.ts, k: c.k };
     } catch {
       return void bad("cursor");
