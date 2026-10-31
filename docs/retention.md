@@ -17,11 +17,22 @@ so the learner's own deletes, Delete my data and the sweeps can find it.
 | 6 | `learners/<learnerId>.json` | learnable counts, `facts.gender`, `lastSeenAt` | kept | progress credit kept | Delete my data, 12-month sweep |
 | 7 | `events/events.jsonl` | event rows, feedback `text` | kept | kept | Delete my data, 12-month sweep |
 | 8 | `catalog-candidates.jsonl` | `surface`, `gloss`, `at`, passed through `stripPersonal` | written | written | 12 months |
-| 9 | server stdout | error messages, `LIVE_DEBUG=1` vendor event names | — | — | host log retention, 30 days |
+| 9 | server stdout | error messages, `LIVE_DEBUG=1` vendor event names; never the team readout key or its `Authorization` header | — | — | host log retention, 30 days |
 | 10 | the vendors | audio and text sent to Gemini, Grok and ElevenLabs | — | — | vendor terms |
 
 The learner's name is stored only inside free text (rows 1–4). The one structured fact in
 `server/catalog/facts.json` is `gender` (`m`/`f`).
+
+## What the team reads
+
+The [team readout](features/team-readout/spec.md) (`GET /v1/team/events`, behind `TEAM_READ_KEY`) returns:
+- row 7: every event row, feedback `text` included, with `learnerId` and a `tester` flag in place of
+  `testerCode`
+- from row 1, for a saved session only: `sessionId`, `learnerId`, `lessonId`, `provider`, start, end,
+  how it ended and the progressed objectives. No transcript, credit or score.
+
+It reads the files on each request and keeps no copy, so a delete or sweep that removes a row removes it
+from the readout.
 
 ## Stores that hold no learner content
 
