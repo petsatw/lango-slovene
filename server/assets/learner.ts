@@ -74,6 +74,7 @@ function shape(raw: any): LearnerModel {
     // not been asked yet — so an older file loads as a learner at the start of the course.
     facts: raw?.facts ?? {},
     updatedAt: raw?.updatedAt ?? new Date().toISOString(),
+    ...(raw?.lastSeenAt ? { lastSeenAt: raw.lastSeenAt } : {}),
   };
 }
 
@@ -139,6 +140,20 @@ export function load(id: string): LearnerModel {
 
 export function save(id: string, model: LearnerModel): LearnerModel {
   return store().write(idFrom(id), model);
+}
+
+const SEEN_EVERY_MS = 3600_000;
+const touched = new Map<string, number>();
+
+/** Stamp `lastSeenAt` on the learner a request resolved, at most once an hour. */
+export function touch(id: string): void {
+  const key = idFrom(id);
+  const now = Date.now();
+  if (now - (touched.get(key) ?? 0) < SEEN_EVERY_MS) return;
+  touched.set(key, now);
+  const model = load(key);
+  if (model.lastSeenAt && now - Date.parse(model.lastSeenAt) < SEEN_EVERY_MS) return;
+  save(key, { ...model, lastSeenAt: new Date(now).toISOString() });
 }
 
 /** Record one answer about the learner and persist it — the whole write path for a fact.

@@ -86,6 +86,9 @@ export interface LearnerModel {
   /** fact id → the stored answer, e.g. `{ gender: "f" }`. Present once the learner has answered one. */
   facts: Record<string, string>;
   updatedAt: string; // ISO
+  /** When a request last resolved this learner, at most hourly. The retention sweep deletes a learner
+   *  unused for 12 months (server/assets/retention.ts). */
+  lastSeenAt?: string; // ISO
 }
 
 // ---- Free conversation: the WITNESS contract (model = blind linguistic reporter, server owns credit) ----
