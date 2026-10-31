@@ -261,7 +261,7 @@ async function openHistory() {
     del.className = "settings-btn history-delete";
     del.textContent = "Delete";
     del.addEventListener("click", async () => {
-      if (!confirm("Delete this session?")) return;
+      if (!confirm("Delete this session? Your progress stays.")) return;
       await api(`/api/history/${encodeURIComponent(e.id)}`, { method: "DELETE" });
       openHistory();
     });
@@ -273,12 +273,12 @@ async function openHistory() {
 $("header-settings").addEventListener("click", openSettings);
 $("settings-history").addEventListener("click", openHistory);
 $("history-delete-all").addEventListener("click", async () => {
-  if (!confirm("Delete all your saved sessions?")) return;
+  if (!confirm("Delete all your saved sessions? Your progress stays.")) return;
   await api("/api/history", { method: "DELETE" });
   openHistory();
 });
 $("settings-delete").addEventListener("click", async () => {
-  if (!confirm("Delete all your data? This cannot be undone.")) return;
+  if (!confirm("Delete all your data? This removes your sessions and your progress, and can't be undone.")) return;
   const res = await api("/api/me", { method: "DELETE" });
   if (res.ok) { learnerStarted = false; openHome(); }
 });
