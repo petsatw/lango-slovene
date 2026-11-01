@@ -34,6 +34,11 @@ const EVENTS: Record<string, string[]> = {
   finder_query: ["resultCount"],
   finder_no_match: [],
   finder_match_opened: ["domainId"],
+  flashcards_started: ["domainId", "from", "firstSide", "includeMemorised", "deckSize"],
+  flashcard_rated: ["domainId", "learnableId", "result", "firstSide", "memorised", "hasAudio"],
+  flashcards_pass_completed: ["domainId", "pass", "cards"],
+  flashcards_setting_changed: ["setting", "value"],
+  flashcards_ended: ["domainId", "rated", "ms"],
   feedback_submitted: ["surface", "screen", "domainId", "level", "lessonId"],
 };
 
