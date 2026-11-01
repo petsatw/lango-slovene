@@ -860,6 +860,7 @@ async function openWords() {
   for (const c of cards) {
     const row = document.createElement("div");
     row.className = "words-item";
+    row.setAttribute("role", "listitem");
     const en = document.createElement("span");
     en.className = "words-en";
     en.textContent = c.en;

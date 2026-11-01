@@ -56,8 +56,8 @@
   <main id="levels" class="screen" hidden>
     <h2 id="levels-title" class="screen-title">—</h2>
     <p id="levels-title-sl" class="domain-meta screen-subtitle"></p>
-    <div id="words-row" class="words-row" hidden>
-      <span class="words-row-label">Words and Phrases</span>
+    <div id="words-row" class="words-row" role="group" aria-labelledby="words-row-label" hidden>
+      <span id="words-row-label" class="words-row-label">Words and Phrases</span>
       <button id="words-overview" class="words-chip" type="button">Overview</button>
     </div>
     <div id="level-list" class="level-list"></div>
@@ -66,7 +66,7 @@
   <!-- WORDS AND PHRASES — a domain's flashcard learnables, English next to Slovene (docs/features/flashcards/spec.md §3). -->
   <main id="words" class="screen" hidden>
     <h2 class="screen-title">Words and Phrases</h2>
-    <div id="words-list" class="words-list"></div>
+    <div id="words-list" class="words-list" role="list"></div>
   </main>
 
   <!-- ② LIVE AI TUTOR — ONE practice surface running either of the two speaking modes behind an

@@ -38,8 +38,6 @@ try {
   await up();
   const browser = await chromium.launch();
   const page = await (await browser.newContext()).newPage();
-  const audioCalls: string[] = [];
-  page.on("request", (r) => { if (/\/api\/speak|\/api\/flashcards\/audio/.test(r.url())) audioCalls.push(r.url()); });
   await page.goto(`${base}/?c=TEST-01`);
   await page.waitForFunction(() => !document.getElementById("scene")!.hidden);
   await page.evaluate(() => document.getElementById("scene-quit")!.click());
@@ -51,7 +49,7 @@ try {
     await page.waitForSelector("#words-row:not([hidden])");
   };
   const rows = () => page.$$eval("#words-list .words-item", (els: Element[]) =>
-    els.map((e) => ({ en: e.children[0].textContent, sl: e.children[1].textContent, text: (e.textContent || "").trim(), tick: e.querySelector(".words-tick") ? e.querySelector(".words-tick")!.getAttribute("aria-label") : null })));
+    els.map((e) => ({ en: e.children[0]!.textContent, sl: e.children[1]!.textContent, text: (e.textContent || "").trim(), tick: e.querySelector(".words-tick")?.getAttribute("aria-label") ?? null })));
   const openList = async () => {
     await page.click("#words-overview");
     await page.waitForSelector("#words-list .words-item");
@@ -66,29 +64,27 @@ try {
   });
   eq("row above first level card", above, true);
 
-  // 4. The list.
+  // 4. The list. Audio is recorded from here on: the first-open spoken lesson preloads its own clips.
+  const audioCalls: string[] = [];
+  page.on("request", (r) => { if (/\/api\/speak|\/api\/flashcards\/audio/.test(r.url())) audioCalls.push(r.url()); });
   await openList();
   eq("title", await page.$eval("#words .screen-title", (e: Element) => e.textContent), "Words and Phrases");
   let list = await rows();
   eq("row count", list.length, 80);
-  eq("first row", [list[0].en, list[0].sl], ["can / may", "Ali lahko ___? / Lahko ___."]);
+  eq("first row", [list[0]!.en, list[0]!.sl], ["can / may", "Ali lahko ___? / Lahko ___."]);
   eq("ticks at start", list.filter((r) => r.tick).length, 0);
 
   // 5. Tapping a row changes nothing and requests no audio.
   await page.locator("#words-list .words-item").first().click();
   eq("list after tap", await rows(), list);
-  eq("audio requests", audioCalls, []);
 
   // 6. Five nailed ratings through the app's own learner headers.
-  const status = await page.evaluate(async () => {
+  await page.evaluate(async () => {
     const h = { "Content-Type": "application/json", "x-learner-id": localStorage.getItem("learnerId") || "", "x-tester-code": localStorage.getItem("testerCode") || "" };
-    let last = null;
     for (let i = 0; i < 5; i++) {
-      last = await (await fetch("/api/flashcards/rate", { method: "POST", headers: h, body: JSON.stringify({ domainId: "sprehod", id: "star_sem_let", result: "nailed" }) })).json();
+      await fetch("/api/flashcards/rate", { method: "POST", headers: h, body: JSON.stringify({ domainId: "sprehod", id: "star_sem_let", result: "nailed" }) });
     }
-    return last;
   });
-  eq("memorised after 5", (status as any).memorised, true);
 
   // 7. Back returns to the levels overview.
   await page.click("#back");
@@ -98,14 +94,11 @@ try {
   await page.waitForSelector("#words-list .words-item");
   const cards = await (await fetch(`${base}/api/flashcards?domainId=sprehod`, { headers: { "x-tester-code": "TEST-01" } })).json();
   list = await rows();
-  eq("row count after", list.length, cards.cards.length);
-  const ticked = list.map((r, i) => (r.tick ? i : -1)).filter((i) => i >= 0);
-  eq("one ticked row", ticked.length, 1);
-  const t = list[ticked[0]];
-  eq("ticked card", cards.cards[ticked[0]].id, "star_sem_let");
-  eq("tick name", t.tick, "Memorised");
-  list.forEach((r, i) => eq(`row ${i} text`, r.text, `${cards.cards[i].en}${cards.cards[i].sl}${i === ticked[0] ? "✓" : ""}`));
-  eq("audio requests (after)", audioCalls, []);
+  // Each row is exactly its card's en and sl, in deck order; only star_sem_let ends in ✓.
+  const want = cards.cards.map((c: { id: string; en: string; sl: string }) => `${c.en}${c.sl}${c.id === "star_sem_let" ? "✓" : ""}`);
+  eq("row text", list.map((r) => r.text), want);
+  eq("tick name", list.filter((r) => r.tick).map((r) => r.tick), ["Memorised"]);
+  eq("audio requests", audioCalls, []);
 
   await page.click("#back");
   await page.waitForFunction(() => !document.getElementById("levels")!.hidden);
