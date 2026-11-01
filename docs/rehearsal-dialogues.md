@@ -366,7 +366,7 @@ Same content-addressed store, key, and preflight as `build:dialogue-assets`. The
 
 ## Runtime
 
-- **`GET /api/config?scenarioId=`** returns `dialogues: Dialogue[]` (level-sorted; `[]` if none). The whole
+- **`GET /api/config?domainId=`** returns `dialogues: Dialogue[]` (level-sorted; `[]` if none). The whole
   tree ships to the client — the click-through runs entirely client-side, **no server turn per choice**.
 - **Client** — the rehearsal overlay in [`public/app.js`](../public/app.js): level tabs, the branching
   renderer, click-to-reveal English, and a single dialogue audio channel that supersedes the prior clip
