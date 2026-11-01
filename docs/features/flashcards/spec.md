@@ -4,7 +4,8 @@ Each domain with published levels has a "Words and Phrases" list: every learnabl
 English next to Slovene. From the list, or straight from the domain's levels overview, the learner runs
 a flashcard drill over the same learnables. With "Hear it in context" on, the Slovene side of a card
 plays a line the learner already heard in that domain's levels, served from the committed audio store,
-and shows that line's Slovene. "Nailed it" adds 1 to the learner's count for that learnable. At 5 the card is memorised, and the list marks it with a check mark.
+and shows that line's Slovene. "Nailed it" adds 1 to the learner's count for that learnable. At 5 the
+card is memorised, and the list marks it with a check mark.
 
 Flashcard state is the learner's own self-rating, kept beside mastery. Mastery (A1 Readiness, the tutor's
 focus set, the live grader and progressed objectives) comes only from spoken lessons and live sessions.
