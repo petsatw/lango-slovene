@@ -24,7 +24,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { DATA_DIR } from "./store";
-import type { LearnerModel } from "../types";
+import type { FlashcardState, LearnerModel } from "../types";
 
 /** The id a request that names no learner is served under — the operator at their own machine. */
 export const DEFAULT_LEARNER_ID = "local";
@@ -67,12 +67,29 @@ interface LearnerStore {
   write(id: string, model: LearnerModel): LearnerModel;
 }
 
+/** Keeps an entry only when `nailed` is a non-negative integer, and the dates only when strings. */
+function shapeFlashcards(raw: any): Record<string, FlashcardState> | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const out: Record<string, FlashcardState> = {};
+  for (const [id, v] of Object.entries<any>(raw)) {
+    if (!Number.isInteger(v?.nailed) || v.nailed < 0) continue;
+    out[id] = {
+      nailed: v.nailed,
+      ...(typeof v.memorisedAt === "string" ? { memorisedAt: v.memorisedAt } : {}),
+      ...(typeof v.lastRatedAt === "string" ? { lastRatedAt: v.lastRatedAt } : {}),
+    };
+  }
+  return out;
+}
+
 function shape(raw: any): LearnerModel {
+  const flashcards = shapeFlashcards(raw?.flashcards);
   return {
     learnables: raw?.learnables ?? {},
     // A model written before facts existed simply has none, which is the same state as a learner who has
     // not been asked yet — so an older file loads as a learner at the start of the course.
     facts: raw?.facts ?? {},
+    ...(flashcards ? { flashcards } : {}),
     updatedAt: raw?.updatedAt ?? new Date().toISOString(),
     ...(raw?.lastSeenAt ? { lastSeenAt: raw.lastSeenAt } : {}),
   };

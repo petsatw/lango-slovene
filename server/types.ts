@@ -71,6 +71,13 @@ export interface LearnableMastery {
   lastAttemptAt?: string;
 }
 
+/** A learner's self-rating of one flashcard (docs/features/flashcards/spec.md §7). */
+export interface FlashcardState {
+  nailed: number;        // "Nailed it" taps
+  memorisedAt?: string;  // ISO; set on every "Nailed it" that leaves nailed >= FLASHCARD_THRESHOLD
+  lastRatedAt?: string;  // ISO; set on every rating
+}
+
 /** The whole learner model — one durable, local, single-learner model (assets/learner.json).
  *
  *  Two kinds of knowledge live here and stay separate. `learnables` is what the learner can SAY, earned
@@ -78,13 +85,15 @@ export interface LearnableMastery {
  *  or put words in their mouth (server/facts.ts). A fact is given once, by the learner, at a beat that
  *  asks for it; nothing infers one.
  *
- *  BOTH fields are rebuilt by hand in `learner.load`/`learner.save` (assets/learner.ts). Adding a third
- *  means editing those two functions as well as this interface — the field would otherwise round-trip to
- *  undefined with nothing raised. */
+ *  Every field is rebuilt by hand in `shape()` (assets/learner.ts), which `learner.load`/`learner.save`
+ *  both go through. Adding one means editing `shape()` as well as this interface — the field would
+ *  otherwise round-trip to undefined with nothing raised. */
 export interface LearnerModel {
   learnables: Record<string, LearnableMastery>;
   /** fact id → the stored answer, e.g. `{ gender: "f" }`. Present once the learner has answered one. */
   facts: Record<string, string>;
+  /** learnable id → the learner's flashcard self-rating (server/flashcards.ts), kept beside mastery. */
+  flashcards?: Record<string, FlashcardState>;
   updatedAt: string; // ISO
   /** When a request last resolved this learner, at most hourly. The retention sweep deletes a learner
    *  unused for 12 months (server/assets/retention.ts). */
