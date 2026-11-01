@@ -154,6 +154,8 @@ main.screen, main.home {
 }
 .words-sl { font-weight: 600; }
 .words-tick { color: var(--green); font-weight: 700; }
+/* The list screen scrolls with the page, so the button sticks to the viewport (§3). */
+#words { overflow-y: visible; }
 .words-flashcards-btn { position: sticky; top: 0; align-self: flex-start; margin-bottom: 10px; z-index: 1; }
 /* Card mode. */
 .fc-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; max-width: 520px; margin-bottom: 12px; }

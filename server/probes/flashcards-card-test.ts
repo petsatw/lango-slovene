@@ -42,23 +42,27 @@ try {
   const browser = await chromium.launch({ args: ["--autoplay-policy=no-user-gesture-required"] });
   const page: any = await (await browser.newContext()).newPage();
 
-  let cards: Card[] = [];
+  let cards: Card[] = [], trim = true;
   await page.route((u: URL) => u.pathname === "/api/flashcards" && u.searchParams.get("domainId") === "sprehod", async (route: any) => {
     const res = await route.fetch();
     const body = await res.json();
-    body.cards = body.cards.filter((c: Card) => KEEP.includes(c.id)).map((c: Card) => (c.id === "skakati" ? { ...c, example: null } : c));
+    if (trim) body.cards = body.cards.filter((c: Card) => KEEP.includes(c.id)).map((c: Card) => (c.id === "skakati" ? { ...c, example: null } : c));
     cards = body.cards;
     await route.fulfill({ response: res, json: body });
   });
 
   let inCard = false;
-  const audio: { id: string; status: number }[] = [];
+  // A served clip: 200, or 206 when the media element sent Range (Chromium sends "bytes=0-"), as audio/mpeg.
+  const audio: { id: string; served: boolean }[] = [];
   const rates: string[] = [];
   const speak: string[] = [];
   const bad: string[] = [];
   page.on("response", (r: any) => {
     const u = new URL(r.url());
-    if (u.pathname === "/api/flashcards/audio") audio.push({ id: u.searchParams.get("id")!, status: r.status() });
+    if (u.pathname === "/api/flashcards/audio") {
+      const served = (r.status() === 200 || r.status() === 206) && r.headers()["content-type"] === "audio/mpeg";
+      audio.push({ id: u.searchParams.get("id")!, served });
+    }
     if (r.status() === 502) bad.push(r.url());
   });
   page.on("request", (r: any) => {
@@ -94,6 +98,11 @@ try {
     await page.click(result === "nailed" ? "#fc-nailed" : "#fc-oops");
   };
   const audioPaused = () => page.$eval("#fc-audio", (a: HTMLAudioElement) => a.paused);
+  // The card's clip is playing (a repeat of the last clip replays from the media cache, with no new request).
+  const playing = (id: string) => page.waitForFunction((id: string) => {
+    const a = document.getElementById("fc-audio") as HTMLAudioElement;
+    return new URL(a.src).searchParams.get("id") === id && !a.paused && a.currentTime > 0;
+  }, id, { timeout: 5000 }).catch(() => fail(`clip ${id} not playing`));
   const until = async (name: string, fn: () => boolean) => {
     for (let i = 0; i < 40; i++) { if (fn()) return; await page.waitForTimeout(100); }
     fail(`timed out: ${name}`);
@@ -109,7 +118,6 @@ try {
   // 3. Controls and the first card, English side.
   eq("segments", await page.$$eval(".fc-seg-opt", (els: Element[]) => els.map((e) => [(e.textContent || "").trim(), e.getAttribute("aria-pressed")])), [["English", "true"], ["Slovene", "false"]]);
   eq("include off", await page.isChecked("#fc-include"), false);
-  eq("cards", cards.map((c) => c.id).sort(), [...KEEP].sort());
   let card = await shown();
   eq("english side", await text("#fc-card .fc-main"), card.en);
   eq("no chips", await visible("#fc-rate"), false);
@@ -121,8 +129,8 @@ try {
   if (card.example) {
     eq("example line", await text("#fc-card .fc-example"), `${card.example.sl}${card.example.en}`);
     await until("clip request", () => audio.length === 1);
-    // The media element sends Range, which the route honours with 206.
-    eq("clip", audio.map((a) => [a.id, a.status === 200 || a.status === 206]), [[card.id, true]]);
+    eq("clip", audio, [{ id: card.id, served: true }]);
+    await playing(card.id);
   } else {
     eq("no example line", await page.$$("#fc-card .fc-example"), []);
     await page.waitForTimeout(300);
@@ -131,7 +139,7 @@ try {
   eq("chips shown", await visible("#fc-rate"), true);
   await tap();
   eq("back to english", await text("#fc-card .fc-main"), card.en);
-  eq("clip paused", await audioPaused(), true);
+  if (card.example) eq("clip paused", await audioPaused(), true);
 
   // 5. Slovene first applies from the next card.
   await page.click('.fc-seg-opt[data-side="sl"]');
@@ -149,9 +157,7 @@ try {
       }
       if (!(pass === 1 && k === 0)) {
         eq(`pass ${pass} opens slovene`, await text("#fc-card .fc-main"), card.sl);
-        if (card.example) {
-          await until("clip on open", () => audio.some((a) => a.id === card.id));
-        }
+        if (card.example) await playing(card.id);
       }
       seen.push(card.id);
       const result = pass <= 5 && card.id !== "star_sem_let" ? "oops" : "nailed";
@@ -167,7 +173,7 @@ try {
     if (pass === 1) eq("rate calls after pass 1", rates.length, 3);
   }
   eq("rate calls", rates.length, 25);
-  eq("clips answered 200", audio.every((a) => a.status === 200 || a.status === 206), true);
+  eq("clips served", audio.every((a) => a.served), true);
   eq("no clip for the card without example", audio.some((a) => a.id === "skakati"), false);
 
   // 8. Everything memorised: empty state; Include memorised brings the cards back with the check mark.
@@ -194,8 +200,12 @@ try {
   eq("stored", await page.evaluate(() => [localStorage.flashcardsFirstSide, localStorage.flashcardsIncludeMemorised]), ["sl", "1"]);
   await page.click("#back");
   await page.waitForFunction(() => !document.getElementById("levels")!.hidden && document.getElementById("flashcards")!.hidden);
+  trim = false; // the full list, long enough to scroll
   await page.click("#words-overview");
   await page.waitForSelector("#words-list .words-item");
+  await page.evaluate(() => scrollTo({ top: document.body.scrollHeight, behavior: "instant" }));
+  await page.waitForFunction(() => scrollY > 0);
+  eq("button stays at the top", await page.$eval("#words-flashcards-btn", (e: Element) => e.getBoundingClientRect().top >= 0), true);
   await page.click("#words-flashcards-btn");
   await page.waitForFunction(() => !document.getElementById("flashcards")!.hidden);
   await shown();

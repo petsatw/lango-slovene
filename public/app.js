@@ -970,6 +970,7 @@ function renderFcCard() {
 }
 
 function turnFcCard() {
+  if (!fcDeck[fcPos]) return; // the pass has ended and the next is still being built
   fcShown = fcShown === "en" ? "sl" : "en";
   if (fcShown === "en") fcStopClip();
   $("fc-rate").hidden = false;
@@ -978,6 +979,7 @@ function turnFcCard() {
 
 async function rateFcCard(result) {
   const card = fcDeck[fcPos];
+  if (!card) return;
   const domainId = currentDomain.id;
   const send = () => api("/api/flashcards/rate", {
     method: "POST",
