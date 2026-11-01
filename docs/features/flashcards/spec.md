@@ -49,6 +49,7 @@ The list is its own screen, `words` (`screen_viewed`, [events](../events/spec.md
 - One row per card, in domain order (§1). Each row has two columns: English (`en`, §5) and Slovene
   (`sl`, §5).
 - A memorised card shows "✓" at the end of its row. The list shows no count, number or date.
+- The "✓" has the accessible name "Memorised", on list rows and on cards.
 - Rows are read-only. Tapping a row does nothing, and the list plays no audio.
 - Back returns to the levels screen.
 - The list loads from `GET /api/flashcards` (§8) each time it opens, so the check marks are current after
@@ -82,6 +83,9 @@ Two controls sit above the card and stay on screen:
 - Audio: each time the Slovene side comes into view, the example clip plays from the start (§6.4). This
   happens when a card opens Slovene first and on every turn to Slovene. The clip stops on a turn to
   English, on a rating and on leaving card mode. A card with no example is silent.
+- A memorised card shows "✓" in its top corner on both sides (accessible name "Memorised", §3).
+- Feedback: the header's "Feedback" link opens the feedback sheet with `screen: "flashcards"`, as on
+  the other screens ([feedback](../feedback/spec.md#4-feedback-chip)).
 
 ### 4.3 Rating
 
