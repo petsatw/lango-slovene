@@ -778,18 +778,15 @@ $("finder").addEventListener("submit", async (e) => {
   }
 });
 
-// The scenario TASK is the headline; difficulty is a glanceable chip, not encoded jargon. Every dialogue
-// in the MVP is A1, so the CEFR band is constant noise — we collapse the (inconsistent) authored labels
-// ("Survival"/"Beginning A1"/"Basic A1"/"Advanced A1"/"Full A1") into one plain 3-tier ladder.
+// The scenario TASK is the headline; difficulty is a glanceable chip, not encoded jargon. The chip shows
+// the level's computed band as Beginner, Intermediate or Advanced (docs/features/dialogue-lesson/spec.md §1):
+// Basic → Beginner, Intermediate → Intermediate, Advanced and Above A1 → Advanced.
 const DIFFICULTY_TIERS = { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" };
 function difficultyTier(levelLabel) {
   const l = (levelLabel || "").toLowerCase();
-  // Handles both the computed bands (Basic/Intermediate/Advanced — docs/dialogue-difficulty-model.md)
-  // and legacy authored labels (Survival / Beginning A1 / Basic A1 / Full A1 / A2).
-  if (l.includes("advanced") || l.includes("full")) return "advanced";
-  if (l.includes("intermediate") || l.includes("basic a1")) return "intermediate"; // computed "Intermediate"; legacy "Basic A1" = middle rung
-  if (l === "basic") return "beginner"; // computed entry band
-  return "beginner"; // "Survival", "Beginning A1", "A2", and anything unrecognized read as the entry rung
+  if (l === "advanced" || l === "above a1") return "advanced";
+  if (l === "intermediate") return "intermediate";
+  return "beginner";
 }
 
 // The crisp variant selector: one big card per level — the TASK up front, a difficulty chip beside it,
