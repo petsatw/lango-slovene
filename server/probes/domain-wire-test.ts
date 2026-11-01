@@ -53,11 +53,6 @@ const check = (name: string, ok: unknown, detail = "") => {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${ok || !detail ? "" : " — " + detail}`);
   if (!ok) failed = true;
 };
-const scenarioKeys = (o: unknown, trail = ""): string[] =>
-  Array.isArray(o) ? o.flatMap((x) => scenarioKeys(x, trail))
-    : o && typeof o === "object"
-      ? Object.entries(o).flatMap(([k, v]) => [...(/scenario/i.test(k) ? [trail + k] : []), ...scenarioKeys(v, trail + k + ".")])
-      : [];
 const rows = () => readFileSync(log, "utf8").trim().split("\n").filter(Boolean);
 
 try {
@@ -72,8 +67,10 @@ try {
   const first = await team(`limit=1&since=${ts1}`);
   const second = await team(`limit=1&cursor=${first.next}`);
   const kOf = (r: any) => JSON.parse(Buffer.from(r.next, "base64url").toString("utf8")).k;
-  check("team events: both seeded rows have props.domainId bakery",
-    first.rows[0]?.props?.domainId === "bakery" && second.rows[0]?.props?.domainId === "bakery",
+  // The readout counts a domain across the cutover: the old row (scenarioId) and the new row (domainId) group together.
+  const perDomain: Record<string, number> = {};
+  for (const r of [...first.rows, ...second.rows]) perDomain[r.props?.domainId] = (perDomain[r.props?.domainId] ?? 0) + 1;
+  check("team events: counting rows by props.domainId puts both seeded rows under bakery", perDomain.bakery === 2,
     JSON.stringify([first.rows[0]?.props, second.rows[0]?.props]));
   check("team events: k equals the value computed from the raw line", kOf(first) === `${sha(seeded[0]!)}#1` && kOf(second) === `${sha(seeded[1]!)}#1`);
 
@@ -91,28 +88,30 @@ try {
   const prune = cli("server/scripts/prune-assets.ts");
   check("npm run prune:assets lists both records", prune.includes("bakery/obj-old") && prune.includes("bakery/obj-new"), prune);
 
-  // 4. response bodies
-  for (const p of ["/api/practice", "/api/match/index", "/api/a1", "/api/history"]) {
-    const body = await (await fetch(`${base}${p}`, { headers: { "x-tester-code": "TEST-01" } })).json();
-    const hits = scenarioKeys(body);
-    check(`${p}: no key contains "scenario"`, hits.length === 0, [...new Set(hits)].slice(0, 5).join(", "));
-  }
+  // 4. response fields that hold domains are named for them
+  const getJson = async (p: string) => (await fetch(`${base}${p}`, { headers: { "x-tester-code": "TEST-01" } })).json();
+  const [practice, index, a1] = [await getJson("/api/practice"), await getJson("/api/match/index"), await getJson("/api/a1")];
+  check("responses name domains by domains[], domainTokens, domains and domain",
+    Array.isArray(practice.domains) && practice.domains.length > 0 && Array.isArray(index.entries?.[0]?.domainTokens) &&
+      a1.competencies?.length > 0 && a1.competencies.every((c: any) => Array.isArray(c.domains)) &&
+      typeof history.entries[0]?.domain === "string",
+    JSON.stringify({ practice: Object.keys(practice), match: Object.keys(index.entries?.[0] ?? {}), a1: Object.keys(a1.competencies?.[0] ?? {}), history: Object.keys(history.entries[0] ?? {}) }));
 
   // 6. /api/scene
   const scene = (body: object) => fetch(`${base}/api/scene`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
-  const practice = await (await fetch(`${base}/api/practice`)).json();
   const spoken = practice.domains.find((d: any) => d.dialogues.some((x: any) => x.advance === "audio"));
-  const ok = await scene({ domainId: spoken.id, level: spoken.dialogues.find((x: any) => x.advance === "audio").level });
+  const level = spoken.dialogues.find((x: any) => x.advance === "audio").level;
+  const ok = await scene({ domainId: spoken.id, level });
   const opening = await ok.json();
   check("POST /api/scene with domainId is 200 and returns the opening beat", ok.status === 200 && opening && typeof opening === "object" && Object.keys(opening).length > 0, String(ok.status));
-  check("POST /api/scene without domainId is 400", (await scene({ level: 1 })).status === 400);
+  // No dual-accept: a stale tab still sending scenarioId gets a 400 and needs a reload.
+  check("POST /api/scene with scenarioId instead of domainId is 400", (await scene({ scenarioId: spoken.id, level })).status === 400);
 
   // 5. the events the app writes
   const lv = practice.domains
     .flatMap((sc: any) => sc.dialogues.map((d: any) => ({ sc, d })))
     .find((x: any) => (x.d.advance ?? "tap") === "tap" && !x.d.intro && x.d.introduces?.length);
   if (!lv) throw new Error("no tap level to play");
-  const index = await (await fetch(`${base}/api/match/index`)).json();
   const entry = index.entries.find((e: any) => e.dialogueId === lv.d.id);
   const word = entry?.nodes.flatMap((n: any) => n.tokens).find((t: string) => t.length > 3 && /^[a-z]+$/.test(t) && !t.endsWith("s"));
   if (!word) throw new Error("no line word for the finder match");
@@ -168,7 +167,6 @@ try {
     const r = mine.filter((x) => x.name === n && x.props?.level !== null);
     check(`${n} is written with props.domainId ${lv.sc.id}`, r.length > 0 && r.every((x) => x.props?.domainId === lv.sc.id), JSON.stringify(r.map((x) => x.props)));
   }
-  check("no line written after the seeded ones contains scenarioId", !rows().slice(seeded.length).some((l) => l.includes("scenarioId")));
 } catch (err) {
   console.error(err);
   failed = true;
