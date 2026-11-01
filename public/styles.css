@@ -472,7 +472,7 @@ main {
 }
 .dialogue-level.active { color: #fff; background: var(--green); border-color: var(--green); }
 .dialogue-convo {
-  flex: 1; min-height: 0; overflow-y: auto;
+  flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
   display: flex; flex-direction: column; gap: 10px;
   padding: 8px 2px; margin: 6px 0;
 }
@@ -580,7 +580,7 @@ main {
 /* Choices: each is a distinct tappable card with a trailing "›" — the same select cue the scenario and
  * level cards use — so it reads unmistakably as "tap to choose", no instruction line needed. */
 .choice-list {
-  flex: 1; min-height: 0; overflow-y: auto;
+  flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
   display: flex; flex-direction: column; gap: 8px; padding: 3px; /* room for card shadows */
 }
 /* The live choice is the ONE thing to do now: amber accent (a hue nothing else uses), a filled number
@@ -635,6 +635,9 @@ main {
 }
 .dialogue-handoff:hover { color: #fff; border-color: var(--green); }
 .dialogue-handoff:active { transform: scale(0.98); }
+
+/* The page behind the dialogue overlay (and any sheet over it) stays put; its scroll position is kept. */
+html.dialogue-open, html.dialogue-open body { overflow: hidden; overscroll-behavior: none; }
 
 .story-overlay {
   position: fixed; inset: 0; z-index: 20;
