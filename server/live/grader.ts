@@ -29,6 +29,7 @@ import { getE2 } from "../adapters/index";
 import * as learner from "../assets/learner";
 import * as turnlog from "../assets/turnlog";
 import { purgeSession, settling } from "../assets/retention";
+import { writeImprove } from "../assets/deletion";
 import { countsFor, creditFromEvidence, isMastered } from "../mastery";
 import * as liveLog from "./log";
 import type { LessonScore, LiveSessionLog, LiveTranscript } from "./log";
@@ -279,6 +280,7 @@ export async function settleSession(
   if (log.noSave) settling.add(log.sessionId);
   try {
     liveLog.write(log);
+    if (log.improve && !log.noSave) writeImprove(log);
   } catch (err: any) {
     console.error("[live] session log failed:", err?.message);
   }

@@ -277,6 +277,7 @@ $("history-delete-all").addEventListener("click", async () => {
   await api("/api/history", { method: "DELETE" });
   openHistory();
 });
+$("settings-improve").addEventListener("click", () => api("/api/me/improve", { method: "DELETE" }));
 $("settings-delete").addEventListener("click", async () => {
   if (!confirm("Delete all your data? This removes your sessions and your progress, and can't be undone.")) return;
   const res = await api("/api/me", { method: "DELETE" });
