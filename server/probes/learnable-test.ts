@@ -1,14 +1,12 @@
 // Mastery-layer tests — the durable per-learnable rules.
 //   (unit)        applyCredit + presentObjective with plain inputs (no I/O, highest fidelity for logic)
 //   (integration) the learner store round-trips through a REAL temp file (seed→invoke→assert→cleanup)
-//   (--live)      a REAL student clip through understand() updates the durable model on real Gemini
-// Run: `npm run test:learnable`  (add `-- --live` for the real-Gemini end-to-end leg).
+// Run: `npm run test:learnable`.
 
 import "dotenv/config";
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import {
   applyCredit,
   creditFromEvidence,
@@ -286,39 +284,6 @@ console.log("learner store (one file per learner, the default):");
     else process.env.LEARNERS_DIR = prevDir;
     if (prevStore !== undefined) process.env.LEARNER_STORE = prevStore;
     rmSync(dir, { recursive: true, force: true });
-  }
-}
-
-// ---- optional: --live end-to-end through understand() on real Gemini --------------------------------
-if (process.argv.includes("--live")) {
-  console.log("live (real Gemini through understand):");
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
-  const clip = path.join(__dirname, "..", "..", "fixtures", "out", "e3-probe.mp3");
-  if (!existsSync(clip)) {
-    console.log("  ⚠️  skipped — need a clip at fixtures/out/e3-probe.mp3 (run: npm run probe:e3)");
-  } else {
-    const dir = mkdtempSync(path.join(os.tmpdir(), "learner-live-"));
-    process.env.LEARNER_PATH = path.join(dir, "learner.json");
-    process.env.LEARNER_STORE = "file";
-    try {
-      const { understand } = await import("../orchestrator");
-      const { getDomain, freshSession } = await import("../domains");
-      const learner = await import("../assets/learner");
-      const domain = getDomain("cafe");
-      const audioBase64 = readFileSync(clip).toString("base64");
-      const r = await understand({ audioBase64, mimeType: "audio/mp3", history: [], session: freshSession(domain),
-                                   learnerId: learner.DEFAULT_LEARNER_ID });
-      console.log(`  verbatim: ${r.userVerbatim}`);
-      console.log(`  learnable_progress: ${r.learnableProgress.map((p) => `${p.id}:${p.result}`).join("  ") || "(none)"}`);
-      const model = learner.load(learner.DEFAULT_LEARNER_ID);
-      check("live: durable model gained at least one learnable", Object.keys(model.learnables).length > 0, JSON.stringify(model.learnables));
-      // The fixture says "Ena kava" (the nominative error) → the pattern should be an attempt, not a success.
-      const pat = model.learnables.eno_femacc;
-      if (pat) check("live: the nominative-error pattern was an attempt, not a success", pat.successes === 0 && pat.attempts >= 1, JSON.stringify(pat));
-      else console.log("  ⚠️  model did not address eno_femacc this run (model's judgement) — skipping that assertion");
-    } finally {
-      rmSync(dir, { recursive: true, force: true });
-    }
   }
 }
 

@@ -472,18 +472,4 @@ export class GeminiE2 implements E2Adapter {
       fallback: { scene: String(parsed.fallback?.scene ?? ""), role: parsed.fallback?.role ?? null },
     };
   }
-
-  async ping(): Promise<string> {
-    const key = requireKey();
-    const res = await fetch(`${BASE}/${this.model}:generateContent`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: "Reply with the single word: OK" }] }],
-      }),
-    });
-    if (!res.ok) throw shortError(res.status, await res.text());
-    const data: any = await res.json();
-    return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "(empty)";
-  }
 }

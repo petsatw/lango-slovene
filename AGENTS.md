@@ -238,10 +238,7 @@ The reasons to repeat and improvise, and the tests a new one must pass, are in c
 ```bash
 npm run fetch:assets   # download prebuilt scene images + audio so ready-made domains work (free)
 npm run dev            # http://localhost:8787 — hold the button, speak, release
-npm run probe:e2       # understand+tutor adapter reachable
-npm run probe:e3       # voice adapter returns real audio
-npm run replay         # recorded clips → full pipeline → audio
-npm run test:mastery   # the deterministic mastery-loop rules
+npm run test:learnable # the durable mastery rules
 npm run runs           # both speaking modes' records of a sitting, side by side
 ```
 

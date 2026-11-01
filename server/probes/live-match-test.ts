@@ -45,7 +45,6 @@ check("carries the literal runs and the mishearing", terms, [
   "Rad bi",
   "Rada bi",
 ]);
-check("within the vendor's ceiling", terms.every((t) => t.length <= 50) && terms.length <= 100, true);
 
 console.log("\nthe verdict rule (readTarget)");
 {

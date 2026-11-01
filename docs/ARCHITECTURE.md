@@ -58,8 +58,7 @@ extending, or authoring content for the system). While the heart of the app is l
 | Capability | Command / surface | Notes |
 |---|---|---|
 | **Run / serve** | `npm run dev` · `npm run start` | thin Node/Express server; serves the PWA, `/api`, and `/gallery`. |
-| **Probe a provider** | `npm run probe:e2` · `npm run probe:e3` | cheap credential/latency check before a large run. |
-| **End-to-end verify** | `npm run replay` · `npm run test:mastery` | real recorded audio through the full pipeline / through the mastery loop. |
+| **Verify** | `npm run test:learnable` · `npm run test:live-match` | the durable mastery rules / live-mode crediting. Rules: [testing spec](features/testing/spec.md). |
 | **Author a domain** | the create-domain skill · `npm run lint:domain` | deterministic lint gates the skill; a `--self-directed` mode discovers the next domain itself. See [domain-authoring.md](domain-authoring.md). |
 | **Materialize assets** | `npm run build:assets -- <id> [--regen frame:<obj>\|scene\|audio:…]` | builds a domain's audio + frames + scene; `--regen` surgically re-rolls one leaf. |
 | **Render catalog assets** | `npm run render:asset` · `npm run render:concept` | render one object/character, or a composed concept/location. |

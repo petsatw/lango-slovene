@@ -234,8 +234,6 @@ export interface E2Adapter {
     transcript: ConversationTurn[];
     catalog: WitnessTarget[];
   }): Promise<LiveTargetReading[]>;
-  /** Cheap credential/endpoint check used by `npm run probe:e2`. Must NOT log the key. */
-  ping(): Promise<string>;
 }
 
 /** E3 — native-quality Slovenian text-to-speech. */
