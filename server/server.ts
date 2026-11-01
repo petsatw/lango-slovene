@@ -32,7 +32,7 @@ import { buildGalleryHtml } from "./scripts/gallery";
 import { frameFor } from "./scripts/dialogue-lib";
 import { liveRouter, attachLive } from "./live/index";
 import * as events from "./events";
-import { exampleClip } from "./flashcards";
+import { exampleClip, deckFor, rate as rateCard, status as cardStatus } from "./flashcards";
 import { buildIndex, matchSituation, SYNONYMS, STOP, MATCH_THRESHOLD } from "./match";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -759,6 +759,31 @@ app.get("/api/speak", async (req, res) => {
     if (!res.headersSent) res.status(502).json({ error: err?.message || "speak failed" });
     else res.end();
   }
+});
+
+// Flashcard state (docs/features/flashcards/spec.md §8): responses carry `memorised` and `due` only.
+app.get("/api/flashcards", (req, res) => {
+  const domainId = String(req.query.domainId ?? "");
+  const deck = deckFor(domainId);
+  if (!deck) return res.status(404).json({ error: "no such domain" });
+  const model = learner.load(learnerOf(req));
+  const now = new Date();
+  res.json({
+    domainId,
+    name: DOMAINS.find((d) => d.id === domainId)?.name ?? domainId,
+    cards: deck.map((c) => ({ ...c, ...cardStatus(model, c.id, now) })),
+  });
+});
+app.post("/api/flashcards/rate", (req, res) => {
+  const { domainId, id, result } = req.body ?? {};
+  const deck = deckFor(String(domainId ?? ""));
+  if (!deck) return res.status(404).json({ error: "no such domain" });
+  if (typeof id !== "string" || !deck.some((c) => c.id === id)) return res.status(400).json({ error: "no such card" });
+  if (result !== "nailed" && result !== "oops") return res.status(400).json({ error: "result must be nailed or oops" });
+  const learnerId = learnerOf(req);
+  const now = new Date();
+  const saved = learner.save(learnerId, rateCard(learner.load(learnerId), id, result, now));
+  res.json(cardStatus(saved, id, now));
 });
 
 // Flashcard example clip (docs/features/flashcards/spec.md §6.4): disk store only, no synthesis path.

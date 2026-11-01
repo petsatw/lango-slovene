@@ -6,6 +6,7 @@ import { CATALOG } from "./catalog";
 import { getE3 } from "./adapters/index";
 import { isSynthesized } from "./scripts/dialogue-lib";
 import * as store from "./assets/store";
+import type { LearnerModel } from "./types";
 
 export interface FlashcardExample { sl: string; en: string; voice: string | undefined }
 export interface Flashcard { id: string; en: string; note?: string; sl: string; example: FlashcardExample | null }
@@ -84,4 +85,27 @@ export function deckFor(domainId: string): Flashcard[] | null {
 export function exampleClip(domainId: string, id: string): Buffer | null {
   const ex = deckFor(domainId)?.find((c) => c.id === id)?.example;
   return ex ? store.read(clipKey(ex.voice, ex.sl), "audio") : null;
+}
+
+export const FLASHCARD_THRESHOLD = 5;
+const DUE_AFTER_MS = 30 * 86_400_000;
+
+/** A rating applied to the model: a new model, `learnables` and `facts` untouched (spec §7). */
+export function rate(model: LearnerModel, learnableId: string, result: "nailed" | "oops", now: Date): LearnerModel {
+  const at = now.toISOString();
+  const prev = model.flashcards?.[learnableId] ?? { nailed: 0 };
+  const next = { ...prev, lastRatedAt: at };
+  if (result === "nailed") {
+    next.nailed = prev.nailed + 1;
+    if (next.nailed >= FLASHCARD_THRESHOLD) next.memorisedAt = at;
+  }
+  return { ...model, flashcards: { ...model.flashcards, [learnableId]: next } };
+}
+
+/** `memorised` and `due` for one card, derived at read time (spec §1). */
+export function status(model: LearnerModel, learnableId: string, now: Date): { memorised: boolean; due: boolean } {
+  const st = model.flashcards?.[learnableId];
+  const memorised = (st?.nailed ?? 0) >= FLASHCARD_THRESHOLD;
+  const at = st?.memorisedAt ? Date.parse(st.memorisedAt) : NaN;
+  return { memorised, due: !memorised || (Number.isFinite(at) && now.getTime() - at > DUE_AFTER_MS) };
 }
