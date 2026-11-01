@@ -24,6 +24,7 @@ const EVENTS: Record<string, string[]> = {
   intro_quit: ["kind", "id"],
   level_started: ["scenarioId", "level"],
   level_completed: ["scenarioId", "level", "ms"],
+  level_restarted: ["scenarioId", "level", "nodeId"],
   level_abandoned: ["scenarioId", "level", "ms", "nodeId"],
   handoff_tapped: ["from"],
   gate_passed: ["via"],

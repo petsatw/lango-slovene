@@ -122,8 +122,8 @@ try {
   await page.locator("#feedback-close").click();
   await page.waitForSelector("#feedback", { state: "hidden" });
   await held(y0, "after the feedback sheet closed over the dialogue");
-  await page.locator("#dialogue-choices .restart").click();
-  await page.waitForSelector("#dialogue-choices .dialogue-choice:not(.restart)");
+  await page.locator("#dialogue-restart").click();
+  await page.waitForSelector("#dialogue-choices .choice-list .dialogue-choice");
   await held(y0, "after starting the level over");
 
   // Close: the position is kept and the page scrolls again.
