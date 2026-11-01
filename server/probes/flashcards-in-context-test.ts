@@ -75,9 +75,19 @@ try {
     return cards.find((c) => c.en === main || c.sl === main) ?? fail(`unknown card text ${main}`);
   };
   const tap = () => page.click("#fc-card");
+  // "Oops" keeps every card due, so none drops out of the deck as memorised mid-run.
   const next = async () => {
     if (!(await page.$eval("#fc-rate", (e: HTMLElement) => !e.hidden))) await tap();
-    await page.click("#fc-nailed");
+    await page.click("#fc-oops");
+  };
+  // Rate the card on screen and wait for the next one (consecutive cards always differ).
+  const nextCard = async () => {
+    const prev = await shown();
+    await next();
+    await page.waitForFunction((t: string[]) => {
+      const m = document.querySelector("#fc-card .fc-main");
+      return !!m && !t.includes((m.textContent || "").trim()) && document.getElementById("fc-rate")!.hidden;
+    }, [prev.en, prev.sl], { timeout: 5000 });
   };
   const playing = (id: string) => page.waitForFunction((id: string) => {
     const a = document.getElementById("fc-audio") as HTMLAudioElement;
@@ -104,8 +114,7 @@ try {
     for (let i = 0; i < 6; i++) {
       const c = await shown();
       if (c.example) return c;
-      await next();
-      await page.waitForTimeout(100);
+      await nextCard();
     }
     return fail("no card with an example came up");
   };
@@ -147,40 +156,44 @@ try {
     if ((await text("#fc-card .fc-main")) === c.en) await tap();
     eq(`no section on ${c.id}`, await sections(), []);
     await noEn(`off ${c.id}`);
-    await next();
-    await page.waitForTimeout(100);
+    await nextCard();
   }
   await page.waitForTimeout(300);
   eq("no new clip request while off", audio.length, 1);
 
-  // Reload: still off; turn on; a clip only when a Slovene side next comes into view.
+  // Reload: still off; turn on with a Slovene side on screen: no section or clip until a Slovene side next comes into view.
   await page.reload();
   await quitLesson();
   await openCardMode();
   eq("still off", await page.isChecked("#fc-context"), false);
+  card = await toExampleCard();
+  await tap();
+  eq("slovene side while off", await text("#fc-card .fc-main"), card.sl);
   await page.check("#fc-context");
   await page.waitForTimeout(300);
-  eq("no clip on the card on screen", audio.length, 1);
+  eq("no section on the side on screen", await sections(), []);
+  eq("no clip on the side on screen", audio.length, 1);
   eq("stored on", await page.evaluate(() => localStorage.flashcardsInContext), "1");
-  card = await toExampleCard();
+  await tap();
   await tap();
   eq("section back", await sections(), [`In Context${card.example!.sl}`]);
   await until("second clip request", () => audio.length === 2);
   eq("second clip", audio[1], { id: card.id, status: 200 });
   await noEn("on again");
   // The card without an example shows no section and makes no request.
-  for (let i = 0; i < 6; i++) {
-    await next();
+  let sawNoExample = false;
+  for (let i = 0; i < 6 && !sawNoExample; i++) {
+    await nextCard();
     const c = await shown();
-    if (!c.example) {
-      const before = audio.length;
-      await tap();
-      eq("no-example card has no section", await sections(), []);
-      await page.waitForTimeout(300);
-      eq("no-example card makes no request", audio.length, before);
-      break;
-    }
+    if (c.example) continue;
+    sawNoExample = true;
+    const before = audio.length;
+    if ((await text("#fc-card .fc-main")) === c.en) await tap();
+    eq("no-example card has no section", await sections(), []);
+    await page.waitForTimeout(300);
+    eq("no-example card makes no request", audio.length, before);
   }
+  if (!sawNoExample) fail("the card without an example never came up");
 
   // The log.
   await page.evaluate(() => {
