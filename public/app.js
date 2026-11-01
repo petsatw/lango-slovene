@@ -728,6 +728,9 @@ function openLevelAt(i, nodeId) {
   $("dialogue-convo").innerHTML = "";
   const entry = dialogue.nodes[nodeId].speaker === "npc" ? path.length - 1 : path.length - 2;
   for (const id of path.slice(0, entry)) dialogueBubble(dialogue.nodes[id]);
+  steps = path.slice(0, entry).filter((id) => dialogue.nodes[id].speaker !== "npc");
+  stepAt = steps.length;
+  updateTreeNav();
   presentNpcNode(path[entry]);
 }
 
@@ -1001,6 +1004,7 @@ async function presentNpcNode(nodeId) {
   const node = dialogue.nodes[nodeId];
   if (!node) return;
   const gen = treeGen;
+  treeNode = nodeId;
   if (levelRun) levelRun.nodeId = nodeId;
   dialogueBubble(node);
   if (dialogue.audio === "ready") await playDialogueLine(node);
@@ -1017,13 +1021,7 @@ function renderChoices(npcNode) {
 
   if (!choices.length) {
     endLevelRun(true);
-    wrap.classList.add("is-terminal"); // drop the panel chrome — a lone restart button, no hint
-    const btn = document.createElement("button");
-    btn.className = "dialogue-choice restart";
-    btn.type = "button";
-    btn.textContent = "↻ Start over";
-    btn.addEventListener("click", startDialogueTree);
-    wrap.appendChild(btn);
+    wrap.classList.add("is-terminal"); // drop the panel chrome — the Feedback button alone, no hint
     const fb = document.createElement("button");
     fb.className = "dialogue-choice";
     fb.type = "button";
@@ -1121,6 +1119,10 @@ function renderChoices(npcNode) {
 // the npc's response so the two voices play in turn, not on top of each other.
 async function chooseClient(clientNodeId) {
   const cn = dialogue.nodes[clientNodeId];
+  steps.length = stepAt;        // undone steps are dropped
+  steps.push(clientNodeId);
+  stepAt = steps.length;
+  updateTreeNav();
   // Clear the choices (the hint vanishes with them — nothing to do during the reply). The panel keeps its
   // fixed height, so the hint reappears in the exact same spot when the next fork renders.
   $("dialogue-choices").innerHTML = "";
@@ -1137,10 +1139,54 @@ async function chooseClient(clientNodeId) {
   }
 }
 
+// The steps taken in this walk (each a chosen client node id) and the position within them. Back and Next
+// move the position and re-show the conversation silently; a new choice drops the steps after it.
+let steps = [];
+let stepAt = 0;
+let treeNode = null;   // the npc line the learner is at
+
+function updateTreeNav() {
+  $("dialogue-back").disabled = stepAt === 0;
+  $("dialogue-next").disabled = stepAt >= steps.length;
+}
+
+// Show the conversation as it stands after the first `pos` steps, without playing any audio.
+function showStepsAt(pos) {
+  treeGen++;
+  stopDialogueAudio();
+  stepAt = pos;
+  updateTreeNav();
+  $("dialogue-convo").innerHTML = "";
+  $("dialogue-choices").innerHTML = "";
+  let npcId = dialogue.root;
+  dialogueBubble(dialogue.nodes[npcId]);
+  for (const cid of steps.slice(0, pos)) {
+    const cn = dialogue.nodes[cid];
+    dialogueBubble(cn);
+    const reply = (cn.next || [])[0];
+    if (!reply) { renderChoices(cn); return; }
+    npcId = reply;
+    dialogueBubble(dialogue.nodes[npcId]);
+  }
+  treeNode = npcId;
+  if (levelRun) levelRun.nodeId = npcId;
+  renderChoices(dialogue.nodes[npcId]);
+}
+
+$("dialogue-back").addEventListener("click", () => { if (stepAt > 0) showStepsAt(stepAt - 1); });
+$("dialogue-next").addEventListener("click", () => { if (stepAt < steps.length) showStepsAt(stepAt + 1); });
+$("dialogue-restart").addEventListener("click", () => {
+  track("level_restarted", { scenarioId: dialogue.scenarioId, level: dialogue.level, nodeId: treeNode });
+  startDialogueTree();
+});
+
 // (Re)start the current level's tree from its root.
 function startDialogueTree() {
   treeGen++;
   stopDialogueAudio();
+  steps = [];
+  stepAt = 0;
+  updateTreeNav();
   $("dialogue-title").textContent = dialogue.title;
   $("dialogue-convo").innerHTML = "";
   $("dialogue-choices").innerHTML = "";
@@ -1858,6 +1904,7 @@ function sceneReleaseClips() {
 // Which run controls this beat offers. Set on every beat, so a node with no slow clip, the first line
 // and the closing one dim rather than disappear. ✕ is never dimmed — the way out is always live.
 function sceneChips({ slower = false, back = false, skip = false } = {}) {
+  $("scene-restart").setAttribute("aria-disabled", scene.node ? "false" : "true");
   $("scene-slower").setAttribute("aria-disabled", slower ? "false" : "true");
   $("scene-back").setAttribute("aria-disabled", back ? "false" : "true");
   $("scene-skip").setAttribute("aria-disabled", skip ? "false" : "true");
@@ -2320,7 +2367,7 @@ async function scenePlayBeat(npc, { replay = false } = {}) {
 // `ack` is the character's backchannel, already playing. The fetch overlaps with it, but the next line
 // must not START until it has finished — `sceneSay` stops whatever is playing, so without this the
 // "Mhm." is cut off within ~50ms and the instant-acknowledgement beat never reaches the learner at all.
-async function sceneStep(from, ack, answer) {
+async function sceneStep(from, ack, answer, { resume = false } = {}) {
   // The fetch outlives a skip that lands while it is in flight, and its reply would otherwise overwrite
   // the state of the beat that superseded it.
   const gen = sceneGen;
@@ -2354,7 +2401,7 @@ async function sceneStep(from, ack, answer) {
   if (data.backchannel) scene.backchannel = data.backchannel;
   if (data.background) $("scene-bg").style.backgroundImage = `url(/backgrounds/${data.background})`;
   if (ack) await ack;
-  if (data.frameEN?.length) {
+  if (data.frameEN?.length && !resume) {
     const id = scene.scenarioId;
     await scenePlayFrame(data.frameEN);
     track(gen === sceneGen ? "intro_completed" : "intro_quit", { kind: "scene", id });
@@ -2362,7 +2409,7 @@ async function sceneStep(from, ack, answer) {
   if (gen !== sceneGen) return;   // the on-ramp is skippable, so a ✕ during it must not land on a beat
   // After the on-ramp and before the first line: the learner knows what this is, and has not yet been
   // given anything to miss.
-  if (data.tutorial?.length) await scenePlayTutorial(data.tutorial);
+  if (data.tutorial?.length && !resume) await scenePlayTutorial(data.tutorial);
   if (gen !== sceneGen) return;
   // Not a word of Slovene is spoken before its audio is in hand. On every later step this has long since
   // settled and costs nothing — the gate is the opening, where the clips were asked for.
@@ -2627,6 +2674,23 @@ function wireSceneChips() {
     scene.trailAt -= 1;
     try { await scenePlayBeat(scene.trail[scene.trailAt], { replay: true }); }
     catch (err) { obs.error(`scene: ${err.message}`); }
+  });
+
+  // Start over: replay from the first line, keeping the learner model as it is. The on-ramp does not play again.
+  $("scene-restart").addEventListener("click", async () => {
+    if (!scene.node) return;
+    track("level_restarted", { scenarioId: scene.scenarioId, level: scene.level, nodeId: scene.node.id });
+    sceneCancel();
+    scene.node = null;
+    scene.trail = [];
+    scene.trailAt = -1;
+    sceneChips({});
+    $("scene-close").hidden = true;
+    $("scene-review").hidden = true;
+    $("scene-controls").hidden = false;
+    sceneSetPhase("speaking");
+    $("scene-prompt").classList.remove("shown");
+    try { await sceneStep(null, null, undefined, { resume: true }); } catch (err) { obs.error(`scene: ${err.message}`); }
   });
 
   // Leave: the same exit as "Done" on the close screen.

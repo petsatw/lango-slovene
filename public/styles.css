@@ -512,11 +512,13 @@ main {
 .dialogue-card .dialogue-convo,
 .dialogue-card .dialogue-choices,
 .dialogue-card .dialogue-hint,
+.dialogue-card .dialogue-nav,
 .dialogue-card .dialogue-handoff { transition: opacity 1s ease; }
 .dialogue-card.intro-active #dialogue-title,
 .dialogue-card.intro-active .dialogue-convo,
 .dialogue-card.intro-active .dialogue-choices,
 .dialogue-card.intro-active .dialogue-hint,
+.dialogue-card.intro-active .dialogue-nav,
 .dialogue-card.intro-active .dialogue-handoff { opacity: 0; pointer-events: none; }
 .dialogue-intro {
   position: absolute; bottom: 16px; right: 16px; z-index: 2;
@@ -536,7 +538,7 @@ main {
   display: flex; flex-direction: column; flex: none;
   margin-top: 8px; height: clamp(190px, 26dvh, 244px);
 }
-.dialogue-choices.is-terminal { height: auto; } /* lone restart button — no fixed box */
+.dialogue-choices.is-terminal { height: auto; } /* the Feedback button alone — no fixed box */
 
 /* "More choices" cue: a bottom fade with a labeled amber pill, shown ONLY on a >2-choice fork and until
  * it's scrolled to the end. Absent on a 2-choice fork. Purely a hint — pointer-events off so it never
@@ -621,12 +623,13 @@ main {
 @media (prefers-reduced-motion: no-preference) {
   .choice-list .dialogue-choice { animation: choice-in 0.26s ease; }
 }
-/* Restart is a lone terminal action, not a choice — keep it green + centered, no amber/badge/elevation. */
-.dialogue-choice.restart {
-  justify-content: center; background: var(--green); color: #fff;
-  border: 1px solid var(--green); border-radius: 12px; font-size: 16px; box-shadow: none;
+/* Start over, Back and Next: one row at the lower left of the card, on screen for the whole conversation. */
+.dialogue-nav { display: flex; gap: 8px; width: fit-content; margin-top: 8px; }
+.dialogue-nav-btn {
+  background: none; color: var(--muted); border: 1px solid #3a4250; border-radius: 999px;
+  padding: 8px 14px; font-size: 14px; font-weight: 600; cursor: pointer;
 }
-.dialogue-choice.restart:hover { background: var(--green-press); box-shadow: none; }
+.dialogue-nav-btn:disabled { opacity: 0.35; cursor: default; }
 /* Introduce→reinforce handoff: a SECONDARY exit to free chat — a quiet right-aligned pill, never the
  * loudest thing on screen (solid full-width is reserved for the live choices above). */
 .dialogue-handoff {

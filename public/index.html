@@ -156,6 +156,7 @@
       <button id="scene-slower" class="scene-chip" type="button" title="Say it slower" aria-label="Say it slower">🐢</button>
       <button id="scene-back" class="scene-chip" type="button" title="Back to the previous line" aria-label="Back to the previous line">«</button>
       <button id="scene-skip" class="scene-chip" type="button" title="Skip to the next line" aria-label="Skip to the next line">»</button>
+      <button id="scene-restart" class="scene-chip" type="button" title="Start over" aria-label="Start over" aria-disabled="true">↻</button>
       <button id="scene-quit" class="scene-chip" type="button" title="Close the lesson" aria-label="Close the lesson">✕</button>
     </div>
     <!-- The on-ramp: the English that tells a first-time learner what this is, what is about to happen,
@@ -262,6 +263,11 @@
            conversation fades in when the intro ends or is skipped. -->
       <button id="dialogue-intro" class="dialogue-intro" type="button" hidden></button>
       <div id="dialogue-choices" class="dialogue-choices"></div>
+      <div id="dialogue-nav" class="dialogue-nav">
+        <button id="dialogue-restart" class="dialogue-nav-btn" type="button" aria-label="Start over">↻ Start over</button>
+        <button id="dialogue-back" class="dialogue-nav-btn" type="button" aria-label="Back" disabled>Back</button>
+        <button id="dialogue-next" class="dialogue-nav-btn" type="button" aria-label="Next" disabled>Next</button>
+      </div>
       <!-- Introduce→reinforce handoff: drop from the rehearsed tree straight into a live chat biased
            toward exactly the learnables this level introduced, where mastery is earned. -->
       <button id="dialogue-handoff" class="dialogue-handoff" type="button" hidden>Now try it for real →</button>
