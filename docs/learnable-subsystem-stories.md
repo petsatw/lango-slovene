@@ -195,7 +195,7 @@ Two conventions used throughout:
 
 Pure user stories — **role · capability · benefit** — with **Given/When/Then** acceptance criteria.
 These are deliberately **not** constrained to current app features; where a feature is implied it's
-incidental, not a requirement. The flows in Part 4 are the concrete acceptance domains that exercise
+incidental, not a requirement. The flows in Part 4 are the concrete acceptance scenarios that exercise
 these stories.
 
 ### Learner — memory & mastery
@@ -313,7 +313,7 @@ whether mastery tracking behaves.
 
 ## Part 4 — The mastery journey as flows (the branches)
 
-These are **flows** — concrete acceptance domains, not canonical user stories. Each is a real path a
+These are **flows** — concrete acceptance scenarios, not canonical user stories. Each is a real path a
 learner takes through the app and hangs under the stories in Part 3. They're anchored to the café
 objective `order_coffee` = "Eno kavo, prosim" — the first **pattern** `eno + [fem acc]` and first **vocab**
 `kava` both live inside it. `n/5` = successes; **[NEW]** = the mastery layer the step depends on.

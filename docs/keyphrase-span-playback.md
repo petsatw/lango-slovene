@@ -232,7 +232,7 @@ single most likely source of a silent bug in this design, and it gets a lint.
 `.claude/skills/voice-key-phrases/SKILL.md`. Mirrors `create-dialogue`'s
 author → critic → reconcile → gate → ReviewPackage shape.
 
-**Input.** A `scenarioId` (optionally one level).
+**Input.** A domain id (optionally one level).
 
 **Stage 0 — gather (L).** Read the domain's spoken levels. Collect:
 - the **key phrases**: distinct client `sl` per level, in met order — the same list the close screen

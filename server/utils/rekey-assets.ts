@@ -40,24 +40,24 @@ const manifest: any[] = existsSync(manifestPath)
 // asset's canonical render. Copy frame bytes → assetRenderKey (free byte-op, like a re-key). The four
 // below were mapped by review (an existing frame == the canonical for that object).
 if (harvest) {
-  const HARVEST: { scenario: string; objectiveId: string; label: string; catalogId?: string }[] = [
-    { scenario: "bakery", objectiveId: "order_bread", label: "LOAF" },
-    { scenario: "bakery", objectiveId: "order_rolls", label: "ROLLS" },
-    { scenario: "cafe", objectiveId: "order_coffee", label: "COFFEE" },
-    { scenario: "bakery", objectiveId: "ask_price", label: "PRICE_TAG", catalogId: "price_tag" },
+  const HARVEST: { domain: string; objectiveId: string; label: string; catalogId?: string }[] = [
+    { domain: "bakery", objectiveId: "order_bread", label: "LOAF" },
+    { domain: "bakery", objectiveId: "order_rolls", label: "ROLLS" },
+    { domain: "cafe", objectiveId: "order_coffee", label: "COFFEE" },
+    { domain: "bakery", objectiveId: "ask_price", label: "PRICE_TAG", catalogId: "price_tag" },
   ];
   console.log(`\n=== rekey:assets --harvest${apply ? "  --apply" : "  (dry run)"} ===`);
   let n = 0;
   for (const h of HARVEST) {
-    const s = DOMAINS.find((x) => x.id === h.scenario);
+    const s = DOMAINS.find((x) => x.id === h.domain);
     const fr = s?.scene?.story?.frames.find((f) => f.objectiveId === h.objectiveId);
-    if (!fr) { console.log(`   ✗ ${h.label}: frame ${h.scenario}/${h.objectiveId} not found`); continue; }
+    if (!fr) { console.log(`   ✗ ${h.label}: frame ${h.domain}/${h.objectiveId} not found`); continue; }
     const frameKey = keyFor(fr.imagePrompt, IMAGE_FORMAT.frame);
     if (!store.has(frameKey, "image")) { console.log(`   ✗ ${h.label}: source frame not on disk`); continue; }
     const asset = h.catalogId ? getObject(h.catalogId) : s!.scene!.assets!.find((a) => a.label === h.label)!;
     const dstKey = assetRenderKey({ label: asset.label, descriptor: asset.descriptor });
     if (store.has(dstKey, "image")) { console.log(`   · ${h.label}: canonical already present`); continue; }
-    console.log(`   ${apply ? "harvest" : "would "} ${h.label} ← ${h.scenario}/${h.objectiveId}  ${frameKey.slice(0, 10)}… → ${dstKey.slice(0, 10)}…`);
+    console.log(`   ${apply ? "harvest" : "would "} ${h.label} ← ${h.domain}/${h.objectiveId}  ${frameKey.slice(0, 10)}… → ${dstKey.slice(0, 10)}…`);
     if (apply) {
       store.put(dstKey, "image", store.read(frameKey, "image")!, {
         provider: "harvest",
@@ -67,7 +67,7 @@ if (harvest) {
         aspectRatio: IMAGE_FORMAT.asset.aspectRatio,
         resolution: IMAGE_FORMAT.asset.resolution,
         mimeType: "image/jpeg",
-        scenarioId: h.scenario,
+        scenarioId: h.domain,
         objectiveId: `asset:${asset.label}`,
         referenceKeys: [frameKey], // provenance: harvested from this frame
       });

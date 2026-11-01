@@ -210,7 +210,7 @@ from there:
 - **Advance mode.**
 - **The levels to author** — each `levelLabel`, `title`, and its ordered **objectives** as EN meanings +
   the grammar point each teaches.
-- A kebab/lowercase `scenarioId`.
+- A kebab/lowercase domain id.
 
 Extending an existing domain: new levels must not re-introduce covered learnables.
 

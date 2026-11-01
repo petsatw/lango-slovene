@@ -70,11 +70,11 @@ try {
     els.filter((e) => (e as HTMLElement).offsetParent && e.id !== "feedback-chip").map((e) => ({ id: e.id || e.className, ...e.getBoundingClientRect().toJSON() })));
   const topAtCentre = async () => {
     const b = await box("#feedback-chip");
-    return !!b && (await page.evaluate(([x, y]) => !!document.elementFromPoint(x, y)?.closest("#feedback-chip"), [b.x + b.width / 2, b.y + b.height / 2]));
+    return !!b && (await page.evaluate(([x, y]) => !!document.elementFromPoint(x, y)?.closest("#feedback-chip"), [b.x + b.width / 2, b.y + b.height / 2] as const));
   };
   // The chip's place checked on this phone and on a small one (320×568).
   const clearOf = async (when: string, sels: string) => {
-    for (const [w, h] of [[390, 844], [320, 568]]) {
+    for (const [w, h] of [[390, 844], [320, 568]] as const) {
       await page.setViewportSize({ width: w, height: h });
       await page.waitForTimeout(150);
       const b = await box("#feedback-chip");

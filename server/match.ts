@@ -26,7 +26,7 @@ export interface Snippet {
 }
 
 export interface IndexEntry extends Omit<LevelCandidate, "lines"> {
-  domainName: string;
+  scenarioName: string;
   level: number;
   levelTitle: string;
   role: string | null;
@@ -51,7 +51,7 @@ export interface IndexInput {
 export interface Match {
   dialogueId: string;
   scenarioId: string;
-  domainName: string;
+  scenarioName: string;
   level: number;
   levelTitle: string;
   score: number; // 0..1
@@ -119,8 +119,8 @@ export function expandQuery(text: string): Set<string> {
 }
 
 /** One entry per published level. Pure: takes plain domain+dialogue data. */
-export function buildIndex(scenarios: IndexInput[]): IndexEntry[] {
-  return scenarios.flatMap((s) => {
+export function buildIndex(domains: IndexInput[]): IndexEntry[] {
+  return domains.flatMap((s) => {
     const domainText = [s.name, s.title, s.summaryEN ?? "", ...(s.tags ?? [])].join(" ");
     const scenarioTokens = new Set(tokenize(domainText));
     return s.dialogues.map((d) => {
@@ -131,7 +131,7 @@ export function buildIndex(scenarios: IndexInput[]): IndexEntry[] {
       return {
         dialogueId: d.id,
         scenarioId: s.id,
-        domainName: s.name,
+        scenarioName: s.name,
         level: d.level,
         levelTitle: d.title,
         role: s.role ?? null,
@@ -174,7 +174,7 @@ export function keywordRank(text: string, index: IndexEntry[]): Match[] {
 }
 
 function toMatch(e: IndexEntry, score: number, reason: string, snippet: Snippet | null = null): Match {
-  return { dialogueId: e.dialogueId, scenarioId: e.scenarioId, scenarioName: e.domainName, level: e.level, levelTitle: e.levelTitle, score, reason, snippet };
+  return { dialogueId: e.dialogueId, scenarioId: e.scenarioId, scenarioName: e.scenarioName, level: e.level, levelTitle: e.levelTitle, score, reason, snippet };
 }
 
 /** The line with the most query-term hits (ties → earliest in authored order); null when none hit. */

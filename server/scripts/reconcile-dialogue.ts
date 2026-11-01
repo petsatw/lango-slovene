@@ -46,7 +46,7 @@ function die(msg: string): never {
 
 // ---- Input shape (authored by the create-dialogue skill; see docs/authoring-pipeline.md) -----------
 // {
-//   domain: { id, name?, title, status?, character, role?, setup, opening, register?:{form,variety} },
+//   scenario: { id, name?, title, status?, character, role?, setup, opening, register?:{form,variety} },
 //   dialogueVoices: { npc, client },                       // shared across the domain's levels
 //   dialogueAdvance?: "tap" | "audio",                     // default "tap" — how the learner advances
 //   dialoguePacing?: string,                               // spoken scenes: pacing profile id (catalog/pacing.json);
@@ -93,10 +93,10 @@ const rel = (p: string) => path.relative(ROOT, p);
 const S = input.scenario;
 if (!S || typeof S !== "object") die(`"scenario" object is required`);
 for (const k of ["id", "title", "character", "setup", "opening"]) {
-  if (typeof S[k] !== "string" || !S[k]) die(`domain.${k} must be a non-empty string`);
+  if (typeof S[k] !== "string" || !S[k]) die(`scenario.${k} must be a non-empty string`);
 }
 const scenarioId: string = S.id;
-if (!/^[a-z0-9_-]+$/.test(scenarioId)) die(`domain.id "${scenarioId}" must be kebab/snake lowercase`);
+if (!/^[a-z0-9_-]+$/.test(scenarioId)) die(`scenario.id "${scenarioId}" must be kebab/snake lowercase`);
 
 const voices = input.dialogueVoices;
 if (!voices || typeof voices.npc !== "string" || typeof voices.client !== "string")

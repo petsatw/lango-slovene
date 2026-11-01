@@ -25,7 +25,7 @@ export function buildGalleryHtml(opts: { imgBase?: string } = {}): string {
   // Read catalog + domains FRESH from disk every call, so the live /gallery route reflects new or
   // edited entries on a plain browser refresh — no server restart. (The image store is already read live.)
   const catalog = loadCatalog();
-  const scenarios = loadDomains();
+  const domains = loadDomains();
   const e4 = getE4();
   const imgKey = (prompt: string, fmt: { aspectRatio: string; resolution: string }) =>
     store.imageKey(e4.name, e4.model, IMAGE_STYLE.id, fmt.aspectRatio, fmt.resolution, prompt);
@@ -73,7 +73,7 @@ export function buildGalleryHtml(opts: { imgBase?: string } = {}): string {
     .join("");
 
   // ---- domains (scene + frames) --------------------------------------------------------------
-  const domainSections = scenarios.filter((s) => s.status === "active")
+  const domainSections = domains.filter((s) => s.status === "active")
     .map((s) => {
       const story = s.scene?.story;
       const sceneKey = story?.sceneImagePrompt ? imgKey(story.sceneImagePrompt, IMAGE_FORMAT.scene) : "";

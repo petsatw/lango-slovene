@@ -2886,7 +2886,7 @@ async function init() {
     // D9 — a learner who has produced nothing meets the scene FIRST, ahead of the shell. `started`
     // has to be in hand before this decision, which is why the route is settled here and not at paint.
     //
-    // `?scene=<scenarioId>` forces it open for anyone. The zero-state route is real but unreachable for
+    // `?scene=<domainId>` forces it open for anyone. The zero-state route is real but unreachable for
     // an existing learner, so without this the only way to look at the scene is to wipe the learner
     // model — which is their actual history, not test data.
     const forced = new URLSearchParams(location.search).get("scene");

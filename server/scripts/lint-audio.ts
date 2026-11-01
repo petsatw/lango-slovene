@@ -208,9 +208,9 @@ const fresh = misses.filter((m) => !m.uncommitted && !m.rekeyFrom);
 // not in the branch, so the deploy would serve nothing for them. Report them first and separately — the
 // fix is one force-add, and confusing this with "needs synthesis" would re-bill for bytes on disk.
 if (uncommitted.length) {
-  const scenarios = [...new Set(uncommitted.map((m) => m.scenarioId))];
+  const domains = [...new Set(uncommitted.map((m) => m.scenarioId))];
   console.error(`❌ ${uncommitted.length} clip(s) are ON DISK but NOT COMMITTED — the deploy would ship without them.`);
-  console.error(`   domain(s): ${scenarios.join(", ")}`);
+  console.error(`   domain(s): ${domains.join(", ")}`);
   console.error(`   assets/ is gitignored by design (docs/DEPLOY.md); clips are force-added. These never were.`);
   console.error(`   Nothing needs generating — the bytes exist and are already paid for.\n`);
   console.error(`   fix: git add -f assets/audio assets/align && git commit -m "chore(assets): ship the clips"\n`);
