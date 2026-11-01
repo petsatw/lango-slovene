@@ -886,11 +886,16 @@ async function openWords() {
 let fcFrom = "levels";   // the screen that opened card mode: "levels" or "words"
 let fcCards = [], fcDeck = [], fcPos = 0, fcShown = "en";
 let fcPending = [], fcGen = 0, fcToastTimer = null;
+let fcStartedAt = null, fcRated = 0, fcPass = 0; // card-mode events: set once the deck loads
 const fcFirstSide = () => (localStorage.getItem("flashcardsFirstSide") === "sl" ? "sl" : "en");
 const fcInclude = () => localStorage.getItem("flashcardsIncludeMemorised") === "1";
 
 function fcStopClip() { $("fc-audio").pause(); }
-function leaveFlashcards() { fcGen++; fcStopClip(); clearTimeout(fcToastTimer); $("fc-toast").hidden = true; }
+function leaveFlashcards() {
+  if (fcStartedAt !== null) track("flashcards_ended", { domainId: currentDomain.id, rated: fcRated, ms: Math.max(1, Date.now() - fcStartedAt) });
+  fcStartedAt = null;
+  fcGen++; fcStopClip(); clearTimeout(fcToastTimer); $("fc-toast").hidden = true;
+}
 
 async function openFlashcards(from) {
   fcFrom = from;
@@ -904,7 +909,14 @@ async function openFlashcards(from) {
   if (!res.ok || gen !== fcGen) return;
   fcCards = (await res.json()).cards;
   fcPending = [];
+  fcRated = 0;
+  fcPass = 0;
+  fcStartedAt = Date.now();
   startPass(null);
+  track("flashcards_started", {
+    domainId: currentDomain.id, from: from === "words" ? "list" : "overview",
+    firstSide: fcFirstSide(), includeMemorised: fcInclude(), deckSize: fcDeck.length,
+  });
 }
 
 function syncFcControls() {
@@ -986,9 +998,14 @@ async function rateFcCard(result) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ domainId, id: card.id, result }),
   }).then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))));
+  const firstSide = fcFirstSide();
+  const rated = (memorised) => track("flashcard_rated", {
+    domainId, learnableId: card.id, result, firstSide, memorised, hasAudio: !!card.example,
+  });
+  fcRated++;
   fcPending.push(send().catch(send).then(
-    (r) => { card.memorised = r.memorised; card.due = r.due; },
-    () => {},
+    (r) => { card.memorised = r.memorised; card.due = r.due; rated(r.memorised); },
+    () => rated(null),
   ));
   fcPos++;
   if (fcPos < fcDeck.length) { showFcCard(); return; }
@@ -998,6 +1015,7 @@ async function rateFcCard(result) {
   await Promise.all(fcPending);
   fcPending = [];
   if (gen !== fcGen) return;
+  track("flashcards_pass_completed", { domainId, pass: ++fcPass, cards: fcDeck.length });
   startPass(card.id);
   if (fcDeck.length) {
     $("fc-toast").hidden = false;
@@ -2978,9 +2996,14 @@ async function init() {
   $("fc-nailed").addEventListener("click", () => rateFcCard("nailed"));
   $("fc-oops").addEventListener("click", () => rateFcCard("oops"));
   for (const b of document.querySelectorAll(".fc-seg-opt")) {
-    b.addEventListener("click", () => { localStorage.setItem("flashcardsFirstSide", b.dataset.side); syncFcControls(); });
+    b.addEventListener("click", () => {
+      if (fcFirstSide() !== b.dataset.side) track("flashcards_setting_changed", { setting: "firstSide", value: b.dataset.side });
+      localStorage.setItem("flashcardsFirstSide", b.dataset.side);
+      syncFcControls();
+    });
   }
   $("fc-include").addEventListener("change", async (e) => {
+    track("flashcards_setting_changed", { setting: "includeMemorised", value: e.target.checked });
     localStorage.setItem("flashcardsIncludeMemorised", e.target.checked ? "1" : "0");
     const gen = fcGen;
     fcStopClip();
