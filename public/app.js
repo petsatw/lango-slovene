@@ -194,7 +194,7 @@ let chatLessonId = null;     // go-live: which lesson's plan the realtime tutor 
 let runId = null;            // THIS sitting on the practice surface — both modes record under it (npm run runs)
 
 // ---- Screen router — one screen visible at a time; the tree + obs are overlays on top. ----
-const SCREENS = ["home", "practice", "levels", "tutor", "a1", "scene", "settings", "history"];
+const SCREENS = ["home", "practice", "levels", "tutor", "a1", "scene", "settings", "history", "words"];
 let currentScreen = "home";
 // The finder's pending settle (1 s after typing stops). Leaving the practice screen cancels it.
 let finderSettleTimer = null;
@@ -838,6 +838,45 @@ function openDomain(s) {
     list.appendChild(card);
   });
   showScreen("levels");
+  loadWordsRow(s.id);
+}
+
+// The Words and Phrases row (docs/features/flashcards/spec.md §2): shown once the domain's cards load; a 404 hides it.
+async function loadWordsRow(domainId) {
+  const row = $("words-row");
+  row.hidden = true;
+  const res = await api(`/api/flashcards?domainId=${encodeURIComponent(domainId)}`);
+  if (res.ok && currentDomain?.id === domainId && currentScreen === "levels") row.hidden = false;
+}
+
+// The list (spec §3): read-only rows, loaded on every open so the check marks are current.
+async function openWords() {
+  showScreen("words");
+  const list = $("words-list");
+  list.textContent = "";
+  const res = await api(`/api/flashcards?domainId=${encodeURIComponent(currentDomain.id)}`);
+  if (!res.ok || currentScreen !== "words") return;
+  const { cards } = await res.json();
+  for (const c of cards) {
+    const row = document.createElement("div");
+    row.className = "words-item";
+    const en = document.createElement("span");
+    en.className = "words-en";
+    en.textContent = c.en;
+    const sl = document.createElement("span");
+    sl.className = "words-sl";
+    sl.textContent = c.sl;
+    row.append(en, sl);
+    if (c.memorised) {
+      const tick = document.createElement("span");
+      tick.className = "words-tick";
+      tick.setAttribute("role", "img");
+      tick.setAttribute("aria-label", "Memorised");
+      tick.textContent = "✓";
+      row.append(tick);
+    }
+    list.append(row);
+  }
 }
 
 function openLevel(i) {
@@ -2799,9 +2838,12 @@ async function init() {
   // Back: levels → practice; everything else → home.
   $("back").addEventListener("click", () => {
     if (currentScreen === "levels") showScreen("practice");
+    else if (currentScreen === "words") showScreen("levels");
     else if (currentScreen === "history") openSettings();
     else openHome();
   });
+
+  $("words-overview").addEventListener("click", openWords);
 
   // Rehearsal tree overlay controls.
   $("dialogue-close").addEventListener("click", closeDialogue);
