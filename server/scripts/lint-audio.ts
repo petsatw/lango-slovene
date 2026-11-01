@@ -1,7 +1,7 @@
 // lint-audio — does every dialogue that CLAIMS its audio is built actually have the bytes?
 //
 //   npm run lint:audio                            # every dialogue — are the bytes ON DISK?
-//   npm run lint:audio -- slavko-intro            # one scenario
+//   npm run lint:audio -- slavko-intro            # one domain
 //   npm run lint:audio -- --shipped               # are the bytes IN THE BRANCH? (the deploy question)
 //   npm run lint:audio -- slavko-intro --shipped
 //
@@ -179,7 +179,7 @@ for (const f of files) {
 
 // ---- Report ----------------------------------------------------------------------------------------
 const rel = (p: string) => path.relative(ROOT, p);
-console.log(`\nlint:audio — ${e3.name}${only ? `  (scenario: ${only})` : ""}${shipped ? "  [--shipped: asking the BRANCH, not the disk]" : ""}`);
+console.log(`\nlint:audio — ${e3.name}${only ? `  (domain: ${only})` : ""}${shipped ? "  [--shipped: asking the BRANCH, not the disk]" : ""}`);
 console.log(`  ${readyLevels} level(s) marked "ready", ${checkedClips} clip(s) checked`);
 if (shipped) console.log(`  ${trackedKeys!.size} clip(s) committed under assets/audio\n`);
 else console.log("");
@@ -208,9 +208,9 @@ const fresh = misses.filter((m) => !m.uncommitted && !m.rekeyFrom);
 // not in the branch, so the deploy would serve nothing for them. Report them first and separately — the
 // fix is one force-add, and confusing this with "needs synthesis" would re-bill for bytes on disk.
 if (uncommitted.length) {
-  const scenarios = [...new Set(uncommitted.map((m) => m.scenarioId))];
+  const domains = [...new Set(uncommitted.map((m) => m.scenarioId))];
   console.error(`❌ ${uncommitted.length} clip(s) are ON DISK but NOT COMMITTED — the deploy would ship without them.`);
-  console.error(`   scenario(s): ${scenarios.join(", ")}`);
+  console.error(`   domain(s): ${domains.join(", ")}`);
   console.error(`   assets/ is gitignored by design (docs/DEPLOY.md); clips are force-added. These never were.`);
   console.error(`   Nothing needs generating — the bytes exist and are already paid for.\n`);
   console.error(`   fix: git add -f assets/audio assets/align && git commit -m "chore(assets): ship the clips"\n`);

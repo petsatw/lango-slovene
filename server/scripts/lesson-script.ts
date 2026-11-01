@@ -1,7 +1,7 @@
 // script:lesson — print a spoken lesson AS THE STUDENT EXPERIENCES IT: the conversation, in order, and
 // nothing else.
 //
-//   npm run script:lesson -- <scenarioId> [--level <n>] [--as <fact>=<value>] [--json]
+//   npm run script:lesson -- <domainId> [--level <n>] [--as <fact>=<value>] [--json]
 //   npm run script:lesson -- --from <reconcile-input.json> [--level <n>] […]
 //
 // `--from` reads the authoring pipeline's own reconcile input, so a lesson can be read as a conversation
@@ -23,7 +23,7 @@
 
 import { readFileSync } from "node:fs";
 import { DIALOGUES, resolveNode, type Dialogue, type DialogueNode } from "../dialogues";
-import { SCENARIOS } from "../scenarios";
+import { DOMAINS } from "../domains";
 import { getFact } from "../facts";
 
 // ---- Arguments ------------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ for (let i = 0; i < argv.length; i++) {
   break;
 }
 
-const USAGE = "usage: npm run script:lesson -- <scenarioId> [--level <n>] [--as <fact>=<value>] [--json]\n" +
+const USAGE = "usage: npm run script:lesson -- <domainId> [--level <n>] [--as <fact>=<value>] [--json]\n" +
               "       npm run script:lesson -- --from <reconcile-input.json> [--level <n>] […]";
 
 /** What this script needs of a lesson, from either source. */
@@ -62,12 +62,12 @@ interface Lesson {
 function fromCatalog(id: string): Lesson {
   const levels = DIALOGUES[id] ?? [];
   if (!levels.length) {
-    console.error(`no dialogue found for scenario "${id}" (have: ${Object.keys(DIALOGUES).join(", ")})`);
+    console.error(`no dialogue found for domain "${id}" (have: ${Object.keys(DIALOGUES).join(", ")})`);
     process.exit(2);
   }
   const d: Dialogue | undefined = levelArg ? levels.find((x) => x.level === Number(levelArg)) : levels[0];
   if (!d) {
-    console.error(`scenario "${id}" has no level ${levelArg} (have: ${levels.map((x) => x.level).join(", ")})`);
+    console.error(`domain "${id}" has no level ${levelArg} (have: ${levels.map((x) => x.level).join(", ")})`);
     process.exit(2);
   }
   return {
@@ -75,7 +75,7 @@ function fromCatalog(id: string): Lesson {
     nodes: d.nodes as Record<string, DialogueNode>,
     npcVoice: d.voices.npc ?? "npc",
     spoken: d.advance === "audio",
-    onboarding: !!SCENARIOS.find((s) => s.id === id)?.onboarding,
+    onboarding: !!DOMAINS.find((s) => s.id === id)?.onboarding,
   };
 }
 

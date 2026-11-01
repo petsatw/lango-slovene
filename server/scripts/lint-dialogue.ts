@@ -7,7 +7,7 @@
 //     referenced by id everywhere; two "kruh"s would split crediting and is an authoring mistake).
 //   - referential integrity: every `introduces` id resolves in the catalog (restated cleanly here).
 //   - coverage report: which dialogue introduces which ids, and which catalog learnables are introduced
-//     by no dialogue (informational — the seed or a scenario may still own them).
+//     by no dialogue (informational — the seed or a domain may still own them).
 //   - delivery-collision WARN: the audio key is (provider, voice, clean `sl`) — the delivery tag is not
 //     in it, so two nodes with the same `sl` in the same voice profile are ONE clip (the first built
 //     wins). If they carry DIFFERENT delivery, the later direction is never heard. Surfaced as a warning
@@ -71,7 +71,7 @@ async function main() {
   const orphans = Object.keys(LEARNABLES).filter((id) => !introducedBy.has(id));
   console.log(`\n=== coverage ===`);
   console.log(`  ${introducedBy.size}/${Object.keys(LEARNABLES).length} learnables are introduced by a dialogue.`);
-  console.log(`  not introduced by any dialogue (may be owned by the seed/scenarios): ${orphans.join(", ") || "none"}`);
+  console.log(`  not introduced by any dialogue (may be owned by the seed/domains): ${orphans.join(", ") || "none"}`);
 
   // 3b. DELIVERY DRIFT (error). `deliverySL` is the same line as `sl`, only with inline delivery tags —
   //     so stripping the bracketed tags must give back `sl`. When it doesn't, the two have drifted:

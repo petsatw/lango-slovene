@@ -4,11 +4,11 @@
 // this one does the separate scene-setting INTRO clip it deliberately skips — the short first-person
 // monologue that plays over the background before a level's tree begins (dialogue.intro).
 //
-// The intro is the LEARNER's own voice, so it is synthesized in the scenario's CLIENT voice profile
+// The intro is the LEARNER's own voice, so it is synthesized in the domain's CLIENT voice profile
 // (dialogue.voices.client), from intro.text — the delivery-tagged source (e.g. "[yawning] Uf…"). The clip
 // is written to public/intros/<intro.audio>, the filename the dialogue already declares.
 //
-//   npm run build:dialogue-intros -- <scenarioId> [--level <n>] [--regen]
+//   npm run build:dialogue-intros -- <domainId> [--level <n>] [--regen]
 //   npm run build:dialogue-intros -- library
 //   npm run build:dialogue-intros -- restaurant --level 1 --regen
 //
@@ -36,12 +36,12 @@ const onlyLevel = levelIdx >= 0 ? Number(args[levelIdx + 1]) : undefined;
 const regen = args.includes("--regen");
 
 if (!scenarioId) {
-  console.error("Usage: npm run build:dialogue-intros -- <scenarioId> [--level <n>] [--regen]");
+  console.error("Usage: npm run build:dialogue-intros -- <domainId> [--level <n>] [--regen]");
   process.exit(1);
 }
 
 (async () => {
-  // Load the scenario's dialogue files that carry an intro (optionally one level).
+  // Load the domain's dialogue files that carry an intro (optionally one level).
   const files = readdirSync(DIALOGUES_DIR)
     .filter((f) => f.startsWith(`${scenarioId}-`) && f.endsWith(".json"))
     .map((f) => ({ f, d: validateDialogue(f, JSON.parse(readFileSync(path.join(DIALOGUES_DIR, f), "utf8"))) as Dialogue }))

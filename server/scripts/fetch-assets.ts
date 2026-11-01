@@ -1,5 +1,5 @@
-// Download the prebuilt scenario assets (scene images + audio) into the local store, so the
-// ready-made scenarios work without paying to regenerate images. The bundle is content-addressed
+// Download the prebuilt domain assets (scene images + audio) into the local store, so the
+// ready-made domains work without paying to regenerate images. The bundle is content-addressed
 // the same way the store is (provider|model|style|prompt), so a clip/image only counts as a "hit"
 // when your config matches the bundle's — i.e. the DEFAULT providers in example-vars. Change the
 // voice/model/E4 provider or IMAGE_STYLE.id and those assets simply regenerate on demand.
@@ -49,5 +49,5 @@ try {
 
 console.log(
   `\nDone — assets unpacked into ${ASSET_DIR}.\n` +
-    `These match the default providers in example-vars. Run \`npm run dev\` and pick a scenario.`,
+    `These match the default providers in example-vars. Run \`npm run dev\` and pick a domain.`,
 );

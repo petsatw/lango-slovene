@@ -75,4 +75,4 @@ Exactly these fields. Keep each tight — this is a sketch someone will compare 
 
 ## When the ledger is thin
 
-Early in a scenario the learner has produced very little, so there may be one stale id to pick up and almost nothing the character can remember. Design the best lesson available in that material. Do not invent history the learner does not have, and do not reach for a novel premise just to look different from designers you cannot see.
+Early in a domain the learner has produced very little, so there may be one stale id to pick up and almost nothing the character can remember. Design the best lesson available in that material. Do not invent history the learner does not have, and do not reach for a novel premise just to look different from designers you cannot see.

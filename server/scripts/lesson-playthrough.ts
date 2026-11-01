@@ -1,7 +1,7 @@
 // playthrough:lesson — print a spoken lesson AS IT PLAYS ON SCREEN: every beat, with the thing the app
 // does to it. The companion to `script:lesson`, and deliberately its opposite.
 //
-//   npm run playthrough:lesson -- <scenarioId> [--level <n>] [--as <fact>=<value>] [--json]
+//   npm run playthrough:lesson -- <domainId> [--level <n>] [--as <fact>=<value>] [--json]
 //   npm run playthrough:lesson -- --from <reconcile-input.json> [--level <n>] […]
 //
 // `script:lesson` answers "does the talking make sense" by throwing the app away. This answers the
@@ -23,7 +23,7 @@
 import { readFileSync } from "node:fs";
 import { DIALOGUES, resolveNode, type Dialogue, type DialogueNode, type DialogueObjective,
          type TutorialStep } from "../dialogues";
-import { SCENARIOS } from "../scenarios";
+import { DOMAINS } from "../domains";
 import { getFact } from "../facts";
 import { pacingFor, type PacingProfile } from "../pacing";
 import { sceneShape, type BeatSurface } from "../scene-shape";
@@ -45,7 +45,7 @@ for (let i = 0; i < argv.length; i++) {
   break;
 }
 
-const USAGE = "usage: npm run playthrough:lesson -- <scenarioId> [--level <n>] [--as <fact>=<value>] [--json]\n" +
+const USAGE = "usage: npm run playthrough:lesson -- <domainId> [--level <n>] [--as <fact>=<value>] [--json]\n" +
               "       npm run playthrough:lesson -- --from <reconcile-input.json> [--level <n>] […]";
 
 /** What this script needs of a lesson, from either source. */
@@ -71,12 +71,12 @@ interface Lesson {
 function fromCatalog(id: string): Lesson {
   const levels = DIALOGUES[id] ?? [];
   if (!levels.length) {
-    console.error(`no dialogue found for scenario "${id}" (have: ${Object.keys(DIALOGUES).join(", ")})`);
+    console.error(`no dialogue found for domain "${id}" (have: ${Object.keys(DIALOGUES).join(", ")})`);
     process.exit(2);
   }
   const d: Dialogue | undefined = levelArg ? levels.find((x) => x.level === Number(levelArg)) : levels[0];
   if (!d) {
-    console.error(`scenario "${id}" has no level ${levelArg} (have: ${levels.map((x) => x.level).join(", ")})`);
+    console.error(`domain "${id}" has no level ${levelArg} (have: ${levels.map((x) => x.level).join(", ")})`);
     process.exit(2);
   }
   return {
@@ -84,7 +84,7 @@ function fromCatalog(id: string): Lesson {
     nodes: d.nodes as Record<string, DialogueNode>,
     npcVoice: d.voices.npc ?? "npc",
     spoken: d.advance === "audio",
-    onboarding: !!SCENARIOS.find((s) => s.id === id)?.onboarding,
+    onboarding: !!DOMAINS.find((s) => s.id === id)?.onboarding,
     pacing: pacingFor(d.pacing), pacingId: d.pacing ?? "onboarding",
     objectives: d.objectives ?? [], introduces: d.introduces ?? [],
     audioState: String(d.audio), frameEN: d.frameEN ?? [], tutorial: d.tutorial ?? [],

@@ -31,19 +31,19 @@ const check = (name: string, ok: boolean, detail = "") => {
 async function openPractice(page: Page) {
   await page.goto(base);
   await page.click('.tile[data-go="practice"]');
-  await page.waitForSelector(".scenario-card");
+  await page.waitForSelector(".domain-card");
 }
 
 // Line 1 / line 2 of every card as the learner sees them (line 2 counts only when it is visible and below).
-const readCards = (page: Page) => page.$$eval(".scenario-card", (els) => els.map((e) => {
-  const n = e.querySelector(".scenario-name") as HTMLElement | null;
-  const m = e.querySelector(".scenario-meta") as HTMLElement | null;
+const readCards = (page: Page) => page.$$eval(".domain-card", (els) => els.map((e) => {
+  const n = e.querySelector(".domain-name") as HTMLElement | null;
+  const m = e.querySelector(".domain-meta") as HTMLElement | null;
   const shown = !!m && m.offsetHeight > 0 && !!n && m.getBoundingClientRect().top >= n.getBoundingClientRect().bottom - 1;
   return { line1: n?.textContent ?? "", line2: shown ? m!.textContent ?? "" : null, text: (e.textContent ?? "").replace("›", "") };
 }));
 
 async function readHeader(page: Page, name: string) {
-  const card = page.locator(".scenario-card", { has: page.locator(".scenario-name", { hasText: new RegExp(`^${name}$`) }) });
+  const card = page.locator(".domain-card", { has: page.locator(".domain-name", { hasText: new RegExp(`^${name}$`) }) });
   if (!(await card.count())) return { line1: "no card", line2: null };
   await card.click();
   await page.waitForSelector("#levels:not([hidden])");
@@ -58,7 +58,7 @@ async function readHeader(page: Page, name: string) {
 async function main() {
   const off: string[] = [];
   for (const [id, want] of TITLES) {
-    const m = JSON.parse(fs.readFileSync(`server/scenarios/${id}.json`, "utf8"));
+    const m = JSON.parse(fs.readFileSync(`server/domains/${id}.json`, "utf8"));
     if (m.name !== want.name || (m.nameSl ?? null) !== want.nameSl) off.push(`${id}: ${m.name} / ${m.nameSl}`);
   }
   check(`manifests match the spec §1 table (${TITLES.size} domains)`, TITLES.size > 0 && off.length === 0, off.join("; "));

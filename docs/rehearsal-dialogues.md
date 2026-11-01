@@ -1,12 +1,12 @@
 # Rehearsal dialogues — the click-through decision tree
 
 A **rehearsal dialogue** is a fully pre-authored, branching **decision-tree** conversation paired with a
-scenario — in its tapped form (a **tap tree**), a real exchange as it happens in life. The learner picks
+domain — in its tapped form (a **tap tree**), a real exchange as it happens in life. The learner picks
 their line and **says it aloud**, mirroring the person they are playing, then hears the character answer.
 It is **rehearsal, not assessment**: no microphone, no server turn, no model in the loop, and **no mastery
 credit**. The live mic tutor stays the only place mastery is earned.
 
-This complements the two existing conversation surfaces (the scenario turn loop and free chat) with a
+This complements the two existing conversation surfaces (the objective turn loop and free chat) with a
 third, lighter one. The division of labour — and the direction the [roadmap](ROADMAP.md#the-pieces) set —
 is: **the click-through dialogue introduces new language; free chat reinforces it toward mastery.** That
 integration is now built: a level ties itself to catalog learnables via [`introduces`](#the-catalog-link--deriving-learnables-from-a-dialogue)
@@ -15,8 +15,8 @@ built is auto-selecting which dialogue comes next (roadmap item 5).
 
 ## What the learner sees
 
-- A **🎭 Rehearse** button on a scenario that has authored dialogues. It opens an overlay.
-- **Competency-level tabs** (e.g. *1. Survival · 2. Basic A1 · 3. Full A1*) when a scenario has more than
+- A **🎭 Rehearse** button on a domain that has authored dialogues. It opens an overlay.
+- **Competency-level tabs** (e.g. *1. Survival · 2. Basic A1 · 3. Full A1*) when a domain has more than
   one level. Each level is a distinct tree with its own, non-overlapping objectives, ascending in length
   and difficulty.
 - The **NPC line** (`npc`) as a left bubble, then **2 client-reply choices** as buttons. Picking one
@@ -30,16 +30,16 @@ built is auto-selecting which dialogue comes next (roadmap item 5).
 
 ## Data model
 
-One file per level: `server/dialogues/<scenario>-<level>.json`, loaded + validated at startup by
+One file per level: `server/dialogues/<domain>-<level>.json`, loaded + validated at startup by
 [`server/dialogues.ts`](../server/dialogues.ts), **grouped by `scenarioId`** and sorted ascending by
-`level` (levels must be unique within a scenario). A scenario with no dialogue file simply has none —
-the feature is optional per scenario.
+`level` (levels must be unique within a domain). A domain with no dialogue file simply has none —
+the feature is optional per domain.
 
 ```jsonc
 {
   "id": "bakery-l1",
-  "scenarioId": "bakery",          // which scenario this pairs with
-  "level": 1,                       // 1..N, ascending difficulty; unique per scenario
+  "scenarioId": "bakery",          // which domain this pairs with
+  "level": 1,                       // 1..N, ascending difficulty; unique per domain
   "levelLabel": "Survival",         // short human label for the tab
   "title": "Buy bread — the basics",
   "objectives": [                   // DISPLAY ONLY — what this level demonstrates (no crediting)
@@ -150,11 +150,11 @@ one more entry — add it here, deliberately, rather than freehanding it into a 
   E3 adapter + the concrete voice id in `.env` (see [SECRETS.md](SECRETS.md)).
 - **`background`** (optional) is a portrait (9:16) image filename served from `public/backgrounds/`. With it
   the whole card becomes a fixed mobile-portrait frame the image fills; the conversation scrolls over it.
-  Backgrounds are **operator-supplied** art (there is no generator for them) named `<scenario>-<level>.jpg`
+  Backgrounds are **operator-supplied** art (there is no generator for them) named `<domain>-<level>.jpg`
   or a descriptive name, committed under `public/backgrounds/` (a git-tracked path — they ship normally).
   It is a per-level field on the reconcile input and is **preserved across reconcile re-runs**.
   - **A background shows the dialogue's own cast.** In a tapped tree the client is a **character** with a
-    gender chosen by the scenario and matched by its cast voice (see
+    gender chosen by the domain and matched by its cast voice (see
     [client-as-character](#learner-facts--what-the-course-knows-about-the-person) — a spoken lesson is the
     other case, where the client is the learner). The picture has to agree with the voices, because it is
     on screen for the whole exchange.
@@ -206,7 +206,7 @@ button, and no chrome (the header is hidden while it is up). It is driven by
 *takes* the learner rather than a rehearsal they pick, `/api/practice` leaves it out of the picker, and
 `build:dialogue-assets` voices only the character — the client lines are the learner's own speech.
 
-`advance` is declared on the scenario manifest (`surfaces.dialogue.advance`) **and** on each level's
+`advance` is declared on the domain manifest (`surfaces.dialogue.advance`) **and** on each level's
 file; `lint:tree` checks the two agree, exactly as it does for `voices`. Absent ⇒ `"tap"`, so every
 dialogue authored before the field keeps its behaviour. In `"audio"` mode `lint:tree` drops its
 "single choice" warning — a spoken spine is linear by design.
@@ -384,7 +384,7 @@ that level's introduced learnables** — where the *existing* witness crediting 
 
 - **Client** (`public/app.js`): `reinforceFromDialogue()` closes the overlay and calls
   `openTutor({ focus, role, context })` — the live tutor opens biased toward this level's introduced set,
-  pinned to the scenario's role and primed with the scene it came from. The focus set is carried on the
+  pinned to the domain's role and primed with the scene it came from. The focus set is carried on the
   client (like the pinned role) and POSTed back on every `/api/converse` turn as `focusLearnables`.
 - **Server**: `converse({ focusLearnables })` → `selectForWitness(model, level, focusIds)` pulls the
   introduced ids to the **front of the in-play target set** and **force-includes them even if unseen** —
@@ -411,7 +411,7 @@ that every `introduces` id resolves, and reports which dialogue introduces which
 Pregenerate with:
 
 ```bash
-npm run build:dialogue-assets -- <scenarioId> [--level <n>] [--nodes <id,id,…>] [--regen]
+npm run build:dialogue-assets -- <domainId> [--level <n>] [--nodes <id,id,…>] [--regen]
 ```
 
 `--nodes` is an **audition**: it synthesizes only those node ids (a cheap pre-approval spot-check of a voice
@@ -453,7 +453,7 @@ different questions, and a staged level usually wants its audio built.
 Only the app-facing endpoints filter (`getPublishedDialogues` in
 [`server/dialogues.ts`](../server/dialogues.ts)). The lints, `script:lesson`, `playthrough:lesson` and the
 asset and alignment builders read every level whatever its status — so a draft is still gated, still
-printable, and still buildable, and a retired one keeps answering for the clips it owns. A scenario whose
+printable, and still buildable, and a retired one keeps answering for the clips it owns. A domain whose
 every level is drafted or retired drops out of the picker exactly as an unauthored one does.
 
 The manifest keeps declaring the level either way: `surfaces.dialogue.levels[]` says the file exists,
@@ -462,11 +462,11 @@ which stays true, and `lint:tree` goes on checking the two agree.
 The **intro** monologue clips are a separate build (the line builder above deliberately skips them):
 
 ```bash
-npm run build:dialogue-intros -- <scenarioId> [--level <n>] [--regen]
+npm run build:dialogue-intros -- <domainId> [--level <n>] [--regen]
 ```
 
 [`server/scripts/build-dialogue-intros.ts`](../server/scripts/build-dialogue-intros.ts) synthesizes each
-level's `intro.text` (the delivery-tagged source) in the scenario's **client** voice profile — the intro is
+level's `intro.text` (the delivery-tagged source) in the domain's **client** voice profile — the intro is
 the learner's own first-person monologue — and writes it to `public/intros/<intro.audio>`, the filename the
 dialogue declares. Preflight-gated, idempotent (skips an existing clip unless `--regen`), and sequential so a
 billed run can't half-complete. Unlike the line audio it writes a plain file (intros are referenced by name,
@@ -476,14 +476,14 @@ like operator-supplied backgrounds), so the clips ship as git-tracked assets und
 
 Tap trees are authored by the **`create-tap-tree`** skill, from the operator's situation map with outcomes
 (the library is the worked example); spoken lessons by the **`create-dialogue`** skill. Both are the
-`dialogue` surface of the shared authoring engine (**docs/authoring-pipeline.md**). create-dialogue mirrors create-scenario's shape for the branching-tree
+`dialogue` surface of the shared authoring engine (**docs/authoring-pipeline.md**). create-dialogue mirrors create-domain's shape for the branching-tree
 surface: the orchestrator specs the tree (situation, per-level objectives mapped to
 [CEFR/Slovenian A1](https://centerslo.si/izpiti/izpiti-iz-znanja-slovenscine/izpit-na-vstopni-ravni)
 competencies — see docs/a1-taxonomy.md — sizing, register), the **`slovenian-author`** agent (dialogue mode)
-writes the native Slovene per node + the catalog delta, and the **`scenario-critic`** agent (dialogue mode)
+writes the native Slovene per node + the catalog delta, and the **`domain-critic`** agent (dialogue mode)
 signs off on naturalness, register consistency, grammar targets, and branch coherence (its recurring catch is
 a convergence node that only makes sense on one incoming path), returning **structured, addressed fixes**.
-Objectives are distinct across a scenario's levels and each is demonstrated on a reachable path. The
+Objectives are distinct across a domain's levels and each is demonstrated on a reachable path. The
 `never freehand Slovene` rule still holds — the author writes the language, not the orchestrator.
 
 ### Deriving the catalog (the repeatable part — how `introduces` gets filled)
@@ -496,7 +496,7 @@ learnables is a **gated step of the authoring pass**, a byproduct of writing the
    `___`; chunk = the fixed phrase) with gloss + the one predictable beginner error — lifted from the
    lines it just wrote, never freehanded. It reuses an existing catalog id wherever one already covers an
    item; it mints a new id only for genuinely new language.
-2. **Critic reviews the delta too.** `scenario-critic` judges the delta on the same axes as the tree —
+2. **Critic reviews the delta too.** `domain-critic` judges the delta on the same axes as the tree —
    canonical form correct, gloss accurate, the predictable error real and correctly described, native not
    textbook, and no **re-mint of an item already in the catalog** (same lexical item modulo inflection —
    NOT a distinct lexeme that merely shares a function; `Živjo`/`Zdravo` and `ja`/`da` both coexist).
@@ -509,7 +509,7 @@ learnables is a **gated step of the authoring pass**, a byproduct of writing the
    structure + manifest consistency), **`lint:a1`** (a1-map ref-integrity + a difficulty/coverage readout — the
    curated core is never force-filled; a per-learnable `a1` tag is the Tagged-A1 superset), **`test:dialogue`**.
 
-The same three-part shape as the scenario engine (author → critic → deterministic reconcile + lint), extended
+The same three-part shape as the domain engine (author → critic → deterministic reconcile + lint), extended
 to grow the catalog. Because a word is minted once and referenced by id (step 1's reuse rule + the reconcile's
 dedup), the catalog stays coherent as dialogues multiply — every later dialogue that uses *kruh* credits the
 same `kruh` the learner has been building all along.
@@ -539,7 +539,7 @@ same `kruh` the learner has been building all along.
 - **Convergence coherence** is the one thing a script can't judge: a shared `next` target must read on **every**
   incoming path. `lint:tree` LISTS every multi-parent node as a review candidate — eyeball each; the critic is
   the real check.
-- **Vary across levels.** A scenario's levels each get their own opener and closer — do **not** reuse one
+- **Vary across levels.** A domain's levels each get their own opener and closer — do **not** reuse one
   greeting (`Dober dan, izvolite?`) as every level's `n1`, or one closing (`Hvala, nasvidenje.`) as every
   terminal client line. Identical openers/closers read monotonously *and* collapse to a single audio clip
   (losing per-line delivery). Give each level a distinct, natural variant; recombine existing catalog
@@ -583,7 +583,7 @@ same `kruh` the learner has been building all along.
   the entry records. Deriving "this is gendered" from the presence of a slash gets six entries wrong — read
   the gloss.
 
-### Register a new scenario — the checklist
+### Register a new domain — the checklist
 
 1. **Pick the situation + register + role + voices.** Choose or add the `npc`/`client` voice profiles (a new
    voice = one `server/catalog/voices.json` profile + one `PROFILE_ENV` row in the E3 adapter + the id in

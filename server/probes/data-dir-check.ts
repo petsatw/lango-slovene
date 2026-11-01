@@ -7,7 +7,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 const ID = "datadir-check";
-const SCENARIOS = ["slavko-intro", "trznica", "sprehod", "library", "bakery", "demo", "restaurant"];
+const DOMAINS = ["slavko-intro", "trznica", "sprehod", "library", "bakery", "demo", "restaurant"];
 let port = 20000 + Math.floor(Math.random() * 20000);
 
 async function start(env: Record<string, string>): Promise<{ child: ChildProcess; base: string }> {
@@ -32,7 +32,7 @@ async function stop(child: ChildProcess) {
 /** Learner progress through the API, then a session, live log and gloss entry through their module functions. */
 async function seed(base: string, env: Record<string, string>): Promise<void> {
   let ok = false;
-  for (const scenarioId of SCENARIOS) {
+  for (const scenarioId of DOMAINS) {
     const r = await fetch(`${base}/api/scene`, {
       method: "POST",
       headers: { "content-type": "application/json", "x-learner-id": ID },

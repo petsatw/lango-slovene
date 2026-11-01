@@ -74,7 +74,7 @@ try {
 
   // ---- tap level
   await page.locator('.tile[data-go="practice"]').click();
-  await page.locator(".scenario-card").filter({ hasText: tap.sc.name }).first().click();
+  await page.locator(".domain-card").filter({ hasText: tap.sc.name }).first().click();
   await page.locator("#level-list .level-card").nth(tap.i).click();
   await page.waitForSelector("#dialogue-convo .bubble");
   await waitFork();
@@ -160,7 +160,7 @@ try {
     await page.waitForFunction(() => !document.getElementById("home")!.hidden);
   }
   await page.locator('.tile[data-go="practice"]').click();
-  await page.locator(".scenario-card").filter({ hasText: spoken.sc.name }).first().click();
+  await page.locator(".domain-card").filter({ hasText: spoken.sc.name }).first().click();
   // The lesson's first line, as the server sends it with the opening reply.
   let openingLine = "";
   page.on("response", async (res) => {

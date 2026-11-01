@@ -18,7 +18,7 @@ worse. Neither reading is worth much without the other, and neither reader sees 
 ## 1. Print the script
 
 ```bash
-npm run script:lesson -- <scenarioId> [--level <n>]              # a shipped lesson
+npm run script:lesson -- <domainId> [--level <n>]              # a shipped lesson
 npm run script:lesson -- --from <reconcile-input.json> [--level <n>]   # one still being authored
 ```
 
@@ -77,7 +77,7 @@ Nobody can tell which is which from the conversation alone, and nobody should ha
 find out. That is what the second tool is for.
 
 ```bash
-npm run playthrough:lesson -- <scenarioId> [--level <n>]
+npm run playthrough:lesson -- <domainId> [--level <n>]
 npm run playthrough:lesson -- --from <reconcile-input.json> [--level <n>]
 ```
 

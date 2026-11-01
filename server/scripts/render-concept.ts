@@ -1,5 +1,5 @@
 // Generate the canonical render for COMPOSED catalog concept(s) — greet/leave, or a location like `cafe`.
-// The composition logic lives in assets/compose.ts (shared with the scenario build, where a scene anchors
+// The composition logic lives in assets/compose.ts (shared with the domain build, where a scene anchors
 // on a location concept's render). Here we just drive it per id, honoring --force.
 //
 //   npm run render:concept -- greet cafe            # render (skips if the image already exists)
