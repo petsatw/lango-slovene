@@ -272,7 +272,7 @@ export function selectForWitness(
 }
 
 // ---- A scene's card: which of its lines this session practises ----
-// A scene (a scenario's `live` surface) names its CORE lines, practised every visit, and its BANK, the
+// A scene (a domain's `live` surface) names its CORE lines, practised every visit, and its BANK, the
 // rest of the buyer's lines. The server picks the day's bank lines from the learner's dated production;
 // the tutor only plays the scene so those lines have somewhere to be said.
 

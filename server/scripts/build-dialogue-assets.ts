@@ -1,4 +1,4 @@
-// Pregenerate audio for a scenario's REHEARSAL dialogues (the predetermined branching trees).
+// Pregenerate audio for a domain's REHEARSAL dialogues (the predetermined branching trees).
 //
 // For every node it synthesizes the speaker's line in that speaker's voice profile (dialogue.voices),
 // keyed by the CLEAN display line (node.sl) so /api/speak — which only knows the on-screen text — finds
@@ -19,7 +19,7 @@
 // client starts showing play buttons for it. Idempotent + FREE on re-run (disk hits). Bills only on new
 // lines. Use --regen to force a re-roll (e.g. after changing a delivery note).
 //
-//   npm run build:dialogue-assets -- <scenarioId> [--level <n>] [--nodes <id,id,…>] [--regen]
+//   npm run build:dialogue-assets -- <domainId> [--level <n>] [--nodes <id,id,…>] [--regen]
 //   npm run build:dialogue-assets -- bakery --level 1            # just the Survival level
 //   npm run build:dialogue-assets -- bakery --level 1 --regen    # re-synthesize it (delivery changed)
 //   npm run build:dialogue-assets -- bakery --level 1 --nodes n1,c1a,c1b   # AUDITION a few lines only
@@ -49,7 +49,7 @@ const auditionNodes =
 const regen = args.includes("--regen");
 
 if (!scenarioId) {
-  console.error("Usage: npm run build:dialogue-assets -- <scenarioId> [--level <n>] [--regen]");
+  console.error("Usage: npm run build:dialogue-assets -- <domainId> [--level <n>] [--regen]");
   process.exit(1);
 }
 
@@ -61,7 +61,7 @@ const files = readdirSync(DIALOGUES_DIR)
   .sort((a, b) => a.d.level - b.d.level);
 
 if (!files.length) {
-  console.error(`No dialogues for scenario "${scenarioId}"${onlyLevel !== undefined ? ` level ${onlyLevel}` : ""}.`);
+  console.error(`No dialogues for domain "${scenarioId}"${onlyLevel !== undefined ? ` level ${onlyLevel}` : ""}.`);
   process.exit(1);
 }
 

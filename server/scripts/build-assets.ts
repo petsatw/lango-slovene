@@ -1,11 +1,11 @@
-// M3 prebuild — materialize a scenario's STATIC assets into the local store.
-// Walks a scenario and getOrCreate's every authored clip/image it owns:
+// M3 prebuild — materialize a domain's STATIC assets into the local store.
+// Walks a domain and getOrCreate's every authored clip/image it owns:
 //   - the tutor's opening line audio (character voice) + each targetSL + story sentence (teacher voice)
 //   - each asset's canonical render, each atomic frame image, the scene image
 // Idempotent and FREE on re-run: anything already in the store is a disk hit, no provider call. Shared
-// (catalog) assets render ONCE and are reused across scenarios (identical descriptor → identical key).
+// (catalog) assets render ONCE and are reused across domains (identical descriptor → identical key).
 //
-//   npm run build:assets -- <scenarioId>                 (defaults to "cafe")
+//   npm run build:assets -- <domainId>                 (defaults to "cafe")
 //
 // Surgical force-regenerate ONE leaf — delete that one key and regenerate only it; everything else is
 // left untouched. Frame/scene regens read the EXISTING per-asset renders to anchor (they do NOT
@@ -22,9 +22,9 @@ import { getOrCreateReferenceSheet } from "../assets/reference-sheet";
 import { renderConcept } from "../assets/compose";
 import { IMAGE_STYLE, IMAGE_FORMAT, relevantLabels } from "../adapters/image-style";
 import { CATALOG } from "../catalog";
-import { SCENARIOS, characterVoiceProfile } from "../scenarios";
+import { DOMAINS, characterVoiceProfile } from "../domains";
 
-// ---- args: <scenarioId> [--regen <selector>] -----------------------------------------------------
+// ---- args: <domainId> [--regen <selector>] -----------------------------------------------------
 const rawArgs = process.argv.slice(2);
 const consumed = new Set<number>();
 let regen: string | undefined;
@@ -37,15 +37,15 @@ for (let i = 0; i < rawArgs.length; i++) {
 }
 const requestedId = rawArgs.find((a, i) => !consumed.has(i) && !a.startsWith("--")) || "cafe";
 
-const scenario = SCENARIOS.find((s) => s.id === requestedId && s.status === "active");
-if (!scenario) {
-  const active = SCENARIOS.filter((s) => s.status === "active").map((s) => s.id);
-  console.error(`No active scenario "${requestedId}". Active: ${active.join(", ") || "(none)"}`);
+const domain = DOMAINS.find((s) => s.id === requestedId && s.status === "active");
+if (!domain) {
+  const active = DOMAINS.filter((s) => s.status === "active").map((s) => s.id);
+  console.error(`No active domain "${requestedId}". Active: ${active.join(", ") || "(none)"}`);
   process.exit(1);
 }
 
-const story = scenario.scene?.story;
-const assets = scenario.scene?.assets ?? [];
+const story = domain.scene?.story;
+const assets = domain.scene?.assets ?? [];
 const frames = story?.frames ?? [];
 const sceneImagePrompt = story?.sceneImagePrompt;
 
@@ -65,16 +65,16 @@ const e4 = getE4();
 // AUDIO items. label is for logs + audio-regen matching. The opening is an IN-SCENE character line →
 // the character's voice profile; objective targets + story narration are learner-facing → teacher voice.
 const audioItems: { label: string; text: string; objectiveId?: string; sel: string; voiceProfile?: string }[] = [
-  { label: "opening", text: scenario.opening, sel: "opening", voiceProfile: characterVoiceProfile(scenario) },
-  ...scenario.objectives.map((o) => ({ label: `audio:objective:${o.id}`, text: o.targetSL, objectiveId: o.id, sel: o.id })),
+  { label: "opening", text: domain.opening, sel: "opening", voiceProfile: characterVoiceProfile(domain) },
+  ...domain.objectives.map((o) => ({ label: `audio:objective:${o.id}`, text: o.targetSL, objectiveId: o.id, sel: o.id })),
   ...(story?.sentences ?? []).map((s, i) => ({ label: `audio:story[${i}]`, text: s, sel: `story[${i}]` })),
 ];
 
 const imageCount = assets.length + frames.length + (sceneImagePrompt ? 1 : 0);
 console.log(
   regen
-    ? `▶ build:assets  scenario=${scenario.id}  --regen ${regen}\n`
-    : `▶ build:assets  scenario=${scenario.id}  e3=${e3.name}  audio=${audioItems.length}  images=${imageCount}\n`,
+    ? `▶ build:assets  domain=${domain.id}  --regen ${regen}\n`
+    : `▶ build:assets  domain=${domain.id}  e3=${e3.name}  audio=${audioItems.length}  images=${imageCount}\n`,
 );
 
 let hits = 0;
@@ -95,7 +95,7 @@ for (const item of audioItems) {
     const { hit } = await store.getOrCreate(
       key,
       "audio",
-      { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text: item.text, scenarioId: scenario.id, objectiveId: item.objectiveId },
+      { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text: item.text, scenarioId: domain.id, objectiveId: item.objectiveId },
       async () => {
         const r = await e3.synthesize({ text: item.text, voiceProfile: item.voiceProfile });
         return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };
@@ -123,7 +123,7 @@ const frameKey = (prompt: string, fmt: { aspectRatio: string; resolution: string
   store.imageKey(e4.name, e4.model, IMAGE_STYLE.id, fmt.aspectRatio, fmt.resolution, prompt);
 
 // Lazily render-or-reuse one asset's canonical render (content-addressed; a hit if it already exists).
-// Shared (catalog) assets render once and are reused across scenarios.
+// Shared (catalog) assets render once and are reused across domains.
 const renderCache = new Map<string, { bytes: Buffer; key: string }>();
 async function getRender(a: { label: string; descriptor: string; catalogId?: string }) {
   const cached = renderCache.get(a.label);
@@ -173,7 +173,7 @@ for (const f of frames) {
     const { hit, key: k } = await getOrCreateImage(f.imagePrompt, {
       ...IMAGE_FORMAT.frame,
       mode: "flashcard",
-      scenarioId: scenario.id,
+      scenarioId: domain.id,
       objectiveId: f.objectiveId,
       referenceImages: sheet ? [sheet.dataUri] : undefined,
       referenceKeys: sheet ? [sheet.key] : undefined,
@@ -187,7 +187,7 @@ for (const f of frames) {
   }
 }
 if (regenFrame !== undefined && !frames.some((f) => f.objectiveId === regenFrame)) {
-  console.error(`No frame for objective "${regenFrame}" in "${scenario.id}".`);
+  console.error(`No frame for objective "${regenFrame}" in "${domain.id}".`);
   process.exit(2);
 }
 
@@ -208,7 +208,7 @@ if (sceneImagePrompt && (!regen || regenScene)) {
       const { hit, key: k } = await getOrCreateImage(sceneImagePrompt, {
         ...IMAGE_FORMAT.scene,
         mode: "scene",
-        scenarioId: scenario.id,
+        scenarioId: domain.id,
         objectiveId: "scene",
         referenceImages: sheet ? [sheet.dataUri] : undefined,
         referenceKeys: sheet ? [sheet.key] : undefined,

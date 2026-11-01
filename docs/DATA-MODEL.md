@@ -133,9 +133,9 @@ interface ConverseResult {
 (threshold = 5, flub decrements by 1, pre-mastery misses stall) live in `server/mastery.ts`; status is
 derived — `successes ≥ threshold` ⇒ mastered, present-but-below ⇒ attempted, absent from the model ⇒ unseen.
 
-## A scenario
+## A domain
 
-`server/scenarios/<id>.json`. References assets by catalog id (`{ ref }`); inline `{ label, descriptor }`
+`server/domains/<id>.json`. References assets by catalog id (`{ ref }`); inline `{ label, descriptor }`
 assets are discouraged (the linter flags them). Abbreviated from `cafe.json`:
 
 ```jsonc
@@ -169,7 +169,7 @@ assets are discouraged (the linter flags them). Abbreviated from `cafe.json`:
 
 `{{TOKEN}}` markers in image prompts are catalog labels — they anchor the generated image to that
 asset's canonical render. The rubric for authoring all of this is in
-[scenario-authoring.md](scenario-authoring.md).
+[domain-authoring.md](domain-authoring.md).
 
 ## A rehearsal dialogue
 

@@ -10,13 +10,13 @@ export interface ConversationTurn {
 
 export type ObjectiveStatus = "pending" | "recast" | "completed";
 
-/** A micro-objective the student should learn to PRODUCE in a scenario. */
+/** A micro-objective the student should learn to PRODUCE in a domain. */
 export interface Objective {
   id: string;
   label: string; // short English label for the UI dot
   targetSL: string; // canonical correct Slovenian the student should produce (default/primary line)
   hintEN: string; // internal guidance for the model — never lectured to the student
-  /** Catalog learnable ids this objective exercises (carrier pattern + fillers). Optional: a scenario
+  /** Catalog learnable ids this objective exercises (carrier pattern + fillers). Optional: a domain
    *  without it keeps today's behaviour exactly (no durable mastery for that objective). See
    *  docs/learnable-subsystem-spec.md §2.2. */
   learnables?: string[];
@@ -172,24 +172,24 @@ export interface E2Result {
   correction: string;
   /** Per-objective verdict for THIS turn — the model's read of what the student produced (SCENE layer). */
   objectiveProgress: ObjectiveProgress[];
-  /** Per-learnable verdict for THIS turn — drives the durable MASTERY layer. Empty when the scenario
-   *  authors no learnables (back-compat) or in non-scenario modes that exercise none. */
+  /** Per-learnable verdict for THIS turn — drives the durable MASTERY layer. Empty when the domain
+   *  authors no learnables (back-compat) or in non-domain modes that exercise none. */
   learnableProgress: LearnableProgress[];
   /** The objective the tutor is now steering toward. */
   focusObjectiveId: string;
 }
 
-/** One level the scenario finder offers the model to rank (server/match.ts). */
-export interface ScenarioCandidate {
+/** One level the domain finder offers the model to rank (server/match.ts). */
+export interface LevelCandidate {
   dialogueId: string;
   scenarioId: string;
-  description: string; // scenario name + level title + summary + objectives, plain English
+  description: string; // domain name + level title + summary + objectives, plain English
   lines: { id: string; sl: string; en: string }[]; // every line of the level, so the model can cite one
 }
 
 /** The model's ranking of candidates for a learner's free-text situation. It decides nothing: the
  *  server drops unknown ids and applies the threshold + cap. */
-export interface ScenarioRanking {
+export interface LevelRanking {
   matches: { dialogueId: string; score: number; reason: string; nodeId?: string }[];
   fallback: { scene: string; role: string | null };
 }
@@ -215,9 +215,9 @@ export interface E2Adapter {
    *  reveal translation on a LIVE transcript, where there is no JSON turn to carry a gloss back.
    *  Optional so adapters without a text path can omit it. */
   gloss?(sl: string): Promise<string>;
-  /** Scenario finder re-rank: score each candidate level 0..1 for the learner's situation + write a
+  /** Domain finder re-rank: score each candidate level 0..1 for the learner's situation + write a
    *  free-chat scene for when none fits. Text only. Optional — the keyword ranker covers its absence. */
-  rankScenarios?(input: { query: string; candidates: ScenarioCandidate[] }): Promise<ScenarioRanking>;
+  rankLevels?(input: { query: string; candidates: LevelCandidate[] }): Promise<LevelRanking>;
   /** Read a FINISHED spoken session against the learnable catalog and report one reading per learnable
    *  the learner produced. Text only — the whole conversation in order, both roles — and it decides no
    *  credit. Optional so adapters without a text path can omit it. */
@@ -290,7 +290,7 @@ export interface UnderstandResult {
   providers: { e2: string };
 }
 
-/** Free-conversation turn result (spec §3.5) — no scenario, no objectives, no session; the same
+/** Free-conversation turn result (spec §3.5) — no domain, no objectives, no session; the same
  *  per-learnable verdict drives the durable mastery layer. */
 export interface ConverseResult {
   userVerbatim: string;

@@ -82,22 +82,22 @@ main.screen, main.home {
 .tile-title { font-size: 16px; font-weight: 600; }
 .tile-sub { font-size: 12px; color: var(--muted); line-height: 1.3; }
 
-/* PRACTICE — scenario list. */
-.scenario-list, .level-list { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 10px; }
-.scenario-card {
+/* PRACTICE — domain list. */
+.domain-list, .level-list { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 10px; }
+.domain-card {
   display: flex; align-items: center; gap: 12px;
   background: var(--panel); color: var(--text);
   border: 1px solid #2b2f38; border-radius: 14px;
   padding: 16px 18px; cursor: pointer; text-align: left;
   transition: border-color 0.12s ease;
 }
-.scenario-card:hover { border-color: var(--green); }
+.domain-card:hover { border-color: var(--green); }
 /* Two groups on one screen: the spoken lessons, and the conversations to read through. They carry the
    screen-title styling because with no heading above them they ARE this screen's headings. */
-.scenario-group { margin: 18px 0 4px; font-size: 20px; font-weight: 700; text-align: left; }
-.scenario-group:first-child { margin-top: 4px; }
-.scenario-name { font-size: 18px; font-weight: 600; flex: 1; }
-.scenario-meta { color: var(--muted); font-size: 13px; }
+.domain-group { margin: 18px 0 4px; font-size: 20px; font-weight: 700; text-align: left; }
+.domain-group:first-child { margin-top: 4px; }
+.domain-name { font-size: 18px; font-weight: 600; flex: 1; }
+.domain-meta { color: var(--muted); font-size: 13px; }
 
 /* PRACTICE — the crisp variant/level selector: number + label + what it teaches. */
 .level-card {
@@ -161,7 +161,7 @@ main.tutor { justify-content: center; }
 .a1-detail-title { font-size: 20px; font-weight: 700; margin: 6px 0 4px; }
 .a1-descriptor { color: var(--muted); font-size: 14px; margin: 0 0 12px; line-height: 1.4; }
 .a1-section { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 16px 0 8px; }
-.a1-scenario {
+.a1-domain {
   width: 100%;
   display: flex; align-items: center; gap: 14px;
   background: var(--panel); color: var(--text);
@@ -169,7 +169,7 @@ main.tutor { justify-content: center; }
   padding: 12px 14px; cursor: pointer; text-align: left;
   transition: border-color 0.12s ease;
 }
-.a1-scenario:hover { border-color: var(--green); }
+.a1-domain:hover { border-color: var(--green); }
 .a1-items { display: flex; flex-direction: column; gap: 4px; }
 .a1-item { font-size: 14px; padding: 6px 10px; border-radius: 8px; background: #181b21; color: var(--muted); }
 .a1-item em { color: #6b727e; font-style: normal; font-size: 12px; }
@@ -178,16 +178,6 @@ main.tutor { justify-content: center; }
 .a1-item.a1-attempted span { color: #ffd479; }
 .a1-item.a1-unseen span { color: #4b515c; }
 
-/* Scenario picker: dropdown of the chosen scenario + its one-line description. */
-.scenario-row { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
-.scenario-select {
-  background: var(--panel); color: var(--text);
-  border: 1px solid var(--green); border-radius: 999px;
-  padding: 4px 10px; font-size: 14px; cursor: pointer;
-  /* Keep the closed picker no wider than a long word; the open list still shows full labels. */
-  max-width: 11ch; text-overflow: ellipsis;
-}
-.scenario-desc { color: var(--muted); font-size: 15px; }
 
 /* Objectives collapse behind a bar (immersion-first): the label stays visible; the descriptor card
    slides down on tap. Height-animated via max-height so it can transition — the parent's `.open` state
@@ -582,7 +572,7 @@ main {
 .hint-btn .chev { font-size: 10px; line-height: 1; transition: transform 0.25s ease; }
 .hint-btn.expanded .chev { transform: rotate(180deg); }
 
-/* Choices: each is a distinct tappable card with a trailing "›" — the same select cue the scenario and
+/* Choices: each is a distinct tappable card with a trailing "›" — the same select cue the domain and
  * level cards use — so it reads unmistakably as "tap to choose", no instruction line needed. */
 .choice-list {
   flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
@@ -975,7 +965,7 @@ body.in-scene header { display: none; }
 .phrase-en { grid-column: 1 / -1; font-size: 14px; color: var(--muted); }
 .phrase-en.held { display: none; }
 
-/* Scenario finder (Practice screen) */
+/* Domain finder (Practice screen) */
 .finder { width: 100%; max-width: 520px; margin-bottom: 10px; }
 .finder input { width: 100%; box-sizing: border-box; padding: 12px 14px; font-size: 16px; border-radius: 12px; border: 1px solid #ccc; }
 #finder-results { margin-bottom: 18px; }

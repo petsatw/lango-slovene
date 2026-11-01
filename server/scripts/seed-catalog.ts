@@ -1,4 +1,4 @@
-// seed-catalog — the catalog-seed writer (the scenario-INDEPENDENT sibling of reconcile-dialogue).
+// seed-catalog — the catalog-seed writer (the domain-INDEPENDENT sibling of reconcile-dialogue).
 //
 // Some learnables aren't born in a dialogue tree — a set of context-independent stems, glue,
 // interrogatives and verb cores is authored as a standalone catalog delta, reviewed

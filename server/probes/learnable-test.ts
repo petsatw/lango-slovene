@@ -302,11 +302,11 @@ if (process.argv.includes("--live")) {
     process.env.LEARNER_STORE = "file";
     try {
       const { understand } = await import("../orchestrator");
-      const { getScenario, freshSession } = await import("../scenarios");
+      const { getDomain, freshSession } = await import("../domains");
       const learner = await import("../assets/learner");
-      const scenario = getScenario("cafe");
+      const domain = getDomain("cafe");
       const audioBase64 = readFileSync(clip).toString("base64");
-      const r = await understand({ audioBase64, mimeType: "audio/mp3", history: [], session: freshSession(scenario),
+      const r = await understand({ audioBase64, mimeType: "audio/mp3", history: [], session: freshSession(domain),
                                    learnerId: learner.DEFAULT_LEARNER_ID });
       console.log(`  verbatim: ${r.userVerbatim}`);
       console.log(`  learnable_progress: ${r.learnableProgress.map((p) => `${p.id}:${p.result}`).join("  ") || "(none)"}`);

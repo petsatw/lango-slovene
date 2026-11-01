@@ -1,22 +1,22 @@
-// The tutor prompt (the E2 system prompt). Built fresh each turn from the scenario + live objective
+// The tutor prompt (the E2 system prompt). Built fresh each turn from the domain + live objective
 // state, so the
 // tutor always knows what the student is learning and what's left to master. This is where the
 // turn policy (short, Slovenian-only, recast-don't-lecture, steer + interleave) is enforced.
 
-import type { Scenario } from "./scenarios";
+import type { Domain } from "./domains";
 import type { SessionState } from "./types";
 import { type ObjectivePresentation } from "./mastery";
 import type { Learnable } from "./learnables";
 
 export function buildSystemPrompt(
-  scenario: Scenario,
+  domain: Domain,
   session: SessionState,
   presentation?: Map<string, ObjectivePresentation>,
 ): string {
   const statusById = new Map(session.objectives.map((o) => [o.id, o.status]));
   const anyLearnables = !!presentation && presentation.size > 0;
 
-  const objectiveLines = scenario.objectives.map((o) => {
+  const objectiveLines = domain.objectives.map((o) => {
     const status = statusById.get(o.id) ?? "pending";
     const p = presentation?.get(o.id);
     // The steer line is the presentation's active target (filler-specific) when present, else the
@@ -42,7 +42,7 @@ export function buildSystemPrompt(
 
   // Register-first: declare ti/vi + the variety up front so every reply is in the right register and
   // stays as short as a real native would speak. Falls back to a sensible colloquial default.
-  const reg = scenario.register ?? { form: "vi", variety: "pogovorni" };
+  const reg = domain.register ?? { form: "vi", variety: "pogovorni" };
   const formText =
     reg.form === "ti"
       ? "TIKANJE (informal 'ti') — address the student informally"
@@ -53,7 +53,7 @@ export function buildSystemPrompt(
       : "KNJIŽNI (standard/bookish) — clean standard Slovenian";
 
   return [
-    `ROLE: You are ${scenario.character}. ${scenario.setup}`,
+    `ROLE: You are ${domain.character}. ${domain.setup}`,
     "",
     "REGISTER (decide this BEFORE every reply, and hold it consistently):",
     `- ${formText}.`,
@@ -123,7 +123,7 @@ export function buildSystemPrompt(
 }
 
 // ---- Free conversation: the WITNESS prompt (spec §3.5) --------------------------------------------
-// A scenario-less chat bounded by the learner model. The model is handed a FAMILIAR palette (the
+// A domain-less chat bounded by the learner model. The model is handed a FAMILIAR palette (the
 // tutor's whole usable vocabulary) and a bounded TARGET set to draw the learner toward. It holds the
 // conversation and reports linguistic EVIDENCE only — it decides no credit and knows nothing about
 // mastery/counts/thresholds. The server (mastery.creditFromEvidence) owns all crediting.
@@ -138,7 +138,7 @@ const DEFAULT_DIRECTIVE =
 /** Where the learner arrived from — set when they tap "Now try it for real" in a rehearsal tree. Pure
  *  ENGLISH priming (situation + what they just practiced); it does NOT hand the model authored Slovene
  *  lines (never-freehand holds — the tutor builds its own Slovene from the palette + targets). */
-export interface ScenarioContext {
+export interface HandoffContext {
   scene: string; // the situation, e.g. "a restaurant — ordering dinner"
   practiced: string[]; // the level's objective descriptors the learner just rehearsed
 }
@@ -159,7 +159,7 @@ export function conversationTeachingBody(
   targets: Learnable[],
   directive: string = DEFAULT_DIRECTIVE,
   role?: string | null,
-  context?: ScenarioContext | null,
+  context?: HandoffContext | null,
 ): string {
   const palette = knows.length
     ? knows.map((l) => `  "${l.sl}" — ${l.gloss}`)
@@ -244,7 +244,7 @@ export function buildConversationPrompt(
   targets: Learnable[],
   directive: string = DEFAULT_DIRECTIVE,
   role?: string | null,
-  context?: ScenarioContext | null,
+  context?: HandoffContext | null,
 ): string {
   return [
     conversationTeachingBody(knows, targets, directive, role, context),

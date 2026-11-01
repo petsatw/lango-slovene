@@ -10,7 +10,7 @@ the `DialogueVoicing` field (§3.5), and the server/renderer seek-and-stop (§3.
 
 **Measured billing.** Forced alignment did not move the ElevenLabs character meter at all across 29 clips
 (10,274 before and after). It is metered at Speech-to-Text rates — $0.22 per *hour* of audio — so a
-scenario is a rounding error, once, cached thereafter.
+domain is a rounding error, once, cached thereafter.
 
 **One bug this shook out.** `/api/speak` served cached clips without `Accept-Ranges`, so a media element
 silently refused to seek: `currentTime` was ignored, the clip played from 0, and the learner heard the
@@ -109,7 +109,7 @@ the pointer records what they will actually hear so the reviewer decides with th
 
 ### 2.2 Coverage — measured
 
-Every distinct key phrase in `slavko-intro` against every npc utterance in the scenario, with the
+Every distinct key phrase in `slavko-intro` against every npc utterance in the domain, with the
 blank rule applied. This is a feasibility probe, **not** the selection mechanism — §3 replaces it:
 
 | Level | Phrase | Candidate NPC delivery | |
@@ -147,8 +147,8 @@ slot for every member. The phrase is reachable, and under the §5.3 ruling it is
 
 **b. Three L2 npc nodes carry no `learnables`** — `n8 "Daj, poskusi!"`, `n13 "A ti? Slovensko?"`,
 `n14 "Ha! In angleško?"`: prompts and elliptical fragments with no catalog content, and no phrase's
-source. Everything else is tagged on both sides, so the id-join is exact throughout this scenario.
-Keep the `grounding: "text-only"` marking in the ReviewPackage for scenarios where it is not.
+source. Everything else is tagged on both sides, so the id-join is exact throughout this domain.
+Keep the `grounding: "text-only"` marking in the ReviewPackage for domains where it is not.
 
 ---
 
@@ -213,7 +213,7 @@ synthesis endpoint returns alignment too, but only by generating *new* audio —
 already approved and paid for. Forced alignment touches nothing.
 
 *Unverified:* the docs page states no pricing. Confirm the per-call cost before the first run.
-Volume is ~45 clips for this scenario, once, and free thereafter (cached like every other artifact).
+Volume is ~45 clips for this domain, once, and free thereafter (cached like every other artifact).
 
 **Storage.** A third artifact type beside `audio` and `image` in `server/assets/store.ts`:
 
@@ -232,16 +232,16 @@ single most likely source of a silent bug in this design, and it gets a lint.
 `.claude/skills/voice-key-phrases/SKILL.md`. Mirrors `create-dialogue`'s
 author → critic → reconcile → gate → ReviewPackage shape.
 
-**Input.** A `scenarioId` (optionally one level).
+**Input.** A domain id (optionally one level).
 
-**Stage 0 — gather (L).** Read the scenario's spoken levels. Collect:
+**Stage 0 — gather (L).** Read the domain's spoken levels. Collect:
 - the **key phrases**: distinct client `sl` per level, in met order — the same list the close screen
   shows, computed by the same rule (`server.ts` `keyPhrases()`), never re-judged;
-- every **npc utterance** in the scenario across all levels — `sl` and `slowSL` — with its node id,
+- every **npc utterance** in the domain across all levels — `sl` and `slowSL` — with its node id,
   level, and its alignment `words[]`.
 
 **Stage 1 — judge (J), one phrase at a time.** For each key phrase, decide:
-- **which utterance** is the best model of it, across the whole scenario, weighing register, warmth,
+- **which utterance** is the best model of it, across the whole domain, weighing register, warmth,
   and whether the phrase carries complete intonation there;
 - **which word range** within that utterance's `words[]` — by index, e.g. words 4–5;
 - or **none**, with a stated reason.
@@ -267,7 +267,7 @@ Rules it works under:
 
 **Stage 2 — critique (J, independent).** A second agent, given only the phrase and the candidate
 utterance's full text with the span marked, answers: *would a beginner hearing this excerpt learn the
-right thing?* It never edits; it returns a verdict. Same shape as `scenario-critic`.
+right thing?* It never edits; it returns a verdict. Same shape as `domain-critic`.
 
 **Stage 3 — reconcile (L).** A deterministic script writes the approved pointers into the dialogue
 JSON. The skill never writes files itself.
@@ -285,7 +285,7 @@ JSON. The skill never writes files itself.
 
 **Stage 5 — ReviewPackage (PR semantics).** A table: phrase → chosen utterance with the span marked
 in context → duration → the critic's verdict → or the reason for no button. Nothing is written until
-approved. Drafts under `.scratch/keyphrase-drafts/<scenarioId>/`.
+approved. Drafts under `.scratch/keyphrase-drafts/<domainId>/`.
 
 ### 3.5 What lands in the dialogue JSON
 
@@ -368,7 +368,7 @@ phrase needs a span.
 | | Question | Ruling |
 |---|---|---|
 | **5.1** | Should `build:alignments` exist at all? | **Keep the script.** Forced alignment is a measurement, it re-synthesizes nothing, and it costs effectively nothing (measured: no movement on the character meter across 29 clips). Keeping it gives the Stage-4 gate a ground truth, which is what makes a hallucinated timestamp fail instead of ship. |
-| **5.2** | One-time bootstrap, or a reusable skill? | **A reusable skill**, `voice-key-phrases`, runnable on any scenario. |
+| **5.2** | One-time bootstrap, or a reusable skill? | **A reusable skill**, `voice-key-phrases`, runnable on any domain. |
 | **5.3** | The four ⚠️ phrases | **The phrase is a SHAPE, not a string.** The taught frame is `govorim dobro ___`; which language sits in the slot is not what the lesson is about. Choose whichever filler sounds best to the ear and makes most sense in context. Clipping out of a question or a negation is acceptable *where it is the only way* — "it might sound a little awkward but it still will make sense". A cleaner declarative delivery is preferred where one exists. **All four get buttons.** |
 | **5.4** | Should the button disclose the voice? | **No. A bare ▶, no label.** And the wires that got crossed get purged: nothing in the code or the docs may frame this panel as a playback of the learner's own voice. It never was, and that was never the intent. |
 | **5.5** | Cross-level sourcing | **Best delivery wins.** Level order is not a constraint. |
@@ -398,7 +398,7 @@ hallucinated one, and the gate in Stage 4 — which is what makes this safe — 
 ground truth to check against. **But this is your call, and it is the core of what you corrected.**
 
 **5.2 Does the skill re-run per lesson, or once?** Cheapest is a one-time bootstrap across the
-scenario whose output you then edit by hand, after which `create-dialogue` authors the `audio`
+domain whose output you then edit by hand, after which `create-dialogue` authors the `audio`
 pointer for new levels as part of normal authoring. That makes the judgment part of lesson design
 instead of a separate pass over it, and the skill stops being load-bearing.
 

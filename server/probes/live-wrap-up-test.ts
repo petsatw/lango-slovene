@@ -14,7 +14,7 @@ const base = `http://127.0.0.1:${port}`;
 const data = mkdtempSync(path.join(tmpdir(), "live-wrap-up-"));
 process.env.DATA_DIR = data;
 const { progressMessage } = await import("../live/index");
-const { scenarioName } = await import("../assets/deletion");
+const { domainName } = await import("../assets/deletion");
 const { settleSession } = await import("../live/grader");
 const { GeminiE2 } = await import("../adapters/gemini");
 const learner = await import("../assets/learner");
@@ -53,7 +53,7 @@ async function main() {
   });
   const created: any = await res.json();
   check("create answers 201", res.status === 201, String(res.status));
-  check("create carries the lesson's scenario name", created.scenario === scenarioName("demo-l1") && !!created.scenario, String(created.scenario));
+  check("create carries the lesson's domain name", created.scenario === domainName("demo-l1") && !!created.scenario, String(created.scenario));
   const frames: any[] = [];
   await new Promise<void>((resolve) => {
     const sock = new WebSocket(created.wsUrl);
@@ -193,7 +193,7 @@ async function main() {
   let t = await wrapText();
   check("End session sends {\"type\":\"end\"}", sent.some((m) => same(parse(m), { type: "end" })), sent.join(" "));
   check("wrap-up: Session ended", t.includes("Session ended"));
-  check("wrap-up: You practised: {scenario}", t.includes("You practised: Probe scenario"));
+  check("wrap-up: You practised: {domain}", t.includes("You practised: Probe scenario"));
   check("wrap-up: Checking your progress…", t.includes("Checking your progress…"));
   check("wrap-up: the no-save line", t.includes("This conversation wasn't saved."));
   check("the transcript and talk button are gone", !(await page.isVisible("#practice-talk")) && !(await page.isVisible("#transcript")));

@@ -11,7 +11,7 @@
 // `lint:keyphrase-audio` can verify that every millisecond written into a dialogue was derived from a real
 // measurement, and fail the ones that were not.
 //
-//   npm run build:alignments -- <scenarioId> [--level <n>] [--nodes <id,id,…>] [--regen] [--dry-run]
+//   npm run build:alignments -- <domainId> [--level <n>] [--nodes <id,id,…>] [--regen] [--dry-run]
 //   npm run build:alignments -- slavko-intro --dry-run          # what WOULD be measured — free
 //   npm run build:alignments -- slavko-intro --nodes n5         # SMOKE TEST: measure one clip only
 //   npm run build:alignments -- slavko-intro                    # measure the un-measured clips
@@ -19,7 +19,7 @@
 //
 // NEVER SYNTHESIZES. It only reads clips that are already in the store — a node whose audio has not been
 // built is reported and skipped, never generated. Billing is at Speech-to-Text rates ($0.22 per HOUR of
-// audio), so a scenario is a fraction of a cent, once; the artifact is cached like every other asset and
+// audio), so a domain is a fraction of a cent, once; the artifact is cached like every other asset and
 // re-runs are free.
 //
 // Only NPC lines are measured, and only their natural clips. Client lines own no audio in a spoken scene,
@@ -43,13 +43,13 @@ const regen = args.includes("--regen");
 const dryRun = args.includes("--dry-run");
 const nodesIdx = args.indexOf("--nodes");
 // An AUDITION: measure only these node ids. One clip is enough to smoke-test the endpoint and see what
-// the call actually costs before committing a whole scenario to it.
+// the call actually costs before committing a whole domain to it.
 const onlyNodes =
   nodesIdx >= 0 ? new Set((args[nodesIdx + 1] ?? "").split(",").map((s) => s.trim()).filter(Boolean)) : undefined;
 const scenarioId = args.find((a, i) => !a.startsWith("--") && args[i - 1] !== "--level" && args[i - 1] !== "--nodes");
 
 if (!scenarioId) {
-  console.error("Usage: npm run build:alignments -- <scenarioId> [--level <n>] [--nodes <id,id,…>] [--regen] [--dry-run]");
+  console.error("Usage: npm run build:alignments -- <domainId> [--level <n>] [--nodes <id,id,…>] [--regen] [--dry-run]");
   process.exit(1);
 }
 
@@ -61,7 +61,7 @@ const files = readdirSync(DIALOGUES_DIR)
   .sort((a, b) => a.d.level - b.d.level);
 
 if (!files.length) {
-  console.error(`No dialogues for scenario "${scenarioId}"${onlyLevel !== undefined ? ` level ${onlyLevel}` : ""}.`);
+  console.error(`No dialogues for domain "${scenarioId}"${onlyLevel !== undefined ? ` level ${onlyLevel}` : ""}.`);
   process.exit(1);
 }
 

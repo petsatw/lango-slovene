@@ -4,7 +4,7 @@
 // and chat surface as a live dialogue — the only difference is that the tutor's lines come from a static
 // adapter (adapters/seed-scripted.ts) instead of the model. There is NO model in the seed loop: the
 // audio isn't judged; each practiced step just plants its learnables as ATTEMPTS (entries). It is
-// deliberately NOT the visual scenario engine — no scene/images/flashcards, just lines + audio. The
+// deliberately NOT the visual domain engine — no scene/images/flashcards, just lines + audio. The
 // structure is reusable (more seeds later for harder topics); for now there is one: getting-started.
 //
 // `mode` ("introduce" | "recall") is advisory authoring intent (introduce = first showing; recall =

@@ -1,6 +1,6 @@
 ---
 name: map-domain
-description: Map a domain a learner wants to tackle next (a market stall, a dog walk, the pharmacy) into what the rest of the app builds from — the minimal card of vocabulary, phrases and sentence stems the learner must produce, the situation map of the independent actions they take there and how each can turn out, and a banded dialogue plan — then register the card and the live scene, and write the handoff that lets a fresh session author the tap trees with create-tap-tree. Use when the user wants to "map a domain", "plan a new scenario from scratch", "what does the learner need for <situation>", or to start a domain the way the market stall was started. The market stall (`trznica`) is the reference; the library is the reference for how situations branch.
+description: Map a domain a learner wants to tackle next (a market stall, a dog walk, the pharmacy) into what the rest of the app builds from — the minimal card of vocabulary, phrases and sentence stems the learner must produce, the situation map of the independent actions they take there and how each can turn out, and a banded dialogue plan — then register the card and the live scene, and write the handoff that lets a fresh session author the tap trees with create-tap-tree. Use when the user wants to "map a domain", "plan a new domain from scratch", "what does the learner need for <situation>", or to start a domain the way the market stall was started. The market stall (`trznica`) is the reference; the library is the reference for how situations branch.
 ---
 
 # map-domain — from a domain to a card, a situation map and a dialogue plan
@@ -20,8 +20,8 @@ because the learner "already knows it" is an item no dialogue is obliged to incl
 the card for completeness.
 
 **The references.**
-- **The market stall** (`trznica`): `server/scenarios/trznica.json` (the card: `surfaces.live.core / bank /
-  stock`), `server/scenarios/harness/trznica.md` (the live scene), `authoring/dialogues/trznica/` (the trees
+- **The market stall** (`trznica`): `server/domains/trznica.json` (the card: `surfaces.live.core / bank /
+  stock`), `server/domains/harness/trznica.md` (the live scene), `authoring/dialogues/trznica/` (the trees
   built from its plan). It is the shape of a finished map: a card with sentence stems that keep a beginner
   on track, and ten levels from basic to advanced.
 - **The library**: `authoring/dialogues/library/reconcile-input.json`. It shows how one visit branches into
@@ -29,7 +29,7 @@ the card for completeness.
 
 **Roles.** C is you. **R** is the operator: the learner, or the person speaking for them. R owns the domain
 and its use cases and approves the map. **LS** is `slovenian-author`, which writes every Slovene string. The
-**critic** is `scenario-critic`. C never writes Slovene.
+**critic** is `domain-critic`. C never writes Slovene.
 
 ## Stage 1 — Intake (R)
 
@@ -125,7 +125,7 @@ each leads, what it introduces, what it reuses.
 
 ## Stage 6 — The map, to R
 
-Write `.scratch/dialogue-drafts/<scenarioId>/domain-map.md`:
+Write `.scratch/dialogue-drafts/<domainId>/domain-map.md`:
 1. **Settings** — the domain, the interlocutors with their registers, the voices, who speaks the learner's
    lines and their gender, the facts, the defaults taken.
 2. **The card** — core, bank, stock. One row per item: id, Slovene, English, kind, `existing` or `new`, the
@@ -146,9 +146,9 @@ R approves, or returns notes; one pass on the notes, then back to R.
 1. **The catalog.** Mint the new items. Tag the core ones `core: true, a1: true` and the rest `a1: true`.
    Place every tagged item in `server/catalog/a1-map.json` under the competencies it serves.
 2. **The live scene.**
-   - Write `server/scenarios/<id>.json` with `surfaces.live`: `harness`, `close`, and `core / bank / stock`
+   - Write `server/domains/<id>.json` with `surfaces.live`: `harness`, `close`, and `core / bank / stock`
      in plan order.
-   - Have LS write the harness, `server/scenarios/harness/<id>.md`, in the shape of the stall's: who the
+   - Have LS write the harness, `server/domains/harness/<id>.md`, in the shape of the stall's: who the
      tutor is, what the world holds, the learner's lines, the other person's lines, how an encounter runs.
      The close line is one of the heard-only lines. Have the critic read it.
 3. **Check it:**
@@ -165,22 +165,22 @@ R approves, or returns notes; one pass on the notes, then back to R.
   says "learning to buy at a stall like yours", opens on «Dober dan.», and runs "a second, shorter
   purchase". A domain that is not a purchase needs that text generalised before its live scene is
   right. Name this to R; it is a code change, not part of this skill.
-- **A scenario has one register.** A domain with several interlocutors in different registers (vi to
+- **A domain has one register.** A domain with several interlocutors in different registers (vi to
   adults, ti to children) holds them per line in the trees and the harness. Say so in the handoff.
-- **A tap-tree scenario has one npc voice.** Interlocutors who need different voices (a child) mean either
-  one voice for all, or one scenario per voice. R decides.
-- **The same line in the same voice is one clip, across scenarios.** Reusing another scenario's npc voice
+- **A tap-tree domain has one npc voice.** Interlocutors who need different voices (a child) mean either
+  one voice for all, or one domain per voice. R decides.
+- **The same line in the same voice is one clip, across domains.** Reusing another domain's npc voice
   means its existing clips can play in place of the new lines. The stall hit this with the bakery's
   voice.
 
 ## Stage 8 — The handoff
 
-Write `.scratch/<yyyy-mm-dd>-handoff-<scenarioId>-tap-trees.md` for a fresh session. Its objective is to
+Write `.scratch/<yyyy-mm-dd>-handoff-<domainId>-tap-trees.md` for a fresh session. Its objective is to
 author every level in the plan with **create-tap-tree**, on the "the plan exists" path. It carries:
 - **Anchors**:
   - `.claude/skills/create-tap-tree/SKILL.md`
   - the domain map (gitignored: say it exists on this machine only)
-  - the scenario manifest and its card
+  - the domain manifest and its card
   - the stall's `authoring/dialogues/trznica/reconcile-input.json` as the nearest worked example
 - **Decisions**, in full: interlocutors and registers, voices and who speaks the learner's lines, the
   facts (genders, the name slots), the tags R approved, the bank order.
