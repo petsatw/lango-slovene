@@ -18,7 +18,7 @@ export interface HistoryEntry {
   kind: "live" | "tap";
   lessonId: string;
   /** The name of the domain the lesson belongs to; the lessonId when none resolves. */
-  scenario: string;
+  domain: string;
   startedAt: string;
   endedAt: string;
   /** Learner-facing names of the objectives the session made progress on. */
@@ -28,8 +28,8 @@ export interface HistoryEntry {
 
 /** A lesson id is a domain id (a scene) or a dialogue id (a tree of a domain). */
 function domainOf(lessonId: string) {
-  const scenarioId = Object.values(DIALOGUES).flat().find((d) => d.id === lessonId)?.scenarioId ?? lessonId;
-  return DOMAINS.find((s) => s.id === scenarioId);
+  const domainId = Object.values(DIALOGUES).flat().find((d) => d.id === lessonId)?.domainId ?? lessonId;
+  return DOMAINS.find((s) => s.id === domainId);
 }
 
 export const domainName = (lessonId: string): string => {
@@ -59,7 +59,7 @@ function fromLive(log: any): HistoryEntry {
     id: log.sessionId,
     kind: "live",
     lessonId: log.lessonId,
-    scenario: domainName(log.lessonId),
+    domain: domainName(log.lessonId),
     startedAt: log.startedAt,
     endedAt: log.endedAt,
     progressed: ((log.progressed ?? []) as string[]).map((id) => LEARNABLES[id]?.sl ?? id),
@@ -68,17 +68,18 @@ function fromLive(log: any): HistoryEntry {
 }
 
 function fromTap(rec: any): HistoryEntry {
+  const lessonId: string = rec.lessonId ?? rec.scenarioId; // a record stored before `lessonId` has only `scenarioId`
   const objectives: any[] = rec.finalObjectives ?? [];
   return {
     id: rec.id,
     kind: "tap",
-    lessonId: rec.scenarioId,
-    scenario: domainName(rec.scenarioId),
+    lessonId,
+    domain: domainName(lessonId),
     startedAt: rec.createdAt,
     endedAt: rec.updatedAt,
     progressed: objectives
       .filter((o) => o.status === "completed")
-      .map((o) => domainOf(rec.scenarioId)?.objectives.find((x) => x.id === o.id)?.label ?? o.id),
+      .map((o) => domainOf(lessonId)?.objectives.find((x) => x.id === o.id)?.label ?? o.id),
     transcripts: (rec.turns ?? []).map((t: any) => ({
       ts: rec.createdAt,
       role: t.role === "student" ? "user" : "tutor",

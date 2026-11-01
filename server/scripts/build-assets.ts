@@ -95,7 +95,7 @@ for (const item of audioItems) {
     const { hit } = await store.getOrCreate(
       key,
       "audio",
-      { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text: item.text, scenarioId: domain.id, objectiveId: item.objectiveId },
+      { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text: item.text, domainId: domain.id, objectiveId: item.objectiveId },
       async () => {
         const r = await e3.synthesize({ text: item.text, voiceProfile: item.voiceProfile });
         return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };
@@ -173,7 +173,7 @@ for (const f of frames) {
     const { hit, key: k } = await getOrCreateImage(f.imagePrompt, {
       ...IMAGE_FORMAT.frame,
       mode: "flashcard",
-      scenarioId: domain.id,
+      domainId: domain.id,
       objectiveId: f.objectiveId,
       referenceImages: sheet ? [sheet.dataUri] : undefined,
       referenceKeys: sheet ? [sheet.key] : undefined,
@@ -208,7 +208,7 @@ if (sceneImagePrompt && (!regen || regenScene)) {
       const { hit, key: k } = await getOrCreateImage(sceneImagePrompt, {
         ...IMAGE_FORMAT.scene,
         mode: "scene",
-        scenarioId: domain.id,
+        domainId: domain.id,
         objectiveId: "scene",
         referenceImages: sheet ? [sheet.dataUri] : undefined,
         referenceKeys: sheet ? [sheet.key] : undefined,

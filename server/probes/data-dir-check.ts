@@ -32,13 +32,13 @@ async function stop(child: ChildProcess) {
 /** Learner progress through the API, then a session, live log and gloss entry through their module functions. */
 async function seed(base: string, env: Record<string, string>): Promise<void> {
   let ok = false;
-  for (const scenarioId of DOMAINS) {
+  for (const domainId of DOMAINS) {
     const r = await fetch(`${base}/api/scene`, {
       method: "POST",
       headers: { "content-type": "application/json", "x-learner-id": ID },
-      body: JSON.stringify({ scenarioId }),
+      body: JSON.stringify({ domainId }),
     });
-    if (r.ok) { ok = true; console.log("progress via /api/scene scenarioId =", scenarioId, (await r.text()).slice(0, 80)); break; }
+    if (r.ok) { ok = true; console.log("progress via /api/scene domainId =", domainId, (await r.text()).slice(0, 80)); break; }
   }
   if (!ok) throw new Error("no spoken scene answered /api/scene");
   // The module functions run in a child process so they read the same env the server did.
@@ -48,7 +48,7 @@ async function seed(base: string, env: Record<string, string>): Promise<void> {
       import * as live from "./server/live/log";
       import * as gloss from "./server/live/gloss";
       import { DATA_DIR } from "./server/assets/store";
-      sessions.appendTurns({ id: "${ID}", scenarioId: "demo", turns: [], finalObjectives: [], complete: false });
+      sessions.appendTurns({ id: "${ID}", domainId: "demo", turns: [], finalObjectives: [], complete: false });
       live.write({ sessionId: "${ID}", runId: null, lessonId: "x", provider: "grok", startedAt: new Date().toISOString(),
         endedAt: new Date().toISOString(), transcripts: [], error: null });
       import("node:fs").then((fs) => { fs.mkdirSync(DATA_DIR, { recursive: true });

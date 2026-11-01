@@ -19,6 +19,7 @@ import { IMAGE_STYLE, IMAGE_FORMAT, relevantLabels } from "../adapters/image-sty
 import { assetRenderKey } from "../assets/images";
 import { referenceSheetKey } from "../assets/reference-sheet";
 import { DOMAINS } from "../domains";
+import { domainIdOf } from "../domain-id";
 
 const apply = process.argv.slice(2).includes("--apply");
 const img = getE4();
@@ -75,7 +76,7 @@ for (const l of lines) {
 }
 for (const k of orphans) {
   const m = metaByKey.get(k);
-  const tag = m ? `${m.scenarioId ?? "?"}/${m.objectiveId ?? "?"} (${m.styleId ?? "?"})` : "(no manifest record)";
+  const tag = m ? `${domainIdOf(m) ?? m.seedId ?? "?"}/${m.objectiveId ?? "?"} (${m.styleId ?? "?"})` : "(no manifest record)";
   console.log(`  ${apply ? "del " : "would del "} ${k.slice(0, 16)}…  ${tag}`);
 }
 

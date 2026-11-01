@@ -77,7 +77,7 @@ function tapRuns(): Run[] {
   return sessions.list().map((rec) => ({
     runId: rec.id,
     mode: "tap" as const,
-    subject: rec.scenarioId,
+    subject: rec.lessonId,
     provider: rec.provider ?? null,
     startedAt: rec.createdAt,
     endedAt: rec.updatedAt,

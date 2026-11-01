@@ -1,6 +1,6 @@
 {
   "id": "restaurant-l3",
-  "scenarioId": "restaurant",
+  "domainId": "restaurant",
   "level": 3,
   "levelLabel": "Basic",
   "title": "Dinner with recommendations",

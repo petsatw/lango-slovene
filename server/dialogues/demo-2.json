@@ -1,6 +1,6 @@
 {
   "id": "demo-l2",
-  "scenarioId": "demo",
+  "domainId": "demo",
   "level": 2,
   "levelLabel": "Basic",
   "title": "Too fast, Slavko",

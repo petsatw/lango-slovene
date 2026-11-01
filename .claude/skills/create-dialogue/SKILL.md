@@ -160,7 +160,7 @@ whole stage is extraction from files already on disk — **no script emits it; C
 Nothing here is judged.
 
 **Which levels to read.** This domain's `advance: "audio"` dialogues with a `level` below this one, the
-**five highest** of them (`server/dialogues.ts` groups by `scenarioId` and sorts ascending by `level`; it
+**five highest** of them (`server/dialogues.ts` groups by `domainId` and sorts ascending by `level`; it
 is the ordering the close screen's Next-lesson button walks forward — `nextLevel` in `server/server.ts`).
 Fewer than five exist → take all that exist. None exist (this is level 1, or every prior level is
 `advance: "tap"`) → the ledger and the cloud are **empty, and the brief says so in as many words**. An

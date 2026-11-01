@@ -46,13 +46,13 @@ try {
 
   // 1. Forced labels on the first domain's first five dialogues.
   const labels = Object.keys(EXPECT);
-  const first = practice.scenarios[0];
+  const first = practice.domains[0];
   const dialogues = Array.from({ length: 5 }, (_, i) => ({ ...first.dialogues[i % first.dialogues.length], levelLabel: labels[i] }));
   const page = await (await browser.newContext()).newPage();
   await page.route("**/api/practice", async (route) => {
     const res = await route.fetch();
     const j = await res.json();
-    j.scenarios[0] = { ...j.scenarios[0], dialogues };
+    j.domains[0] = { ...j.domains[0], dialogues };
     await route.fulfill({ response: res, json: j });
   });
   await page.goto(`${base}/?c=TEST-01`);
@@ -63,7 +63,7 @@ try {
   const page2 = await (await browser.newContext()).newPage();
   await page2.goto(`${base}/?c=TEST-01`);
   await page2.waitForFunction(() => !document.getElementById("scene")!.hidden || !document.getElementById("home")!.hidden);
-  for (const sc of practice.scenarios) {
+  for (const sc of practice.domains) {
     const got = await chips(page2, sc.name);
     eq(`${sc.name} chip count`, got.length, sc.dialogues.length);
     sc.dialogues.forEach((d: any, i: number) => {

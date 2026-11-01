@@ -1,5 +1,5 @@
 {
-  "scenario": {
+  "domain": {
     "id": "library",
     "name": "Library",
     "title": "At the library (knjižnica)",

@@ -104,8 +104,7 @@ try {
   await expectMiss("extra params", "domainId=upravna-enota&id=koliko&text=Nova%20beseda&e3=gemini&voice=character");
 
   // Disk store only: warm the server's in-memory cache, drop the file, the route must miss.
-  // /api/speak reads mvp's `scenarioId` query key; domain rename B (#129) switches it to `domainId`.
-  const warm = await fetch(`${base}/api/speak?text=${encodeURIComponent(star.sl)}&scenarioId=sprehod&voice=${encodeURIComponent(star.voice ?? "")}`);
+  const warm = await fetch(`${base}/api/speak?text=${encodeURIComponent(star.sl)}&domainId=sprehod&voice=${encodeURIComponent(star.voice ?? "")}`);
   eq("speak warm status", warm.status, 200);
   eq("speak warm bytes", Buffer.from(await warm.arrayBuffer()).equals(bytes), true);
   rmSync(path.join(assetDir, "audio", `${starKey}.mp3`));

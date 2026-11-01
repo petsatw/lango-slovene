@@ -68,7 +68,7 @@ async function main() {
     if (i > 120) throw new Error("server did not start");
     await new Promise((r) => setTimeout(r, 500));
   }
-  const api: any[] = (await (await fetch(`${base}/api/practice`)).json()).scenarios;
+  const api: any[] = (await (await fetch(`${base}/api/practice`)).json()).domains;
   const apiOff = api.filter((s) => s.nameSl !== (TITLES.get(s.id)?.nameSl ?? null)).map((s) => `${s.id}: ${s.nameSl}`);
   check("GET /api/practice carries nameSl", api.some((s) => s.nameSl) && apiOff.length === 0, apiOff.join("; "));
 

@@ -78,7 +78,7 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
     sessionId: s.sessionId,
     wsUrl: `${scheme}://${host}/v1/live/sessions/${s.sessionId}?token=${s.token}`,
     ttlSec: registry.SESSION_TTL_SEC,
-    scenario: domainName(lessonId),
+    domain: domainName(lessonId),
   });
 });
 

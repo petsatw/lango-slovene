@@ -146,7 +146,7 @@ not omissions. Then stop and ask for approval.
 
 ### 4 — Reconcile (L), on approval only
 
-Write the draft `pointers.json` — `{ scenarioId, pointers: [{ level, node, from, fromLevel, kind,
+Write the draft `pointers.json` — `{ domainId, pointers: [{ level, node, from, fromLevel, kind,
 words?, why }] }` — and run:
 
 ```

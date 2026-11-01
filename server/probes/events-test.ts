@@ -39,7 +39,7 @@ try {
 
   // A new learner is put into their first lesson; leave it, then play a tap-through level to its end.
   const practice = await (await fetch(`${base}/api/practice`)).json();
-  const lv = practice.scenarios
+  const lv = practice.domains
     .flatMap((sc: any) => sc.dialogues.map((d: any) => ({ sc, d })))
     .find((x: any) => (x.d.advance ?? "tap") === "tap" && !x.d.intro);
   if (!lv) throw new Error("no tap-through level to play");

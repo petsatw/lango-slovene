@@ -26,12 +26,12 @@ export interface Snippet {
 }
 
 export interface IndexEntry extends Omit<LevelCandidate, "lines"> {
-  scenarioName: string;
+  domainName: string;
   level: number;
   levelTitle: string;
   role: string | null;
   tokens: Set<string>; // stemmed tokens of the level's own text (title + objectives)
-  scenarioTokens: Set<string>; // stemmed tokens of the domain's title + tags + summary
+  domainTokens: Set<string>; // stemmed tokens of the domain's title + tags + summary
   nodes: IndexNode[]; // in authored order (root first)
 }
 
@@ -50,8 +50,8 @@ export interface IndexInput {
 
 export interface Match {
   dialogueId: string;
-  scenarioId: string;
-  scenarioName: string;
+  domainId: string;
+  domainName: string;
   level: number;
   levelTitle: string;
   score: number; // 0..1
@@ -122,7 +122,7 @@ export function expandQuery(text: string): Set<string> {
 export function buildIndex(domains: IndexInput[]): IndexEntry[] {
   return domains.flatMap((s) => {
     const domainText = [s.name, s.title, s.summaryEN ?? "", ...(s.tags ?? [])].join(" ");
-    const scenarioTokens = new Set(tokenize(domainText));
+    const domainTokens = new Set(tokenize(domainText));
     return s.dialogues.map((d) => {
       const objectives = (d.objectives ?? []).map((o) => o.descriptorEN ?? "").filter(Boolean);
       const nodes: IndexNode[] = Object.entries(d.nodes ?? {}).map(([id, n]) => ({
@@ -130,14 +130,14 @@ export function buildIndex(domains: IndexInput[]): IndexEntry[] {
       }));
       return {
         dialogueId: d.id,
-        scenarioId: s.id,
-        scenarioName: s.name,
+        domainId: s.id,
+        domainName: s.name,
         level: d.level,
         levelTitle: d.title,
         role: s.role ?? null,
         description: `${s.name} — ${d.title}. ${s.summaryEN ?? ""} Objectives: ${objectives.join("; ")}`.trim(),
         tokens: new Set(tokenize(`${d.title} ${objectives.join(" ")}`)), // node lines feed the snippet, not the score
-        scenarioTokens,
+        domainTokens,
         nodes,
       };
     });
@@ -150,7 +150,7 @@ export function keywordScore(query: Set<string>, e: IndexEntry, words = query.si
   if (!query.size) return 0;
   let where = 0, which = 0;
   for (const t of query) {
-    if (e.scenarioTokens.has(t)) where++;
+    if (e.domainTokens.has(t)) where++;
     if (e.tokens.has(t)) which++;
   }
   // Normalised by the learner's own word count (synonyms add matches, not dilution).
@@ -162,7 +162,7 @@ export function keywordRank(text: string, index: IndexEntry[]): Match[] {
   const words = tokenize(text).length;
   return index
     .map((e) => {
-      const hits = [...q].filter((t) => e.scenarioTokens.has(t) || e.tokens.has(t));
+      const hits = [...q].filter((t) => e.domainTokens.has(t) || e.tokens.has(t));
       const n = bestNode(q, e);
       const snippet = n ? snippetFor(e, n.id, q) : null;
       return { e, score: keywordScore(q, e, words), hits, snippet };
@@ -174,7 +174,7 @@ export function keywordRank(text: string, index: IndexEntry[]): Match[] {
 }
 
 function toMatch(e: IndexEntry, score: number, reason: string, snippet: Snippet | null = null): Match {
-  return { dialogueId: e.dialogueId, scenarioId: e.scenarioId, scenarioName: e.scenarioName, level: e.level, levelTitle: e.levelTitle, score, reason, snippet };
+  return { dialogueId: e.dialogueId, domainId: e.domainId, domainName: e.domainName, level: e.level, levelTitle: e.levelTitle, score, reason, snippet };
 }
 
 /** The line with the most query-term hits (ties → earliest in authored order); null when none hit. */
@@ -218,8 +218,8 @@ export async function matchSituation(text: string, index: IndexEntry[], e2?: E2A
     try {
       const ranking = await e2.rankLevels({
         query: text,
-        candidates: index.map(({ dialogueId, scenarioId, description, nodes }) => ({
-          dialogueId, scenarioId, description,
+        candidates: index.map(({ dialogueId, domainId, description, nodes }) => ({
+          dialogueId, domainId, description,
           lines: nodes.map((n) => ({ id: n.id, sl: n.sl, en: n.en })),
         })),
       });

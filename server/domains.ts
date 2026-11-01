@@ -336,7 +336,7 @@ export function characterVoiceProfile(domain: Domain): string {
 
 export function freshSession(domain: Domain): SessionState {
   return {
-    scenarioId: domain.id,
+    domainId: domain.id,
     objectives: domain.objectives.map((o) => ({ id: o.id, status: "pending", attempts: 0 })),
     complete: false,
     turns: 0,

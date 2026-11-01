@@ -50,7 +50,7 @@ extending, or authoring content for the system). While the heart of the app is l
 | **Free practice** | Hear the canonical phrase for each objective, record your own attempt **locally**, play it back to compare. No upload, no API spend. | practice panel |
 | **Live progress** | Objective dots `pending ○ → recast ◐ → completed ●`; an end-of-session takeaway lists the phrases you can now say, each replayable. | objective dots · takeaway |
 | **Past runs / replay** | Every run is captured. Reopen the list, replay any run turn-by-turn (free, from the store), and **name** or **favorite** a run. | `GET /api/sessions` · `GET /api/sessions/:id` · `POST /api/sessions/:id/meta` |
-| **Domain picker** | Switch among active domains (planned ones are listed but disabled); each boots a fresh session. | `GET /api/config?scenarioId=` |
+| **Domain picker** | Switch among active domains (planned ones are listed but disabled); each boots a fresh session. | `GET /api/config?domainId=` |
 | **Live observability** | An on-screen overlay mirrors state, active providers, what was heard (verbatim), the reply, the recast note, and timings — so failures are visible, not mysterious. | overlay |
 
 ### Operator (CLI + env)

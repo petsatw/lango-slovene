@@ -1,6 +1,6 @@
 {
   "id": "slavko-intro-l3",
-  "scenarioId": "slavko-intro",
+  "domainId": "slavko-intro",
   "level": 3,
   "levelLabel": "Basic",
   "title": "Where are you from?",

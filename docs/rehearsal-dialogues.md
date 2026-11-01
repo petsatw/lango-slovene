@@ -31,14 +31,14 @@ built is auto-selecting which dialogue comes next (roadmap item 5).
 ## Data model
 
 One file per level: `server/dialogues/<domain>-<level>.json`, loaded + validated at startup by
-[`server/dialogues.ts`](../server/dialogues.ts), **grouped by `scenarioId`** and sorted ascending by
+[`server/dialogues.ts`](../server/dialogues.ts), **grouped by `domainId`** and sorted ascending by
 `level` (levels must be unique within a domain). A domain with no dialogue file simply has none —
 the feature is optional per domain.
 
 ```jsonc
 {
   "id": "bakery-l1",
-  "scenarioId": "bakery",          // which domain this pairs with
+  "domainId": "bakery",          // which domain this pairs with
   "level": 1,                       // 1..N, ascending difficulty; unique per domain
   "levelLabel": "Survival",         // short human label for the tab
   "title": "Buy bread — the basics",

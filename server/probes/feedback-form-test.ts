@@ -122,7 +122,7 @@ try {
   }, "a scenario about wibbles");
 
   const practice = await (await fetch(`${base}/api/practice`)).json();
-  const lv = practice.scenarios
+  const lv = practice.domains
     .flatMap((sc: any) => sc.dialogues.map((d: any) => ({ sc, d })))
     .find((x: any) => (x.d.advance ?? "tap") === "tap" && !x.d.intro);
   if (!lv) throw new Error("no tap-through level to play");
@@ -150,7 +150,7 @@ try {
   await live.route("**/v1/live/sessions", (route) =>
     route.fulfill({
       status: 201, contentType: "application/json",
-      body: JSON.stringify({ sessionId: "11111111-2222-3333-4444-555555555555", wsUrl: `ws://127.0.0.1:${port}/v1/live/sessions/probe`, ttlSec: 60, scenario: "Probe scenario" }),
+      body: JSON.stringify({ sessionId: "11111111-2222-3333-4444-555555555555", wsUrl: `ws://127.0.0.1:${port}/v1/live/sessions/probe`, ttlSec: 60, domain: "Probe scenario" }),
     }));
   await live.routeWebSocket(/\/v1\/live\/sessions\//, (ws) => {
     ws.onMessage((m: any) => {
@@ -186,7 +186,7 @@ try {
   check("surfaces header, finder_request, level_end, level_end, live_end",
     JSON.stringify(fb.map((r) => r.props.surface).sort()) === JSON.stringify(["finder_request", "header", "level_end", "level_end", "live_end"]));
   // Each row carries its surface and where the learner was (feedback spec §3), nothing else, nothing empty.
-  const context = ["surface", "screen", "scenarioId", "level", "lessonId"];
+  const context = ["surface", "screen", "domainId", "level", "lessonId"];
   check("each row has text, surface, screen and only context props, none empty", fb.every((r) => r.text && r.props.surface && r.props.screen
     && Object.keys(r.props).every((k) => context.includes(k)) && Object.values(r.props).every((v) => v !== null && v !== "")),
     JSON.stringify(fb.map((r) => r.props)));

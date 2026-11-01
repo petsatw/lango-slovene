@@ -86,7 +86,7 @@ try {
   put("learners", "bad name", { learnables: {}, facts: {}, updatedAt: monthsAgo(24) });
   put("learners", "", { learnables: {}, facts: {}, updatedAt: monthsAgo(24) }); // learners/.json
   put("live", "blank-id-live", liveRec("blank-id-live", "", ago(400 * DAY), "Sem Kris"));
-  put("sessions", "old-tap", { id: "old-tap", scenarioId: "s", createdAt: ago(400 * DAY), updatedAt: ago(400 * DAY), finalObjectives: [], learnerId: "old-learner", turns: [] });
+  put("sessions", "old-tap", { id: "old-tap", lessonId: "s", createdAt: ago(400 * DAY), updatedAt: ago(400 * DAY), finalObjectives: [], learnerId: "old-learner", turns: [] });
   put("improve", "old-copy", { learnerId: "old-learner", sessionId: "old-learner-live", createdAt: ago(10 * DAY), transcripts: [] });
   const everyone = [...learners.map(([id]) => id), "corrupt-learner", "bad name", ""];
   writeFileSync(TURNLOG, everyone.map((id) => JSON.stringify({ learnerId: id, path: "live", sessionId: `${id}-live` }) + "\n").join(""));
@@ -107,7 +107,7 @@ try {
   // ---- a saved session from 5 hours ago, in full ----
   const HOURS_5 = ago(5 * 3600_000);
   put("live", "saved-live", liveRec("saved-live", "keeper", HOURS_5, "Sem Kris"));
-  put("sessions", "saved-tap", { id: "saved-tap", scenarioId: "s", createdAt: HOURS_5, updatedAt: HOURS_5, finalObjectives: [], learnerId: "keeper", retain: false, turns: [{ role: "student", text: "I am Kris", userVerbatim: "Sem Kris", audioKey: "abc" }] });
+  put("sessions", "saved-tap", { id: "saved-tap", lessonId: "s", createdAt: HOURS_5, updatedAt: HOURS_5, finalObjectives: [], learnerId: "keeper", retain: false, turns: [{ role: "student", text: "I am Kris", userVerbatim: "Sem Kris", audioKey: "abc" }] });
   writeFileSync(TURNLOG, readFileSync(TURNLOG, "utf8") + JSON.stringify({
     ts: HOURS_5, learnerId: "keeper", path: "live", sessionId: "saved-live", input: { history: [{ role: "user", text: "Sem Kris" }] }, output: { userVerbatim: "Sem Kris", tutorReply: "Živjo, Kris!" },
   }) + "\n");

@@ -28,14 +28,14 @@ const DIALOGUES_DIR = path.join(__dirname, "..", "dialogues");
 const INTROS_DIR = path.join(__dirname, "..", "..", "public", "intros");
 
 const args = process.argv.slice(2);
-const scenarioId = args.find(
+const domainId = args.find(
   (a) => !a.startsWith("--") && args[args.indexOf(a) - 1] !== "--level",
 );
 const levelIdx = args.indexOf("--level");
 const onlyLevel = levelIdx >= 0 ? Number(args[levelIdx + 1]) : undefined;
 const regen = args.includes("--regen");
 
-if (!scenarioId) {
+if (!domainId) {
   console.error("Usage: npm run build:dialogue-intros -- <domainId> [--level <n>] [--regen]");
   process.exit(1);
 }
@@ -43,13 +43,13 @@ if (!scenarioId) {
 (async () => {
   // Load the domain's dialogue files that carry an intro (optionally one level).
   const files = readdirSync(DIALOGUES_DIR)
-    .filter((f) => f.startsWith(`${scenarioId}-`) && f.endsWith(".json"))
+    .filter((f) => f.startsWith(`${domainId}-`) && f.endsWith(".json"))
     .map((f) => ({ f, d: validateDialogue(f, JSON.parse(readFileSync(path.join(DIALOGUES_DIR, f), "utf8"))) as Dialogue }))
     .filter(({ d }) => (onlyLevel === undefined || d.level === onlyLevel) && d.intro?.text)
     .sort((a, b) => a.d.level - b.d.level);
 
   if (!files.length) {
-    console.error(`No dialogue files for "${scenarioId}"${onlyLevel !== undefined ? ` level ${onlyLevel}` : ""} carry an intro.text — nothing to synthesize.`);
+    console.error(`No dialogue files for "${domainId}"${onlyLevel !== undefined ? ` level ${onlyLevel}` : ""} carry an intro.text — nothing to synthesize.`);
     process.exit(1);
   }
 
@@ -67,7 +67,7 @@ if (!scenarioId) {
   }
   if (e3.name === "elevenlabs" && !process.env.ELEVENLABS_API_KEY) problems.push(`ELEVENLABS_API_KEY is not set (see docs/SECRETS.md)`);
   if (problems.length) {
-    console.error(`\n❌ preflight failed for "${scenarioId}" — nothing synthesized:`);
+    console.error(`\n❌ preflight failed for "${domainId}" — nothing synthesized:`);
     for (const p of problems) console.error(`   • ${p}`);
     process.exit(1);
   }

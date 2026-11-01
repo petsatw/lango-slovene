@@ -23,6 +23,7 @@ import { IMAGE_STYLE, IMAGE_FORMAT, stripTokens, singleAssetSheetPrompt } from "
 import { assetRenderKey } from "../assets/images";
 import { getObject, CATALOG } from "../catalog";
 import { DOMAINS } from "../domains";
+import { domainIdOf } from "../domain-id";
 
 const apply = process.argv.slice(2).includes("--apply");
 const harvest = process.argv.slice(2).includes("--harvest");
@@ -67,7 +68,7 @@ if (harvest) {
         aspectRatio: IMAGE_FORMAT.asset.aspectRatio,
         resolution: IMAGE_FORMAT.asset.resolution,
         mimeType: "image/jpeg",
-        scenarioId: h.domain,
+        domainId: h.domain,
         objectiveId: `asset:${asset.label}`,
         referenceKeys: [frameKey], // provenance: harvested from this frame
       });
@@ -99,7 +100,7 @@ if (process.argv.slice(2).includes("--audio")) {
     if (!store.has(old.key, "audio")) { missing++; continue; }
     copied++;
     if (!apply) continue;
-    const meta = { provider: old.provider, voiceOrModel: voiceId!, model, text: old.text, scenarioId: old.scenarioId, objectiveId: old.objectiveId };
+    const meta = { provider: old.provider, voiceOrModel: voiceId!, model, text: old.text, domainId: domainIdOf(old), seedId: old.seedId, objectiveId: old.objectiveId };
     store.put(newKey, "audio", store.read(old.key, "audio")!, { ...meta, mimeType: old.mimeType });
     const align = store.read(old.key, "align");
     if (align) store.put(newKey, "align", align, meta);
@@ -172,7 +173,7 @@ for (const s of DOMAINS.filter((s) => s.status === "active")) {
           aspectRatio: it.fmt.aspectRatio,
           resolution: it.fmt.resolution,
           mimeType: old.mimeType || "image/jpeg",
-          scenarioId: s.id,
+          domainId: s.id,
           objectiveId: it.objectiveId,
           referenceKeys: [old.key], // provenance: re-keyed from this old render
         });
