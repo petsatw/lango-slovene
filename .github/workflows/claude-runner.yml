@@ -78,7 +78,7 @@ jobs:
           base_branch: mvp
           claude_args: >-
             --max-turns 100
-            --allowedTools "Read,Glob,Grep,Edit,Write,Bash(npm:*),Bash(npx:*),Bash(node:*),Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(gh pr view:*)"
+            --allowedTools "Read,Glob,Grep,Edit,Write,Bash(npm:*),Bash(npx:*),Bash(node:*),Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git rm:*),Bash(gh pr view:*)"
             --disallowedTools "WebFetch,WebSearch,Read(./.env*)"
           prompt: |
             You are working unattended on issue #${{ github.event.issue.number }} of ${{ github.repository }}. Nobody answers questions during this run.
