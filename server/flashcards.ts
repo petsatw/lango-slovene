@@ -62,10 +62,11 @@ const decks = new Map<string, Flashcard[] | null>();
 
 /** The domain's deck, computed once per domain; `null` for a domain with no published levels. */
 export function deckFor(domainId: string): Flashcard[] | null {
+  if (!Object.hasOwn(DIALOGUES, domainId)) return null; // not cached: the audio route passes any query string here
   if (decks.has(domainId)) return decks.get(domainId)!;
-  const levels = Object.hasOwn(DIALOGUES, domainId) ? getPublishedDialogues(domainId) : [];
+  const levels = getPublishedDialogues(domainId);
   const deck = levels.length === 0 ? null : domainOrder(levels).map((id) => {
-    const l = LEARNABLES[id];
+    const l = LEARNABLES[id]!; // dialogues.ts refuses to load a level naming a learnable not in the catalog
     const cut = l.gloss.indexOf(" — ");
     return {
       id,

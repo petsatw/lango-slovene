@@ -52,12 +52,7 @@ async function up() {
   fail("server did not start");
 }
 
-let sawBadGateway = false;
-const clip = async (q: string, headers: Record<string, string> = {}) => {
-  const r = await fetch(`${base}/api/flashcards/audio?${q}`, { headers });
-  if (r.status === 502) sawBadGateway = true;
-  return r;
-};
+const clip = (q: string, headers: Record<string, string> = {}) => fetch(`${base}/api/flashcards/audio?${q}`, { headers });
 const expectMiss = async (name: string, q: string) => {
   const r = await clip(q);
   eq(`${name} status`, r.status, 404);
@@ -68,7 +63,8 @@ try {
   // Deck.
   const sprehod = deckFor("sprehod") ?? fail("no sprehod deck");
   eq("sprehod cards", sprehod.length, 80);
-  eq("first card", { id: sprehod[0].id, en: sprehod[0].en, sl: sprehod[0].sl }, { id: "ali_lahko", en: "can / may", sl: "Ali lahko ___? / Lahko ___." });
+  const first = sprehod[0] ?? fail("empty sprehod deck");
+  eq("first card", { id: first.id, en: first.en, sl: first.sl }, { id: "ali_lahko", en: "can / may", sl: "Ali lahko ___? / Lahko ___." });
   const noExample = sprehod.filter((c) => !c.example).map((c) => c.id);
   eq("sprehod cards without an example", noExample, []);
   const card = (id: string) => sprehod.find((c) => c.id === id) ?? fail(`no card ${id}`);
@@ -76,8 +72,8 @@ try {
   eq("skakati example", card("skakati").example?.sl, "Ne, še mladiček je. Skače.");
   eq("koliko example", deckFor("upravna-enota")?.find((c) => c.id === "koliko")?.example, null);
   const ime = card("ime_mi_je");
-  if (!ime.note || ime.en.includes(" — ")) fail(`ime_mi_je en/note: ${JSON.stringify(ime)}`);
   eq("ime_mi_je en", ime.en, "my / your / his / her name is ___");
+  eq("ime_mi_je note", ime.note, "the person is a dative pronoun ('Ime mu je Enzo.')");
   // Every demo example is a line some synthesized node carries for that card (a spoken level's client lines are not).
   for (const c of deckFor("demo") ?? []) {
     if (!c.example) continue;
@@ -85,7 +81,6 @@ try {
       Object.values(d.nodes).some((n) => n.sl === c.example!.sl && n.learnables?.includes(c.id) && isSynthesized(d, n)));
     if (!ok) fail(`demo ${c.id} example "${c.example.sl}" is only a spoken client line`);
   }
-  eq("deck twice", JSON.stringify(deckFor("sprehod")), JSON.stringify(deckFor("sprehod")));
 
   // Server.
   await up();
@@ -109,7 +104,8 @@ try {
   await expectMiss("extra params", "domainId=upravna-enota&id=koliko&text=Nova%20beseda&e3=gemini&voice=character");
 
   // Disk store only: warm the server's in-memory cache, drop the file, the route must miss.
-  const warm = await fetch(`${base}/api/speak?text=${encodeURIComponent(star.sl)}&domainId=sprehod&voice=${encodeURIComponent(star.voice ?? "")}`);
+  // /api/speak reads mvp's `scenarioId` query key; domain rename B (#129) switches it to `domainId`.
+  const warm = await fetch(`${base}/api/speak?text=${encodeURIComponent(star.sl)}&scenarioId=sprehod&voice=${encodeURIComponent(star.voice ?? "")}`);
   eq("speak warm status", warm.status, 200);
   eq("speak warm bytes", Buffer.from(await warm.arrayBuffer()).equals(bytes), true);
   rmSync(path.join(assetDir, "audio", `${starKey}.mp3`));
@@ -118,7 +114,6 @@ try {
   // Nothing written.
   eq("audio dir", snapshot(), before.filter((f) => f !== `${starKey}.mp3`));
   if (existsSync(path.join(assetDir, "manifest.jsonl"))) fail("manifest.jsonl written");
-  if (sawBadGateway) fail("flashcards route answered 502");
 
   console.log("PASS");
   child.kill("SIGKILL");

@@ -656,10 +656,7 @@ app.post("/api/converse", async (req, res) => {
   }
 });
 
-// Stream the tutor's Slovenian audio progressively (Level 1), with persistent caching for replay.
-// GET so an <audio> element can stream it natively. Text is short so the query param is fine.
-// Lookup: L1 in-memory → L2 disk store. On a miss we stream from the provider AND persist the bytes
-// to the store, so every later request for the same text is served free — even after a restart.
+// Serve a stored clip as audio/mpeg with byte ranges: /api/speak cache hits and flashcard clips.
 function sendCachedClip(req: express.Request, res: express.Response, cached: Buffer) {
   res.setHeader("Content-Type", "audio/mpeg");
   res.setHeader("Cache-Control", "no-store");
@@ -689,6 +686,10 @@ function sendCachedClip(req: express.Request, res: express.Response, cached: Buf
   return res.end(cached);
 }
 
+// Stream the tutor's Slovenian audio progressively (Level 1), with persistent caching for replay.
+// GET so an <audio> element can stream it natively. Text is short so the query param is fine.
+// Lookup: L1 in-memory → L2 disk store. On a miss we stream from the provider AND persist the bytes
+// to the store, so every later request for the same text is served free — even after a restart.
 app.get("/api/speak", async (req, res) => {
   const text = String(req.query.text || "");
   if (!text.trim()) return res.status(400).json({ error: "text is required" });
