@@ -1,6 +1,7 @@
 {
   "id": "lekarna",
   "name": "Pharmacy",
+  "nameSl": "Lekarna",
   "title": "At the pharmacy (lekarna)",
   "summaryEN": "At the pharmacy: describing a symptom, choosing tablets or syrup, asking the price.",
   "tags": ["pharmacy", "lekarna", "medicine", "sick", "headache", "cold", "symptoms", "pills", "tablets", "health", "chemist", "drugstore"],

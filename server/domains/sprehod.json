@@ -1,6 +1,7 @@
 {
   "id": "sprehod",
-  "name": "Dog walk",
+  "name": "Walking the Dogs",
+  "nameSl": "Sprehod s psoma",
   "title": "Walking the dogs (sprehod s psoma)",
   "status": "active",
   "character": "People you meet walking your two dogs in Ljubljana: passers-by, dog owners, a child and her mother",

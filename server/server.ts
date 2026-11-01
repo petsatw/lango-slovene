@@ -148,7 +148,7 @@ app.get("/api/practice", (req, res) => {
   const scenarios = DOMAINS.map((s) => ({ s, dialogues: getPublishedDialogues(s.id) }))
     .filter(({ dialogues }) => dialogues.length > 0)
     .map(({ s, dialogues }) => ({
-      id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null,
+      id: s.id, name: s.name ?? s.title, nameSl: s.nameSl ?? null, title: s.title, role: s.role ?? null,
       summaryEN: s.summaryEN ?? null, tags: s.tags ?? [],
       // The spoken lessons are the spine of the course, so they have a durable home in the picker
       // alongside the rehearsal trees. `mode` is what splits the two groups on the screen: a spoken

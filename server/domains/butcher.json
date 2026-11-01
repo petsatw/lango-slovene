@@ -1,6 +1,7 @@
 {
   "id": "butcher",
   "name": "Butcher",
+  "nameSl": "Mesnica",
   "title": "At the butcher (mesnica)",
   "summaryEN": "Buying meat at a neighbourhood butcher: choosing a cut, saying how much you want, asking the price and paying.",
   "tags": ["butcher", "mesnica", "meat", "beef", "pork", "chicken", "sausage", "weight", "kilo", "grams", "quantities", "price", "shop"],
