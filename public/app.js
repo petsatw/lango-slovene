@@ -1128,6 +1128,25 @@ function startDialogueTree() {
   presentNpcNode(dialogue.root);
 }
 
+// Lock the page while #dialogue is visible: overflow hidden stops wheel, touch and keyboard scrolls, and a
+// scroll listener puts back the offset after programmatic scrolls (overflow hidden still allows those).
+{
+  let lockedY = null;
+  const hold = () => { if (lockedY !== null && window.scrollY !== lockedY) window.scrollTo(0, lockedY); };
+  new MutationObserver(() => {
+    const open = !$("dialogue").hidden;
+    if (open === (lockedY !== null)) return;
+    document.documentElement.classList.toggle("dialogue-open", open);
+    if (open) {
+      lockedY = window.scrollY;
+      window.addEventListener("scroll", hold);
+    } else {
+      window.removeEventListener("scroll", hold);
+      lockedY = null;
+    }
+  }).observe($("dialogue"), { attributes: true, attributeFilter: ["hidden"] });
+}
+
 function closeDialogue() {
   endLevelRun(false);
   treeGen++;
