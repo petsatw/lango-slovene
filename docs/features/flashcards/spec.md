@@ -2,9 +2,9 @@
 
 Each domain with published levels has a "Words and Phrases" list: every learnable its levels teach,
 English next to Slovene. From the list, or straight from the domain's levels overview, the learner runs
-a flashcard drill over the same learnables. The Slovene side of a card plays a line the learner already
-heard in that domain's levels, served from the committed audio store. "Nailed it" adds 1 to the
-learner's count for that learnable. At 5 the card is memorised, and the list marks it with a check mark.
+a flashcard drill over the same learnables. With "Hear it in context" on, the Slovene side of a card
+plays a line the learner already heard in that domain's levels, served from the committed audio store,
+and shows that line's Slovene. "Nailed it" adds 1 to the learner's count for that learnable. At 5 the card is memorised, and the list marks it with a check mark.
 
 Flashcard state is the learner's own self-rating, kept beside mastery. Mastery (A1 Readiness, the tutor's
 focus set, the live grader and progressed objectives) comes only from spoken lessons and live sessions.
@@ -63,26 +63,39 @@ the clip that is playing.
 
 ### 4.1 Controls
 
-Two controls sit above the card and stay on screen:
+Three controls sit above the card and stay on screen:
 
 | Control | Values | Default | Kept |
 |---|---|---|---|
 | segmented control | "English" / "Slovene": the side each card shows first | English | per device, `localStorage.flashcardsFirstSide` (`en`, `sl`) |
 | "Include memorised" switch | on / off | off | per device, `localStorage.flashcardsIncludeMemorised` |
+| "Hear it in context" switch | on / off | on | per device, `localStorage.flashcardsInContext` |
 
 - Changing "Include memorised" starts a new pass at once (§4.4) with the new rule.
 - Changing the first side applies from the next card. The card on screen stays as it is.
+- "Hear it in context" decides the example clip and the In Context section (§4.2). Turning it off stops
+  the clip that is playing and hides the section. Turning it on applies from the next time a Slovene side
+  comes into view.
+- The switch reads "Hear it in context", with no hint or subtitle. An unset
+  `localStorage.flashcardsInContext` reads as on.
 
 ### 4.2 The card
 
 - One card fills the screen body and shows one side. A tap anywhere on the card turns it to the other
   side, and every later tap turns it back. The controls and chips sit outside the card.
 - English side: `en`, large.
-- Slovene side: `sl`, large. Under it, smaller, the `note` when the card has one. Under that, the
-  example line (§6): its Slovene and its English. A card with no example shows no example line.
-- Audio: each time the Slovene side comes into view, the example clip plays from the start (§6.4). This
-  happens when a card opens Slovene first and on every turn to Slovene. The clip stops on a turn to
-  English, on a rating and on leaving card mode. A card with no example is silent.
+- Slovene side: `sl`, large. Under it, smaller, the `note` when the card has one. With "Hear it in
+  context" on, the card ends with the In Context section: the heading "In Context" and, under it, the
+  example's `sl` (§6). The section shows nothing else.
+- The In Context section is on the Slovene side only. The English side never shows it, since the
+  example would give the answer away. A card with no example, or any card with "Hear it in context" off,
+  shows no section.
+- The example's `en` is never shown, on either side or anywhere else in card mode.
+- Audio, with "Hear it in context" on: each time the Slovene side comes into view, the example clip plays
+  from the start (§6.4). This happens when a card opens Slovene first and on every turn to Slovene. The
+  clip stops on a turn to English, on a rating, on turning "Hear it in context" off and on leaving card
+  mode. A card with no example is silent.
+- With "Hear it in context" off, no example clip plays and the client requests none.
 - A memorised card shows "✓" in its top corner on both sides (accessible name "Memorised", §3).
 - Feedback: the header's "Feedback" link opens the feedback sheet with `surface: "header"` and
   `screen: "flashcards"`, as on every screen with the header ([feedback](../feedback/spec.md#1-points)).
@@ -153,8 +166,9 @@ Candidates are ranked by these keys in turn, and the first candidate whose clip 
 3. Fewest words in the line.
 4. Lowest level, then node order in the level file.
 
-The example is `{ sl, en, voice }`: the node's `sl` and `en`, and the profile from §6.1. The deck, with its
-examples, is computed once per domain and held in memory for the life of the process.
+The example is `{ sl, en, voice }`: the node's `sl` and `en`, and the profile from §6.1. Card mode shows
+only its `sl` (§4.2). The deck, with its examples, is computed once per domain and held in memory for the
+life of the process.
 
 Examples in Walking the Dogs: `star_sem_let` → "Star je pet mesecev." / "He's five months old."; `skakati`,
 whose forms only appear inflected → "Ne, še mladiček je. Skače.".
@@ -244,7 +258,7 @@ Each name and prop is in the `server/events.ts` allowlist and in the
 | `flashcards_started` | card mode opens | `domainId`, `from` (`overview`: the "Flashcards" chip; `list`: the "Flashcards" button), `firstSide` (`en`, `sl`), `includeMemorised`, `deckSize` |
 | `flashcard_rated` | the rate call for a "Nailed it" or "Oops" tap settles | `domainId`, `learnableId`, `result` (`nailed`, `oops`), `firstSide`, `memorised` (from the rate response; `null` when the call failed), `hasAudio` |
 | `flashcards_pass_completed` | the last card of a pass is rated | `domainId`, `pass` (from 1), `cards` |
-| `flashcards_setting_changed` | a control in §4.1 changes | `setting` (`firstSide`, `includeMemorised`), `value` |
+| `flashcards_setting_changed` | a control in §4.1 changes | `setting` (`firstSide`, `includeMemorised`, `inContext`), `value` |
 | `flashcards_ended` | card mode closes, by Back or any other screen change | `domainId`, `rated`, `ms` |
 
 - Turning a card and playing a clip record nothing.
