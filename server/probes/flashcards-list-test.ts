@@ -57,7 +57,7 @@ try {
 
   // 3. The row sits above the first level card and reads only its label and chip.
   await openLevels();
-  eq("row text", await page.$eval("#words-row", (e: Element) => [...e.children].map((c) => (c.textContent || "").trim())), ["Words and Phrases", "Overview"]);
+  eq("row text", await page.$eval("#words-row", (e: Element) => [...e.children].map((c) => (c.textContent || "").trim())), ["Words and Phrases", "Overview", "Flashcards"]);
   const above = await page.evaluate(() => {
     const row = document.getElementById("words-row")!, card = document.querySelector("#level-list .level-card")!;
     return !!(row.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING);

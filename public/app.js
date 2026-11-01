@@ -194,7 +194,7 @@ let chatLessonId = null;     // go-live: which lesson's plan the realtime tutor 
 let runId = null;            // THIS sitting on the practice surface — both modes record under it (npm run runs)
 
 // ---- Screen router — one screen visible at a time; the tree + obs are overlays on top. ----
-const SCREENS = ["home", "practice", "levels", "tutor", "a1", "scene", "settings", "history", "words"];
+const SCREENS = ["home", "practice", "levels", "tutor", "a1", "scene", "settings", "history", "words", "flashcards"];
 let currentScreen = "home";
 // The finder's pending settle (1 s after typing stops). Leaving the practice screen cancels it.
 let finderSettleTimer = null;
@@ -208,6 +208,7 @@ function showScreen(id) {
     $("consent").hidden = true;
     if (liveActive()) abandonLive();
   }
+  if (currentScreen === "flashcards" && id !== "flashcards") leaveFlashcards();
   currentScreen = id;
   track("screen_viewed", { screen: id });
   for (const s of SCREENS) $(s).hidden = s !== id;
@@ -877,6 +878,129 @@ async function openWords() {
       row.append(tick);
     }
     list.append(row);
+  }
+}
+
+// Card mode (spec §4). A pass is a shuffled deck of the cards the screen loaded; rate responses are applied
+// to those cards before the next pass is built.
+let fcFrom = "levels";   // the screen that opened card mode: "levels" or "words"
+let fcCards = [], fcDeck = [], fcPos = 0, fcShown = "en";
+let fcPending = [], fcGen = 0, fcToastTimer = null;
+const fcFirstSide = () => (localStorage.getItem("flashcardsFirstSide") === "sl" ? "sl" : "en");
+const fcInclude = () => localStorage.getItem("flashcardsIncludeMemorised") === "1";
+
+function fcStopClip() { $("fc-audio").pause(); }
+function leaveFlashcards() { fcGen++; fcStopClip(); clearTimeout(fcToastTimer); $("fc-toast").hidden = true; }
+
+async function openFlashcards(from) {
+  fcFrom = from;
+  showScreen("flashcards");
+  const gen = ++fcGen;
+  syncFcControls();
+  $("fc-card").hidden = true;
+  $("fc-empty").hidden = true;
+  $("fc-rate").hidden = true;
+  const res = await api(`/api/flashcards?domainId=${encodeURIComponent(currentDomain.id)}`);
+  if (!res.ok || gen !== fcGen) return;
+  fcCards = (await res.json()).cards;
+  fcPending = [];
+  startPass(null);
+}
+
+function syncFcControls() {
+  const side = fcFirstSide();
+  for (const b of document.querySelectorAll(".fc-seg-opt")) b.setAttribute("aria-pressed", String(b.dataset.side === side));
+  $("fc-include").checked = fcInclude();
+}
+
+// Fisher–Yates over the due cards (all cards with "Include memorised"); the card that ended the last pass
+// does not open this one unless it is the only card.
+function startPass(lastId) {
+  const deck = fcCards.filter((c) => fcInclude() || c.due);
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  if (deck.length > 1 && deck[0].id === lastId) {
+    const j = 1 + Math.floor(Math.random() * (deck.length - 1));
+    [deck[0], deck[j]] = [deck[j], deck[0]];
+  }
+  fcDeck = deck;
+  fcPos = 0;
+  showFcCard();
+}
+
+function showFcCard() {
+  fcStopClip();
+  const card = fcDeck[fcPos];
+  $("fc-empty").hidden = !!card;
+  $("fc-card").hidden = !card;
+  $("fc-rate").hidden = true;
+  if (!card) return;
+  fcShown = fcFirstSide();
+  renderFcCard();
+}
+
+function renderFcCard() {
+  const card = fcDeck[fcPos];
+  const el = $("fc-card");
+  el.textContent = "";
+  const add = (cls, text, parent = el) => {
+    const d = document.createElement("span");
+    d.className = cls;
+    d.textContent = text;
+    parent.append(d);
+    return d;
+  };
+  if (card.memorised) {
+    const tick = add("fc-tick", "✓");
+    tick.setAttribute("role", "img");
+    tick.setAttribute("aria-label", "Memorised");
+  }
+  if (fcShown === "en") { add("fc-main", card.en); return; }
+  add("fc-main", card.sl);
+  if (card.note) add("fc-note", card.note);
+  if (!card.example) return;
+  const ex = add("fc-example", card.example.sl);
+  add("fc-example-en", card.example.en, ex);
+  const a = $("fc-audio");
+  const src = `/api/flashcards/audio?domainId=${encodeURIComponent(currentDomain.id)}&id=${encodeURIComponent(card.id)}`;
+  if (a.getAttribute("src") === src) a.currentTime = 0; else a.src = src;
+  a.play().catch(() => {});
+}
+
+function turnFcCard() {
+  fcShown = fcShown === "en" ? "sl" : "en";
+  if (fcShown === "en") fcStopClip();
+  $("fc-rate").hidden = false;
+  renderFcCard();
+}
+
+async function rateFcCard(result) {
+  const card = fcDeck[fcPos];
+  const domainId = currentDomain.id;
+  const send = () => api("/api/flashcards/rate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ domainId, id: card.id, result }),
+  }).then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))));
+  fcPending.push(send().catch(send).then(
+    (r) => { card.memorised = r.memorised; card.due = r.due; },
+    () => {},
+  ));
+  fcPos++;
+  if (fcPos < fcDeck.length) { showFcCard(); return; }
+  const gen = fcGen;
+  fcStopClip();
+  $("fc-rate").hidden = true;
+  await Promise.all(fcPending);
+  fcPending = [];
+  if (gen !== fcGen) return;
+  startPass(card.id);
+  if (fcDeck.length) {
+    $("fc-toast").hidden = false;
+    clearTimeout(fcToastTimer);
+    fcToastTimer = setTimeout(() => { $("fc-toast").hidden = true; }, 3000);
   }
 }
 
@@ -2840,11 +2964,28 @@ async function init() {
   $("back").addEventListener("click", () => {
     if (currentScreen === "levels") showScreen("practice");
     else if (currentScreen === "words") showScreen("levels");
+    else if (currentScreen === "flashcards") { if (fcFrom === "words") openWords(); else showScreen("levels"); }
     else if (currentScreen === "history") openSettings();
     else openHome();
   });
 
   $("words-overview").addEventListener("click", openWords);
+  $("words-flashcards").addEventListener("click", () => openFlashcards("levels"));
+  $("words-flashcards-btn").addEventListener("click", () => openFlashcards("words"));
+  $("fc-card").addEventListener("click", turnFcCard);
+  $("fc-nailed").addEventListener("click", () => rateFcCard("nailed"));
+  $("fc-oops").addEventListener("click", () => rateFcCard("oops"));
+  for (const b of document.querySelectorAll(".fc-seg-opt")) {
+    b.addEventListener("click", () => { localStorage.setItem("flashcardsFirstSide", b.dataset.side); syncFcControls(); });
+  }
+  $("fc-include").addEventListener("change", async (e) => {
+    localStorage.setItem("flashcardsIncludeMemorised", e.target.checked ? "1" : "0");
+    const gen = fcGen;
+    fcStopClip();
+    await Promise.all(fcPending);
+    fcPending = [];
+    if (gen === fcGen) startPass(null);
+  });
 
   // Rehearsal tree overlay controls.
   $("dialogue-close").addEventListener("click", closeDialogue);
