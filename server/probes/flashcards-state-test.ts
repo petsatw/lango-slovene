@@ -2,7 +2,7 @@
 // (docs/features/flashcards/spec.md §7, §8, §10).
 //   npx tsx server/probes/flashcards-state-test.ts
 import { spawn, type ChildProcess } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -10,7 +10,9 @@ const CARD = "star_sem_let";
 const CODE_A = "FC-A";
 const CODE_B = "FC-B"; // a code derives the learner id, so each learner carries their own code
 process.env.TESTER_CODES = `${CODE_A},${CODE_B}`; // so resolveId here derives the ids the server derives
-const data = mkdtempSync(path.join(tmpdir(), "fc-state-"));
+const temps: string[] = [];
+const tempDir = (prefix: string) => { const d = mkdtempSync(path.join(tmpdir(), prefix)); temps.push(d); return d; };
+const data = tempDir("fc-state-");
 process.env.DATA_DIR = data; // the in-process learner store below reads it on import
 const learner = await import("../assets/learner");
 const { applyCredit } = await import("../mastery");
@@ -153,13 +155,13 @@ try {
   // 11. Errors.
   eq("unknown domain GET", (await cards(CODE_A, "no-such-domain")).status, 404);
   eq("unknown domain POST", (await rateCard(CODE_A, "nailed", CARD, "no-such-domain")).status, 404);
-  eq("id outside sprehod", (await rateCard(CODE_A, "nailed", "dober_dan_not_in_domain")).status, 400);
+  eq("id outside sprehod", (await rateCard(CODE_A, "nailed", "kruh")).status, 400); // a bakery card
   eq("bad result", (await rateCard(CODE_A, "great")).status, 400);
 
   // 12. Other stores.
-  for (const extra of <Record<string, string>[]>[{ LEARNER_STORE: "memory" }, { LEARNER_STORE: "file", LEARNER_PATH: path.join(mkdtempSync(path.join(tmpdir(), "fc-file-")), "learner.json") }]) {
+  for (const extra of <Record<string, string>[]>[{ LEARNER_STORE: "memory" }, { LEARNER_STORE: "file", LEARNER_PATH: path.join(tempDir("fc-file-"), "learner.json") }]) {
     await stop();
-    await start(extra, mkdtempSync(path.join(tmpdir(), "fc-store-")));
+    await start(extra, tempDir("fc-store-"));
     await fiveNails(CODE_A);
     eq(`${extra.LEARNER_STORE} memorised`, cardOf((await cards(CODE_A)).body).memorised, true);
     await cards(CODE_A, "bakery");
@@ -168,9 +170,11 @@ try {
 
   await stop();
   console.log("PASS");
-  process.exit(0);
 } catch (e: any) {
   console.log("FAIL", e.message);
   await stop();
-  process.exit(1);
+  process.exitCode = 1;
+} finally {
+  for (const d of temps) rmSync(d, { recursive: true, force: true });
 }
+process.exit(process.exitCode ?? 0);
