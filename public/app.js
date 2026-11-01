@@ -80,17 +80,22 @@ let feedbackSurface = null;
 let feedbackCloseTimer = null;
 let feedbackContext = {};
 // Where the learner was when the sheet opened (docs/features/feedback/spec.md#3-context).
+// Props that don't apply (a lesson without a level, say) are left out rather than sent as null.
 function currentFeedbackContext() {
-  if (!$("dialogue").hidden && dialogue) return { screen: "dialogue", scenarioId: dialogue.scenarioId, level: dialogue.level };
-  if (currentScreen === "scene") return { screen: "spoken", scenarioId: scene.scenarioId, level: scene.level };
-  if (currentScreen === "tutor" && liveSessionShowing()) return { screen: "live", lessonId: liveLessonId };
-  return { screen: currentScreen };
+  const where = !$("dialogue").hidden && dialogue ? { screen: "dialogue", scenarioId: dialogue.scenarioId, level: dialogue.level }
+    : currentScreen === "scene" ? { screen: "spoken", scenarioId: scene.scenarioId, level: scene.level }
+    : currentScreen === "tutor" && liveSessionShowing() ? { screen: "live", lessonId: liveLessonId }
+    : { screen: currentScreen };
+  return Object.fromEntries(Object.entries(where).filter(([, v]) => v !== null && v !== undefined && v !== ""));
 }
 function liveSessionShowing() { return liveActive() || !!wrapUp; }
 // The chip is on screen while the dialogue overlay, the spoken lesson or a live session (and its wrap-up) shows.
+// On the tutor screen the header's "‹ Home" holds the top-left corner, so the chip drops below it.
 function syncFeedbackChip() {
-  $("feedback-chip").hidden = $("dialogue").hidden && currentScreen !== "scene"
+  const chip = $("feedback-chip");
+  chip.hidden = $("dialogue").hidden && currentScreen !== "scene"
     && !(currentScreen === "tutor" && liveSessionShowing());
+  chip.classList.toggle("below-header", currentScreen === "tutor");
 }
 function openFeedback(surface) {
   clearTimeout(feedbackCloseTimer);

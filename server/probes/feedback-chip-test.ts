@@ -65,6 +65,26 @@ try {
   });
 
   const box = async (sel: string): Promise<Box | null> => page.locator(sel).first().boundingBox();
+  // Every visible control matching `sels`, so a chip over any one of them is caught.
+  const boxes = (sels: string) => page.locator(sels).evaluateAll((els) =>
+    els.filter((e) => (e as HTMLElement).offsetParent && e.id !== "feedback-chip").map((e) => ({ id: e.id || e.className, ...e.getBoundingClientRect().toJSON() })));
+  const topAtCentre = async () => {
+    const b = await box("#feedback-chip");
+    return !!b && (await page.evaluate(([x, y]) => !!document.elementFromPoint(x, y)?.closest("#feedback-chip"), [b.x + b.width / 2, b.y + b.height / 2]));
+  };
+  // The chip's place checked on this phone and on a small one (320×568).
+  const clearOf = async (when: string, sels: string) => {
+    for (const [w, h] of [[390, 844], [320, 568]]) {
+      await page.setViewportSize({ width: w, height: h });
+      await page.waitForTimeout(150);
+      const b = await box("#feedback-chip");
+      const others = await boxes(sels);
+      check(`${when} @${w}x${h}: the chip is visible`, await page.locator("#feedback-chip").isVisible());
+      check(`${when} @${w}x${h}: the chip covers no control`, !!b && others.length > 0 && others.every((o: Box) => !meets(b, o)),
+        JSON.stringify({ b, hit: others.filter((o: Box) => b && meets(b, o)) }));
+      check(`${when} @${w}x${h}: the chip is the top element at its centre`, await topAtCentre());
+    }
+  };
   const chipBox = () => box("#feedback-chip");
   const chipVisible = () => page.locator("#feedback-chip").isVisible();
   const send = async (text: string) => {
@@ -89,6 +109,7 @@ try {
     const b = await box(sel);
     check(`spoken: the chip does not cover ${sel}`, !!cb && (!b || !meets(cb, b)), JSON.stringify({ cb, b }));
   }
+  await clearOf("spoken", "#scene button, #scene-chips, #scene-prompt");
   // A beat that waits for the learner's tap is a stable moment to open the sheet over.
   const stepScene = async () => {
     if (await page.locator("#scene-choice").isVisible()) await page.locator("#scene-choice button").first().click({ timeout: 2000 }).catch(() => {});
@@ -128,10 +149,6 @@ try {
   await page.locator(".scenario-card").filter({ hasText: lv.sc.name }).first().click();
   await page.locator("#level-list .level-card").nth(lv.sc.dialogues.indexOf(lv.d)).click();
   await page.waitForSelector("#dialogue:not([hidden])");
-  const topAtCentre = async () => {
-    const b = await chipBox();
-    return !!b && (await page.evaluate(([x, y]) => !!document.elementFromPoint(x, y)?.closest("#feedback-chip"), [b.x + b.width / 2, b.y + b.height / 2]));
-  };
   const clear = async (when: string) => {
     const b = await chipBox();
     const others = await page.locator(".dialogue-choice, #dialogue-controls, .dialogue-controls").evaluateAll((els) =>
@@ -139,6 +156,7 @@ try {
     check(`dialogue ${when}: the chip is visible`, await chipVisible());
     check(`dialogue ${when}: the chip covers no choice or control`, !!b && others.every((o: Box) => !meets(b, o)), JSON.stringify({ b, others }));
     check(`dialogue ${when}: the chip is the top element at its centre`, await topAtCentre());
+    await clearOf(`dialogue ${when}`, "#dialogue button, .dialogue-choice, .dialogue-controls");
   };
   if (await page.locator("#dialogue-intro").isVisible()) await clear("intro");
   for (let i = 0; i < 20 && !(await page.locator("#dialogue-choices .dialogue-choice").count()); i++) {
@@ -185,6 +203,8 @@ try {
     const b = await box(sel);
     check(`live: the chip does not cover ${sel}`, !!lb && (!b || !meets(lb, b)), JSON.stringify({ lb, b }));
   }
+  // The tutor screen keeps the app header: "‹ Home", Settings and Feedback are controls too.
+  await clearOf("live", "header button, #tutor button");
   await page.locator("#feedback-chip").click();
   socket.send(JSON.stringify({ type: "transcript", id: "t1", role: "tutor", text: "Dober dan, kako ste?" }));
   await page.waitForFunction(() => document.getElementById("transcript")!.textContent!.includes("Dober dan, kako ste?"));
@@ -199,6 +219,7 @@ try {
   await page.locator("#practice-talk").click({ force: true });
   await page.waitForSelector("#live-wrapup:not([hidden])");
   check("wrap-up: the chip is visible", await chipVisible());
+  await clearOf("wrap-up", "header button, #tutor button");
   await page.locator("#live-feedback").click();
   await send("live end");
 
@@ -212,16 +233,21 @@ try {
   const expect = (t: string, props: Record<string, unknown>, absent: string[] = []) => {
     const r = by(t);
     const p = r?.props ?? {};
-    const ok = !!r && Object.entries(props).every(([k, v]) => v === "*" ? p[k] !== undefined : p[k] === v) && absent.every((k) => p[k] === undefined);
+    const ok = !!r && Object.entries(props).every(([k, v]) => v === "*" ? p[k] !== undefined : v === "?" ? p[k] === undefined || typeof p[k] === "number" : p[k] === v)
+      && absent.every((k) => p[k] === undefined);
     check(`row "${t}"`, ok, JSON.stringify(p));
   };
   check("nine feedback_submitted rows", fb.length === want, String(fb.length));
-  expect("chip spoken", { surface: "chip", screen: "spoken", scenarioId: "*", level: "*" }, ["lessonId"]);
+  // Props that don't apply are left out, never sent empty (feedback spec §3).
+  check("no feedback_submitted prop is null or empty", fb.every((r) => Object.values(r.props ?? {}).every((v) => v !== null && v !== "")),
+    JSON.stringify(fb.map((r) => r.props)));
+  // A spoken lesson without a level (the first-open one) carries no `level`.
+  expect("chip spoken", { surface: "chip", screen: "spoken", scenarioId: "*", level: "?" }, ["lessonId"]);
   expect("chip dialogue", { surface: "chip", screen: "dialogue", scenarioId: lv.sc.id, level: lv.d.level }, ["lessonId"]);
   expect("chip live", { surface: "chip", screen: "live", lessonId: "*" }, ["scenarioId", "level"]);
   expect("header home", { surface: "header", screen: "home" }, ["scenarioId", "level", "lessonId"]);
   expect("level end dialogue", { surface: "level_end", screen: "dialogue", scenarioId: lv.sc.id, level: lv.d.level });
-  expect("level end spoken", { surface: "level_end", screen: "spoken", scenarioId: "*", level: "*" });
+  expect("level end spoken", { surface: "level_end", screen: "spoken", scenarioId: "*", level: "?" }, ["lessonId"]);
   expect("live end", { surface: "live_end", screen: "live", lessonId: "*" });
   expect("finder request", { surface: "finder_request", screen: "practice" }, ["scenarioId", "level", "lessonId"]);
   expect("header live", { surface: "header", screen: "live", lessonId: "*" });

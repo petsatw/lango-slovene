@@ -185,7 +185,11 @@ try {
   check("exactly five feedback_submitted rows", fb.length === 5, String(fb.length));
   check("surfaces header, finder_request, level_end, level_end, live_end",
     JSON.stringify(fb.map((r) => r.props.surface).sort()) === JSON.stringify(["finder_request", "header", "level_end", "level_end", "live_end"]));
-  check("each row has text and props exactly { surface }", fb.every((r) => r.text && JSON.stringify(Object.keys(r.props)) === '["surface"]'));
+  // Each row carries its surface and where the learner was (feedback spec §3), nothing else, nothing empty.
+  const context = ["surface", "screen", "scenarioId", "level", "lessonId"];
+  check("each row has text, surface, screen and only context props, none empty", fb.every((r) => r.text && r.props.surface && r.props.screen
+    && Object.keys(r.props).every((k) => context.includes(k)) && Object.values(r.props).every((v) => v !== null && v !== "")),
+    JSON.stringify(fb.map((r) => r.props)));
   check("the unsent sheet recorded nothing", !readFileSync(log, "utf8").includes("closed unsent"));
 } catch (e: any) {
   console.log("FAIL ", e.message);
