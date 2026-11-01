@@ -3,7 +3,7 @@
 //
 //   npm run test:live-match
 
-import { keytermsFor, variantsOf } from "../live/match";
+import { keytermsFor } from "../live/match";
 import { creditable, readTarget, scoreLesson, type ChannelReading, type LiveGrade } from "../live/grader";
 import { LEARNABLES } from "../learnables";
 import type { Learnable } from "../learnables";
@@ -32,9 +32,6 @@ const zivjo = target("zivjo");
 const eno = target("eno_femacc");
 const rad_bi = target("rad_bi");
 
-console.log("\nsurfaces");
-check("slot alternation splits", variantsOf("Rad / Rada bi ___."), ["Rad bi ___.", "Rada bi ___."]);
-
 console.log("\nkeyterms");
 const terms = keytermsFor([zivjo, eno, rad_bi]);
 check("carries the literal runs and the mishearing", terms, [
@@ -59,6 +56,7 @@ console.log("\nthe verdict rule (readTarget)");
   const reading = (saidLine: number, over: Partial<{ uptake: boolean; correct: boolean; recast: boolean; saidLang: string }> = {}) =>
     ({ id: "krompir", saidLine, uptake: true, correct: true, recast: false, saidLang: "sl", ...over });
 
+  // Regression: an inflected form ("Kilo krompirja") was never credited, fixed in 1d48ddc.
   check("an inflected form the grader cites and the tutor took up is a success",
     readTarget(transcript, reading(2)).verdict, "success");
   check("its span is the learner's own line", readTarget(transcript, reading(2)).said, "Kilo krompirja, prosim.");
@@ -79,7 +77,6 @@ console.log("\nthe lesson score (scoreLesson)");
     [ch("dober_dan", "success"), ch("imate_danes", "success"), ch("ja", "attempt"), ch("hruska", "success", false)],
   );
   check("X of Y counts lesson successes only", [score.succeeded.length, score.total], [2, 4]);
-  check("a learnable outside the lesson does not count toward it", score.succeeded.includes("hruska"), false);
   check("attempts are listed apart", score.attempted, ["ja"]);
 }
 

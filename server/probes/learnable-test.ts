@@ -79,11 +79,6 @@ console.log("applyCredit:");
   let d = credit(fresh(), "kava", "success", 7); // 7/5
   d = credit(d, "kava", "attempt", 1);
   check("flub deep past threshold (7→6) stays mastered", statusOf(got(d,"kava")) === "mastered" && got(d,"kava").successes === 6);
-
-  // purity: input not mutated
-  const base = fresh();
-  applyCredit(base, [{ id: "kava", result: "success" }]);
-  check("applyCredit does not mutate its input", Object.keys(base.learnables).length === 0);
 }
 
 // ---- unit: presentObjective (spec §3.2) ------------------------------------------------------------

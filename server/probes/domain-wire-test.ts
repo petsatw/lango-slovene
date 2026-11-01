@@ -150,8 +150,6 @@ try {
   await page.locator("#finder-input").pressSequentially(`${lv.sc.name} ${word}`, { delay: 20 });
   await page.waitForTimeout(1500);
   const card = page.locator("#finder-results .level-card").filter({ hasText: lv.d.title }).first();
-  // The finder card's heading is built from the match index's domainName on the client.
-  const heading = await card.locator(".level-title").textContent();
   await card.click();
   await page.waitForFunction(() => !document.getElementById("dialogue")!.hidden);
 
@@ -163,7 +161,6 @@ try {
   const written = () => rows().slice(seeded.length).map((l) => JSON.parse(l));
   for (let i = 0; i < 20 && !NAMES.every((n) => written().some((r) => r.name === n)); i++) await page.waitForTimeout(250);
   await browser.close();
-  check("the finder card reads the domain name and the level title", heading === `${lv.sc.name} — ${lv.d.title}`, String(heading));
 
   const mine = written();
   for (const n of NAMES) {

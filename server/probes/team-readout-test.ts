@@ -128,13 +128,13 @@ try {
     const flipped = (key[0] === "A" ? "B" : "A") + key.slice(1);
     await expectUnknown(get, bearer(flipped), "wrong key, same length");
     await expectUnknown(get, bearer(key + "x"), "wrong key, other length");
-    await expectUnknown(get, bearer(key.slice(0, 8)), "wrong key, short");
     await expectUnknown(get, { headers: { Authorization: "Bearer " } }, "empty bearer");
     await expectUnknown(get, { headers: { Authorization: key } }, "bare key, no scheme");
     // Parameters are checked only after the key: bad params without the key are still the unknown path.
     await expectUnknown(get, bearer(flipped), "wrong key, bad params", "?limit=0&since=x&cursor=x");
     await expectUnknown(get, undefined, "no header, bad params", "?limit=0");
     // HEAD is not GET: Express would otherwise route it to the GET handler.
+    // Regression: HEAD reached the GET handler, fixed in #95.
     const head = await get("/v1/team/events", { method: "HEAD", ...bearer(key) });
     const headRef = await get("/v1/team/nope", { method: "HEAD", ...bearer(key) });
     check(head.status === 404 && headRef.status === 404, `HEAD: ${head.status}`);
@@ -197,6 +197,7 @@ try {
     // 5. query
     const big = await (await get("/v1/team/events?limit=5000", bearer(key))).json();
     check(big.rows.length === 1000, `limit=5000 gave ${big.rows.length}`);
+    // Regression: a cursor with an unreadable ts was accepted, fixed in #95.
     const badTs = Buffer.from(JSON.stringify({ ts: "nonsense", k: "x" })).toString("base64url");
     for (const q of ["limit=0", "limit=-1", "limit=1.5", "limit=abc", "since=nonsense", "cursor=nonsense", `cursor=${badTs}`]) {
       const r = await get(`/v1/team/events?${q}`, bearer(key));

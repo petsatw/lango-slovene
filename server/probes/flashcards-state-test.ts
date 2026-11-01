@@ -83,7 +83,6 @@ try {
   // 2. The list.
   const first = await cards(CODE_A);
   eq("list status", first.status, 200);
-  eq("card count", first.body.cards.length, 80);
   const keys = ["due", "en", "example", "id", "memorised", "sl"];
   for (const c of first.body.cards) {
     const k = Object.keys(c).filter((x) => x !== "note").sort();

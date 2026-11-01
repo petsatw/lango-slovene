@@ -70,7 +70,7 @@ map per-domain through the dialogue's `voices` block, then confirm with recipe A
   `gloss-cache.json` ([server/assets/store.ts](../server/assets/store.ts)). Defaults to `ASSET_DIR`, so local
   dev is unchanged. On Railway, attach a volume at `/data` and set `DATA_DIR=/data`, so learner progress
   and logs survive a redeploy while `ASSET_DIR` keeps the committed clips. `LEARNERS_DIR` and `TURNLOG_DIR`
-  still override their folders. Check: `npx tsx server/probes/data-dir-check.ts`.
+  still override their folders.
 - `PORT` — Railway injects it; the server honors it ([server/server.ts:422](../server/server.ts#L422)). No action.
 - `OPERATOR_TOOLS` — leave **unset** in prod. It gates the session/transcript endpoints; default-closed keeps
   learner transcripts unreadable on a public URL. Set `=1` only in local dev to use the Replays view.

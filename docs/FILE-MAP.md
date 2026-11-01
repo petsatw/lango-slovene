@@ -101,7 +101,7 @@ Every operator command maps to a file here (or in `server/probes/` / `server/uti
 | Command | File | What it does |
 |---|---|---|
 | `npm run dev` / `start` | `server/server.ts` | run the server (watch / once) |
-| `npm run test:match` | `server/probes/match-test.ts` | domain finder — keyword layer on the real catalog; `--live` for the Gemini NLU leg |
+| `npm run test:match` | `server/probes/match-test.ts` | domain finder — keyword layer on the real catalog |
 | `npm run test:learnable` | `server/probes/learnable-test.ts` | durable mastery rules — unit + temp-file store |
 | `npm run test:live-match` | `server/probes/live-match-test.ts` | live-mode crediting on plain inputs — transcriber hints, the verdict rule, the lesson score |
 | `npm run test:retention` | `server/probes/retention-test.ts` | the record writers + the retention sweep against a temp asset dir — what a declining session leaves behind |

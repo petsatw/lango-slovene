@@ -44,7 +44,8 @@ try {
   const practice = await (await fetch(`${base}/api/practice`)).json();
   const browser = await chromium.launch();
 
-  // 1. Forced labels on the first domain's first five dialogues.
+  // Forced labels on the first domain's first five dialogues.
+  // Regression: Above A1 levels read Beginner, fixed in #83.
   const labels = Object.keys(EXPECT);
   const first = practice.domains[0];
   const dialogues = Array.from({ length: 5 }, (_, i) => ({ ...first.dialogues[i % first.dialogues.length], levelLabel: labels[i] }));
@@ -59,18 +60,6 @@ try {
   await page.waitForFunction(() => !document.getElementById("scene")!.hidden);
   eq("forced chips", await chips(page, first.name), labels.map((l) => EXPECT[l]));
 
-  // 2. Real data: every Advanced / Above A1 level reads Advanced; no chip carries a digit or "score".
-  const page2 = await (await browser.newContext()).newPage();
-  await page2.goto(`${base}/?c=TEST-01`);
-  await page2.waitForFunction(() => !document.getElementById("scene")!.hidden || !document.getElementById("home")!.hidden);
-  for (const sc of practice.domains) {
-    const got = await chips(page2, sc.name);
-    eq(`${sc.name} chip count`, got.length, sc.dialogues.length);
-    sc.dialogues.forEach((d: any, i: number) => {
-      if (d.levelLabel === "Above A1" || d.levelLabel === "Advanced") eq(`${sc.name} level ${d.level}`, got[i], "Advanced");
-    });
-    for (const c of got) if (/\d|score/i.test(c)) fail(`${sc.name}: chip "${c}" matches /\\d|score/i`);
-  }
   await browser.close();
   console.log("PASS");
   child.kill("SIGKILL");

@@ -128,7 +128,7 @@ label until the tech lead reviews them. Chris merges only PRs labelled `reviewed
   runner with no network services. It is one TypeScript script in `server/probes/`, named in the issue
   and written with the slice, run as `npx tsx server/probes/<name>.ts` (or an existing `npm run lint:*` /
   `test:*` script). The script starts the server it needs with its own env (as
-  `server/probes/data-dir-check.ts` does), calls it with `fetch`, inspects files with `node:fs`, and drives
+  `server/probes/live-wrap-up-test.ts` does), calls it with `fetch`, inspects files with `node:fs`, and drives
   headless Chromium through the repo's `playwright`. Add an automated test only when it guards behaviour
   likely to regress and is cheap to keep green. No extra scaffolding, mocks or fixtures.
 - When the slice is built and a check needed for acceptance cannot run in the runner, write `BLOCKED.md`
@@ -248,7 +248,7 @@ check for a surviving child on the port (`lsof -nP -iTCP:<port> -sTCP:LISTEN`) b
 took.
 
 **Testing philosophy:** test the seams with real services, observe the pipeline live, never mock the
-heart. The probes and replay exist to exercise the real integration. (Full command list:
+heart. The probes exist to exercise the real integration. (Full command list:
 [FILE-MAP.md](docs/FILE-MAP.md).)
 
 ## The domain engine — the working agreement

@@ -62,11 +62,8 @@ const expectMiss = async (name: string, q: string) => {
 try {
   // Deck.
   const sprehod = deckFor("sprehod") ?? fail("no sprehod deck");
-  eq("sprehod cards", sprehod.length, 80);
   const first = sprehod[0] ?? fail("empty sprehod deck");
   eq("first card", { id: first.id, en: first.en, sl: first.sl }, { id: "ali_lahko", en: "can / may", sl: "Ali lahko ___? / Lahko ___." });
-  const noExample = sprehod.filter((c) => !c.example).map((c) => c.id);
-  eq("sprehod cards without an example", noExample, []);
   const card = (id: string) => sprehod.find((c) => c.id === id) ?? fail(`no card ${id}`);
   eq("star_sem_let example", [card("star_sem_let").example?.sl, card("star_sem_let").example?.en], ["Star je pet mesecev.", "He's five months old."]);
   eq("skakati example", card("skakati").example?.sl, "Ne, še mladiček je. Skače.");

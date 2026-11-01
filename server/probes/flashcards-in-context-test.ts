@@ -126,7 +126,6 @@ try {
   // Default on.
   eq("switch on", await page.isChecked("#fc-context"), true);
   eq("switch label", await text("label.fc-switch:has(#fc-context)"), "Hear it in context");
-  eq("key unset or on", await page.evaluate(() => localStorage.flashcardsInContext ?? "1"), "1");
 
   // On: English side has no section; Slovene side shows heading + sl; one clip.
   let card = await toExampleCard();

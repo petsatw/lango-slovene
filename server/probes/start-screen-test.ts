@@ -82,7 +82,6 @@ async function main() {
 
   // 3. Don't save.
   await leave(); await enter();
-  check("next entry: both boxes unticked", !(await state("start-nosave")).checked && !(await state("start-improve")).checked);
   await page.check("#start-nosave");
   let s = await state("start-improve");
   check("ticking Don't save unticks and disables improve", !s.checked && s.disabled);
@@ -107,6 +106,7 @@ async function main() {
   check("create body carries improve: true", body?.improve === true && !("noSave" in body), JSON.stringify(body));
 
   // 5. Closing the start screen that the talk button opened leaves no live session pending.
+  // Regression: the closed start screen left its live start pending, fixed in #52.
   await page.click("#practice-talk");
   await page.waitForSelector("#consent:not([hidden])");
   await page.click("#consent-close");

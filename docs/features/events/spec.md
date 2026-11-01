@@ -69,7 +69,8 @@ Each accepted event becomes one line in `DATA_DIR/events/events.jsonl`:
 | `flashcards_ended` | card mode closes | `domainId`, `rated`, `ms` |
 | `feedback_submitted` | a feedback sheet is sent | `surface`, `screen`, `domainId`, `level`, `lessonId`, plus `text` ([feedback](../feedback/spec.md#3-context)) |
 
-Back and Next in a tap dialogue record no event. Turning a flashcard and playing its clip record no event.
+Back and Next in a tap dialogue record no event. Turning a flashcard and playing its clip, in card mode or
+from the Words and Phrases list, record no event.
 
 The finder events record that a search happened and its outcome. `finder_query` and `finder_no_match` are recorded
 once per distinct trimmed, non-empty query. The query text stays in the browser.

@@ -252,7 +252,7 @@ export interface E3Adapter {
   /** Cache-key tag for a NAMED voice profile (e.g. "male-speaker"). Audio reuse keys by the speaker's
    *  voice profile: the same text in two profiles is two distinct clips. Omit → the teacher voice. */
   voiceTagFor(voiceProfile?: string): string;
-  /** Full-buffer synthesis — used by probes and the replay harness. `voiceProfile` omitted → teacher.
+  /** Full-buffer synthesis — used by the server and the build scripts. `voiceProfile` omitted → teacher.
    *  `speed` is an optional provider-side rate control (<1 slower). It is deliberately NOT part of the
    *  audio cache key: the client asks for a clip by (text, voice) alone, so a key carrying speed could
    *  never be found again. Consequence: changing the speed of an already-built clip needs a --regen. */
@@ -316,7 +316,7 @@ export interface ConverseResult {
   providers: { e2: string };
 }
 
-/** What the orchestrator returns for one full (non-streaming) turn — used by the replay harness. */
+/** What the orchestrator returns for one full (non-streaming) turn (`runTurn`, dormant). */
 export interface TurnResult {
   userSaid: string;
   tutorReply: string;

@@ -1,11 +1,12 @@
 # Flashcards
 
 Each domain with published levels has a "Words and Phrases" list: every learnable its levels teach,
-English next to Slovene. From the list, or straight from the domain's levels overview, the learner runs
-a flashcard drill over the same learnables. With "Hear it in context" on, the Slovene side of a card
-plays a line the learner already heard in that domain's levels, served from the committed audio store,
-and shows that line's Slovene. "Nailed it" adds 1 to the learner's count for that learnable. At 5 the
-card is memorised, and the list marks it with a check mark.
+English next to Slovene, with a play button for each card's example line. From the list, or straight
+from the domain's levels overview, the learner runs a flashcard drill over the same learnables. With
+"Hear it in context" on, the Slovene side of a card plays a line the learner already heard in that
+domain's levels, served from the committed audio store, and shows that line's Slovene. "Nailed it" adds
+1 to the learner's count for that learnable. At 5 the card is memorised, and the list marks it with a
+check mark.
 
 Flashcard state is the learner's own self-rating, kept beside mastery. Mastery (A1 Readiness, the tutor's
 focus set, the live grader and progressed objectives) comes only from spoken lessons and live sessions.
@@ -47,14 +48,32 @@ The list is its own screen, `words` (`screen_viewed`, [events](../events/spec.md
 - Title: "Words and Phrases".
 - Under the title, the "Flashcards" button opens card mode (§4). It stays at the top of the screen while
   the list scrolls.
-- One row per card, in domain order (§1). Each row has two columns: English (`en`, §5) and Slovene
-  (`sl`, §5).
-- A memorised card shows "✓" at the end of its row. The list shows no count, number or date.
+- One row per card, in domain order (§1). Each row has three columns: English (`en`, §5), Slovene
+  (`sl`, §5) and "Hear it in context".
+- A heading above the first row reads "Hear it in context" over the third column. The English and
+  Slovene columns have no heading.
+- A memorised card shows "✓" at the end of its row. The list shows no count, number, date or score.
 - The "✓" has the accessible name "Memorised", on list rows and on cards.
-- Rows are read-only. Tapping a row does nothing, and the list plays no audio.
+- Rows are read-only. Tapping a row outside its play button does nothing.
 - Back returns to the levels overview.
 - The list loads from `GET /api/flashcards` (§8) each time it opens, so the check marks are current after
   card mode.
+
+### 3.1 Hear it in context
+
+- A row whose card has an example (§6) shows a small play button, "▶", in the third column, with the
+  accessible name "Hear it in context". A card with `example: null` leaves the cell empty.
+- Tapping "▶" plays that card's example clip from the start, from `GET /api/flashcards/audio` (§6.4).
+  Tapping it again while the clip plays starts it again from the start.
+- One clip plays at a time. Tapping another row's "▶" stops the clip that is playing and starts that
+  row's.
+- Leaving the list by any route (Back, the "Flashcards" button or any other screen change) stops the clip
+  that is playing.
+- The list requests no clip until a "▶" is tapped, and preloads none. An error or `404` plays nothing and
+  shows nothing: no retry and no message, and the list works as usual.
+- The column ignores card mode's "Hear it in context" switch (§4.1): it shows and plays the same
+  whatever `localStorage.flashcardsInContext` holds.
+- Playing a clip records no event (§9).
 
 ## 4. Card mode
 
@@ -74,9 +93,9 @@ Three controls sit above the card and stay on screen:
 
 - Changing "Include memorised" starts a new pass at once (§4.4) with the new rule.
 - Changing the first side applies from the next card. The card on screen stays as it is.
-- "Hear it in context" decides the example clip and the In Context section (§4.2). Turning it off stops
-  the clip that is playing and hides the section. Turning it on applies from the next time a Slovene side
-  comes into view.
+- "Hear it in context" decides the example clip and the In Context section (§4.2), in card mode only.
+  The list's "Hear it in context" column (§3.1) ignores it. Turning it off stops the clip that is playing
+  and hides the section. Turning it on applies from the next time a Slovene side comes into view.
 - The switch reads "Hear it in context", with no hint or subtitle. An unset
   `localStorage.flashcardsInContext` reads as on.
 
@@ -182,7 +201,8 @@ any card, and is silent. In Administrative Unit, `koliko` is one: it is in `intr
 
 ### 6.4 Audio route
 
-`GET /api/flashcards/audio?domainId=<domainId>&id=<learnableId>` serves a card's example clip.
+`GET /api/flashcards/audio?domainId=<domainId>&id=<learnableId>` serves a card's example clip, to card
+mode (§4.2) and to the list's play buttons (§3.1).
 
 - The server resolves the card's example from its own deck (§6.2) and reads the clip with
   `store.read(key, "audio")`. It reads the disk store only.
@@ -194,7 +214,8 @@ any card, and is silent. In Administrative Unit, `koliko` is one: it is in `intr
 - Like the other media loads, it is shared across learners and carries no learner headers
   ([tester identity](../tester-identity/spec.md#1-invite-link)).
 - The client requests a clip only for a card with an example, and does not preload. An error or `404`
-  leaves the card silent: no retry, no message, and the card works as usual.
+  leaves the card silent: no retry, no message, and the card works as usual. On the list, a clip is
+  requested only on a "▶" tap (§3.1).
 
 ## 7. Flashcard state
 
@@ -262,7 +283,7 @@ Each name and prop is in the `server/events.ts` allowlist and in the
 | `flashcards_setting_changed` | a control in §4.1 changes | `setting` (`firstSide`, `includeMemorised`, `inContext`), `value` |
 | `flashcards_ended` | card mode closes, by Back or any other screen change | `domainId`, `rated`, `ms` |
 
-- Turning a card and playing a clip record nothing.
+- Turning a card and playing a clip, in card mode or from the list (§3.1), record nothing.
 - Readout, on the team readout rows:
 
 ```bash
