@@ -62,10 +62,17 @@ try {
   const waitRows = async (n: number) => { for (let i = 0; i < 20 && fbRows().length < n; i++) await new Promise((r) => setTimeout(r, 250)); };
 
   // The sheet that is open: one text box, no thumbs, the spec's words, Send gated on non-blank text.
-  const sheet = async (page: any, name: string, want: { title: string; label: string; placeholder?: string }, text: string) => {
+  // `over` is the screen the sheet opens over; it must stay showing beneath the sheet and after it closes.
+  const sheet = async (page: any, name: string, want: { title: string; label: string; placeholder?: string }, text: string, over?: string) => {
     const s = await page.evaluate(() => {
       const el = document.getElementById("feedback")!;
+      // The sheet is the topmost layer: its controls are what a tap at their centre lands on.
+      const onTop = ["feedback-close", "feedback-text", "feedback-send"].every((id) => {
+        const r = document.getElementById(id)!.getBoundingClientRect();
+        return el.contains(document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2));
+      });
       return {
+        onTop,
         title: document.getElementById("feedback-title")!.textContent,
         label: document.getElementById("feedback-prompt")!.textContent,
         placeholder: document.getElementById("feedback-text")!.getAttribute("placeholder") || "",
@@ -76,6 +83,8 @@ try {
     check(`${name}: title and label`, s.title === want.title && s.label === want.label, JSON.stringify(s));
     check(`${name}: placeholder`, s.placeholder === (want.placeholder ?? ""), s.placeholder);
     check(`${name}: one textarea, no thumbs`, s.areas === 1 && !s.thumbs);
+    check(`${name}: the sheet is the top layer`, s.onTop);
+    if (over) check(`${name}: opened over #${over}`, await page.locator(`#${over}`).isVisible());
     const send = page.locator("#feedback-send");
     const emptyOff = await send.isDisabled();
     await page.locator("#feedback-text").fill("   ");
@@ -86,6 +95,7 @@ try {
     await send.click();
     check(`${name}: Thanks shown`, await page.locator("#feedback-thanks").isVisible());
     await page.waitForSelector("#feedback", { state: "hidden" });
+    if (over) check(`${name}: #${over} still showing after the sheet closes`, await page.locator(`#${over}`).isVisible());
   };
 
   // 3. First page: the spoken lesson's close, then header, Finder request, a tap level's end.
@@ -95,7 +105,7 @@ try {
   await page.goto(`${base}/?c=TEST-01`);
   await page.waitForFunction(() => !document.getElementById("scene-close")!.hidden);
   await page.locator("#scene-feedback").click();
-  await sheet(page, "spoken close", { title: "Feedback", label: "How did this go for you?" }, "spoken note");
+  await sheet(page, "spoken close", { title: "Feedback", label: "How did this go for you?" }, "spoken note", "scene-close");
   await page.evaluate(() => document.getElementById("scene-quit")!.click());
   await page.waitForFunction(() => !document.getElementById("home")!.hidden);
 
@@ -124,12 +134,14 @@ try {
   }
   if (!(await page.locator("#dialogue-choices.is-terminal").count())) throw new Error("the level did not reach its end");
   await page.locator("#level-feedback").click();
-  await sheet(page, "tap level end", { title: "Feedback", label: "How did this go for you?" }, "level note");
+  await sheet(page, "tap level end", { title: "Feedback", label: "How did this go for you?" }, "level note", "dialogue");
+  check("tap level end: the page behind the dialogue stays locked", await page.evaluate(() => document.documentElement.classList.contains("dialogue-open")));
 
   // 4. A header sheet filled and closed with ✕ records nothing.
   await page.evaluate(() => document.getElementById("header-feedback")!.click());
   await page.locator("#feedback-text").fill("closed unsent");
   await page.locator("#feedback-close").click();
+  check("✕ closes the sheet", await page.locator("#feedback").isHidden());
   await flush(page);
   await waitRows(5);
 
@@ -162,7 +174,7 @@ try {
   await live.click("#practice-talk", { force: true });
   await live.waitForSelector("#live-feedback");
   await live.click("#live-feedback");
-  await sheet(live, "live end", { title: "Feedback", label: "How did this go for you?" }, "live note");
+  await sheet(live, "live end", { title: "Feedback", label: "How did this go for you?" }, "live note", "live-wrapup");
   await flush(live);
   await waitRows(6);
   await browser.close();
@@ -173,7 +185,7 @@ try {
   check("exactly five feedback_submitted rows", fb.length === 5, String(fb.length));
   check("surfaces header, finder_request, level_end, level_end, live_end",
     JSON.stringify(fb.map((r) => r.props.surface).sort()) === JSON.stringify(["finder_request", "header", "level_end", "level_end", "live_end"]));
-  check("each row has text and no rating or hasText", fb.every((r) => r.text && !("rating" in r.props) && !("hasText" in r.props)));
+  check("each row has text and props exactly { surface }", fb.every((r) => r.text && JSON.stringify(Object.keys(r.props)) === '["surface"]'));
   check("the unsent sheet recorded nothing", !readFileSync(log, "utf8").includes("closed unsent"));
 } catch (e: any) {
   console.log("FAIL ", e.message);
