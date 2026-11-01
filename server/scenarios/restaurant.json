@@ -1,6 +1,7 @@
 {
   "id": "restaurant",
   "name": "Restaurant",
+  "nameSl": "Restavracija",
   "title": "At the restaurant (restavracija)",
   "summaryEN": "Eating out: ordering drinks and dishes, pizza with friends, asking for recommendations, asking for the bill and paying by card.",
   "tags": ["restaurant", "restavracija", "waiter", "coffee", "menu", "order food", "dinner", "lunch", "pizza", "drink", "bill", "pay", "card", "recommendation", "friends"],

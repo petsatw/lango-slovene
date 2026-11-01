@@ -96,6 +96,7 @@ main.screen, main.home {
    screen-title styling because with no heading above them they ARE this screen's headings. */
 .scenario-group { margin: 18px 0 4px; font-size: 20px; font-weight: 700; text-align: left; }
 .scenario-group:first-child { margin-top: 4px; }
+.scenario-titles { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .scenario-name { font-size: 18px; font-weight: 600; flex: 1; }
 .scenario-meta { color: var(--muted); font-size: 13px; }
 

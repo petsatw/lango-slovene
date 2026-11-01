@@ -93,6 +93,8 @@ export interface Scenario {
   id: string;
   /** Short label for the picker dropdown (e.g. "Café"). Falls back to title if absent. */
   name?: string;
+  /** Slovene translation of `name`, plain text. Absent for demo. */
+  nameSl?: string;
   title: string;
   /** One plain-English sentence of the situations this scenario covers — read by the scenario finder
    *  (server/match.ts). Optional; `lint:scenario` requires it. */

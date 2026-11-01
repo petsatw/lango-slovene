@@ -541,11 +541,11 @@ async function loadPractice() {
         const card = document.createElement("button");
         card.className = "scenario-card";
         card.type = "button";
-        const n = s.dialogues.length;
         card.innerHTML =
-          `<span class="scenario-name">${s.name}</span>` +
-          `<span class="scenario-meta">${n} lesson${n === 1 ? "" : "s"}</span>` +
+          `<span class="scenario-titles"><span class="scenario-name"></span><span class="scenario-meta"></span></span>` +
           `<span class="level-chevron">›</span>`;
+        card.querySelector(".scenario-name").textContent = s.name;
+        card.querySelector(".scenario-meta").textContent = s.nameSl || "";
         card.addEventListener("click", () => openScenario(s));
         el.appendChild(card);
       }
@@ -819,6 +819,7 @@ function openScenario(s) {
   currentScenario = s;
   dialogues = s.dialogues;
   $("levels-title").textContent = s.name;
+  $("levels-title-sl").textContent = s.nameSl || "";
   const list = $("level-list");
   list.innerHTML = "";
   dialogues.forEach((d, i) => {
