@@ -209,6 +209,7 @@ function showScreen(id) {
     if (liveActive()) abandonLive();
   }
   if (currentScreen === "flashcards" && id !== "flashcards") leaveFlashcards();
+  if (currentScreen === "words" && id !== "words") $("words-audio").pause();
   currentScreen = id;
   track("screen_viewed", { screen: id });
   for (const s of SCREENS) $(s).hidden = s !== id;
@@ -223,7 +224,7 @@ function openHome() { stopAllAudio(); showScreen("home"); }
 function openPractice() { showScreen("practice"); loadPractice(); }
 function openA1() { showScreen("a1"); renderA1(); }
 
-function stopAllAudio() { stopDialogueAudio(); }
+function stopAllAudio() { stopDialogueAudio(); $("words-audio").pause(); }
 
 // ---- Settings and Learning history (docs/features/consent-privacy/spec.md, learning-history/spec.md). ----
 async function openSettings() {
@@ -869,6 +870,18 @@ async function openWords() {
     sl.className = "words-sl";
     sl.textContent = c.sl;
     row.append(en, sl);
+    const hear = document.createElement("span");
+    hear.className = "words-hear";
+    if (c.example) {
+      const play = document.createElement("button");
+      play.type = "button";
+      play.className = "words-play";
+      play.setAttribute("aria-label", "Hear it in context");
+      play.textContent = "▶";
+      play.addEventListener("click", () => playWordsClip(c.id));
+      hear.append(play);
+    }
+    row.append(hear);
     if (c.memorised) {
       const tick = document.createElement("span");
       tick.className = "words-tick";
@@ -879,6 +892,14 @@ async function openWords() {
     }
     list.append(row);
   }
+}
+
+// One list clip at a time, restarted from the top on every tap (spec §3.1); an error or 404 plays nothing.
+function playWordsClip(cardId) {
+  const a = $("words-audio");
+  const src = `/api/flashcards/audio?domainId=${encodeURIComponent(currentDomain.id)}&id=${encodeURIComponent(cardId)}`;
+  if (a.getAttribute("src") === src) a.currentTime = 0; else a.src = src;
+  a.play().catch(() => {});
 }
 
 // Card mode (spec §4). A pass is a shuffled deck of the cards the screen loaded; rate responses are applied

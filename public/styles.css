@@ -149,11 +149,17 @@ main.screen, main.home {
 }
 .words-list { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 8px; }
 .words-item {
-  display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: baseline;
+  display: grid; gap: 12px; align-items: baseline;
   background: var(--panel); border: 1px solid #2b2f38; border-radius: 12px; padding: 10px 14px;
 }
+/* rem, not em: the heading's smaller font must not narrow its third column, so it sits over the ▶. */
+.words-head, .words-item { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 4.5rem 1rem; }
+.words-head { display: grid; gap: 12px; width: 100%; max-width: 520px; padding: 0 15px 4px; font-size: 12px; opacity: 0.7; }
+.words-head > :nth-child(3) { text-align: center; }
 .words-sl { font-weight: 600; }
-.words-tick { color: var(--green); font-weight: 700; }
+.words-hear { text-align: center; }
+.words-play { background: none; border: 0; color: inherit; cursor: pointer; font-size: 14px; padding: 8px 14px; margin: -8px 0; }
+.words-tick { grid-column: 4; color: var(--green); font-weight: 700; }
 /* The list screen scrolls with the page, so the button sticks to the viewport (§3). */
 #words { overflow-y: visible; }
 .words-flashcards-btn { position: sticky; top: 0; align-self: flex-start; margin-bottom: 10px; z-index: 1; }
