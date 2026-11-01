@@ -128,7 +128,7 @@ label until the tech lead reviews them. Chris merges only PRs labelled `reviewed
   runner with no network services. It is one TypeScript script in `server/probes/`, named in the issue
   and written with the slice, run as `npx tsx server/probes/<name>.ts` (or an existing `npm run lint:*` /
   `test:*` script). The script starts the server it needs with its own env (as
-  `server/probes/data-dir-check.ts` does), calls it with `fetch`, inspects files with `node:fs`, and drives
+  `server/probes/live-wrap-up-test.ts` does), calls it with `fetch`, inspects files with `node:fs`, and drives
   headless Chromium through the repo's `playwright`. Add an automated test only when it guards behaviour
   likely to regress and is cheap to keep green. No extra scaffolding, mocks or fixtures.
 - When the slice is built and a check needed for acceptance cannot run in the runner, write `BLOCKED.md`
@@ -238,10 +238,7 @@ The reasons to repeat and improvise, and the tests a new one must pass, are in c
 ```bash
 npm run fetch:assets   # download prebuilt scene images + audio so ready-made domains work (free)
 npm run dev            # http://localhost:8787 — hold the button, speak, release
-npm run probe:e2       # understand+tutor adapter reachable
-npm run probe:e3       # voice adapter returns real audio
-npm run replay         # recorded clips → full pipeline → audio
-npm run test:mastery   # the deterministic mastery-loop rules
+npm run test:learnable # the durable mastery rules
 npm run runs           # both speaking modes' records of a sitting, side by side
 ```
 
@@ -251,7 +248,7 @@ check for a surviving child on the port (`lsof -nP -iTCP:<port> -sTCP:LISTEN`) b
 took.
 
 **Testing philosophy:** test the seams with real services, observe the pipeline live, never mock the
-heart. The probes and replay exist to exercise the real integration. (Full command list:
+heart. The probes exist to exercise the real integration. (Full command list:
 [FILE-MAP.md](docs/FILE-MAP.md).)
 
 ## The domain engine — the working agreement

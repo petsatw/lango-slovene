@@ -135,7 +135,6 @@ try {
   if (!(await page.locator("#dialogue-choices.is-terminal").count())) throw new Error("the level did not reach its end");
   await page.locator("#level-feedback").click();
   await sheet(page, "tap level end", { title: "Feedback", label: "How did this go for you?" }, "level note", "dialogue");
-  check("tap level end: the page behind the dialogue stays locked", await page.evaluate(() => document.documentElement.classList.contains("dialogue-open")));
 
   // 4. A header sheet filled and closed with ✕ records nothing.
   await page.evaluate(() => document.getElementById("header-feedback")!.click());

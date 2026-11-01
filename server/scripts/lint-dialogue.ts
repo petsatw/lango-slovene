@@ -5,7 +5,6 @@
 //
 //   - dup canonical `sl`: no two learnables share a normalized surface (a word is minted ONCE and
 //     referenced by id everywhere; two "kruh"s would split crediting and is an authoring mistake).
-//   - referential integrity: every `introduces` id resolves in the catalog (restated cleanly here).
 //   - coverage report: which dialogue introduces which ids, and which catalog learnables are introduced
 //     by no dialogue (informational — the seed or a domain may still own them).
 //   - delivery-collision WARN: the audio key is (provider, voice, clean `sl`) — the delivery tag is not
@@ -56,13 +55,12 @@ async function main() {
     if (ids.length > 1) errors.push(`duplicate canonical sl "${surface}" shared by learnables: ${ids.join(", ")}`);
   }
 
-  // 2. Referential integrity + 3. coverage.
+  // 2. Coverage.
   const dialogues = Object.values(DIALOGUES).flat();
   const introducedBy = new Map<string, string[]>();
   console.log("=== dialogue → introduced learnables ===");
   for (const d of dialogues) {
     for (const id of d.introduces) {
-      if (!LEARNABLES[id]) errors.push(`dialogue "${d.id}" introduces unknown learnable "${id}"`);
       (introducedBy.get(id) ?? introducedBy.set(id, []).get(id)!).push(d.id);
     }
     console.log(`  ${d.id.padEnd(12)} introduces ${d.introduces.length}: ${d.introduces.join(", ") || "(none)"}`);

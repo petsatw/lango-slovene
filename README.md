@@ -61,13 +61,6 @@ npm run dev                   # http://localhost:8787 — pick a domain, hold to
 The scenes and flashcards come from the downloaded bundle (no image-generation key needed); the
 conversation runs live through your understand + voice keys.
 
-**2 · Check your wiring first** — a few cents, confirms your keys are connected
-
-```bash
-npm run probe:e2   # understand + tutor reachable
-npm run probe:e3   # voice returns real audio
-npm run replay     # one recorded clip → full pipeline → audio
-```
 
 More detail in *Verifying it actually works*, below.
 
@@ -112,8 +105,7 @@ Full map: [docs/FILE-MAP.md](docs/FILE-MAP.md). Why it's shaped this way: [docs/
 - [AGENTS.md](AGENTS.md) — conventions for agents (and people) working in the repo.
 
 Common seams: add a domain (`server/domains/*.json`, via the engine) · swap a provider
-(`server/types.ts` + `server/adapters/index.ts` + `.env`) · verify against real services
-(`npm run probe:e2` / `probe:e3` / `replay`).
+(`server/types.ts` + `server/adapters/index.ts` + `.env`).
 
 ## License
 

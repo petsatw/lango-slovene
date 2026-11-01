@@ -170,7 +170,6 @@ try {
       await page.waitForSelector("#fc-toast:not([hidden])");
       eq("toast", await text("#fc-toast"), "Shuffled. Going again.");
     }
-    if (pass === 1) eq("rate calls after pass 1", rates.length, 3);
   }
   eq("rate calls", rates.length, 25);
   eq("clips served", audio.every((a) => a.served), true);

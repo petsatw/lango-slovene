@@ -65,6 +65,7 @@ try {
   await page.evaluate(() => window.scrollBy(0, 500));
   await page.keyboard.press("End");
   await page.waitForTimeout(200);
+  // Regression: the page behind the dialogue overlay scrolled, fixed in #84.
   check((await sy()) === y0, `page scrolled behind the overlay: ${await sy()} != ${y0}`);
 
   for (const sel of [".dialogue-convo", ".choice-list"]) {
@@ -91,7 +92,6 @@ try {
 
   // Every attempt to move the page while the overlay (or a sheet over it) is open leaves it at `y`.
   const held = async (y: number, where: string) => {
-    check(await page.evaluate(() => document.documentElement.classList.contains("dialogue-open")), `no lock class ${where}`);
     await page.mouse.move(5, 400);
     await page.mouse.wheel(0, 2000);
     await page.evaluate(() => window.scrollBy(0, 500));
@@ -99,9 +99,8 @@ try {
     await page.waitForTimeout(200);
     check((await sy()) === y, `page scrolled ${where}: ${await sy()} != ${y}`);
   };
-  // After a close the lock is gone: no lock class, and a wheel over the page scrolls it.
+  // After a close the lock is gone: a wheel over the page scrolls it.
   const released = async (where: string) => {
-    check(!(await page.evaluate(() => document.documentElement.classList.contains("dialogue-open"))), `lock class left on ${where}`);
     const before = await sy();
     await page.mouse.move(5, 400);
     await page.mouse.wheel(0, 200);

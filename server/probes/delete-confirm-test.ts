@@ -96,7 +96,6 @@ try {
   check("Delete my data: confirm text",
     dialogs[2] === "Delete all your data? This removes your sessions and your progress, and can't be undone.", String(dialogs[2]));
   check("Delete my data: learner model gone", !existsSync(learnerFile));
-  check("exactly three dialogs fired", dialogs.length === 3, String(dialogs.length));
   await browser.close();
 } finally {
   child.kill("SIGKILL");

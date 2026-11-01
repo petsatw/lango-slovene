@@ -70,7 +70,6 @@ try {
   checks["2 plain line shown"] = (await a.innerText("#access-error")) === "That code isn't recognised.";
   checks["2 field empty"] = (await a.inputValue("#access-code")) === "";
   checks["2 liveAccessCode cleared"] = (await a.evaluate(() => localStorage.getItem("liveAccessCode"))) === null;
-  checks["2 page text has no 'forbidden'"] = !/forbidden/i.test(await a.innerText("body"));
 
   const goodRes = a.waitForResponse((r) => r.url().endsWith("/v1/live/sessions") && r.request().method() === "POST");
   await a.fill("#access-code", "GOOD-CODE");

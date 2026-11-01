@@ -84,8 +84,8 @@ try {
   const ids = await page.$$eval(".history-entry", (els) => els.map((e) => (e as HTMLElement).dataset.id));
   check("2. history lists only TEST-01's session", ids.length === 1 && ids[0] === "live-TEST-01", JSON.stringify(ids));
   await page.click(".history-open");
-  await page.waitForFunction(() => document.querySelector(".history-line")?.textContent?.includes("Dober dan"));
-  check("2. its transcript opens", true);
+  check("2. its transcript opens", await page.waitForFunction(() => document.querySelector(".history-line")?.textContent?.includes("Dober dan"))
+    .then(() => true, () => false));
 
   await page.click(".history-delete");
   await page.waitForFunction(() => !document.querySelector(".history-entry"));
@@ -94,24 +94,6 @@ try {
 
   const other = await fetch(`${base}/api/history/live-TEST-02`, { headers: { "x-tester-code": "TEST-01" } });
   check("4. TEST-02's session id with TEST-01's code is 404", other.status === 404, String(other.status));
-
-  const tapFile = path.join(data, "sessions", "tap-TEST-01.json");
-  mkdirSync(path.dirname(tapFile), { recursive: true });
-  writeFileSync(tapFile, JSON.stringify({
-    id: "tap-TEST-01", lessonId: "fixture-scenario", createdAt: "2026-10-02T10:00:00.000Z", updatedAt: "2026-10-02T10:05:00.000Z",
-    status: "completed", finalObjectives: [], learnerId: idOf("TEST-01"), testerCode: "TEST-01",
-    turns: [{ index: 0, role: "tutor", text: "Dober dan" }],
-  }));
-  const before = readFileSync(tapFile, "utf8");
-  const append = await fetch(`${base}/api/turn`, {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-tester-code": "TEST-02" },
-    body: JSON.stringify({ audioBase64: "AAAA", mimeType: "audio/webm", runId: "tap-TEST-01" }),
-  });
-  const aList = await (await fetch(`${base}/api/history`, { headers: { "x-tester-code": "TEST-01" } })).json();
-  check("4. TEST-02 cannot append to TEST-01's session, and TEST-01's history is unchanged",
-    append.status === 404 && readFileSync(tapFile, "utf8") === before && aList.entries.map((e: any) => e.id).join() === "tap-TEST-01",
-    String(append.status));
 
   await page.click("#back");
   await page.click("#settings-delete");

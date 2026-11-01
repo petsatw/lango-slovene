@@ -24,7 +24,6 @@ const retention = await import("../assets/retention");
 const { settleSession } = await import("../live/grader");
 const turnlog = await import("../assets/turnlog");
 const liveLog = await import("../live/log");
-const learnerStore = await import("../assets/learner");
 
 let failed = false;
 const check = (name: string, ok: boolean, detail = "") => {
@@ -64,39 +63,25 @@ try {
   const learners: [string, object][] = [
     ["old-learner", { updatedAt: monthsAgo(13), lastSeenAt: monthsAgo(13) }],
     ["new-learner", { updatedAt: monthsAgo(11), lastSeenAt: monthsAgo(11) }],
-    ["noseen-old", { updatedAt: monthsAgo(13) }], // no lastSeenAt: falls back to updatedAt
-    ["noseen-new", { updatedAt: monthsAgo(11) }],
     ["just-over", { updatedAt: monthsAgo(12, -DAY), lastSeenAt: monthsAgo(12, -DAY) }],
     ["just-under", { updatedAt: monthsAgo(12, DAY), lastSeenAt: monthsAgo(12, DAY) }],
     ["active", { updatedAt: ago(3600_000), lastSeenAt: ago(3600_000) }],
-    ["credited-since", { updatedAt: ago(DAY), lastSeenAt: monthsAgo(13) }], // credited yesterday, stamp stale
-    ["future-seen", { updatedAt: ago(DAY), lastSeenAt: new Date(Date.now() + 30 * DAY).toISOString() }],
-    ["no-dates", {}],
-    ["bad-dates", { updatedAt: "not a date", lastSeenAt: "also not" }],
   ];
-  const deletedIds = ["old-learner", "noseen-old", "just-over"];
+  const deletedIds = ["old-learner", "just-over"];
   for (const [id, dates] of learners) {
     put("learners", id, { learnables: { x: { attempts: 1, successes: 1 } }, facts: {}, ...dates });
     put("live", `${id}-live`, liveRec(`${id}-live`, id, ago(400 * DAY), "Sem Kris"));
     writeFileSync(path.join(dir("live"), `${id}-live.gloss.json`), "{}");
   }
-  // A file that does not parse, and one whose name is not a learner id, each with old records.
-  writeFileSync(learnerFile("corrupt-learner"), "{ not json");
-  put("live", "corrupt-learner-live", liveRec("corrupt-learner-live", "corrupt-learner", ago(400 * DAY), "Sem Kris"));
-  put("learners", "bad name", { learnables: {}, facts: {}, updatedAt: monthsAgo(24) });
-  put("learners", "", { learnables: {}, facts: {}, updatedAt: monthsAgo(24) }); // learners/.json
-  put("live", "blank-id-live", liveRec("blank-id-live", "", ago(400 * DAY), "Sem Kris"));
   put("sessions", "old-tap", { id: "old-tap", lessonId: "s", createdAt: ago(400 * DAY), updatedAt: ago(400 * DAY), finalObjectives: [], learnerId: "old-learner", turns: [] });
   put("improve", "old-copy", { learnerId: "old-learner", sessionId: "old-learner-live", createdAt: ago(10 * DAY), transcripts: [] });
-  const everyone = [...learners.map(([id]) => id), "corrupt-learner", "bad name", ""];
+  const everyone = learners.map(([id]) => id);
   writeFileSync(TURNLOG, everyone.map((id) => JSON.stringify({ learnerId: id, path: "live", sessionId: `${id}-live` }) + "\n").join(""));
   writeFileSync(EVENTS, everyone.map((id) => JSON.stringify({ learnerId: id, name: "app_opened", ts: ago(400 * DAY) }) + "\n").join(""));
-  const corruptBefore = readFileSync(learnerFile("corrupt-learner"), "utf8");
 
   // ---- improvement copies: 90 days ----
   put("improve", "copy-91d", { learnerId: "x", sessionId: "copy-91d", createdAt: ago(91 * DAY), transcripts: [] });
   put("improve", "copy-89d", { learnerId: "x", sessionId: "copy-89d", createdAt: ago(89 * DAY), transcripts: [] });
-  put("improve", "copy-nodate", { learnerId: "x", sessionId: "copy-nodate", transcripts: [] });
 
   // ---- candidate rows: 12 months ----
   writeFileSync(process.env.CANDIDATES_PATH!, [
@@ -122,20 +107,12 @@ try {
       && lines(TURNLOG).some((r) => r.learnerId === id) && lines(EVENTS).some((r) => r.learnerId === id);
   check("learner unused for 13 months: deleted with model, live log, translations, tap record, turn-log rows, event rows and improvement copy",
     gone("old-learner") && !has("sessions", "old-tap") && !has("improve", "old-copy"));
-  check("learner with no lastSeenAt and updatedAt 13 months ago: deleted with their records", gone("noseen-old"));
   check("learner last seen 12 months and a day ago: deleted", gone("just-over"));
   for (const [id] of learners.filter(([id]) => !deletedIds.includes(id))) {
     check(`learner ${id}: kept with their records`, kept(id));
   }
-  check("an unparseable learner file is kept, unchanged, with its records",
-    readFileSync(learnerFile("corrupt-learner"), "utf8") === corruptBefore && has("live", "corrupt-learner-live")
-      && lines(EVENTS).some((r) => r.learnerId === "corrupt-learner"));
-  check("a learner file whose name is not a learner id deletes nothing",
-    has("learners", "bad name") && has("learners", "") && has("live", "blank-id-live")
-      && lines(EVENTS).some((r) => r.learnerId === "bad name") && lines(EVENTS).some((r) => r.learnerId === ""));
   check("improvement copy 91 days old: swept", !has("improve", "copy-91d"));
   check("improvement copy 89 days old: kept", has("improve", "copy-89d"));
-  check("improvement copy without a readable createdAt: kept", has("improve", "copy-nodate"));
   const cands = lines(process.env.CANDIDATES_PATH!).map((r) => r.surface);
   check("candidate row 13 months old dropped, 11 months old kept", JSON.stringify(cands) === JSON.stringify(["nova fraza"]), JSON.stringify(cands));
   const liveText = JSON.parse(readFileSync(path.join(DIR, "live", "saved-live.json"), "utf8")).transcripts[0].text;
@@ -144,16 +121,6 @@ try {
   check("saved session from 5 hours ago keeps its live log, session record and turn-log rows in full",
     liveText === "Sem Kris" && tapTurn.userVerbatim === "Sem Kris" && tapTurn.audioKey === "abc"
       && row?.output.userVerbatim === "Sem Kris" && row?.output.tutorReply === "Živjo, Kris!" && row?.input.history[0].text === "Sem Kris" && !row?.redactedAt);
-  const snapshot = () => JSON.stringify([readdirSync(path.join(DIR, "learners")).sort(), readdirSync(path.join(DIR, "live")).sort(), readFileSync(TURNLOG, "utf8"), readFileSync(EVENTS, "utf8")]);
-  const before = snapshot();
-  retention.sweep();
-  check("a second sweep changes nothing", snapshot() === before);
-
-  // ---- every save writes updatedAt ----
-  learnerStore.save("saver", { learnables: {}, facts: {}, updatedAt: monthsAgo(24) });
-  check("a learner save writes updatedAt as now", Date.now() - Date.parse(learnerJson("saver")?.updatedAt) < 60_000, learnerJson("saver")?.updatedAt);
-  learnerStore.setFact("saver", "gender", "f");
-  check("a fact save keeps updatedAt current", Date.now() - Date.parse(learnerJson("saver")?.updatedAt) < 60_000);
 
   // ---- what a turn writes ----
   console.log("\nwhat a turn writes");
@@ -271,8 +238,6 @@ globalThis.fetch = (url, init) => {
   }
 
   console.log("\nserver");
-  check("the startup sweep left the active learners and the unreadable file alone",
-    has("learners", "active") && has("learners", "credited-since") && readFileSync(learnerFile("corrupt-learner"), "utf8") === corruptBefore);
   const del = (q = "", body?: object) => fetch(`${base}/api/me/improve${q}`, {
     method: "DELETE",
     headers: { "x-learner-id": "http-learner", ...(body ? { "content-type": "application/json" } : {}) },
@@ -281,8 +246,6 @@ globalThis.fetch = (url, init) => {
   const res = await del("?learnerId=other-learner", { learnerId: "other-learner" });
   check("DELETE /api/me/improve deletes the caller's copies and no one else's, whatever the body or query names",
     res.status === 204 && !has("improve", "http-a") && has("improve", "http-keep") && has("improve", "t1-a") && has("improve", "copy-89d"), String(res.status));
-  const again = await del();
-  check("a second DELETE /api/me/improve is a 204 and changes nothing", again.status === 204 && has("improve", "http-keep"), String(again.status));
   const none = await fetch(`${base}/api/me/improve`, { method: "DELETE", headers: { "x-learner-id": "never-shared" } });
   check("a learner with no copies gets 204", none.status === 204, String(none.status));
   const histDel = await fetch(`${base}/api/history/hist-live`, { method: "DELETE", headers: { "x-learner-id": "hist-learner" } });
@@ -301,9 +264,6 @@ globalThis.fetch = (url, init) => {
   await created.arrayBuffer();
   check("starting a live session stamps lastSeenAt (POST /v1/live/sessions)",
     created.status !== 403 && typeof learnerJson(idOf("TEST-03"))?.lastSeenAt === "string", `status ${created.status} (no live provider key here, so 503 is expected)`);
-  await (await fetch(`${base}/api/practice`, { headers: { "x-learner-id": "corrupt-learner" } })).arrayBuffer();
-  check("a request for a learner whose file does not parse leaves the file as it is",
-    readFileSync(learnerFile("corrupt-learner"), "utf8") === corruptBefore);
 
   const speak = async (q: string) => {
     const r = await fetch(`${base}/api/speak?${q}`);

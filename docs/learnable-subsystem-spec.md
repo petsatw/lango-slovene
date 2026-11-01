@@ -331,7 +331,7 @@ The same crediting machine with a domain-less prompt:
 | `server/server.ts` | `POST /api/converse` (also hosts the seed via `seedId`/`begin`); `GET /api/learner`; `started` flag in `/api/config` |
 | `server/domains/cafe.json` | author `learnables` on objectives (worked example) |
 | `public/app.js` | free-chat toggle (off → Tutorial → L1 → L2); seed + free chat delivered through the chat surface + push-to-talk |
-| `package.json` | `test:learnable`, `probe:converse`, `learner`, `build:seed-assets` scripts |
+| `package.json` | `test:learnable`, `learner`, `build:seed-assets` scripts |
 | `docs/*` | DATA-MODEL (new shapes), ARCHITECTURE (the second layer), stories Part 6 (flub→decrement) |
 
 No change to: the asset store/catalog ontology, E3/E4 adapters, session records, the 14-turn cap, the
@@ -354,7 +354,7 @@ real file; and `npm run dev` boots (loader runs at startup).
 **Phase 2 — Objective→learnable references.** Add `learnables?`/`fillerLines?` to the `Objective` type +
 `validateDomain`; author them on `cafe.json` (`order_coffee → ["eno_femacc","kava"]`, the chunks).
 *Verify:* extend `lint:domain`/load to assert every referenced learnable id exists; `npm run dev` boots
-café; existing `npm run test:mastery` still green (scene layer untouched).
+café.
 
 **Phase 3 — Learner model + crediting (pure + store).** `server/mastery.ts` (`THRESHOLD`, `applyCredit`),
 `server/assets/learner.ts` (`load`/`save`, `LEARNER_PATH`).
@@ -368,22 +368,19 @@ gemini schema + parse; `presentObjectives`; mastery-aware `prompt.ts` lines + th
 output instruction.
 *Verify:* **unit** — `presentObjectives` picks the next-unmastered filler, flips to review when all
 mastered, falls back to `targetSL` with no `fillerLines`, and is a no-op for objectives without
-`learnables`. **live** — `npm run probe:e2` still parses; a real café clip through `understand` returns a
-non-empty, well-formed `learnableProgress` (extend `test:mastery`'s print).
+`learnables`.
 
 **Phase 5 — Wire crediting into the turn loop.** `orchestrator.understand` loads→presents→credits→saves;
 returns a learner snapshot; `/api/turn` passes it through unchanged otherwise.
-*Verify:* **e2e on real Gemini** (`test:learnable --live`, temp `LEARNER_PATH`): run the café fixture clip
-("Ena kava…", the nominative error) through `understand`; assert the learner model gained an `attempt`
-(not a success) for the pattern (F3 step 1), and that a clean clip credits a `success`. Assert outcomes
-(the persisted counts), not call logs.
+*Verify:* **integration** (`test:learnable`, temp `LEARNER_PATH`): credit an `attempt` (not a success) for
+the nominative-error pattern (F3 step 1) and a `success` for a clean production; assert the persisted
+counts, not call logs.
 
 **Phase 6 — Free conversation (levels 1–2).** `buildConversationPrompt`; `orchestrator.converse`;
-`POST /api/converse`; a `probe:converse` script; a minimal client free-chat entry (push-to-talk + level
+`POST /api/converse`; a minimal client free-chat entry (push-to-talk + level
 toggle) reusing the existing capture/play path.
 *Verify:* **unit** — the prompt includes only familiar items at level 1 and exactly 1–2 un-attempted core
-items at level 2. **live** — `probe:converse` runs a real clip → asserts a credited `learnableProgress`
-and a Slovene reply; manual: `npm run dev`, free-chat one turn, confirm the dots/counts move
+items at level 2. Manual: `npm run dev`, free-chat one turn, confirm the dots/counts move
 (screenshot per the "screenshot UI before claiming verified" memory).
 
 **Phase 7 — Resume + inspection + docs.** Presentation consulted at boot (mastered items not re-pushed);
@@ -393,8 +390,7 @@ ARCHITECTURE, and stories Part 6.
 presentation no longer pushes `kava` (F1 step 4 / US-6); `GET /api/learner` returns the derived
 mastered/attempted counts; `npm run learner` prints them.
 
-**Final.** Full real-stack pass: `npm run probe:e2`, `npm run test:mastery`, `npm run test:learnable`
-(+`--live`), `npm run probe:converse`, `npm run dev` smoke (café turn + free chat). Report what is
+**Final.** Full pass: `npm run test:learnable`, `npm run dev` smoke (café turn + free chat). Report what is
 verified live vs. unit-only, honestly.
 
 ---

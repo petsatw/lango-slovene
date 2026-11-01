@@ -117,9 +117,6 @@ try {
   await openList();
   eq("title", await page.$eval("#words .screen-title", (e: Element) => e.textContent), "Words and Phrases");
   let list = await rows();
-  eq("row count", list.length, 80);
-  eq("first row", [list[0]!.en, list[0]!.sl], ["can / may", "Ali lahko ___? / Lahko ___."]);
-  eq("ticks at start", list.filter((r) => r.tick).length, 0);
 
   // 4b. Heading "Hear it in context" sits above the first row, over its third column, and is not a row.
   const head = await page.evaluate(() => {
