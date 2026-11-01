@@ -89,6 +89,8 @@ When diagnosing a problem or analyzing a behavior:
   "Core is the learnable's `core: true` flag" — not "core is no longer read from the a1-map".
 - **Warding off a tempting alternative gets one clause, not a paragraph.** "Length is not a band input —
   it measures amount, not difficulty." Enough to stop a plausible revert; not a retrospective.
+- **One term per thing.** The top-level unit that holds levels is a *domain*, in code, docs, skills and
+  issues; learner copy labels it "scenario" ([terminology](docs/features/terminology/spec.md)).
 - Applies to code comments, `docs/`, and skill files alike. `docs/research/` is exempt: it is a record of
   what was thought and when, and a superseded document there should say so at the top.
 

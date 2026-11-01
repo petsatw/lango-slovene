@@ -1,6 +1,6 @@
 # Data model & HTTP API
 
-The concrete shapes — endpoints, scenario/session JSON, catalog nodes, and the adapter interfaces. This
+The concrete shapes — endpoints, domain/session JSON, catalog nodes, and the adapter interfaces. This
 is reference: read [ARCHITECTURE.md](ARCHITECTURE.md) for what these mean and why, and
 [FILE-MAP.md](FILE-MAP.md) for where they live. Types are sourced from
 [`server/types.ts`](../server/types.ts); shapes are shown as TypeScript for precision.
@@ -22,14 +22,14 @@ behaviour ([retention.md](retention.md)).
 |---|---|---|---|
 | `GET` | `/` | the PWA | `public/index.html` (static) |
 | `GET` | `/api/health` | liveness | `{ ok: true }` |
-| `GET` | `/api/config?scenarioId=` | boot a scenario | providers, the chosen scenario (id, title, opening, objectives, story frame order), a fresh `session`, the scenario list for the picker, and `dialogues[]` — the scenario's **rehearsal dialogues**, level-sorted (`[]` if none; see [rehearsal-dialogues.md](rehearsal-dialogues.md)). Unknown/planned ids fall back to café. |
+| `GET` | `/api/config?domainId=` | boot a domain | providers, the chosen domain (id, title, opening, objectives, story frame order), a fresh `session`, the domain list for the picker, and `dialogues[]` — the domain's **rehearsal dialogues**, level-sorted (`[]` if none; see [rehearsal-dialogues.md](rehearsal-dialogues.md)). Unknown/planned ids fall back to café. |
 | `POST` | `/api/turn` | one conversational turn (E2 only) | `UnderstandResult` — text fast; audio is fetched separately. Also captures the run if `runId` is sent. |
-| `POST` | `/api/converse` | one free-conversation turn (E2 only, scenario-less) | `ConverseResult` — bounded by the learner model; `level: 1\|2`. Credits the durable mastery layer. `begin: true` returns the static opening (`Začnemo?`, no model call/credit); `role` is the client-pinned free-chat role carried back each turn. Also hosts the **seed**: `{ seedId, begin? }` swaps the model for the scripted adapter (returns the next scripted line + `seedDone`). |
-| `POST` | `/api/scene` | one beat of a **spoken scene** (an `advance: "audio"` dialogue) | `{ voice, background, npc: { id, sl, en, slowSL, captionDelayMs, glossPolicy, stallHandlers[] }, spoke, done }`. `{ scenarioId }` returns the opening beat and credits nothing; `{ scenarioId, from }` means the learner spoke at `from` — the server walks the spine and plants that beat's `learnables` as **attempts**. The learner's recording is **never uploaded**: nothing inspects it, so the turn cannot be failed. See [rehearsal-dialogues.md › Tapped vs spoken](rehearsal-dialogues.md). |
+| `POST` | `/api/converse` | one free-conversation turn (E2 only, domain-less) | `ConverseResult` — bounded by the learner model; `level: 1\|2`. Credits the durable mastery layer. `begin: true` returns the static opening (`Začnemo?`, no model call/credit); `role` is the client-pinned free-chat role carried back each turn. Also hosts the **seed**: `{ seedId, begin? }` swaps the model for the scripted adapter (returns the next scripted line + `seedDone`). |
+| `POST` | `/api/scene` | one beat of a **spoken scene** (an `advance: "audio"` dialogue) | `{ voice, background, npc: { id, sl, en, slowSL, captionDelayMs, glossPolicy, stallHandlers[] }, spoke, done }`. `{ domainId }` returns the opening beat and credits nothing; `{ domainId, from }` means the learner spoke at `from` — the server walks the spine and plants that beat's `learnables` as **attempts**. The learner's recording is **never uploaded**: nothing inspects it, so the turn cannot be failed. See [rehearsal-dialogues.md › Tapped vs spoken](rehearsal-dialogues.md). |
 | `GET` | `/api/learner` | inspect the caller's learner model (operator) | `LearnerInspection` — every learnable in the model with its derived status, and how the rows split (`mastered`/`attempted`). Read-only. |
-| `GET` | `/api/speak?text=&voice=&scenarioId=&objectiveId=&retain=` | stream tutor/teacher audio (E3) | `audio/mpeg`, streamed progressively. `voice=character` → the scenario character's voice; `voice=<catalog profile id>` (e.g. `shop-assistant`) → that named voice (rehearsal-dialogue speakers); otherwise the teacher voice. Cache: L1 memory → L2 disk → synthesize+persist. `retain=0` streams the clip without writing it to the disk store or the manifest — a conversational reply can name the learner, and the store is shared with every authored lesson clip ([retention.md](retention.md)). |
-| `GET` | `/api/image?scenarioId=&objectiveId=` | a story frame or scene image | `image/jpeg` from the store. `objectiveId=scene` → the full tableau. 404 with a build hint if not yet built (`npm run build:assets`). |
-| `GET` | `/api/sessions` | list past runs (newest first) | `{ sessions: [{ id, scenarioId, createdAt, status, turns, label, favorite, completed, objectives }] }` |
+| `GET` | `/api/speak?text=&voice=&domainId=&objectiveId=&retain=` | stream tutor/teacher audio (E3) | `audio/mpeg`, streamed progressively. `voice=character` → the domain character's voice; `voice=<catalog profile id>` (e.g. `shop-assistant`) → that named voice (rehearsal-dialogue speakers); otherwise the teacher voice. Cache: L1 memory → L2 disk → synthesize+persist. `retain=0` streams the clip without writing it to the disk store or the manifest — a conversational reply can name the learner, and the store is shared with every authored lesson clip ([retention.md](retention.md)). |
+| `GET` | `/api/image?domainId=&objectiveId=` | a story frame or scene image | `image/jpeg` from the store. `objectiveId=scene` → the full tableau. 404 with a build hint if not yet built (`npm run build:assets`). |
+| `GET` | `/api/sessions` | list past runs (newest first) | `{ sessions: [{ id, lessonId, createdAt, status, turns, label, favorite, completed, objectives }] }` |
 | `GET` | `/api/sessions/:id` | one run's full record | `SessionRecord` (ordered turns + final objectives) |
 | `POST` | `/api/sessions/:id/meta` | promote a run | sets `label` and/or `favorite`; returns the updated `SessionRecord` |
 | `GET` | `/gallery` · `/gallery/image/:key.jpg` | live visual catalog | HTML rebuilt from the catalog + on-disk renders each request; read-only, bills nothing |
@@ -63,7 +63,7 @@ behaviour ([retention.md](retention.md)).
 ```ts
 type ObjectiveStatus = "pending" | "recast" | "completed";
 
-interface Objective {       // authored in the scenario
+interface Objective {       // authored in the domain
   id: string;
   label: string;            // short English label for the UI dot
   targetSL: string;         // the canonical Slovene the learner should PRODUCE (default/primary line)
@@ -79,7 +79,7 @@ interface ObjectiveState {  // live, per session
 }
 
 interface SessionState {
-  scenarioId: string;
+  domainId: string;
   objectives: ObjectiveState[];
   complete: boolean;        // all completed OR turn cap (14) hit
   turns: number;
@@ -173,9 +173,9 @@ asset's canonical render. The rubric for authoring all of this is in
 
 ## A rehearsal dialogue
 
-`server/dialogues/<scenario>-<level>.json` — a pre-authored branching decision tree paired with a
-scenario, one file per competency level. Loaded by [`server/dialogues.ts`](../server/dialogues.ts),
-grouped by `scenarioId`, level-sorted. Rehearsal only: no session, no crediting. Full treatment:
+`server/dialogues/<domainId>-<level>.json` — a pre-authored branching decision tree paired with a
+domain, one file per competency level. Loaded by [`server/dialogues.ts`](../server/dialogues.ts),
+grouped by `domainId`, level-sorted. Rehearsal only: no session, no crediting. Full treatment:
 [rehearsal-dialogues.md](rehearsal-dialogues.md).
 
 ```ts
@@ -191,8 +191,8 @@ interface DialogueNode {
 }
 
 interface Dialogue {
-  id: string; scenarioId: string;
-  level: number;            // 1..N ascending; unique per scenario
+  id: string; domainId: string;
+  level: number;            // 1..N ascending; unique per domain
   levelLabel: string;       // tab label (e.g. "Survival")
   title: string;
   objectives: { label: string; descriptorEN: string }[];   // DISPLAY ONLY — no crediting
@@ -223,7 +223,7 @@ interface SessionTurn {
 
 interface SessionRecord {
   id: string;
-  scenarioId: string;
+  lessonId: string;
   createdAt: string;        // ISO
   updatedAt: string;
   status: SessionStatus;

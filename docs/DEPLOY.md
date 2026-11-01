@@ -139,7 +139,7 @@ ELEVENLABS_VOICE_ID=fSzEIez35vDdOs4DQwVh ELEVENLABS_VOICE_ID_MALE=Jcyy5bkqt86ud0
 ELEVENLABS_VOICE_ID_SHOP_ASSISTANT=MMDUS1hxcZnX8i9ZdqNf TURNLOG=0 PORT=8797 \
 ./node_modules/.bin/tsx server/server.ts &
 
-curl -s -o /dev/null -D - "http://localhost:8797/api/speak?text=<sl>&scenarioId=<id>&voice=<profile>" \
+curl -s -o /dev/null -D - "http://localhost:8797/api/speak?text=<sl>&domainId=<id>&voice=<profile>" \
   | grep -i x-audio-cache          # expect: X-Audio-Cache: hit
 ```
 
@@ -152,7 +152,7 @@ node -e 'const d=require("./server/dialogues/restaurant-1.json");const n=[d.root
 ### Recipe B — live probe against the deployed URL
 
 ```bash
-curl -s -o /dev/null -D - "$BASE/api/speak?text=<sl>&scenarioId=<id>&voice=female-speaker" \
+curl -s -o /dev/null -D - "$BASE/api/speak?text=<sl>&domainId=<id>&voice=female-speaker" \
   | grep -i "x-audio-cache\|^HTTP"
 ```
 
