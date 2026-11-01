@@ -32,6 +32,7 @@ import { buildGalleryHtml } from "./scripts/gallery";
 import { frameFor } from "./scripts/dialogue-lib";
 import { liveRouter, attachLive } from "./live/index";
 import * as events from "./events";
+import { exampleClip } from "./flashcards";
 import { buildIndex, matchSituation, SYNONYMS, STOP, MATCH_THRESHOLD } from "./match";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -655,6 +656,36 @@ app.post("/api/converse", async (req, res) => {
   }
 });
 
+// Serve a stored clip as audio/mpeg with byte ranges: /api/speak cache hits and flashcard clips.
+function sendCachedClip(req: express.Request, res: express.Response, cached: Buffer) {
+  res.setHeader("Content-Type", "audio/mpeg");
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("X-Audio-Cache", "hit");
+  // A cached clip is SEEKABLE. Key Phrases plays a word range of one of the character's lines by
+  // setting `currentTime`, and a media element will only seek a resource whose server advertises byte
+  // ranges — without `Accept-Ranges` the assignment is silently ignored, the clip plays from 0, and the
+  // learner hears the whole sentence instead of their phrase. It fails quietly and looks like nothing
+  // happened, which is why it is handled here rather than left to the renderer to work around.
+  //
+  // Only the cache-hit path can do this: a live synthesis is streamed as it arrives, with no length to
+  // report and nothing to seek within. That is fine — nothing seeks a live clip.
+  res.setHeader("Accept-Ranges", "bytes");
+  const range = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range ?? ""));
+  if (range) {
+    const last = cached.length - 1;
+    const start = range[1] ? Number(range[1]) : 0;
+    const end = range[2] ? Math.min(Number(range[2]), last) : last;
+    if (!Number.isFinite(start) || start > last || end < start) {
+      res.setHeader("Content-Range", `bytes */${cached.length}`);
+      return res.status(416).end();
+    }
+    res.status(206);
+    res.setHeader("Content-Range", `bytes ${start}-${end}/${cached.length}`);
+    return res.end(cached.subarray(start, end + 1));
+  }
+  return res.end(cached);
+}
+
 // Stream the tutor's Slovenian audio progressively (Level 1), with persistent caching for replay.
 // GET so an <audio> element can stream it natively. Text is short so the query param is fine.
 // Lookup: L1 in-memory → L2 disk store. On a miss we stream from the provider AND persist the bytes
@@ -681,32 +712,7 @@ app.get("/api/speak", async (req, res) => {
   const cached = audioCache.get(key) ?? store.read(key, "audio");
   if (cached) {
     cachePut(key, cached); // promote disk hit into L1 for the next replay
-    res.setHeader("Content-Type", "audio/mpeg");
-    res.setHeader("Cache-Control", "no-store");
-    res.setHeader("X-Audio-Cache", "hit");
-    // A cached clip is SEEKABLE. Key Phrases plays a word range of one of the character's lines by
-    // setting `currentTime`, and a media element will only seek a resource whose server advertises byte
-    // ranges — without `Accept-Ranges` the assignment is silently ignored, the clip plays from 0, and the
-    // learner hears the whole sentence instead of their phrase. It fails quietly and looks like nothing
-    // happened, which is why it is handled here rather than left to the renderer to work around.
-    //
-    // Only the cache-hit path can do this: a live synthesis is streamed as it arrives, with no length to
-    // report and nothing to seek within. That is fine — nothing seeks a live clip.
-    res.setHeader("Accept-Ranges", "bytes");
-    const range = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range ?? ""));
-    if (range) {
-      const last = cached.length - 1;
-      const start = range[1] ? Number(range[1]) : 0;
-      const end = range[2] ? Math.min(Number(range[2]), last) : last;
-      if (!Number.isFinite(start) || start > last || end < start) {
-        res.setHeader("Content-Range", `bytes */${cached.length}`);
-        return res.status(416).end();
-      }
-      res.status(206);
-      res.setHeader("Content-Range", `bytes ${start}-${end}/${cached.length}`);
-      return res.end(cached.subarray(start, end + 1));
-    }
-    return res.end(cached);
+    return sendCachedClip(req, res, cached);
   }
 
   // Domain tags (optional) so live clips are queryable by domain/objective in the manifest.
@@ -753,6 +759,13 @@ app.get("/api/speak", async (req, res) => {
     if (!res.headersSent) res.status(502).json({ error: err?.message || "speak failed" });
     else res.end();
   }
+});
+
+// Flashcard example clip (docs/features/flashcards/spec.md §6.4): disk store only, no synthesis path.
+app.get("/api/flashcards/audio", (req, res) => {
+  const clip = exampleClip(String(req.query.domainId ?? ""), String(req.query.id ?? ""));
+  if (!clip) return res.status(404).json({ error: "no clip" });
+  return sendCachedClip(req, res, clip);
 });
 
 // M4 — serve a domain's story-frame / scene image from the store (read-only: playback never
