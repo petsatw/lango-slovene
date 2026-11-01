@@ -72,17 +72,3 @@ The word "scenario" appears in these places only:
 - Readers take the domain id from `domainId`, or from `scenarioId` where a stored line has only that key.
   A session record's reader takes `lessonId`, or `scenarioId` where the record has only that key. Stored
   lines stay as written.
-
-## 5. Term check
-
-- `npm run lint:terms` lists every "scenario", in any case, in the repo's tracked files that
-  `.term-allowlist.json` does not cover, with `file:line`, and exits 1 when it lists any.
-- An allowlist entry is `{ "path", "text", "why" }`: `text` is an exact substring of a line in `path`,
-  and `why` says in a few words why the line keeps the word. `path` is a file path, or `docs/research/**`.
-- An entry that matches no line is listed as stale and fails.
-- An identifier form (`scenario` followed by a capital, a digit or `_`, or `Scenario` after a lowercase
-  letter or before a capital) fails unless an entry covers that exact line.
-- `npm run lint:terms -- --scope <path>...` checks only files under those paths, and only their entries for
-  staleness.
-- Checks: `npx tsx server/probes/terms-test.ts` (the tool) and `npx tsx server/probes/terms-repo-test.ts`
-  (the whole repo, where every entry is a §2 case).
