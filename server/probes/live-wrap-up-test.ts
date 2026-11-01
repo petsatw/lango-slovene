@@ -228,8 +228,8 @@ async function main() {
 
   // Give feedback, then What next.
   await page.click("#live-feedback");
-  check("Give feedback opens the rating sheet", await page.isVisible("#feedback"));
-  await page.click("#feedback-up");
+  check("Give feedback opens the feedback sheet", await page.isVisible("#feedback"));
+  await page.fill("#feedback-text", "live note");
   await page.click("#feedback-send");
   await page.evaluate(() => {
     Object.defineProperty(document, "visibilityState", { value: "hidden", configurable: true });
