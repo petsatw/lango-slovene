@@ -411,15 +411,9 @@ main {
 .history-head, .history-progress { display: block; }
 .history-progress { color: var(--muted); font-size: 13px; }
 .history-entry-body { display: block; margin: 8px 4px; color: var(--muted); font-size: 14px; }
-.feedback-overlay { z-index: 30; }
+.story-overlay.feedback-overlay { z-index: 50; } /* above the spoken scene (40), whose close screen opens it */
 .access-code { width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 12px; font-size: 16px; border-radius: 10px; border: 1px solid #3a4452; background: #11151b; color: #fff; }
 .story-card.feedback-card { text-align: left; max-width: 420px; }
-.feedback-rating { display: flex; justify-content: center; gap: 16px; margin: 0 0 14px; }
-.feedback-thumb {
-  font-size: 28px; padding: 8px 20px; cursor: pointer;
-  background: transparent; border: 2px solid #2b2f38; border-radius: 14px;
-}
-.feedback-thumb[aria-pressed="true"] { border-color: var(--green); background: rgba(11, 110, 79, 0.25); }
 .feedback-text {
   width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 10px;
   background: var(--panel); color: inherit; font: inherit;
