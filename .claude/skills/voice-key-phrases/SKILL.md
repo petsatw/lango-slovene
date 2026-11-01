@@ -1,6 +1,6 @@
 ---
 name: voice-key-phrases
-description: Give a spoken scenario's Key Phrases their play buttons by pointing each phrase at the portion of an existing NPC clip where the character says that shape — judged per phrase, critiqued independently, written by a deterministic reconcile, and gated. Use when a spoken (`advance: "audio"`) lesson's close screen has silent phrases, or the user says "voice the key phrases", "add play buttons to the close screen", "wire up the key phrase audio". Never synthesizes anything. See docs/keyphrase-span-playback.md.
+description: Give a spoken domain's Key Phrases their play buttons by pointing each phrase at the portion of an existing NPC clip where the character says that shape — judged per phrase, critiqued independently, written by a deterministic reconcile, and gated. Use when a spoken (`advance: "audio"`) lesson's close screen has silent phrases, or the user says "voice the key phrases", "add play buttons to the close screen", "wire up the key phrase audio". Never synthesizes anything. See docs/keyphrase-span-playback.md.
 ---
 
 # voice-key-phrases — the Key Phrases voicing orchestrator
@@ -19,14 +19,14 @@ In a spoken scene the learner's lines are **never synthesized** — we own no re
 putting the character's voice on their line and calling it theirs would be a lie. So the close screen's
 Key Phrases list, which is exactly those lines, has nothing to play.
 
-But the phrase was **taught**, and the character models it himself somewhere in the scenario. The button
+But the phrase was **taught**, and the character models it himself somewhere in the domain. The button
 replays *that*. Nothing new is ever generated: this pass can only ever aim at clips that already exist.
 
 ## The three lanes (never blur them)
 
 - **L — measurement**: word-level timings for clips already on disk. `npm run build:alignments`. It makes
   no choices; it reports where each word falls. Operator-run, effectively free (Speech-to-Text rates —
-  $0.22 per *hour* of audio; a scenario is a fraction of a cent, cached thereafter).
+  $0.22 per *hour* of audio; a domain is a fraction of a cent, cached thereafter).
 - **J — judgment**: which of the character's deliveries models each phrase, and which words of it. **You**,
   then an independent critic. This is a teaching judgment and it is the whole reason this is a skill.
 - **L — write + gate**: `reconcile:keyphrase-audio` writes the pointers and **derives every millisecond**;
@@ -66,7 +66,7 @@ until the operator approves** (PR semantics).
 - **The key phrases**, per level: distinct `client` node `sl` in met order — the same list the close screen
   shows, computed by the same rule. A line with no letters (`"___"`, the learner saying their own name) is
   not a phrase. Never re-judge this set.
-- **Every npc utterance in the scenario**, across *all* levels: node id, level, `sl`, and its `learnables`.
+- **Every npc utterance in the domain**, across *all* levels: node id, level, `sl`, and its `learnables`.
 - **The alignments.** `npm run build:alignments -- <domainId>` (add `--dry-run` first to see the scope).
   Then read each clip's `words[]` — index, text, start/end. Indices are real words; the provider's
   whitespace tokens are already stripped, so index *n* is word *n*.

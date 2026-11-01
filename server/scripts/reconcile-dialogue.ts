@@ -1,8 +1,8 @@
 // reconcile-dialogue — the DETERMINISTIC L-lane writer of the rehearsal-dialogue pipeline (handoff B1).
 //
 // It takes ONE orchestrator-assembled draft bundle (authored by the create-dialogue skill: the tree the
-// orchestrator specced + the language slovenian-author wrote + the fixes scenario-critic returned) and
-// turns it into committed files: the per-level dialogue JSONs, the scenario MANIFEST (D2), and the merged
+// orchestrator specced + the language slovenian-author wrote + the fixes domain-critic returned) and
+// turns it into committed files: the per-level dialogue JSONs, the domain MANIFEST (D2), and the merged
 // learnable catalog — then emits candidate A1 mappings for operator review (D5i).
 //
 //   npm run reconcile:dialogue -- <path-to-reconcile-input.json>
@@ -35,7 +35,7 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..", "..");
 const DIALOGUES_DIR = path.join(__dirname, "..", "dialogues");
-const SCENARIOS_DIR = path.join(__dirname, "..", "scenarios");
+const DOMAINS_DIR = path.join(__dirname, "..", "domains");
 const LEARNABLES_FILE = path.join(__dirname, "..", "catalog", "learnables.json");
 const A1_FILE = path.join(__dirname, "..", "catalog", "a1-map.json");
 
@@ -47,7 +47,7 @@ function die(msg: string): never {
 // ---- Input shape (authored by the create-dialogue skill; see docs/authoring-pipeline.md) -----------
 // {
 //   domain: { id, name?, title, status?, character, role?, setup, opening, register?:{form,variety} },
-//   dialogueVoices: { npc, client },                       // shared across the scenario's levels
+//   dialogueVoices: { npc, client },                       // shared across the domain's levels
 //   dialogueAdvance?: "tap" | "audio",                     // default "tap" — how the learner advances
 //   dialoguePacing?: string,                               // spoken scenes: pacing profile id (catalog/pacing.json);
 //                                                          // absent → whatever is already on the file is preserved
@@ -102,8 +102,8 @@ const voices = input.dialogueVoices;
 if (!voices || typeof voices.npc !== "string" || typeof voices.client !== "string")
   die(`"dialogueVoices" must be { npc, client }`);
 
-// How the learner advances this scenario's levels — tapped rehearsal choices (the default) or spoken
-// turns. Scenario-wide: a package is a rehearsal tree or a spoken scene, not a mix.
+// How the learner advances this domain's levels — tapped rehearsal choices (the default) or spoken
+// turns. Domain-wide: a package is a rehearsal tree or a spoken scene, not a mix.
 const advance: "tap" | "audio" = input.dialogueAdvance ?? "tap";
 if (advance !== "tap" && advance !== "audio") die(`"dialogueAdvance" must be "tap" | "audio"`);
 
@@ -392,8 +392,8 @@ if (mintedIds.size) {
   writeFileSync(LEARNABLES_FILE, JSON.stringify(merged, null, 2) + "\n");
 }
 
-// ---- Step 7: write/update the scenario MANIFEST (D2) — preserve any legacy scene/objectives ---------
-const manifestFile = path.join(SCENARIOS_DIR, `${domainId}.json`);
+// ---- Step 7: write/update the domain MANIFEST (D2) — preserve any legacy scene/objectives ---------
+const manifestFile = path.join(DOMAINS_DIR, `${domainId}.json`);
 const prevManifest = existsSync(manifestFile) ? JSON.parse(readFileSync(manifestFile, "utf8")) : {};
 const manifest: any = {
   ...prevManifest,
@@ -406,7 +406,7 @@ const manifest: any = {
   setup: S.setup,
   opening: S.opening,
   ...(S.register ? { register: S.register } : prevManifest.register ? { register: prevManifest.register } : {}),
-  // The app's front door, declared. One scenario carries it; the server prefers the flagged package
+  // The app's front door, declared. One domain carries it; the server prefers the flagged package
   // over whichever spoken one happens to sort first.
   ...(S.onboarding ? { onboarding: true } : prevManifest.onboarding ? { onboarding: true } : {}),
 };
@@ -421,7 +421,7 @@ manifest.surfaces = {
   },
   a1: (input.a1Candidates?.length ?? 0) > 0 ? true : (prevManifest.surfaces?.a1 ?? false),
 };
-manifest.objectives = prevManifest.objectives ?? []; // dialogue scenarios own no turn-loop objectives
+manifest.objectives = prevManifest.objectives ?? []; // dialogue domains own no turn-loop objectives
 writeFileSync(manifestFile, JSON.stringify(manifest, null, 2) + "\n");
 
 // ---- Step 8: emit A1 candidate mappings for OPERATOR review (never auto-merged into a1-map.json) ----

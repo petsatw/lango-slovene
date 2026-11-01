@@ -3,7 +3,7 @@
 //   - text-to-image:  POST https://api.x.ai/v1/images/generations  { model, prompt, aspect_ratio, resolution }
 //   - with reference: POST https://api.x.ai/v1/images/edits        { ..., image: {url, type:"image_url"} }
 // The edits endpoint anchors output to ≤3 source images (URL / base64 data URI / file_id) — that's
-// how we pin character/setting consistency to the scenario's reference sheet.
+// how we pin character/setting consistency to the domain's reference sheet.
 
 import type { ImageAdapter, ImageResult } from "../types";
 

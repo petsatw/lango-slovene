@@ -139,7 +139,7 @@ export class ElevenLabsE3 implements E3Adapter {
 //
 // POST /v1/forced-alignment, multipart `file` + `text`. It reports where each word falls in an mp3 that
 // already exists; it synthesizes nothing, re-rolls nothing, and costs nothing in TTS credits (it bills at
-// Speech-to-Text rates — $0.22 per HOUR of audio, so a scenario's worth of clips is a fraction of a cent).
+// Speech-to-Text rates — $0.22 per HOUR of audio, so a domain's worth of clips is a fraction of a cent).
 //
 // It is deliberately NOT part of the E3Adapter interface. E3 is "turn text into speech", provider-agnostic;
 // this is an ElevenLabs-specific instrument that the alignment build reaches for directly, after asserting

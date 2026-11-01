@@ -70,11 +70,11 @@ try {
     els.filter((e) => (e as HTMLElement).offsetParent && e.id !== "feedback-chip").map((e) => ({ id: e.id || e.className, ...e.getBoundingClientRect().toJSON() })));
   const topAtCentre = async () => {
     const b = await box("#feedback-chip");
-    return !!b && (await page.evaluate(([x, y]) => !!document.elementFromPoint(x, y)?.closest("#feedback-chip"), [b.x + b.width / 2, b.y + b.height / 2]));
+    return !!b && (await page.evaluate(([x, y]) => !!document.elementFromPoint(x, y)?.closest("#feedback-chip"), [b.x + b.width / 2, b.y + b.height / 2] as const));
   };
   // The chip's place checked on this phone and on a small one (320×568).
   const clearOf = async (when: string, sels: string) => {
-    for (const [w, h] of [[390, 844], [320, 568]]) {
+    for (const [w, h] of [[390, 844], [320, 568]] as const) {
       await page.setViewportSize({ width: w, height: h });
       await page.waitForTimeout(150);
       const b = await box("#feedback-chip");
@@ -146,7 +146,7 @@ try {
     .find((x: any) => (x.d.advance ?? "tap") === "tap");
   if (!lv) throw new Error("no tap level to play");
   await page.locator('.tile[data-go="practice"]').click();
-  await page.locator(".scenario-card").filter({ hasText: lv.sc.name }).first().click();
+  await page.locator(".domain-card").filter({ hasText: lv.sc.name }).first().click();
   await page.locator("#level-list .level-card").nth(lv.sc.dialogues.indexOf(lv.d)).click();
   await page.waitForSelector("#dialogue:not([hidden])");
   const clear = async (when: string) => {

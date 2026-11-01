@@ -33,7 +33,7 @@
     "prompt:live": "tsx server/scripts/live-prompt.ts",
     "script:lesson": "tsx server/scripts/lesson-script.ts",
     "playthrough:lesson": "tsx server/scripts/lesson-playthrough.ts",
-    "lint:scenario": "tsx server/scripts/lint-scenario.ts",
+    "lint:domain": "tsx server/scripts/lint-domain.ts",
     "lint:dialogue": "tsx server/scripts/lint-dialogue.ts",
     "lint:tree": "tsx server/scripts/lint-tree.ts",
     "lint:a1": "tsx server/scripts/lint-a1.ts",

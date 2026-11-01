@@ -22,7 +22,7 @@ import type { LiveSessionLog } from "../live/log";
 interface Run {
   runId: string | null;
   mode: "live" | "tap";
-  /** The lesson the live session was working, or the scenario the turns were recorded under. */
+  /** The lesson the live session was working, or the domain the turns were recorded under. */
   subject: string;
   provider: string | null;
   startedAt: string;

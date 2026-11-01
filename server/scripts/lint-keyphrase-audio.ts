@@ -5,7 +5,7 @@
 // reading the JSON is exactly the part that fails silently. A span whose milliseconds drifted from its
 // audio still plays; it just plays the wrong words, and nothing errors.
 //
-//   npm run lint:keyphrase-audio -- [domainId]     # all scenarios if omitted
+//   npm run lint:keyphrase-audio -- [domainId]     # all domains if omitted
 //
 // What it enforces, in the order a pointer can go wrong:
 //   1. the referenced node exists, in the level named, and is an NPC node;
@@ -32,20 +32,20 @@ import { validateDialogue, type Dialogue } from "../dialogues";
 import { LEARNABLES } from "../learnables";
 import { words as tokenize, frameFor, normSurface } from "./dialogue-lib";
 
-const onlyScenario = process.argv.slice(2).find((a) => !a.startsWith("--"));
+const onlyDomain = process.argv.slice(2).find((a) => !a.startsWith("--"));
 const DIALOGUES_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "dialogues");
 
 const all = readdirSync(DIALOGUES_DIR)
   .filter((f) => f.endsWith(".json"))
   .map((f) => validateDialogue(f, JSON.parse(readFileSync(path.join(DIALOGUES_DIR, f), "utf8"))));
 
-const byScenario = new Map<string, Dialogue[]>();
+const byDomain = new Map<string, Dialogue[]>();
 for (const d of all) {
-  if (onlyScenario && d.domainId !== onlyScenario) continue;
-  (byScenario.get(d.domainId) ?? byScenario.set(d.domainId, []).get(d.domainId)!).push(d);
+  if (onlyDomain && d.domainId !== onlyDomain) continue;
+  (byDomain.get(d.domainId) ?? byDomain.set(d.domainId, []).get(d.domainId)!).push(d);
 }
-if (!byScenario.size) {
-  console.error(`\n❌ lint:keyphrase-audio: no dialogues${onlyScenario ? ` for scenario "${onlyScenario}"` : ""}.\n`);
+if (!byDomain.size) {
+  console.error(`\n❌ lint:keyphrase-audio: no dialogues${onlyDomain ? ` for domain "${onlyDomain}"` : ""}.\n`);
   process.exit(1);
 }
 
@@ -66,7 +66,7 @@ function frameParts(sl: string): { fixed: Set<string>; optional: Set<string>; ha
   return { fixed, optional, hasSlot: sl.includes("___") };
 }
 
-for (const [domainId, levels] of byScenario) {
+for (const [domainId, levels] of byDomain) {
   const byLevel = new Map(levels.map((d) => [d.level, d]));
 
   for (const d of levels) {
@@ -78,7 +78,7 @@ for (const [domainId, levels] of byScenario) {
 
       // 1 — the target exists, in the level named, and is the character's.
       const src = byLevel.get(v.level);
-      if (!src) { problems.push(`${at}: points at level ${v.level}, which this scenario does not have`); continue; }
+      if (!src) { problems.push(`${at}: points at level ${v.level}, which this domain does not have`); continue; }
       const srcNode = src.nodes[v.from];
       if (!srcNode) { problems.push(`${at}: points at node "${v.from}" in L${v.level}, which does not exist`); continue; }
       if (srcNode.speaker !== "npc") { problems.push(`${at}: points at L${v.level}/${v.from}, a ${srcNode.speaker} node — only the character owns clips`); continue; }
@@ -216,7 +216,7 @@ for (const [domainId, levels] of byScenario) {
   }
 }
 
-console.log(`\n▶ lint:keyphrase-audio${onlyScenario ? ` — ${onlyScenario}` : ""}`);
+console.log(`\n▶ lint:keyphrase-audio${onlyDomain ? ` — ${onlyDomain}` : ""}`);
 console.log(`   ${pointers} voicing pointer(s): ${wholes} whole-clip, ${spans} span`);
 for (const n of notes) console.log(`   ⚠️  ${n}`);
 if (problems.length) {

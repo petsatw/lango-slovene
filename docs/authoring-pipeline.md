@@ -5,28 +5,28 @@ delta) → critic → deterministic reconcile + lint → operator-gated generati
 as the shared spine**. It supersedes the ad-hoc, hand-run dialogue process. Where it diverges from the older
 per-surface tooling, the divergence was a decision — recorded inline below.
 
-## The model — a scenario is a spine rendered onto surfaces
+## The model — a domain is a spine rendered onto surfaces
 
-A **scenario** is not one artifact. It is **one canonical language spine rendered onto several surfaces**:
+A **domain** is not one artifact. It is **one canonical language spine rendered onto several surfaces**:
 
 - **Spine (the invariant):** the situation + register + role + voices, and its **learnables in the catalog**
   (`server/catalog/learnables.json`) — minted once by id, referenced everywhere. The catalog is the
-  cross-surface, cross-scenario review spine.
+  cross-surface, cross-domain review spine.
 - **Surfaces (rendered from the spine):**
   1. **Rehearsal dialogue tree** — the Practice surface (npc/client branching, N levels). *Built.*
   2. **Live-chat handoff** — scene context: role + introduced learnables + focus set. *Built.*
   3. **Guided live dialogue** — a future live mode that follows the tree's shape dynamically (ROADMAP 5). *Not built.*
-  4. **Visual / objective turn-loop** — create-scenario's original target; **retired** in the MVP, kept dormant.
+  4. **Visual / objective turn-loop** — create-domain's original target; **retired** in the MVP, kept dormant.
   5. **A1 competency mapping** — the learnables' place in the readiness map (`server/catalog/a1-map.json`).
 
 Every surface is a **parameterized output of the same engine**. Today two surfaces are authored through it:
-the **visual** surface via the `create-scenario` skill, and the **dialogue** surface via the `create-dialogue`
+the **visual** surface via the `create-domain` skill, and the **dialogue** surface via the `create-dialogue`
 skill. Both run the same shape; they differ only in what they render.
 
 ## The J / L / G lanes (never blur them)
 
 - **J — Judgment:** authoring + structural decisions. The orchestrator (the skill) + the `lesson-designer`,
-  `learning-designer`, `slovenian-author` and `scenario-critic` subagents. Fuzzy, in-language, LLM-native.
+  `learning-designer`, `slovenian-author` and `domain-critic` subagents. Fuzzy, in-language, LLM-native.
 - **L — Logic:** id assignment, catalog merge, key computation, file writes, deterministic lints. **Scripts**
   (`reconcile-dialogue`, `lint:dialogue`, `lint:tree`, `lint:a1`), never by hand.
 - **G — Generation:** TTS/image bytes from finished content. `build:dialogue-assets` / `build:assets` —
@@ -72,14 +72,14 @@ outcomes and the banded dialogue plan, then the card and the live scene register
 tap-tree session.
 
 Tap trees: **`.claude/skills/create-tap-tree/SKILL.md`** — the operator's situation map, transcribed into
-trees; `slovenian-author` (tap-tree mode) finishes the Slovene and the delivery, `scenario-critic` (tap-tree
+trees; `slovenian-author` (tap-tree mode) finishes the Slovene and the delivery, `domain-critic` (tap-tree
 mode) checks it, then the same reconcile and gates as below.
 
 Spoken lessons: **`.claude/skills/create-dialogue/SKILL.md`** (the J-lane orchestrator). Agents:
 **`lesson-designer`** (×3, blind to each other — each proposes a different way to teach the given
 objective), **`learning-designer`** (picks which of the three gets built, and what to take from the
 others), **`slovenian-author`** (dialogue mode — writes the Slovene per node + the catalog delta) and
-**`scenario-critic`** (dialogue mode — judges naturalness/register/branch coherence, emits structured fixes).
+**`domain-critic`** (dialogue mode — judges naturalness/register/branch coherence, emits structured fixes).
 Between those last two, a spoken lesson is read as a conversation by
 **`.claude/skills/review-lesson-script/SKILL.md`** — `npm run script:lesson` prints the draft as talk in a
 room, and a reader given only that page returns per-beat findings the critic then rules on.
@@ -135,7 +135,7 @@ sidecar: either would make the artifact half-authored, which is the ambiguity th
 
 **A learnable is `new` in exactly one level — the first that introduces it — and `reuse` everywhere after.**
 Listing the same id under `new` on two levels is a duplicate-surface error the reconcile refuses (the second
-mint collides with the now-existing catalog entry). Across a scenario's levels the author/critic split shared
+mint collides with the now-existing catalog entry). Across a domain's levels the author/critic split shared
 items accordingly: mint at first use, reuse thereafter.
 
 ### The tree is the canonical scene-script (D3)
@@ -146,24 +146,24 @@ productions, `introduces` = focus). Keep the nodes clean to that dual role. No g
 
 ## The manifest is the source of truth (D2)
 
-`server/scenarios/<id>.json` is the **package manifest**: situation/register/role/voices + a `surfaces` block
+`server/domains/<id>.json` is the **package manifest**: situation/register/role/voices + a `surfaces` block
 declaring what exists. The `dialogue` surface declares its shared voices + the levels; the per-level
 `server/dialogues/<id>-<n>.json` files are the rendered surface, **keyed to the manifest**. `lint:tree` checks
 the two agree (declared level ↔ file, matching label + voices). `surfaces.a1: true` marks a package whose
-levels the A1 map references. The manifest is additive — legacy scenarios omit `surfaces` and still load.
+levels the A1 map references. The manifest is additive — legacy domains omit `surfaces` and still load.
 
 ## A1 mapping is folded into authoring (D5)
 
 `server/catalog/a1-map.json` is grounded in the official Slovene A1 taxonomy (**docs/a1-taxonomy.md**): 3
-foundational layers + 10 thematic domains; learnable→competency is many-to-many; a bucket may be an empty
-**frontier** domain. It is a **coverage** map — which life domain an item serves and how far the learner is
+foundational layers + 10 A1 themes; learnable→competency is many-to-many; a bucket may be an empty
+**frontier** A1 theme. It is a **coverage** map — which A1 theme an item serves and how far the learner is
 in it — and the readiness screen (`GET /api/a1`) is the learner's only progress surface. It does not decide
 what is core; the learnable's `core: true` flag does.
 
 The reconcile **emits candidate mappings** for each newly-minted learnable (`a1-candidates.json`); the
 operator confirms them and folds them into the map (never auto-mapped — no auto-competency assignment).
 `lint:a1` gates the fold: every **core and/or A1-tagged** learnable is mapped to ≥1 competency **or** on the
-explicit `excluded` list, and every scenario ref resolves. An unmapped one is invisible on the readiness
+explicit `excluded` list, and every domain ref resolves. An unmapped one is invisible on the readiness
 screen — the learner masters it and nothing moves. Above-A1 items are not tracked there. Scope: the catalog is the
 **production** inventory, so coverage is over produced learnables; the wider recognition set and the weighted
 4-mode readiness scoring are out of scope (the MVP exercises Speaking/Listening/Reading; Writing is out by
@@ -172,15 +172,15 @@ design — see docs/a1-taxonomy.md).
 ## The umbrella end-state (D1) — staged, not big-bang
 
 The engine's end-state is one umbrella —
-`author-scenario --surface dialogue|handoff|guided-live|visual|a1` — sharing the J/L/G core + the
+`author-domain --surface dialogue|handoff|guided-live|visual|a1` — sharing the J/L/G core + the
 author/critic agents, with surface-specific generators + lints. We got there **staged**: `create-dialogue` is
 built now **as** the `dialogue` surface generator (its input is the manifest; its stages are the shared core),
-and `create-scenario` folds in later as `--surface visual` **only if that retired surface is revived** (D6 —
+and `create-domain` folds in later as `--surface visual` **only if that retired surface is revived** (D6 —
 kept dormant, not deleted; not invested in for the MVP). No big-bang refactor of dormant visual code.
 
 ## Operational notes (D7)
 
-- **Data reload:** scenarios/dialogues/learnables load only at **server startup** (`readdirSync`); tsx-watch
+- **Data reload:** domains/dialogues/learnables load only at **server startup** (`readdirSync`); tsx-watch
   reloads `.ts` only. After adding or editing JSON, **restart the server**. (Accepted — authoring is offline.)
 - **Voice/env preflight:** `build:dialogue-assets` verifies every voice profile the target references resolves
   to a configured voice id (and the API key is set) **before** synthesizing — a run that would half-complete

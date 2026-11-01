@@ -1,4 +1,4 @@
-// Pre-build the SEED conversation's audio so it ships in the starter pack like the scenarios' audio.
+// Pre-build the SEED conversation's audio so it ships in the starter pack like the domains' audio.
 // Each seed step plays BILINGUALLY by ear: the TUTOR's Slovene line (tutorSL) then its English
 // translation (tutorEN), both spoken in the TEACHER voice (eleven_v3 renders English natively). Keys are
 // identical to what /api/speak computes, so a prebuilt clip is served free + offline at runtime (no

@@ -23,7 +23,7 @@
 import { readFileSync } from "node:fs";
 import { DIALOGUES, resolveNode, type Dialogue, type DialogueNode, type DialogueObjective,
          type TutorialStep } from "../dialogues";
-import { SCENARIOS } from "../scenarios";
+import { DOMAINS } from "../domains";
 import { getFact } from "../facts";
 import { pacingFor, type PacingProfile } from "../pacing";
 import { sceneShape, type BeatSurface } from "../scene-shape";
@@ -71,12 +71,12 @@ interface Lesson {
 function fromCatalog(id: string): Lesson {
   const levels = DIALOGUES[id] ?? [];
   if (!levels.length) {
-    console.error(`no dialogue found for scenario "${id}" (have: ${Object.keys(DIALOGUES).join(", ")})`);
+    console.error(`no dialogue found for domain "${id}" (have: ${Object.keys(DIALOGUES).join(", ")})`);
     process.exit(2);
   }
   const d: Dialogue | undefined = levelArg ? levels.find((x) => x.level === Number(levelArg)) : levels[0];
   if (!d) {
-    console.error(`scenario "${id}" has no level ${levelArg} (have: ${levels.map((x) => x.level).join(", ")})`);
+    console.error(`domain "${id}" has no level ${levelArg} (have: ${levels.map((x) => x.level).join(", ")})`);
     process.exit(2);
   }
   return {
@@ -84,7 +84,7 @@ function fromCatalog(id: string): Lesson {
     nodes: d.nodes as Record<string, DialogueNode>,
     npcVoice: d.voices.npc ?? "npc",
     spoken: d.advance === "audio",
-    onboarding: !!SCENARIOS.find((s) => s.id === id)?.onboarding,
+    onboarding: !!DOMAINS.find((s) => s.id === id)?.onboarding,
     pacing: pacingFor(d.pacing), pacingId: d.pacing ?? "onboarding",
     objectives: d.objectives ?? [], introduces: d.introduces ?? [],
     audioState: String(d.audio), frameEN: d.frameEN ?? [], tutorial: d.tutorial ?? [],

@@ -20,9 +20,9 @@ import * as deletion from "./assets/deletion";
 import { inspect, statusOf, applyCredit } from "./mastery";
 import { A1_MAP } from "./a1";
 import { IMAGE_STYLE, IMAGE_FORMAT } from "./adapters/image-style";
-import { SCENARIOS, freshSession, getScenario, characterVoiceProfile } from "./scenarios";
+import { DOMAINS, freshSession, getDomain, characterVoiceProfile } from "./domains";
 import { CATALOG } from "./catalog";
-import { getDialoguesForScenario, getPublishedDialogues, resolveNode, nodeForms, type Dialogue, type DialogueNode } from "./dialogues";
+import { getDialoguesForDomain, getPublishedDialogues, resolveNode, nodeForms, type Dialogue, type DialogueNode } from "./dialogues";
 import { getFact, factValues } from "./facts";
 import { pacingFor } from "./pacing";
 import { sceneShape } from "./scene-shape";
@@ -96,88 +96,88 @@ app.get("/gallery", (_req, res) => {
   try {
     res.end(buildGalleryHtml({ imgBase: "/gallery/image" }));
   } catch (err: any) {
-    // A catalog/scenario JSON mid-edit throws on reload — show why instead of a blank 500, and recover
+    // A catalog/domain JSON mid-edit throws on reload — show why instead of a blank 500, and recover
     // on the next refresh once the file is valid again.
     const msg = String(err?.message ?? err).replace(/[<&]/g, (c) => (c === "<" ? "&lt;" : "&amp;"));
-    res.end(`<pre style="color:#e66;background:#111;padding:24px;font:13px ui-monospace;white-space:pre-wrap">gallery build failed — likely a catalog or scenario file mid-edit:\n\n${msg}</pre>`);
+    res.end(`<pre style="color:#e66;background:#111;padding:24px;font:13px ui-monospace;white-space:pre-wrap">gallery build failed — likely a catalog or domain file mid-edit:\n\n${msg}</pre>`);
   }
 });
 
-// Active providers, the chosen scenario (with objectives for the dots + a fresh session), and the
-// scenario list (active + PLANNED) for the picker. NO keys — safe for the client.
-// ?domainId= selects which scenario to boot; getScenario falls back to CAFE for unknown/planned ids.
+// Active providers, the chosen domain (with objectives for the dots + a fresh session), and the
+// domain list (active + PLANNED) for the picker. NO keys — safe for the client.
+// ?domainId= selects which domain to boot; getDomain falls back to CAFE for unknown/planned ids.
 app.get("/api/config", (req, res) => {
-  const scenario = getScenario(req.query.domainId ? String(req.query.domainId) : undefined);
+  const domain = getDomain(req.query.domainId ? String(req.query.domainId) : undefined);
   res.json({
     providers: { e2: getE2().name, e3: getE3().name },
     scenario: {
-      id: scenario.id,
-      name: scenario.name ?? scenario.title,
-      title: scenario.title,
-      opening: scenario.opening,
-      objectives: scenario.objectives.map((o) => ({ id: o.id, label: o.label, targetSL: o.targetSL })),
+      id: domain.id,
+      name: domain.name ?? domain.title,
+      title: domain.title,
+      opening: domain.opening,
+      objectives: domain.objectives.map((o) => ({ id: o.id, label: o.label, targetSL: o.targetSL })),
       // Story layer (M4): frame order + SL lines for playback; image bytes come from /api/image.
-      story: scenario.scene?.story
+      story: domain.scene?.story
         ? {
-            sentences: scenario.scene.story.sentences,
-            frames: scenario.scene.story.frames.map((f) => ({ objectiveId: f.objectiveId, lineSL: f.lineSL })),
-            hasScene: !!scenario.scene.story.sceneImagePrompt,
+            sentences: domain.scene.story.sentences,
+            frames: domain.scene.story.frames.map((f) => ({ objectiveId: f.objectiveId, lineSL: f.lineSL })),
+            hasScene: !!domain.scene.story.sceneImagePrompt,
           }
         : null,
     },
-    // Rehearsal layer: the predetermined branching dialogues paired with this scenario, one per
+    // Rehearsal layer: the predetermined branching dialogues paired with this domain, one per
     // competency level (ascending), [] if none. Each whole tree is client-side data — the click-through
     // runs with no server turn.
-    dialogues: getPublishedDialogues(scenario.id),
-    session: freshSession(scenario),
-    scenarios: SCENARIOS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, status: s.status })),
+    dialogues: getPublishedDialogues(domain.id),
+    session: freshSession(domain),
+    scenarios: DOMAINS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, status: s.status })),
     // Has this learner produced anything yet? If not, free conversation routes them into the seed.
     started: learnerStarted(learnerOf(req)),
   });
 });
 
 
-// Practice scenarios (MVP destination ①): every scenario that has authored rehearsal dialogues, with
+// Practice scenarios (MVP destination ①): every domain that has authored rehearsal dialogues, with
 // its full level trees inline (each tree is client-side data — the click-through runs with no server
-// turn). Scenarios without dialogues (café, planned stubs) are omitted — this list IS the picker.
-// Draft and retired levels are not served, so a scenario whose every level is staged or archived drops
+// turn). Domains without dialogues (café, planned stubs) are omitted — this list IS the picker.
+// Draft and retired levels are not served, so a domain whose every level is staged or archived drops
 // out of the picker exactly as an unauthored one does.
 // `started` drives the live-tutor zero-state (empty learner → seed) so the home can route without a
 // second call.
 app.get("/api/practice", (req, res) => {
-  const domains = SCENARIOS.map((s) => ({ s, dialogues: getPublishedDialogues(s.id) }))
+  const domains = DOMAINS.map((s) => ({ s, dialogues: getPublishedDialogues(s.id) }))
     .filter(({ dialogues }) => dialogues.length > 0)
     .map(({ s, dialogues }) => ({
       id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null,
       summaryEN: s.summaryEN ?? null, tags: s.tags ?? [],
       // The spoken lessons are the spine of the course, so they have a durable home in the picker
       // alongside the rehearsal trees. `mode` is what splits the two groups on the screen: a spoken
-      // scenario's levels open the scene surface, a rehearsal scenario's open the click-through tree.
+      // domain's levels open the scene surface, a rehearsal domain's open the click-through tree.
       mode: dialogues.some((d) => (d.advance ?? "tap") === "audio") ? "spoken" : "rehearsal",
       dialogues,
     }));
-  // The scenario that owns the first-run spoken scene, if one is authored — the boot route needs it in
+  // The domain that owns the first-run spoken scene, if one is authored — the boot route needs it in
   // the same call as `started`, so a zero-state learner reaches the scene without a second round trip.
   // The front door is DECLARED, by the `onboarding` flag on exactly one manifest. Falling back to the
   // first spoken package is a courtesy for a repo that has not declared one; it is not the contract,
   // because that would make the app's first screen a function of filename order.
-  const spoken = (s: (typeof SCENARIOS)[number]) =>
+  const spoken = (s: (typeof DOMAINS)[number]) =>
     getPublishedDialogues(s.id).some((d) => (d.advance ?? "tap") === "audio");
-  const sceneScenario = SCENARIOS.find((s) => s.onboarding && spoken(s)) ?? SCENARIOS.find(spoken);
+  const sceneDomain = DOMAINS.find((s) => s.onboarding && spoken(s)) ?? DOMAINS.find(spoken);
   res.json({
     domains,
     providers: { e2: getE2().name, e3: getE3().name },
     started: learnerStarted(learnerOf(req)),
-    scene: sceneScenario?.id ?? null,
+    scene: sceneDomain?.id ?? null,
   });
 });
 
-// SCENARIO FINDER — the learner's free-text situation → up to 3 published levels + a live-chat framing
+// DOMAIN FINDER — the learner's free-text situation → up to 3 published levels + a live-chat framing
 // for when none fits. Keyword ranking always; the E2 re-rank when the adapter has one (text only, cheap).
 // Text only for now — the client can type, or dictate with the OS keyboard.
 function finderIndex() {
   return buildIndex(
-    SCENARIOS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null,
+    DOMAINS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null,
       summaryEN: s.summaryEN, tags: s.tags, dialogues: getPublishedDialogues(s.id) }))
       .filter((s) => s.dialogues.length > 0),
   );
@@ -212,8 +212,8 @@ app.post("/api/match", async (req, res) => {
 //   POST /api/scene { domainId, level? }        → the opening line (credits nothing)
 //   POST /api/scene { domainId, level?, from }  → the learner spoke at `from`; advance
 //
-// `level` picks which spoken level of the scenario to play; absent → the lowest. Without it only the
-// first spoken level of a scenario is reachable, and every level after it ships unplayable.
+// `level` picks which spoken level of the domain to play; absent → the lowest. Without it only the
+// first spoken level of a domain is reachable, and every level after it ships unplayable.
 // What the live tutor needs to carry this lesson into free chat: the learnables the learner actually
 // PRODUCED here (client nodes — the same rule the runtime credits by, and a superset of `introduces`,
 // which is empty on a level that mostly re-works earlier phrases), plus the scene and the objectives so
@@ -221,7 +221,7 @@ app.post("/api/match", async (req, res) => {
 // LIVE tutor works from — a live session is opened against a lesson, so a handoff that names none lands
 // the learner on a surface that cannot start.
 function sceneHandoff(scene: Dialogue) {
-  const s = SCENARIOS.find((x) => x.id === scene.domainId);
+  const s = DOMAINS.find((x) => x.id === scene.domainId);
   const focus = [...new Set(Object.values(scene.nodes)
     .filter((n) => n.speaker === "client")
     .flatMap((n) => n.learnables ?? []))];
@@ -240,7 +240,7 @@ app.post("/api/scene", (req, res) => {
 
   const spoken = getPublishedDialogues(domainId).filter((d) => (d.advance ?? "tap") === "audio");
   const scene = typeof level === "number" ? spoken.find((d) => d.level === level) : spoken[0];
-  if (!scene) return res.status(404).json({ error: `No spoken scene for scenario "${domainId}"${typeof level === "number" ? ` level ${level}` : ""}` });
+  if (!scene) return res.status(404).json({ error: `No spoken scene for domain "${domainId}"${typeof level === "number" ? ` level ${level}` : ""}` });
 
   const pacing = pacingFor(scene.pacing);
 
@@ -275,7 +275,7 @@ app.post("/api/scene", (req, res) => {
     // clip's text (what /api/speak keys on), the voice it was built in, and the window to play.
     //
     // The learner's own lines are never synthesized, so the button can only ever replay a clip of the
-    // CHARACTER saying the phrase — here or in another level of the same scenario. Which delivery, and
+    // CHARACTER saying the phrase — here or in another level of the same domain. Which delivery, and
     // which words of it, was judged upstream by `voice-key-phrases` and checked by `lint:keyphrase-audio`;
     // nothing is decided here. This resolves and, crucially, VERIFIES: a pointer at a node that no longer
     // exists, is not the character's, or has no clip on disk yields no button rather than a broken one or
@@ -371,7 +371,7 @@ app.post("/api/scene", (req, res) => {
   // played BEFORE they have answered anything, so a panel built there says "Sem študent." back to a woman
   // who spent the lesson saying "Sem študentka." The closing beat is the first moment every answer is in.
   const closeScreen = () => ({
-    // What the close screen offers next — the scenario's next spoken level, if one is authored. Null ends
+    // What the close screen offers next — the domain's next spoken level, if one is authored. Null ends
     // the run at the close screen.
     nextLevel: spoken.find((d) => d.level > scene.level)?.level ?? null,
     keyPhrases: keyPhrases(),
@@ -430,7 +430,7 @@ app.post("/api/scene", (req, res) => {
 });
 
 // A1 Readiness (MVP destination ④) — the coverage map. Each competency carries REAL progress read from
-// the durable learner model (mastered / attempted counts over its learnables) + the scenario levels that
+// the durable learner model (mastered / attempted counts over its learnables) + the domain levels that
 // advance it, resolved to display labels. This is the only place progress is visible to the learner.
 app.get("/api/a1", (req, res) => {
   const model = learner.load(learnerOf(req));
@@ -440,8 +440,8 @@ app.get("/api/a1", (req, res) => {
     const mastered = ids.filter((id) => status(id) === "mastered").length;
     const attempted = ids.filter((id) => status(id) === "attempted").length;
     const domains = c.domains.map((s) => {
-      const scn = SCENARIOS.find((x) => x.id === s.domainId);
-      const dlg = getDialoguesForScenario(s.domainId).find((d) => d.level === s.level);
+      const scn = DOMAINS.find((x) => x.id === s.domainId);
+      const dlg = getDialoguesForDomain(s.domainId).find((d) => d.level === s.level);
       return {
         domainId: s.domainId,
         name: scn?.name ?? scn?.title ?? s.domainId,
@@ -528,14 +528,14 @@ app.post("/api/turn", async (req, res) => {
     if (runId) {
       try {
         const e3 = getE3();
-        const scenario = getScenario(result.session.domainId);
+        const domain = getDomain(result.session.domainId);
         // The opening + every tutor reply are the CHARACTER speaking → key by the character's voice
         // profile, so the captured/replayed clip matches what /api/speak (voice=character) synthesizes.
-        const tutorTag = e3.voiceTagFor(characterVoiceProfile(scenario));
+        const tutorTag = e3.voiceTagFor(characterVoiceProfile(domain));
         const tutorKey = (text: string) => store.audioKey(e3.name, tutorTag, text);
         const seedTurns = sessions.load(runId)
           ? undefined
-          : [{ role: "tutor" as const, text: scenario.opening, audioKey: tutorKey(scenario.opening) }];
+          : [{ role: "tutor" as const, text: domain.opening, audioKey: tutorKey(domain.opening) }];
         sessions.appendTurns({
           id: runId,
           lessonId: result.session.domainId,
@@ -567,7 +567,7 @@ app.post("/api/turn", async (req, res) => {
   }
 });
 
-// One free-conversation turn (E2 only) — scenario-less, bounded by the durable learner model. Audio is
+// One free-conversation turn (E2 only) — domain-less, bounded by the durable learner model. Audio is
 // fetched from /api/speak exactly like /api/turn (voice=character is irrelevant here → teacher voice).
 app.post("/api/converse", async (req, res) => {
   const { audioBase64, mimeType, history, level, seedId, begin, role, focusLearnables, context, runId, e2 } = req.body ?? {};
@@ -664,14 +664,14 @@ app.get("/api/speak", async (req, res) => {
   if (!text.trim()) return res.status(400).json({ error: "text is required" });
 
   const e3 = getE3(req.query.e3);
-  // Voice selection: `voice=character` → the scenario character's profile (in-scene lines: the tutor
+  // Voice selection: `voice=character` → the domain character's profile (in-scene lines: the tutor
   // reply / opening); `voice=<catalog profile id>` (e.g. shop-assistant, male-speaker) → that profile
   // (rehearsal-dialogue speakers); anything else/absent → the teacher voice (targets, narration, practice).
   const domainIdQ = req.query.domainId ? String(req.query.domainId) : undefined;
   const voiceQ = String(req.query.voice || "");
   const voiceProfile =
     voiceQ === "character"
-      ? characterVoiceProfile(getScenario(domainIdQ))
+      ? characterVoiceProfile(getDomain(domainIdQ))
       : voiceQ && CATALOG.voiceProfiles[voiceQ]
         ? voiceQ
         : undefined;
@@ -709,7 +709,7 @@ app.get("/api/speak", async (req, res) => {
     return res.end(cached);
   }
 
-  // Scenario tags (optional) so live clips are queryable by scenario/objective in the manifest.
+  // Domain tags (optional) so live clips are queryable by domain/objective in the manifest.
   const objectiveId = req.query.objectiveId ? String(req.query.objectiveId) : undefined;
   const meta = { provider: e3.name, voiceOrModel: e3.voiceTagFor(voiceProfile), model: e3.model, text, domainId: domainIdQ, objectiveId };
 
@@ -755,12 +755,12 @@ app.get("/api/speak", async (req, res) => {
   }
 });
 
-// M4 — serve a scenario's story-frame / scene image from the store (read-only: playback never
+// M4 — serve a domain's story-frame / scene image from the store (read-only: playback never
 // bills; `npm run build:assets` pre-generates them). objectiveId="scene" => the final all-in image.
 app.get("/api/image", (req, res) => {
-  const scenario = getScenario(String(req.query.domainId || ""));
-  const story = scenario.scene?.story;
-  if (!story) return res.status(404).json({ error: "no story for scenario" });
+  const domain = getDomain(String(req.query.domainId || ""));
+  const story = domain.scene?.story;
+  if (!story) return res.status(404).json({ error: "no story for domain" });
 
   const objectiveId = String(req.query.objectiveId || "");
   const isScene = objectiveId === "scene";
@@ -774,7 +774,7 @@ app.get("/api/image", (req, res) => {
   const e4 = getE4();
   const key = store.imageKey(e4.name, e4.model, IMAGE_STYLE.id, fmt.aspectRatio, fmt.resolution, prompt);
   const buf = store.read(key, "image");
-  if (!buf) return res.status(404).json({ error: "image not built — run: npm run build:assets -- " + scenario.id });
+  if (!buf) return res.status(404).json({ error: "image not built — run: npm run build:assets -- " + domain.id });
 
   res.setHeader("Content-Type", "image/jpeg");
   res.setHeader("Cache-Control", "no-store");

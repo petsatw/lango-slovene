@@ -1,11 +1,11 @@
 // A1 Readiness (MVP Phase 4) — the coverage map: A1 competency → the catalog learnables that evidence
-// it + the scenario levels that advance it. The competency list is GROUNDED in the official Slovene A1
+// it + the domain levels that advance it. The competency list is GROUNDED in the official Slovene A1
 // taxonomy (docs/a1-taxonomy.md): 3 foundational layers (phonology/numbers · morphosyntax · pragmatics)
-// + the 10 thematic domains. Progress is read from the durable learner model, making this the ONLY
-// learner-visible progress surface. A `foundational|thematic` bucket may be EMPTY (a domain the shipped
-// scenarios don't reach yet — the readiness frontier), which is legitimate, not an error.
+// + the 10 A1 themes. Progress is read from the durable learner model, making this the ONLY
+// learner-visible progress surface. A `foundational|thematic` bucket may be EMPTY (an A1 theme the shipped
+// domains don't reach yet — the readiness frontier), which is legitimate, not an error.
 //
-// The map answers WHICH LIFE DOMAIN an item serves and HOW FAR the learner is in that domain. It does not
+// The map answers WHICH A1 THEME an item serves and HOW FAR the learner is in that theme. It does not
 // answer whether an item is core — that is the learnable's own `core: true` flag. Membership is many-to-many
 // by design (`hvala` serves both pragmatics and personal_relations), which is what makes it a coverage map.
 //
@@ -18,7 +18,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { LEARNABLES } from "./learnables";
 
-export interface A1ScenarioRef {
+export interface A1DomainRef {
   domainId: string;
   level: number;
 }
@@ -27,16 +27,16 @@ export type A1CompetencyKind = "foundational" | "thematic";
 
 export interface A1Competency {
   id: string;
-  /** foundational = a cross-modal layer (§1); thematic = one of the 10 domains (§3). */
+  /** foundational = a cross-modal layer (§1); thematic = one of the 10 A1 themes (§3). */
   kind: A1CompetencyKind;
   label: string;
   descriptor: string;
-  /** CAN-DO functions this competency covers (thematic domains; optional). */
+  /** CAN-DO functions this competency covers (A1 themes; optional). */
   functions?: string[];
-  /** Sample formulaic exponents (thematic domains; optional). */
+  /** Sample formulaic exponents (A1 themes; optional). */
   exponents?: string[];
-  learnables: string[]; // catalog learnable ids that evidence this competency (may be [] for a frontier domain)
-  domains: A1ScenarioRef[]; // the scenario levels that advance it (may be [])
+  learnables: string[]; // catalog learnable ids that evidence this competency (may be [] for a frontier A1 theme)
+  domains: A1DomainRef[]; // the domain levels that advance it (may be [])
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -77,7 +77,7 @@ export function loadA1Map(): A1Map {
     if (!Array.isArray(c.domains)) fail(`competency "${c.id}": domains must be an array`);
     for (const s of c.domains) {
       if (typeof s.domainId !== "string" || typeof s.level !== "number")
-        fail(`competency "${c.id}": each scenario needs { domainId, level }`);
+        fail(`competency "${c.id}": each entry needs { domainId, level }`);
     }
   }
   const excluded = raw.excluded !== undefined ? strArray(raw.excluded, `"excluded"`) : [];

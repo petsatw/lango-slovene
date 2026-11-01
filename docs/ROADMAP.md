@@ -32,12 +32,12 @@ run and open enough to spread. Each requirement maps to one piece below.
    in, native Slovene out, corrections by recast. *(the turn loop)*
 2. **The app owns the teaching.** Deterministic mastery rules in the server, prompt rebuilt from
    state each turn. *(single-session)*
-3. **On-demand, quality-gated scenario generation.** Author → deterministic lint → independent
-   critic → ship. A `--self-directed` mode discovers the best *next* scenario itself, from the existing
+3. **On-demand, quality-gated domain generation.** Author → deterministic lint → independent
+   critic → ship. A `--self-directed` mode discovers the best *next* domain itself, from the existing
    repertoire + the research principles. *(runs today as an agent skill)*
 
 Also built — a lighter third conversation surface: **rehearsal decision-tree dialogues.** Pre-authored
-branching exchanges paired with a scenario at ascending competency levels, with pregenerated per-speaker
+branching exchanges paired with a domain at ascending competency levels, with pregenerated per-speaker
 audio and optional delivery-note voice direction. Comprehensible-input *introduction* (no mic, no credit
 from the tree), now tied to catalog learnables and wired to hand the learner into a biased free chat that
 reinforces them — the introduce-then-reinforce loop; [rehearsal-dialogues.md](rehearsal-dialogues.md).
@@ -55,9 +55,9 @@ Item 12 (a+b) is built; what remains is auto-selecting which dialogue comes next
    framing below, retained for context:
    A persistent learner model with an
    `attempted → completed → mastered` lifecycle: an objective reaches *mastered* only on repeated
-   correct production, as the *same* objective recurs in different scenarios over time. Requires a
+   correct production, as the *same* objective recurs in different domains over time. Requires a
    **shared objective catalog** — common objectives (greet, ask-to-repeat, …) defined once and
-   referenced by id across scenarios, so a correct production anywhere counts. Mastery is
+   referenced by id across domains, so a correct production anywhere counts. Mastery is
    **count-based** (interview-settled): a learnable is mastered after a threshold of successful
    productions (currently 5, tunable), credited on any understandable-and-correct production —
    prompted, echoed, or cold — accrued across sittings and contexts, with a flub resetting it. The loop
@@ -74,7 +74,7 @@ Item 12 (a+b) is built; what remains is auto-selecting which dialogue comes next
    patterns/objectives). The core pattern library itself:
    [research/core-pattern-library-2026-06-26/](research/core-pattern-library-2026-06-26/RANKED-PATTERNS.md).
 5. **A tutor that leads, not just reacts.** An orchestration layer over the learner model that chooses
-   what scenario/objective comes next from the learner's goals and history, schedules when things
+   what domain/objective comes next from the learner's goals and history, schedules when things
    resurface, and lets the tutor go deeper or broader. This is the "tutor-as-agent" step — and its
    learner-facing surface: a selector of what to practice next and a "completed" review view, fed by
    the learner model. The **edge-finding** free-conversation level lives here: a learner-pickable mode
@@ -86,7 +86,7 @@ Item 12 (a+b) is built; what remains is auto-selecting which dialogue comes next
    acceptance matches against the set (deterministic; defer semantic/fuzzy match to later). This is the
    research panel's most-cited weak link and a flagged "do-now" item. Scope: a `variants` field on the
    objective schema + the acceptance check, plus a variant-set criterion in the authoring rubric and
-   critic. *(Promoted out of the [scenario-authoring.md](scenario-authoring.md) PLANNED list — it was
+   critic. *(Promoted out of the [domain-authoring.md](domain-authoring.md) PLANNED list — it was
    mis-bundled there with the persistence-gated deferrals.)*
 7. **Consistency at scale — rescoped to an audio + fine-tuning pass** *(foundation shipped).* The
    relational-ontology **foundation is built**: a shared **catalog** referenced by id — objects,

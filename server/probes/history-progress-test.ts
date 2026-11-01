@@ -1,4 +1,4 @@
-// Acceptance check for learning-history rows: scenario and date over the progressed objectives.
+// Acceptance check for learning-history rows: domain and date over the progressed objectives.
 //   npx tsx server/probes/history-progress-test.ts
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -8,7 +8,7 @@ import path from "node:path";
 import { chromium } from "playwright";
 import { progressedIds } from "../live/grader";
 import { LEARNABLES } from "../learnables";
-import { SCENARIOS } from "../scenarios";
+import { DOMAINS } from "../domains";
 
 let failed = false;
 const check = (name: string, ok: boolean, detail = "") => {
@@ -21,8 +21,8 @@ check("1. progressedIds keeps successes among the objectives",
   same(progressedIds(["a", "b", "c"], [{ id: "a", result: "success" }, { id: "b", result: "attempt" }, { id: "z", result: "success" }]), ["a"]));
 check("1. progressedIds with no progress is []", same(progressedIds(["a", "b"], []), []));
 
-const scene = SCENARIOS.find((s) => s.id === "trznica")!;
-const tap = SCENARIOS.find((s) => s.id === "cafe")!;
+const scene = DOMAINS.find((s) => s.id === "trznica")!;
+const tap = DOMAINS.find((s) => s.id === "cafe")!;
 const [l1, l2] = scene.surfaces!.live!.core.map((id) => LEARNABLES[id]!) as [typeof LEARNABLES[string], typeof LEARNABLES[string]];
 const done = tap.objectives[0]!;
 const pend = tap.objectives[1]!;
@@ -75,7 +75,7 @@ try {
   const { entries } = await (await fetch(`${base}/api/history`, { headers: { "x-tester-code": "TEST-01" } })).json();
   for (const [id, want] of Object.entries(expected)) {
     const e = entries.find((x: any) => x.id === id);
-    check(`3. ${id} has scenario and progressed`, !!e && e.domain === want.domain && same(e.progressed, want.progressed),
+    check(`3. ${id} has domain and progressed`, !!e && e.domain === want.domain && same(e.progressed, want.progressed),
       JSON.stringify(e && { domain: e.domain, progressed: e.progressed }));
   }
   check("3. no entry has a score", entries.length === 4 && entries.every((e: any) => !/score/i.test(JSON.stringify(e))));

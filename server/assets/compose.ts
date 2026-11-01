@@ -1,7 +1,7 @@
 // Render any catalog NODE to its canonical render — composing recursively. An object/character renders
 // as one isolated asset; a CONCEPT is montaged from its constituents (each itself a node, so a scene can
 // anchor on a location concept like `cafe`, which itself anchors on counter + fixture) and generated
-// anchored to that labelled sheet. Shared by the render:concept script AND the scenario build — the one
+// anchored to that labelled sheet. Shared by the render:concept script AND the domain build — the one
 // place that knows how to turn "a catalog id" into "its render tile", whatever kind it is.
 
 import * as store from "./store";

@@ -1,8 +1,8 @@
-// Scenario + objective data. Scenarios live as per-file JSON under server/scenarios/ (one file per
-// scenario, written by the create-scenario engine on commit). This module keeps the TS interfaces,
-// loads + validates the JSON at startup, and exposes SCENARIOS / getScenario / freshSession unchanged.
+// Domain + objective data. Domains live as per-file JSON under server/domains/ (one file per
+// domain, written by the create-domain engine on commit). This module keeps the TS interfaces,
+// loads + validates the JSON at startup, and exposes DOMAINS / getDomain / freshSession unchanged.
 //
-// NOTE: the data dir is server/scenarios/ (a sibling directory to this file). `from "./scenarios"`
+// NOTE: the data dir is server/domains/ (a sibling directory to this file). `from "./domains"`
 // still resolves to THIS file — the dir has no index, so there is no import collision.
 
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -20,17 +20,17 @@ export interface StoryFrame {
   imagePrompt: string; // raw prompt for the frame image (the house style prefix is added at gen time)
 }
 
-/** A canonical asset (character / setting / object) for a scenario. Each asset gets its own canonical
+/** A canonical asset (character / setting / object) for a domain. Each asset gets its own canonical
  *  render; the LABEL is the token reused in every frame/scene prompt to anchor that render. */
 export interface AssetDef {
   label: string; // ALL-CAPS token, e.g. BAKER — referenced in prompts, anchors the per-asset render
   descriptor: string; // minimal canonical description that fixes the look
-  catalogId?: string; // set when resolved from a shared catalog ref (a SHARED asset, not scenario-local)
+  catalogId?: string; // set when resolved from a shared catalog ref (a SHARED asset, not domain-local)
 }
 
 /** A scene.assets entry can instead be a SHARED-asset reference by catalog id (opt-in reuse). Resolves
  *  to the catalog object's, or character's-visual, `{ label, descriptor }` — one canonical descriptor,
- *  so the content-addressed store renders it once and reuses it across scenarios. */
+ *  so the content-addressed store renders it once and reuses it across domains. */
 export interface AssetRef {
   ref: string; // a catalog object id (objects.json) or character id (characters.json → its visual)
 }
@@ -42,7 +42,7 @@ export interface Register {
   variety: "pogovorni" | "knjizni"; // colloquial vs standard/bookish
 }
 
-/** One rehearsal level the scenario package declares (the manifest's view of a dialogue file). The
+/** One rehearsal level the domain package declares (the manifest's view of a dialogue file). The
  *  per-level `server/dialogues/<id>-<level>.json` is the RENDERED surface; this is the manifest's
  *  DECLARATION of it. `lint:tree` checks the two agree (level + label + voices). */
 export interface DialogueSurfaceLevel {
@@ -50,19 +50,19 @@ export interface DialogueSurfaceLevel {
   levelLabel: string;
 }
 
-/** The `dialogue` surface of a scenario package: the shared per-speaker voice profiles + the levels the
+/** The `dialogue` surface of a domain package: the shared per-speaker voice profiles + the levels the
  *  manifest declares. The dialogue JSON files are keyed to this (D2 — manifest as source of truth). */
 export interface DialogueSurface {
   voices: { npc: string; client: string };
-  /** How the learner advances this scenario's levels — "tap" (rehearsal choices, the default) or
+  /** How the learner advances this domain's levels — "tap" (rehearsal choices, the default) or
    *  "audio" (spoken turns; see DialogueAdvance in dialogues.ts). Declared here as the manifest's
    *  statement of it; `lint:tree` checks each dialogue file agrees, exactly as it does for voices. */
   advance?: "tap" | "audio";
   levels: DialogueSurfaceLevel[];
 }
 
-/** The surfaces a scenario package renders from its one canonical spine (D1/D2). Optional + additive:
- *  legacy scenarios that predate the manifest simply omit it. Today only `dialogue` is materialized;
+/** The surfaces a domain package renders from its one canonical spine (D1/D2). Optional + additive:
+ *  legacy domains that predate the manifest simply omit it. Today only `dialogue` is materialized;
  *  `a1: true` marks that this package's levels are referenced by the A1 coverage map. Future surfaces
  *  (guided-live, visual) slot in here without touching the loader. */
 /** The `live` surface: the tutor plays this scene in a live session, directed by its own harness.
@@ -70,7 +70,7 @@ export interface DialogueSurface {
  *  what she says. The app adds the day's scheduled lines and how the lesson runs (server/live/prompt.ts);
  *  the card is what that schedule is drawn from (mastery.selectForScene). */
 export interface LiveSurface {
-  /** Filename under server/scenarios/harness/. */
+  /** Filename under server/domains/harness/. */
   harness: string;
   /** The Slovene line the tutor ends the lesson on. The conversation carries on after it. */
   close: string;
@@ -83,26 +83,26 @@ export interface LiveSurface {
   stock?: string[];
 }
 
-export interface ScenarioSurfaces {
+export interface DomainSurfaces {
   dialogue?: DialogueSurface;
   live?: LiveSurface;
   a1?: boolean;
 }
 
-export interface Scenario {
+export interface Domain {
   id: string;
   /** Short label for the picker dropdown (e.g. "Café"). Falls back to title if absent. */
   name?: string;
   title: string;
-  /** One plain-English sentence of the situations this scenario covers — read by the scenario finder
-   *  (server/match.ts). Optional; `lint:scenario` requires it. */
+  /** One plain-English sentence of the situations this domain covers — read by the domain finder
+   *  (server/match.ts). Optional; `lint:domain` requires it. */
   summaryEN?: string;
-  /** Finder keywords: places, things, situations, synonyms (EN + SL). Optional; `lint:scenario` requires it. */
+  /** Finder keywords: places, things, situations, synonyms (EN + SL). Optional; `lint:domain` requires it. */
   tags?: string[];
   status: "active" | "planned";
   /** Who the tutor plays (free-text role — drives the tutor prompt). */
   character: string;
-  /** Short Slovene role noun the LIVE tutor adopts when the learner arrives from this scenario's
+  /** Short Slovene role noun the LIVE tutor adopts when the learner arrives from this domain's
    *  rehearsal handoff (e.g. "natakarica", "prodajalka v pekarni"). Persona awareness only — never a
    *  voice id (free chat is always the teacher voice). Absent → the tutor decides its own role. */
   role?: string;
@@ -114,22 +114,22 @@ export interface Scenario {
   setup: string;
   /** The tutor's first Slovenian line (shown/spoken at session start). */
   opening: string;
-  /** The register the tutor holds across the scenario (ti/vi + pogovorni/knjizni). */
+  /** The register the tutor holds across the domain (ti/vi + pogovorni/knjizni). */
   register?: Register;
   /** The surfaces this package renders (D1/D2 — the manifest's declaration of what exists). Optional +
-   *  additive; legacy scenarios omit it. `lint:tree` checks the `dialogue` surface agrees with the
+   *  additive; legacy domains omit it. `lint:tree` checks the `dialogue` surface agrees with the
    *  per-level dialogue files. */
-  surfaces?: ScenarioSurfaces;
+  surfaces?: DomainSurfaces;
   /** This package owns the app's FRONT DOOR — a learner who has produced nothing opens straight into its
-   *  first spoken level. Exactly one scenario carries it; without the flag the front door would be
-   *  whichever spoken package happened to sort first, and adding a scenario would silently move it. */
+   *  first spoken level. Exactly one domain carries it; without the flag the front door would be
+   *  whichever spoken package happened to sort first, and adding a domain would silently move it. */
   onboarding?: boolean;
   objectives: Objective[];
   /** Visual story layer (M3/M4) — narrated opener, one frame per objective, one final all-in scene. */
   scene?: {
     /** The labeled asset bible — always RESOLVED `AssetDef[]` after load. Raw JSON entries may be
-     *  scenario-local `{ label, descriptor }` OR shared `{ ref }` to the catalog (see AssetRef /
-     *  validateScenario). Each asset gets its own canonical render anchored by its label. */
+     *  domain-local `{ label, descriptor }` OR shared `{ ref }` to the catalog (see AssetRef /
+     *  validateDomain). Each asset gets its own canonical render anchored by its label. */
     assets?: AssetDef[];
     story?: {
       sentences: string[]; // ≤5 short simple-Slovenian narration sentences
@@ -139,11 +139,11 @@ export interface Scenario {
   };
 }
 
-// ---- Loader: read + validate every server/scenarios/*.json at startup -------------------------
+// ---- Loader: read + validate every server/domains/*.json at startup -------------------------
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const SCENARIOS_DIR = path.join(__dirname, "scenarios");
-const HARNESS_DIR = path.join(SCENARIOS_DIR, "harness");
+const DOMAINS_DIR = path.join(__dirname, "domains");
+const HARNESS_DIR = path.join(DOMAINS_DIR, "harness");
 
 /** A live surface's harness text, as authored. */
 export function harnessText(live: LiveSurface): string {
@@ -151,7 +151,7 @@ export function harnessText(live: LiveSurface): string {
 }
 
 function fail(file: string, msg: string): never {
-  throw new Error(`Invalid scenario "${file}": ${msg}`);
+  throw new Error(`Invalid domain "${file}": ${msg}`);
 }
 
 function asString(file: string, obj: any, key: string): string {
@@ -162,7 +162,7 @@ function asString(file: string, obj: any, key: string): string {
 
 /** Resolve one raw scene.assets entry to a concrete AssetDef. A `{ ref }` points at the catalog (a
  *  shared object, or a character's visual) and carries its catalogId through for provenance; an inline
- *  `{ label, descriptor }` is scenario-local. */
+ *  `{ label, descriptor }` is domain-local. */
 function resolveAsset(file: string, a: any): AssetDef {
   if (a && typeof a.ref === "string") {
     const id = a.ref;
@@ -185,10 +185,10 @@ function resolveAsset(file: string, a: any): AssetDef {
   return { label: a.label, descriptor: a.descriptor };
 }
 
-/** Validate + RESOLVE one parsed JSON object into a Scenario (the loader is the data contract). Also
+/** Validate + RESOLVE one parsed JSON object into a Domain (the loader is the data contract). Also
  *  used by the --file draft paths (lint / show-prompts) so a draft's catalog `{ ref }`s resolve exactly
  *  as they do at load. `file` is only used to label errors. */
-export function validateScenario(file: string, raw: any): Scenario {
+export function validateDomain(file: string, raw: any): Domain {
   if (!raw || typeof raw !== "object") fail(file, "not an object");
   asString(file, raw, "id");
   asString(file, raw, "title");
@@ -264,7 +264,7 @@ export function validateScenario(file: string, raw: any): Scenario {
       if (typeof live !== "object" || Array.isArray(live)) fail(file, `surfaces.live must be an object`);
       const harness = asString(file, live, "harness");
       if (!existsSync(path.join(HARNESS_DIR, harness)))
-        fail(file, `surfaces.live.harness: no file "${harness}" in server/scenarios/harness/`);
+        fail(file, `surfaces.live.harness: no file "${harness}" in server/domains/harness/`);
       asString(file, live, "close");
       for (const key of ["core", "bank", "stock"] as const) {
         if (key === "stock" && live.stock === undefined) continue;
@@ -296,46 +296,46 @@ export function validateScenario(file: string, raw: any): Scenario {
       }
     }
   }
-  return raw as Scenario;
+  return raw as Domain;
 }
 
-export function loadScenarios(): Scenario[] {
-  const files = readdirSync(SCENARIOS_DIR)
+export function loadDomains(): Domain[] {
+  const files = readdirSync(DOMAINS_DIR)
     .filter((f) => f.endsWith(".json"))
     .sort(); // stable, deterministic order
-  const loaded = files.map((f) => validateScenario(f, JSON.parse(readFileSync(path.join(SCENARIOS_DIR, f), "utf8"))));
-  return [...loaded, ...PLANNED_SCENARIOS];
+  const loaded = files.map((f) => validateDomain(f, JSON.parse(readFileSync(path.join(DOMAINS_DIR, f), "utf8"))));
+  return [...loaded, ...PLANNED_DOMAINS];
 }
 
-// PLANNED scenarios (Feature 1 — choose-your-own-adventure). Declared, not yet implemented. Kept as
-// TS stubs (they own no data file); the create-scenario engine writes real scenarios as JSON.
-export const PLANNED_SCENARIOS: Scenario[] = [
+// PLANNED domains (Feature 1 — choose-your-own-adventure). Declared, not yet implemented. Kept as
+// TS stubs (they own no data file); the create-domain engine writes real domains as JSON.
+export const PLANNED_DOMAINS: Domain[] = [
   { id: "upravna_enota", name: "Upravna enota", title: "Registering at the upravna enota", status: "planned", character: "", setup: "", opening: "", objectives: [] },
   { id: "pharmacy", name: "Pharmacy", title: "At the pharmacy (lekarna)", status: "planned", character: "", setup: "", opening: "", objectives: [] },
 ];
 
-export const SCENARIOS: Scenario[] = loadScenarios();
+export const DOMAINS: Domain[] = loadDomains();
 
-export function getScenario(id: string | undefined): Scenario {
+export function getDomain(id: string | undefined): Domain {
   const found =
-    SCENARIOS.find((s) => s.id === id && s.status === "active") ??
-    SCENARIOS.find((s) => s.id === "cafe" && s.status === "active") ??
-    SCENARIOS.find((s) => s.status === "active") ??
-    SCENARIOS[0];
-  if (!found) throw new Error("No scenarios loaded — server/scenarios/ has no valid JSON files.");
+    DOMAINS.find((s) => s.id === id && s.status === "active") ??
+    DOMAINS.find((s) => s.id === "cafe" && s.status === "active") ??
+    DOMAINS.find((s) => s.status === "active") ??
+    DOMAINS[0];
+  if (!found) throw new Error("No domains loaded — server/domains/ has no valid JSON files.");
   return found;
 }
 
-/** The voice profile that voices this scenario's IN-SCENE character lines — the opening and the live
+/** The voice profile that voices this domain's IN-SCENE character lines — the opening and the live
  *  tutor reply (the tutor playing the character). Falls back to the teacher voice when no characterRef. */
-export function characterVoiceProfile(scenario: Scenario): string {
-  return scenario.characterRef ? getCharacter(scenario.characterRef).voiceProfile : TEACHER_VOICE_PROFILE;
+export function characterVoiceProfile(domain: Domain): string {
+  return domain.characterRef ? getCharacter(domain.characterRef).voiceProfile : TEACHER_VOICE_PROFILE;
 }
 
-export function freshSession(scenario: Scenario): SessionState {
+export function freshSession(domain: Domain): SessionState {
   return {
-    domainId: scenario.id,
-    objectives: scenario.objectives.map((o) => ({ id: o.id, status: "pending", attempts: 0 })),
+    domainId: domain.id,
+    objectives: domain.objectives.map((o) => ({ id: o.id, status: "pending", attempts: 0 })),
     complete: false,
     turns: 0,
   };

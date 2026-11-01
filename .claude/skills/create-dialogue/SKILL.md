@@ -1,6 +1,6 @@
 ---
 name: create-dialogue
-description: Author a lango-slovenian scenario's SPOKEN lessons (`advance: "audio"`) — the linear scenes the learner advances by speaking, their catalog learnables, and the scenario manifest — designed three ways, chosen, written, read as a conversation, critiqued, taken through the deterministic gates, and presented PR-style for approval. Audio and the approval itself belong to the operator. Use when the user wants to add or extend a scenario's spoken lessons or says "create a spoken lesson", "add a lesson to <scenario>". This is the spoken half of the `dialogue` surface (see docs/authoring-pipeline.md). Tap trees (`advance: "tap"`) are the create-tap-tree skill.
+description: Author a lango-slovenian domain's SPOKEN lessons (`advance: "audio"`) — the linear scenes the learner advances by speaking, their catalog learnables, and the domain manifest — designed three ways, chosen, written, read as a conversation, critiqued, taken through the deterministic gates, and presented PR-style for approval. Audio and the approval itself belong to the operator. Use when the user wants to add or extend a domain's spoken lessons or says "create a spoken lesson", "add a lesson to <domain>". This is the spoken half of the `dialogue` surface (see docs/authoring-pipeline.md). Tap trees (`advance: "tap"`) are the create-tap-tree skill.
 ---
 
 # create-dialogue — the spoken-lesson orchestrator (the `dialogue` surface, `advance: "audio"`)
@@ -26,7 +26,7 @@ voice/env matrix) before you start — they are authoritative and win over anyth
 - **J — Judgment (content):** the scene, the per-level objectives, the branching graph (ids + who speaks +
   the English intent per node + where branches re-converge), and **every word the learner reads or hears**.
   Done by `lesson-designer` ×3, `learning-designer`, `slovenian-author` (LS), `review-lesson-script`,
-  `scenario-critic` and — where the reading and the critic show the lesson is badly wrong —
+  `domain-critic` and — where the reading and the critic show the lesson is badly wrong —
   `lesson-editor` (E).
 - **L — Logic:** id assignment, catalog merge, `introduces` computation, file writes, the structural +
   catalog + a1 lints. Done by **scripts** (`reconcile-dialogue`, `lint:*`), never by hand.
@@ -92,7 +92,7 @@ the three briefs may open on the same entry.
 
 ## What the input is
 
-Manifest-shaped: a scenario package — situation / register / role / voices — plus the levels to author.
+Manifest-shaped: a domain package — situation / register / role / voices — plus the levels to author.
 The tree is the canonical **scene-script** (authoring-pipeline.md › D3): the same nodes a future
 guided-live mode will consume, so keep npc lines as clean scene beats and client choices as clean expected
 productions.
@@ -120,7 +120,7 @@ finished.** Approval and generation are both R's; a run with no R present stops 
   firm, specific recommendation into the ReviewPackage — see
   [dialogue-difficulty-model.md §7](../../../docs/dialogue-difficulty-model.md#7-operating-headlessly--conventions-hold-deviations-become-recommendations).
 - **Scope discipline.** No guided-live runtime, no A1 engine, no auto-competency assignment. Don't touch
-  create-scenario.
+  create-domain.
 
 ---
 
@@ -159,7 +159,7 @@ Answers to **AGENTS.md › How the lessons teach**. Read it first; it is the law
 whole stage is extraction from files already on disk — **no script emits it; C reads the dialogue JSON**.
 Nothing here is judged.
 
-**Which levels to read.** This scenario's `advance: "audio"` dialogues with a `level` below this one, the
+**Which levels to read.** This domain's `advance: "audio"` dialogues with a `level` below this one, the
 **five highest** of them (`server/dialogues.ts` groups by `domainId` and sorts ascending by `level`; it
 is the ordering the close screen's Next-lesson button walks forward — `nextLevel` in `server/server.ts`).
 Fewer than five exist → take all that exist. None exist (this is level 1, or every prior level is
@@ -196,11 +196,11 @@ learner can already pick out:
 
 ### 1 — Parse the brief, and fix the shape (J from R; the shape by C)
 
-Fix from the brief — or, if the scenario exists, read its manifest and existing levels first and take them
+Fix from the brief — or, if the domain exists, read its manifest and existing levels first and take them
 from there:
 
-- **The situation** — the scenario's standing setting: who the character is, what kind of place this is,
-  what the learner is doing there. It belongs to the scenario and holds across every level. (What each
+- **The situation** — the domain's standing setting: who the character is, what kind of place this is,
+  what the learner is doing there. It belongs to the domain and holds across every level. (What each
   designer invents fresh at 2a is the **scene**: the particular moment, the reason these two are talking
   today, what is in the room with them. Situation is the spine; scene is per-lesson.)
 - **Register** — `ti`/`vi` + `pogovorni`/`knjižni`.
@@ -210,9 +210,9 @@ from there:
 - **Advance mode.**
 - **The levels to author** — each `levelLabel`, `title`, and its ordered **objectives** as EN meanings +
   the grammar point each teaches.
-- A kebab/lowercase `domainId`.
+- A kebab/lowercase domain id.
 
-Extending an existing scenario: new levels must not re-introduce covered learnables.
+Extending an existing domain: new levels must not re-introduce covered learnables.
 
 **The one new shape (C).** A shape is a sentence frame with a slot: `___ sem ___`, `Imam ___`,
 `Ali si ___?`, `Rad bi ___`. Two utterances are the SAME shape when one is the other with a different
@@ -247,7 +247,7 @@ Set `dialogueAdvance: "audio"` in the reconcile input.
 
 **Quote this verbatim, first, into every content brief for an `advance: "audio"` level** — ahead of the
 stage's own instructions, before anything else the brief carries. It goes to the three `lesson-designer`s
-(2a), the `learning-designer` (2b), `slovenian-author` (3) and `scenario-critic` (5).
+(2a), the `learning-designer` (2b), `slovenian-author` (3) and `domain-critic` (5).
 
 It is stated as properties of a spoken lesson rather than as instructions, so the same words serve a role
 that chooses the scene, a role that writes the lines, and a role that rules on them.
@@ -282,7 +282,7 @@ What each role does with it — say which, in that role's brief:
 | `learning-designer` (2b) | keeps the merged design passing it — a beat grafted from another design is where this breaks |
 | `slovenian-author` (3) | writes lines in which people say what they are doing, and hands over cleanly |
 | `review-lesson-script` (4b) | runs the eyes-shut test — it is given the lesson with the eyes already shut |
-| `scenario-critic` (5) | weighs what that reading found against everything else it can see |
+| `domain-critic` (5) | weighs what that reading found against everything else it can see |
 
 `lesson-designer` already carries the eyes-shut test in its own definition. The quotation is still the
 brief's first block: it is the one standard all four roles are held to, and it is stated once, here.
@@ -291,7 +291,7 @@ brief's first block: it is the one standard all four roles are held to, and it i
 
 Slovene inflects a speaker's own words for their gender, so a spoken lesson is written for two learners at
 once. **Quote this block into the same briefs as the audio-only brief** — the three `lesson-designer`s, the
-`learning-designer`, `slovenian-author` and `scenario-critic`. It is stated as costs, so the same words
+`learning-designer`, `slovenian-author` and `domain-critic`. It is stated as costs, so the same words
 serve the role that shapes the scene, the role that writes the lines, and the role that rules on them.
 
 > **The app knows the learner's gender**, because the onboarding lesson asks and it is stored. Lines may
@@ -324,7 +324,7 @@ What each role does with it — say which, in that role's brief:
 | `lesson-designer` (2a) | whether the design leans on a gendered line from the character, and whether that line earns the second recording |
 | `learning-designer` (2b) | keeps the merged design inside the same budget — a beat grafted from another design is where a fork appears unnoticed |
 | `slovenian-author` (3) | writes the neutral phrasing where one exists, and both forms where the lesson wants the echo |
-| `scenario-critic` (5) | names every character line that varies, and says for each whether it is worth a clip |
+| `domain-critic` (5) | names every character line that varies, and says for each whether it is worth a clip |
 
 ### 2a — Three designs (J), three authors, in parallel
 
@@ -563,7 +563,7 @@ free to change. After stage 3 the run only goes forward; a problem found later i
   docs/rehearsal-dialogues.md: `root` is an `npc` node, every path ends at `next: []`, and the spine is
   `next[0]` throughout.
 - **Every objective is demonstrated on a reachable path**, and the objectives are distinct across the
-  scenario's levels.
+  domain's levels.
 - **The count clears the floor** (2a › Sizing). **Below the floor goes back to 2b.** Sitting *exactly* on
   the floor is a pass — the floor is the minimum, and a gate that rejects a compliant design is a broken
   gate. Where it sits exactly on the floor, name the npc node doing work a turn could do (a line the
@@ -694,7 +694,7 @@ and if what it found is bad enough to need a rewrite, the critic says so and the
 
 ### 5 — Independent critique (J → critic)
 
-Dispatch **`scenario-critic`** (dialogue mode) over ALL levels' trees + deltas at once. For a spoken level
+Dispatch **`domain-critic`** (dialogue mode) over ALL levels' trees + deltas at once. For a spoken level
 the brief opens with **the audio-only brief**, quoted verbatim, naming what this role decides with it: the
 eyes-shut test has already been run for the critic by stage 4b, and the critic weighs what it found against
 everything else it can see. It then carries **writing for two learners**,
@@ -776,7 +776,7 @@ reason to run the stage again.
 
 Complete the reconcile input (draft path while unapproved; shape in docs/authoring-pipeline.md › The
 reconcile input contract, and the header comment of `server/scripts/reconcile-dialogue.ts`). For a spoken
-scenario its header and its nodes are already in place from 4b — this stage fills in the rest and folds the
+domain its header and its nodes are already in place from 4b — this stage fills in the rest and folds the
 critic's fixes onto what is there:
 
 - the `scenario` header
@@ -798,7 +798,7 @@ Rules:
   (its first use) and `reuse` on the rest. The same id under `new` twice makes the reconcile fail on a
   duplicate surface — split it here.
 - **`background`** (optional): a per-level portrait filename under `public/backgrounds/`
-  (`<scenario>-<level>.jpg` or descriptive), operator-supplied art. The reconcile writes it onto the level
+  (`<domain>-<level>.jpg` or descriptive), operator-supplied art. The reconcile writes it onto the level
   and preserves it on re-run.
 - The reconcile input is the **source of truth** for a level's nodes. Later node changes go here and get a
   re-run — never hand-edit `server/dialogues/*.json`.
@@ -975,11 +975,11 @@ the editor returns. One editorial pass per rejection, then back to R.
   for a deploy (`git add -f assets/audio`); intro clips land in `public/intros/` and alignments in
   `assets/align/`, both git-tracked. See docs/DEPLOY.md for the ship + serve-env contract.
 
-- **Restart the server (R)** — scenarios, dialogues and learnables load only at startup.
+- **Restart the server (R)** — domains, dialogues and learnables load only at startup.
 
 ## Scope (do not add)
 
 No guided-live runtime, no A1 scoring engine, no auto-competency assignment (candidates are
-operator-confirmed), no manifest consolidation beyond the `surfaces` block. Don't touch create-scenario.
+operator-confirmed), no manifest consolidation beyond the `surfaces` block. Don't touch create-domain.
 **Audio generation, core promotion, the server restart and the deploy are all R's** — this skill authors,
 gates, and hands over.

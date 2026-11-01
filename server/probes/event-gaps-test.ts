@@ -58,7 +58,7 @@ try {
 
   // Handoff from a tap level.
   await page.locator('.tile[data-go="practice"]').click();
-  await page.locator(".scenario-card").filter({ hasText: lv.sc.name }).first().click();
+  await page.locator(".domain-card").filter({ hasText: lv.sc.name }).first().click();
   await page.locator("#level-list .level-card").nth(lv.sc.dialogues.indexOf(lv.d)).click();
   await page.locator("#dialogue-handoff").click();
   await page.waitForFunction(() => !document.getElementById("tutor")!.hidden);
@@ -85,7 +85,7 @@ try {
   await page.waitForTimeout(1500);
   await page.locator('.tile[data-go="practice"]').click();
 
-  // Finder, match: the scenario name plus a word from one of the level's lines, so its card carries a
+  // Finder, match: the domain name plus a word from one of the level's lines, so its card carries a
   // snippet and opens at that line (openLevelAt). The settled count is the number of cards shown.
   const card = page.locator("#finder-results .level-card").filter({ hasText: lv.d.title });
   await input.fill("");

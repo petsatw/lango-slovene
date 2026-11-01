@@ -1,22 +1,22 @@
-// The shared asset CATALOG — the studio-style registry of identity-bearing assets that scenarios
+// The shared asset CATALOG — the studio-style registry of identity-bearing assets that domains
 // reference by stable id. Three entity kinds, each a JSON file under server/catalog/:
 //   - voices.json     — named voice profiles (provider-agnostic) + which profile is the teacher voice
 //   - characters.json — characters that BUNDLE a visual identity + a voice profile
 //   - objects.json    — shared objects/figures with one canonical descriptor (→ one canonical render)
 //
-// Reuse is OPT-IN and INTENTFUL: a scenario shares an asset only by referencing its catalog id
-// (scene.assets `{ ref }` / Scenario.characterRef). Because a catalog descriptor is identical wherever
+// Reuse is OPT-IN and INTENTFUL: a domain shares an asset only by referencing its catalog id
+// (scene.assets `{ ref }` / Domain.characterRef). Because a catalog descriptor is identical wherever
 // it's referenced, the content-addressed image store renders it ONCE and reuses it everywhere (money
 // = the canary). Audio reuse keys by the speaker's voice PROFILE, not the literal character.
 //
-// NOTE (same trick as scenarios.ts): `from "./catalog"` resolves to THIS file; the sibling catalog/
+// NOTE (same trick as domains.ts): `from "./catalog"` resolves to THIS file; the sibling catalog/
 // dir has no index, so there is no import collision.
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-import type { AssetDef } from "./scenarios";
+import type { AssetDef } from "./domains";
 
 /** A named, provider-agnostic voice profile. The concrete provider voice is bound in the E3 adapter
  *  (provider-specific), never here — so the catalog stays adapter-neutral. */
@@ -33,7 +33,7 @@ export interface VoiceProfile {
  *  catalog objects. `type` = the object id(s) it is a kind of; `visualRef` = the object used as its
  *  reference image (the same object as its type in the simple case; a named individual's own canonical
  *  render — e.g. `natasa_the_baker` — in the advanced case). Recurring characters keep this identity
- *  across scenarios. */
+ *  across domains. */
 export interface CatalogCharacter {
   id: string;
   /** Object id(s) this actor IS A KIND OF — the figure-type image(s). Simple case: `["baker"]`. */
@@ -49,7 +49,7 @@ export interface CatalogCharacter {
   name?: string;
 }
 
-/** A shared object/figure with one canonical descriptor → one canonical render reused across scenarios. */
+/** A shared object/figure with one canonical descriptor → one canonical render reused across domains. */
 export interface CatalogObject extends AssetDef {
   id: string;
   gender?: "feminine" | "masculine"; // for figure assets (e.g. the customer avatar); see CatalogCharacter.gender
@@ -58,7 +58,7 @@ export interface CatalogObject extends AssetDef {
 /** A COMPOSED concept: a reusable depiction built FROM other catalog assets (the ontology's composite
  *  node). Its identity is the depiction `prompt` (which names its assets as `{{TOKEN}}`s) + the assets it
  *  `composedFrom`. The render is the content-addressed image at that prompt — so every frame that uses the
- *  same depiction shares one canonical image (greet/leave are the same picture in every scenario). */
+ *  same depiction shares one canonical image (greet/leave are the same picture in every domain). */
 export interface CatalogConcept {
   id: string;
   label: string;

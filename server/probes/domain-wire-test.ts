@@ -8,7 +8,7 @@ import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { chromium } from "playwright";
-import { SCENARIOS } from "../scenarios";
+import { DOMAINS } from "../domains";
 
 const port = 20000 + Math.floor(Math.random() * 20000);
 const base = `http://127.0.0.1:${port}`;
@@ -74,7 +74,7 @@ try {
     JSON.stringify([first.rows[0]?.props, second.rows[0]?.props]));
   check("team events: k equals the value computed from the raw line", kOf(first) === `${sha(seeded[0]!)}#1` && kOf(second) === `${sha(seeded[1]!)}#1`);
 
-  const cafe = SCENARIOS.find((s) => s.id === "cafe")!;
+  const cafe = DOMAINS.find((s) => s.id === "cafe")!;
   const cafeName = cafe.name ?? cafe.title;
   const history = await (await fetch(`${base}/api/history`, { headers: { "x-tester-code": "TEST-01" } })).json();
   const taps = history.entries.filter((e: any) => e.kind === "tap");
@@ -124,7 +124,7 @@ try {
   await page.waitForFunction(() => !document.getElementById("home")!.hidden);
 
   await page.locator('.tile[data-go="practice"]').click();
-  await page.locator(".scenario-card").filter({ hasText: lv.sc.name }).first().click();
+  await page.locator(".domain-card").filter({ hasText: lv.sc.name }).first().click();
   await page.locator("#level-list .level-card").nth(lv.sc.dialogues.indexOf(lv.d)).click();
   const choice = page.locator("#dialogue-choices .choice-list .dialogue-choice").first();
   await choice.click();
@@ -149,7 +149,10 @@ try {
   }
   await page.locator("#finder-input").pressSequentially(`${lv.sc.name} ${word}`, { delay: 20 });
   await page.waitForTimeout(1500);
-  await page.locator("#finder-results .level-card").filter({ hasText: lv.d.title }).first().click();
+  const card = page.locator("#finder-results .level-card").filter({ hasText: lv.d.title }).first();
+  // The finder card's heading is built from the match index's domainName on the client.
+  const heading = await card.locator(".level-title").textContent();
+  await card.click();
   await page.waitForFunction(() => !document.getElementById("dialogue")!.hidden);
 
   await page.evaluate(() => {
@@ -160,6 +163,7 @@ try {
   const written = () => rows().slice(seeded.length).map((l) => JSON.parse(l));
   for (let i = 0; i < 20 && !NAMES.every((n) => written().some((r) => r.name === n)); i++) await page.waitForTimeout(250);
   await browser.close();
+  check("the finder card reads the domain name and the level title", heading === `${lv.sc.name} — ${lv.d.title}`, String(heading));
 
   const mine = written();
   for (const n of NAMES) {

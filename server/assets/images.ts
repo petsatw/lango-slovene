@@ -2,7 +2,7 @@
 // (provider | model | styleId | aspectRatio | resolution | prompt) ⇒ same key ⇒ regeneration is free.
 //
 // `aspectRatio`/`resolution` are explicit (typed API args, not prose). `referenceImages` anchor the
-// output to the scenario's reference sheet (character/setting consistency). `styled: false` sends the
+// output to the domain's reference sheet (character/setting consistency). `styled: false` sends the
 // prompt verbatim — used for the reference sheet, whose prompt is already complete.
 
 import * as store from "./store";
@@ -71,7 +71,7 @@ export async function getOrCreateImage(
 
 // The per-asset CANONICAL RENDER through the store. Content-addressed on the single-asset prompt, so a
 // shared (catalog) asset — identical descriptor everywhere — renders ONCE and is reused across
-// scenarios. Plain text-to-image (no anchor); the prompt already carries the full house style.
+// domains. Plain text-to-image (no anchor); the prompt already carries the full house style.
 export async function getOrCreateAssetRender(
   asset: { label: string; descriptor: string },
 ): Promise<{ bytes: Buffer; hit: boolean; key: string }> {

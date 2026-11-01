@@ -1,4 +1,4 @@
-// Pregenerate audio for a scenario's REHEARSAL dialogues (the predetermined branching trees).
+// Pregenerate audio for a domain's REHEARSAL dialogues (the predetermined branching trees).
 //
 // For every node it synthesizes the speaker's line in that speaker's voice profile (dialogue.voices),
 // keyed by the CLEAN display line (node.sl) so /api/speak — which only knows the on-screen text — finds
@@ -61,7 +61,7 @@ const files = readdirSync(DIALOGUES_DIR)
   .sort((a, b) => a.d.level - b.d.level);
 
 if (!files.length) {
-  console.error(`No dialogues for scenario "${domainId}"${onlyLevel !== undefined ? ` level ${onlyLevel}` : ""}.`);
+  console.error(`No dialogues for domain "${domainId}"${onlyLevel !== undefined ? ` level ${onlyLevel}` : ""}.`);
   process.exit(1);
 }
 

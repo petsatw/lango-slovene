@@ -1,8 +1,8 @@
-// Shared visual system for ALL generated images, so every scenario's reference sheet, frames, and
+// Shared visual system for ALL generated images, so every domain's reference sheet, frames, and
 // scene read as one cohesive set. `id` is part of the image cache key (store.imageKey).
 //
-// IMPORTANT: `id` represents the WHOLE visual system — the art style AND each scenario's reference
-// sheet. If you change the prefix, or regenerate a scenario's reference sheet so output shifts,
+// IMPORTANT: `id` represents the WHOLE visual system — the art style AND each domain's reference
+// sheet. If you change the prefix, or regenerate a domain's reference sheet so output shifts,
 // BUMP `id` (e.g. v2-…) so keys change and stale images aren't served for the new look.
 
 export const IMAGE_STYLE = {
@@ -13,8 +13,8 @@ export const IMAGE_STYLE = {
   // frame/scene keys strip the {{TOKEN}} braces, so adding that notation doesn't churn the cache).
   id: "v2-flat-warm",
 
-  // Scenario-agnostic art style + the shared city vibe (present-day Ljubljana's historic district)
-  // that every image carries. The SCENARIO setting (café vs. bakery vs. butcher) still comes from each
+  // Domain-agnostic art style + the shared city vibe (present-day Ljubljana's historic district)
+  // that every image carries. The DOMAIN setting (café vs. bakery vs. butcher) still comes from each
   // prompt + the reference sheet, never from here — so this prefix must not name a specific shop.
   // NOTE: "rounded" here means soft EDGES/linework (the approachable look), NOT body shape — the style
   // never dictates build; people render in all natural shapes. The prefix is in the per-asset render
@@ -124,7 +124,7 @@ export function styledPrompt(
 // The per-asset CANONICAL RENDER prompt — one isolated item on a plain background, in the house style.
 // This is the reference UNIT of the v3 system: each asset is rendered once and reused as the anchor
 // for every frame/scene that uses it. Because a shared (catalog) asset's descriptor is identical
-// wherever it's referenced, the content-addressed store renders it ONCE and reuses it across scenarios
+// wherever it's referenced, the content-addressed store renders it ONCE and reuses it across domains
 // (money = the canary). No printed label — the image IS the single asset, identified by position.
 export function singleAssetSheetPrompt(label: string, descriptor: string): string {
   return (
