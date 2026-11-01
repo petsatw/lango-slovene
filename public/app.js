@@ -692,6 +692,7 @@ function openLevelAt(i, nodeId) {
   dialogue = dialogues[i];
   const path = treePath(dialogue, nodeId);
   if (!path) { openLevel(i); return; }
+  beginLevelRun(dialogue.scenarioId, dialogue.level);
   applyDialogueBackground();
   $("dialogue").hidden = false;
   startDialogueTree();               // resets state + presents the root…
@@ -720,7 +721,9 @@ function treePath(d, nodeId) {
   return null;
 }
 
+let finderSettleTimer = null;
 $("finder-input").addEventListener("input", (e) => {
+  clearTimeout(finderSettleTimer);
   const text = e.target.value.trim();
   if (!text) { $("finder-results").hidden = true; return; }
   if (!finderIndex) return;
@@ -729,13 +732,19 @@ $("finder-input").addEventListener("input", (e) => {
   if (!matches.length) {
     renderFinder([], { query: text, scene: `The learner wants to practise: ${text}`, role: null },
       "No lessons match that yet — try practising it live!");
-    return;
+  } else {
+    renderFinder(matches, null, "Press Enter to search by meaning");
   }
-  renderFinder(matches, null, "Press Enter to search by meaning");
+  finderSettleTimer = setTimeout(() => trackFinder(text, matches.length), 1000);
 });
 
-// A submitted search records that it happened and how it came out; the query text stays in the browser.
-function trackFinder(resultCount) {
+// A search that settles (Enter, or 1 s without typing) records that it happened and how it came out; the
+// query text stays in the browser, and each distinct query is recorded once.
+const finderTracked = new Set();
+function trackFinder(text, resultCount) {
+  clearTimeout(finderSettleTimer);
+  if (finderTracked.has(text)) return;
+  finderTracked.add(text);
   track("finder_query", { resultCount });
   if (!resultCount) track("finder_no_match");
 }
@@ -744,6 +753,7 @@ $("finder").addEventListener("submit", async (e) => {
   e.preventDefault();
   const text = $("finder-input").value.trim();
   if (!text) return;
+  clearTimeout(finderSettleTimer);
   renderFinder([], null, "Finding the best match…");
   try {
     const res = await api("/api/match", {
@@ -753,12 +763,12 @@ $("finder").addEventListener("submit", async (e) => {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-    trackFinder(data.matches.length);
+    trackFinder(text, data.matches.length);
     const note = data.matches.length ? "" : "No lessons match that yet — try practising it live!";
     renderFinder(data.matches, { query: text, ...data.fallback }, note);
   } catch (err) {
     const matches = finderIndex ? finderSuggest(text) : [];
-    trackFinder(matches.length);
+    trackFinder(text, matches.length);
     const note = matches.length ? `Search failed (${err.message})` : "No lessons match that yet — try practising it live!";
     renderFinder(matches, { query: text, scene: `The learner wants to practise: ${text}`, role: null }, note);
   }
@@ -1164,6 +1174,7 @@ function reinforceFromDialogue() {
   const context = scene ? { scene: `${scene} — ${dialogue.title}`, practiced } : null;
   const role = currentScenario ? (currentScenario.role || null) : null;
   const lessonId = dialogue ? dialogue.id : null;
+  track("handoff_tapped", { from: "level" });
   closeDialogue();
   openTutor({ focus, role, context, lessonId });
 }
