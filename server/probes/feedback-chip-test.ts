@@ -146,7 +146,7 @@ try {
     .find((x: any) => (x.d.advance ?? "tap") === "tap");
   if (!lv) throw new Error("no tap level to play");
   await page.locator('.tile[data-go="practice"]').click();
-  await page.locator(".scenario-card").filter({ hasText: lv.sc.name }).first().click();
+  await page.locator(".domain-card").filter({ hasText: lv.sc.name }).first().click();
   await page.locator("#level-list .level-card").nth(lv.sc.dialogues.indexOf(lv.d)).click();
   await page.waitForSelector("#dialogue:not([hidden])");
   const clear = async (when: string) => {

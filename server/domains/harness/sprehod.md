@@ -2,7 +2,7 @@
 
 <!--
 Sections (server/live/prompt.ts › harnessFor): everything before the first "## @" heading is the shared
-preamble, sent in every sprehod live session. "## @sprehod" is the session opened by the scenario id (free
+preamble, sent in every sprehod live session. "## @sprehod" is the session opened by the domain id (free
 practice); "## @sprehod-l<n>" is the handoff from that tap tree. A session gets the preamble plus its own
 section. Every section ends on the close line, «Adijo, lep dan še naprej.».
 -->

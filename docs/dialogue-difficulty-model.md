@@ -25,8 +25,8 @@ else is a **readout**: the band per dialogue, and its core/A1 line counts.
 ### What the a1-map is
 
 The `a1-map` ([a1-taxonomy.md](a1-taxonomy.md)) is **only** a mapping of competencies to learnables that are
-core and/or A1-tagged. It answers *which life domain does this item serve, and how far along is the learner
-in that domain* — it does **not** answer *is this core*. It is many-to-many by design (`hvala` serves both
+core and/or A1-tagged. It answers *which A1 theme does this item serve, and how far along is the learner
+in that theme* — it does **not** answer *is this core*. It is many-to-many by design (`hvala` serves both
 `pragmatics` and `personal_relations`), which is exactly the right shape for coverage.
 
 Its one live product job is `GET /api/a1`, the **A1 Readiness screen** — the learner's map of A1
@@ -107,7 +107,7 @@ The app shows each `levelLabel` as a Beginner, Intermediate or Advanced chip on 
 
 ## 6. What this unlocks
 
-A native-authored, situation-organized, complication-rich scenario (the library flowchart is the worked
+A native-authored, situation-organized, complication-rich domain (the library flowchart is the worked
 example) is **buildable close to as authored**: its complications are choices/parentheticals, its full A2–B2
 spread is carried by band classification, and its breadth is preserved.
 

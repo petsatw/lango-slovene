@@ -15,7 +15,7 @@ const full = args.includes("--full");
 const n = Number(args.find((a) => /^\d+$/.test(a))) || 10;
 
 if (!existsSync(LOG_PATH)) {
-  console.log(`No turn log yet at ${LOG_PATH}\n(Run a turn — free chat, seed, or scenario — then re-run this.)`);
+  console.log(`No turn log yet at ${LOG_PATH}\n(Run a turn — free chat, seed, or domain — then re-run this.)`);
   process.exit(0);
 }
 

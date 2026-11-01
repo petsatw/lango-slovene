@@ -411,7 +411,7 @@ function wavBase64FromBuffer(buffer) {
 }
 
 // Streaming playback: point an <audio> at /api/speak; the browser streams and plays the mp3
-// progressively, so audio starts on the first chunk. Default voice = teacher (no scenario character).
+// progressively, so audio starts on the first chunk. Default voice = teacher (no domain character).
 // A failure the learner is entitled to see. The observability panel is opt-in (?obs=1), so without this
 // a tester whose turn failed watched it go nowhere with nothing on screen saying so. It reports through
 // the same line under the button that live mode reports through, and the next turn clears it.
@@ -515,16 +515,16 @@ async function stopRecordingAndSend() {
 }
 
 // ---- ① Practice scenarios: list → variant/level selector → the rehearsal tree ----
-let dialogues = [];    // the open scenario's levels: [{ level, levelLabel, title, objectives, audio, voices, root, nodes, scenarioId }]
+let dialogues = [];    // the open domain's levels: [{ level, levelLabel, title, objectives, audio, voices, root, nodes, scenarioId }]
 let dialogue = null;   // the level currently open in the tree overlay
-let currentScenario = null; // the scenario meta {id, name, role, dialogues} whose levels are open
+let currentDomain = null; // the domain meta {id, name, role, dialogues} whose levels are open
 
 async function loadPractice() {
-  const el = $("scenario-list");
+  const el = $("domain-list");
   el.innerHTML = "<p class='muted'>Loading…</p>";
   try {
     const { scenarios } = await (await api("/api/practice")).json();
-    practiceScenarios = scenarios;
+    practiceDomains = scenarios;
     loadFinderIndex();
     if (!scenarios.length) { el.innerHTML = "<p class='muted'>No scenarios yet.</p>"; return; }
     el.innerHTML = "";
@@ -534,19 +534,19 @@ async function loadPractice() {
       const group = scenarios.filter((s) => s.mode === mode);
       if (!group.length) continue;
       const h = document.createElement("p");
-      h.className = "scenario-group";
+      h.className = "domain-group";
       h.textContent = heading;
       el.appendChild(h);
       for (const s of group) {
         const card = document.createElement("button");
-        card.className = "scenario-card";
+        card.className = "domain-card";
         card.type = "button";
         const n = s.dialogues.length;
         card.innerHTML =
-          `<span class="scenario-name">${s.name}</span>` +
-          `<span class="scenario-meta">${n} lesson${n === 1 ? "" : "s"}</span>` +
+          `<span class="domain-name">${s.name}</span>` +
+          `<span class="domain-meta">${n} lesson${n === 1 ? "" : "s"}</span>` +
           `<span class="level-chevron">›</span>`;
-        card.addEventListener("click", () => openScenario(s));
+        card.addEventListener("click", () => openDomain(s));
         el.appendChild(card);
       }
     }
@@ -555,12 +555,12 @@ async function loadPractice() {
   }
 }
 
-// ---- Scenario finder — two layers. (1) Type-ahead: the static keyword index is fetched once and scored
+// ---- Domain finder — two layers. (1) Type-ahead: the static keyword index is fetched once and scored
 // in the browser on every keystroke (no network, no model). Mirrors tokenize/expandQuery/keywordScore in
 // server/match.ts — keep the two in step. (2) Enter → POST /api/match: Gemini reads the whole catalog and
 // maps the learner's intent to levels with reasons; the server falls back to keywords if it fails. The
 // "Practise this live" card is always last, opening the free-chat tutor framed for the learner's words.
-let practiceScenarios = [];
+let practiceDomains = [];
 let finderIndex = null;
 
 async function loadFinderIndex() {
@@ -669,10 +669,10 @@ function renderFinder(matches, live, note) {
     card.innerHTML =
       `<span class="level-main">` +
         `<span class="level-title"></span>` +
-        `<span class="scenario-meta"></span>` +
+        `<span class="domain-meta"></span>` +
       `</span><span class="level-chevron">›</span>`;
     card.querySelector(".level-title").textContent = `${m.scenarioName} — ${m.levelTitle}`;
-    card.querySelector(".scenario-meta").textContent = m.reason || "";
+    card.querySelector(".domain-meta").textContent = m.reason || "";
     if (m.snippet) card.querySelector(".level-main").appendChild(finderSnippetEl(m.snippet));
     card.addEventListener("click", () => { track("finder_match_opened", { scenarioId: m.scenarioId }); openFinderMatch(m); });
     el.appendChild(card);
@@ -681,7 +681,7 @@ function renderFinder(matches, live, note) {
     const card = document.createElement("button");
     card.className = "level-card";
     card.type = "button";
-    card.innerHTML = `<span class="level-main"><span class="level-title"></span><span class="scenario-meta">Live AI tutor plays the scene with you</span></span><span class="level-chevron">›</span>`;
+    card.innerHTML = `<span class="level-main"><span class="level-title"></span><span class="domain-meta">Live AI tutor plays the scene with you</span></span><span class="level-chevron">›</span>`;
     card.querySelector(".level-title").textContent = `Practise this live: “${live.query}”`;
     card.addEventListener("click", () => {
       track("handoff_tapped", { from: "finder" });
@@ -701,9 +701,9 @@ function renderFinder(matches, live, note) {
 }
 
 function openFinderMatch(m) {
-  const s = practiceScenarios.find((x) => x.id === m.scenarioId);
+  const s = practiceDomains.find((x) => x.id === m.scenarioId);
   if (!s) return;
-  openScenario(s);
+  openDomain(s);
   const i = s.dialogues.findIndex((d) => d.id === m.dialogueId);
   if (i < 0) return;
   // Tap-through trees open AT the matched exchange; spoken levels (and anything unreachable) open at the start.
@@ -802,7 +802,7 @@ $("finder").addEventListener("submit", async (e) => {
   }
 });
 
-// The scenario TASK is the headline; difficulty is a glanceable chip, not encoded jargon. The chip shows
+// The level's task is the headline; difficulty is a glanceable chip, not encoded jargon. The chip shows
 // the level's computed band as Beginner, Intermediate or Advanced (docs/features/dialogue-lesson/spec.md §1):
 // Basic → Beginner, Intermediate → Intermediate, Advanced and Above A1 → Advanced.
 const DIFFICULTY_TIERS = { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" };
@@ -815,8 +815,8 @@ function difficultyTier(levelLabel) {
 
 // The crisp variant selector: one big card per level — the TASK up front, a difficulty chip beside it,
 // a quiet ordinal — not a row of ambiguous tabs. Tap a level → its rehearsal tree.
-function openScenario(s) {
-  currentScenario = s;
+function openDomain(s) {
+  currentDomain = s;
   dialogues = s.dialogues;
   $("levels-title").textContent = s.name;
   const list = $("level-list");
@@ -1239,12 +1239,12 @@ function reinforceFromDialogue() {
         .flatMap((n) => n.learnables || []))]
     : [];
   const focus = produced.length ? produced : ((dialogue && dialogue.introduces) || []);
-  // Carry the scene into the live chat: the tutor pins the scenario's role and is told the situation +
+  // Carry the scene into the live chat: the tutor pins the domain's role and is told the situation +
   // the objectives this level rehearsed, so it keeps the scene alive while still tutoring.
-  const scene = currentScenario ? (currentScenario.name || currentScenario.title) : null;
+  const scene = currentDomain ? (currentDomain.name || currentDomain.title) : null;
   const practiced = (dialogue && dialogue.objectives) ? dialogue.objectives.map((o) => o.descriptorEN) : [];
   const context = scene ? { scene: `${scene} — ${dialogue.title}`, practiced } : null;
-  const role = currentScenario ? (currentScenario.role || null) : null;
+  const role = currentDomain ? (currentDomain.role || null) : null;
   const lessonId = dialogue ? dialogue.id : null;
   track("handoff_tapped", { from: "level" });
   closeDialogue();
@@ -1480,11 +1480,11 @@ function addLiveBubble(role, text, id) {
   return div;
 }
 // ---- The wrap-up (docs/features/live-session/spec.md#2-wrap-up) ----
-let liveScenario = "";
-let wrapUp = null; // { pressed, scenario, noSave, result: {ending, objectives} | null, closed }
+let liveDomain = "";
+let wrapUp = null; // { pressed, domain, noSave, result: {ending, objectives} | null, closed }
 
 onLive("created", ({ scenario }) => {
-  liveScenario = scenario || "";
+  liveDomain = scenario || "";
   $("practice-talk").disabled = false;
   renderPractice();
 });
@@ -1497,7 +1497,7 @@ function resetWrapUp() {
 }
 
 function openWrapUp(pressed) {
-  if (!wrapUp) wrapUp = { pressed, scenario: liveScenario, noSave, result: null, closed: false };
+  if (!wrapUp) wrapUp = { pressed, domain: liveDomain, noSave, result: null, closed: false };
   else if (pressed) wrapUp.pressed = true;
   clearInterval(liveTick);
   liveTick = null;
@@ -1514,7 +1514,7 @@ function renderWrapUp() {
   $("wrapup-title").textContent = w.result
     ? (w.result.ending === "time" ? "Session time reached" : "Session ended")
     : (w.pressed || w.closed ? "Session ended" : "");
-  $("wrapup-scenario").textContent = w.scenario ? `You practised: ${w.scenario}` : "";
+  $("wrapup-domain").textContent = w.domain ? `You practised: ${w.domain}` : "";
   const block = $("wrapup-progress");
   const line = (text) => { const p = document.createElement("p"); p.textContent = text; return p; };
   if (objectives?.length) {
@@ -1601,7 +1601,7 @@ function startTutorSession() {
 // Free chat opens with the tutor speaking first — a static Slovene "Začnemo?" (the learner knows it from
 // the tutorial). No learner audio, no model call, no credit; it just seeds the thread.
 async function beginFreeChat() {
-  // Do NOT reset chatRole here — a rehearsal handoff may have pinned the scenario's role already.
+  // Do NOT reset chatRole here — a rehearsal handoff may have pinned the domain's role already.
   obs.state("free conversation");
   try {
     const res = await api("/api/converse", {
@@ -2461,7 +2461,7 @@ function sceneFinish() {
 }
 
 // The lesson's rehearsal dialogue: the same material worked in a real transaction, at the learner's own
-// pace. It lands on the level itself, by the same path a learner would take by hand — the scenario list
+// pace. It lands on the level itself, by the same path a learner would take by hand — the domain list
 // is fetched rather than held, because the scene is the one surface that can be opened without it.
 async function openPracticeDialogue(target) {
   sceneCancel();
@@ -2471,7 +2471,7 @@ async function openPracticeDialogue(target) {
     const s = scenarios.find((x) => x.id === target.scenarioId);
     const i = s ? s.dialogues.findIndex((d) => d.level === target.level) : -1;
     if (i < 0) throw new Error(`no dialogue ${target.scenarioId} level ${target.level}`);
-    openScenario(s);
+    openDomain(s);
     openLevel(i);
   } catch (err) {
     obs.error(`go deeper: ${err.message}`);
@@ -2699,7 +2699,7 @@ function wireSceneChips() {
 
 // ---- ③ A1 Readiness — the coverage map (the learner's map of A1 coverage; progressed objectives show on the live
 // wrap-up and in the Learning history, docs/MVP.md). A hand-authored
-// competency → scenarios mapping; progress read from the durable learner model. List → drill-down. ----
+// competency → domains mapping; progress read from the durable learner model. List → drill-down. ----
 let a1Competencies = [];
 
 async function renderA1() {
@@ -2727,7 +2727,7 @@ async function renderA1() {
   }
 }
 
-// Drill into one competency: its descriptor, the scenarios/levels that move it forward (tap → practice
+// Drill into one competency: its descriptor, the domains/levels that move it forward (tap → practice
 // that level), and the learnables with their mastered/attempted/unseen status.
 function openCompetency(id) {
   const c = a1Competencies.find((x) => x.id === id);
@@ -2743,7 +2743,7 @@ function openCompetency(id) {
   const scnRows = c.scenarios
     .map(
       (s) =>
-        `<button class="a1-scenario" data-sc="${s.scenarioId}" data-lv="${s.level}">` +
+        `<button class="a1-domain" data-domain="${s.scenarioId}" data-lv="${s.level}">` +
         `<span class="level-badge">${s.level}</span>` +
         `<span class="level-main"><span class="level-label">${s.name} · ${s.levelLabel}</span>` +
         `<span class="level-title">${s.title}</span></span><span class="level-chevron">›</span></button>`,
@@ -2764,19 +2764,19 @@ function openCompetency(id) {
     `<p class="a1-section">What it covers</p>` +
     `<div class="a1-items">${itemRows}</div>`;
   el.appendChild(body);
-  // Tapping a scenario level jumps straight into that rehearsal tree.
-  body.querySelectorAll(".a1-scenario").forEach((b) =>
-    b.addEventListener("click", () => jumpToLevel(b.dataset.sc, Number(b.dataset.lv))),
+  // Tapping a domain level jumps straight into that rehearsal tree.
+  body.querySelectorAll(".a1-domain").forEach((b) =>
+    b.addEventListener("click", () => jumpToLevel(b.dataset.domain, Number(b.dataset.lv))),
   );
 }
 
-// From A1, open a specific scenario level's rehearsal tree (fetches the practice list, finds the scenario).
+// From A1, open a specific domain level's rehearsal tree (fetches the practice list, finds the domain).
 async function jumpToLevel(scenarioId, level) {
   try {
     const { scenarios } = await (await api("/api/practice")).json();
     const s = scenarios.find((x) => x.id === scenarioId);
     if (!s) return;
-    openScenario(s);
+    openDomain(s);
     const idx = s.dialogues.findIndex((d) => d.level === level);
     if (idx >= 0) openLevel(idx);
   } catch (err) {

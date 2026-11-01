@@ -23,7 +23,7 @@ Two conventions used throughout:
   = one durable, local model. No accounts, no sign-in, no identity work.
 - **Decided: this work is the mastery loop itself** — *not* the tutor that leads. All steering/selection
   is deferred (see Part 2 → Steering).
-- **Decided: assume a starter pack exists** — a basic set of scenarios, vocabulary, and patterns as
+- **Decided: assume a starter pack exists** — a basic set of domains, vocabulary, and patterns as
   learnables — and the learner starts at **zero** against it. No generation, no leading, no exposure
   tracking, no motivation inside this work.
 
@@ -93,7 +93,7 @@ Two conventions used throughout:
   only** — the pattern frame was not produced, so the pattern gets nothing.
 
 ### Where counting happens
-- **Decided: counts accrue wherever the tutor assesses live input** — scenario turns and free
+- **Decided: counts accrue wherever the tutor assesses live input** — domain turns and free
   conversation.
 - **Excludes** **story preview** (just listening) and **free practice / record-and-compare** (local,
   unassessed). "Anywhere" means anywhere the tutor judges a live production — *not* literally everywhere
@@ -111,10 +111,10 @@ Two conventions used throughout:
   item falls back into the pool, re-masterable with one clean success; deep past threshold a single flub
   doesn't unseat it. See [learnable-subsystem-spec.md](learnable-subsystem-spec.md) §3.1.
 
-### Groups & presentation (inside scenarios)
+### Groups & presentation (inside domains)
 - An **objective draws from a group** of catalog learnables that satisfy it.
 - **Groups are catalog-backed and settled at authoring.** Existing catalog learnables form the group;
-  any natural-but-missing items get **created during scenario creation** to complete it (e.g., `tea` for
+  any natural-but-missing items get **created during domain creation** to complete it (e.g., `tea` for
   a café; repair phrases "can you repeat that?" / "again please?").
 - **Decided: a group with any unmastered item presents that item** (the one needing mastery) — *not*
   random while items remain.
@@ -138,13 +138,13 @@ Two conventions used throughout:
 - **Decided: scene/objective completion and mastery are independent layers.** The existing
   `pending → recast → completed`, the 14-turn cap, and session-complete are **one** layer (exists today,
   ephemeral). The durable mastery count is a **separate** layer [NEW].
-- **Mastery does not depend on scenario/objective/session status.** Its only question per attempt: *was
+- **Mastery does not depend on domain/objective/session status.** Its only question per attempt: *was
   it successful? → increment.*
-- **Finishing a scenario ≠ mastering its learnables.** A learner can complete the café having only nudged
+- **Finishing a domain ≠ mastering its learnables.** A learner can complete the café having only nudged
   a few counts and return another day.
 - The layers **do not gate each other** — extra successful productions count even after an objective's
   dot is already `●` (see Flow 10).
-- A scenario whose **whole group is mastered** flips to **on-repeat review**.
+- A domain whose **whole group is mastered** flips to **on-repeat review**.
 
 ### Free conversation [NEW]
 - A casual conversation mode. Draws on the learner's **attempted + mastered** learnables, **plus one or
@@ -195,7 +195,7 @@ Two conventions used throughout:
 
 Pure user stories — **role · capability · benefit** — with **Given/When/Then** acceptance criteria.
 These are deliberately **not** constrained to current app features; where a feature is implied it's
-incidental, not a requirement. The flows in Part 4 are the concrete acceptance scenarios that exercise
+incidental, not a requirement. The flows in Part 4 are the concrete acceptance domains that exercise
 these stories.
 
 ### Learner — memory & mastery
@@ -236,7 +236,7 @@ decay for no reason.
 **US-6 — Stop asking what I own.**
 As a learner, I want to stop being prompted for things I already say easily, so that practice stays on
 what's still shaky.
-- *Given* a mastered learnable, *When* I'm in a scenario, *Then* the tutor stops targeting it — unless
+- *Given* a mastered learnable, *When* I'm in a domain, *Then* the tutor stops targeting it — unless
   it's the only item available, in which case it may recur lightly.
 
 **US-7 — Progress counts wherever I really use it.**
@@ -289,8 +289,8 @@ stays enjoyable rather than a chore.
 
 **US-14 — Author real practice of an objective.**
 As an author, I want to define, at authoring time, the group of learnables that satisfies each objective —
-creating any natural-but-missing ones — so that every scenario gives genuine practice.
-- *Given* I author a scenario, *When* I define an objective, *Then* it references a group of catalog
+creating any natural-but-missing ones — so that every domain gives genuine practice.
+- *Given* I author a domain, *When* I define an objective, *Then* it references a group of catalog
   learnables, and missing-but-natural items are created to complete it.
 
 **US-15 — Mark what's high-leverage.**
@@ -313,7 +313,7 @@ whether mastery tracking behaves.
 
 ## Part 4 — The mastery journey as flows (the branches)
 
-These are **flows** — concrete acceptance scenarios, not canonical user stories. Each is a real path a
+These are **flows** — concrete acceptance domains, not canonical user stories. Each is a real path a
 learner takes through the app and hangs under the stories in Part 3. They're anchored to the café
 objective `order_coffee` = "Eno kavo, prosim" — the first **pattern** `eno + [fem acc]` and first **vocab**
 `kava` both live inside it. `n/5` = successes; **[NEW]** = the mastery layer the step depends on.
@@ -418,7 +418,7 @@ objective `order_coffee` = "Eno kavo, prosim" — the first **pattern** `eno + [
 ## Part 5 — Scope boundary
 
 **In (the mastery loop):** the durable per-learnable counters and threshold; per-learnable crediting;
-the unseen→attempted→mastered lifecycle and flub-reset; groups & presentation inside scenarios; the two
+the unseen→attempted→mastered lifecycle and flub-reset; groups & presentation inside domains; the two
 layers; free-conversation levels 1–2 (familiar + 1–2 un-attempted catalog items); counting wherever the
 tutor assesses.
 

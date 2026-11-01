@@ -1,6 +1,6 @@
 ---
 name: voice-key-phrases
-description: Give a spoken scenario's Key Phrases their play buttons by pointing each phrase at the portion of an existing NPC clip where the character says that shape — judged per phrase, critiqued independently, written by a deterministic reconcile, and gated. Use when a spoken (`advance: "audio"`) lesson's close screen has silent phrases, or the user says "voice the key phrases", "add play buttons to the close screen", "wire up the key phrase audio". Never synthesizes anything. See docs/keyphrase-span-playback.md.
+description: Give a spoken domain's Key Phrases their play buttons by pointing each phrase at the portion of an existing NPC clip where the character says that shape — judged per phrase, critiqued independently, written by a deterministic reconcile, and gated. Use when a spoken (`advance: "audio"`) lesson's close screen has silent phrases, or the user says "voice the key phrases", "add play buttons to the close screen", "wire up the key phrase audio". Never synthesizes anything. See docs/keyphrase-span-playback.md.
 ---
 
 # voice-key-phrases — the Key Phrases voicing orchestrator
@@ -19,14 +19,14 @@ In a spoken scene the learner's lines are **never synthesized** — we own no re
 putting the character's voice on their line and calling it theirs would be a lie. So the close screen's
 Key Phrases list, which is exactly those lines, has nothing to play.
 
-But the phrase was **taught**, and the character models it himself somewhere in the scenario. The button
+But the phrase was **taught**, and the character models it himself somewhere in the domain. The button
 replays *that*. Nothing new is ever generated: this pass can only ever aim at clips that already exist.
 
 ## The three lanes (never blur them)
 
 - **L — measurement**: word-level timings for clips already on disk. `npm run build:alignments`. It makes
   no choices; it reports where each word falls. Operator-run, effectively free (Speech-to-Text rates —
-  $0.22 per *hour* of audio; a scenario is a fraction of a cent, cached thereafter).
+  $0.22 per *hour* of audio; a domain is a fraction of a cent, cached thereafter).
 - **J — judgment**: which of the character's deliveries models each phrase, and which words of it. **You**,
   then an independent critic. This is a teaching judgment and it is the whole reason this is a skill.
 - **L — write + gate**: `reconcile:keyphrase-audio` writes the pointers and **derives every millisecond**;
@@ -42,7 +42,7 @@ gate will reject it — as it should.
 ## Guardrails
 
 - **Never write `server/dialogues/*.json`.** `reconcile:dialogue` owns those files. The pointers go into
-  `authoring/dialogues/<scenarioId>/reconcile-input.json` via `reconcile:keyphrase-audio`.
+  `authoring/dialogues/<domainId>/reconcile-input.json` via `reconcile:keyphrase-audio`.
 - **Never change which phrases are listed.** The list is the client lines the learner produced, computed by
   `keyPhrases()` in `server/server.ts`. That selection is about the learner and is not yours to revisit.
 - **The join is an id equality, never a similarity score.** A delivery is a candidate only if its npc node
@@ -58,7 +58,7 @@ gate will reject it — as it should.
 
 ## Procedure
 
-Work on a draft under `.scratch/keyphrase-drafts/<scenarioId>/`. **Nothing is written into `authoring/`
+Work on a draft under `.scratch/keyphrase-drafts/<domainId>/`. **Nothing is written into `authoring/`
 until the operator approves** (PR semantics).
 
 ### 0 — Gather (L). No judgment yet.
@@ -66,8 +66,8 @@ until the operator approves** (PR semantics).
 - **The key phrases**, per level: distinct `client` node `sl` in met order — the same list the close screen
   shows, computed by the same rule. A line with no letters (`"___"`, the learner saying their own name) is
   not a phrase. Never re-judge this set.
-- **Every npc utterance in the scenario**, across *all* levels: node id, level, `sl`, and its `learnables`.
-- **The alignments.** `npm run build:alignments -- <scenarioId>` (add `--dry-run` first to see the scope).
+- **Every npc utterance in the domain**, across *all* levels: node id, level, `sl`, and its `learnables`.
+- **The alignments.** `npm run build:alignments -- <domainId>` (add `--dry-run` first to see the scope).
   Then read each clip's `words[]` — index, text, start/end. Indices are real words; the provider's
   whitespace tokens are already stripped, so index *n* is word *n*.
 - **The catalog frames** for every shared id (`server/catalog/learnables.json`). A frame stores its slot as
@@ -150,9 +150,9 @@ Write the draft `pointers.json` — `{ scenarioId, pointers: [{ level, node, fro
 words?, why }] }` — and run:
 
 ```
-npm run reconcile:keyphrase-audio -- .scratch/keyphrase-drafts/<scenarioId>/pointers.json --dry-run
-npm run reconcile:keyphrase-audio -- .scratch/keyphrase-drafts/<scenarioId>/pointers.json
-npm run reconcile:dialogue -- authoring/dialogues/<scenarioId>/reconcile-input.json
+npm run reconcile:keyphrase-audio -- .scratch/keyphrase-drafts/<domainId>/pointers.json --dry-run
+npm run reconcile:keyphrase-audio -- .scratch/keyphrase-drafts/<domainId>/pointers.json
+npm run reconcile:dialogue -- authoring/dialogues/<domainId>/reconcile-input.json
 ```
 
 The reconcile derives every `startMs`/`endMs` and every `heard` from the alignment itself. Supply a
@@ -161,8 +161,8 @@ timestamp and it refuses.
 ### 5 — Gate (L)
 
 ```
-npm run lint:keyphrase-audio -- <scenarioId>
-npm run lint:audio -- <scenarioId>
+npm run lint:keyphrase-audio -- <domainId>
+npm run lint:audio -- <domainId>
 ```
 
 Then **restart the server** — dialogue JSON loads at startup only — and **play the app**. Open a level,

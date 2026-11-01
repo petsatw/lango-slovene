@@ -22,7 +22,7 @@ import { getE4 } from "../adapters/index";
 import { IMAGE_STYLE, IMAGE_FORMAT, stripTokens, singleAssetSheetPrompt } from "../adapters/image-style";
 import { assetRenderKey } from "../assets/images";
 import { getObject, CATALOG } from "../catalog";
-import { SCENARIOS } from "../scenarios";
+import { DOMAINS } from "../domains";
 
 const apply = process.argv.slice(2).includes("--apply");
 const harvest = process.argv.slice(2).includes("--harvest");
@@ -49,7 +49,7 @@ if (harvest) {
   console.log(`\n=== rekey:assets --harvest${apply ? "  --apply" : "  (dry run)"} ===`);
   let n = 0;
   for (const h of HARVEST) {
-    const s = SCENARIOS.find((x) => x.id === h.scenario);
+    const s = DOMAINS.find((x) => x.id === h.scenario);
     const fr = s?.scene?.story?.frames.find((f) => f.objectiveId === h.objectiveId);
     if (!fr) { console.log(`   ✗ ${h.label}: frame ${h.scenario}/${h.objectiveId} not found`); continue; }
     const frameKey = keyFor(fr.imagePrompt, IMAGE_FORMAT.frame);
@@ -140,7 +140,7 @@ const renderList: string[] = [];
 
 console.log(`\n=== rekey:assets (${IMAGE_STYLE.id})${apply ? "  --apply" : "  (dry run)"} ===`);
 
-for (const s of SCENARIOS.filter((s) => s.status === "active")) {
+for (const s of DOMAINS.filter((s) => s.status === "active")) {
   const story = s.scene?.story;
   if (!story) continue;
   const items = [
@@ -155,7 +155,7 @@ for (const s of SCENARIOS.filter((s) => s.status === "active")) {
       continue;
     }
     // The same picture iff its only change is the {{ }} notation: stripped new prompt == an old render's
-    // prompt. Match by prompt CONTENT across all scenarios — frames with identical prompts (greet,
+    // prompt. Match by prompt CONTENT across all domains — frames with identical prompts (greet,
     // ask_price, pay_leave) are one shared image (content-addressed), as they were before.
     const target = stripTokens(it.prompt);
     const old = manifest.find((e) => e.type === "image" && e.prompt === target && store.has(e.key, "image"));

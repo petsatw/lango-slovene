@@ -5,7 +5,7 @@
 // assets a given frame/scene actually uses and tile their renders — each labelled — into ONE montage,
 // which is the single reference image submitted to the generator. So a frame/scene is still anchored to
 // one labelled sheet (strong, all-assets-pinned consistency), but that sheet is now composed on the fly
-// from SHARED per-asset renders instead of one monolithic per-scenario generation. Money rendered once
+// from SHARED per-asset renders instead of one monolithic per-domain generation. Money rendered once
 // is the same pixels on every sheet it appears in.
 //
 // The composed sheet is content-addressed on the ordered set of per-asset render keys it combines, so a
