@@ -127,7 +127,7 @@ try {
   await tap();
   eq("slovene side", await text("#fc-card .fc-main"), card.sl);
   if (card.example) {
-    eq("example line", await text("#fc-card .fc-example"), `${card.example.sl}${card.example.en}`);
+    eq("in context section", await text("#fc-card .fc-example"), `In Context${card.example.sl}`);
     await until("clip request", () => audio.length === 1);
     eq("clip", audio, [{ id: card.id, served: true }]);
     await playing(card.id);
