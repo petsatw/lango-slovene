@@ -65,7 +65,7 @@ Each accepted event becomes one line in `DATA_DIR/events/events.jsonl`:
 | `flashcards_started` | card mode opens ([flashcards](../flashcards/spec.md#9-events)) | `domainId`, `from` (`overview`, `list`), `firstSide` (`en`, `sl`), `includeMemorised`, `deckSize` |
 | `flashcard_rated` | the rate call for a "Nailed it" or "Oops" tap settles | `domainId`, `learnableId`, `result` (`nailed`, `oops`), `firstSide`, `memorised` (`null` when the call failed), `hasAudio` |
 | `flashcards_pass_completed` | the last card of a flashcard pass is rated | `domainId`, `pass`, `cards` |
-| `flashcards_setting_changed` | a card-mode control changes | `setting` (`firstSide`, `includeMemorised`), `value` |
+| `flashcards_setting_changed` | a card-mode control changes | `setting` (`firstSide`, `includeMemorised`, `inContext`), `value` |
 | `flashcards_ended` | card mode closes | `domainId`, `rated`, `ms` |
 | `feedback_submitted` | a feedback sheet is sent | `surface`, `screen`, `domainId`, `level`, `lessonId`, plus `text` ([feedback](../feedback/spec.md#3-context)) |
 

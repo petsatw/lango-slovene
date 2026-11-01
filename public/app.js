@@ -890,6 +890,8 @@ let fcStartedAt = null, fcRated = 0, fcPass = 0; // card-mode events: set once t
 const fcFirstSide = () => (localStorage.getItem("flashcardsFirstSide") === "sl" ? "sl" : "en");
 const fcInclude = () => localStorage.getItem("flashcardsIncludeMemorised") === "1";
 
+const fcInContext = () => localStorage.getItem("flashcardsInContext") !== "0";
+
 function fcStopClip() { $("fc-audio").pause(); }
 function leaveFlashcards() {
   if (fcStartedAt !== null) track("flashcards_ended", { domainId: currentDomain.id, rated: fcRated, ms: Math.max(1, Date.now() - fcStartedAt) });
@@ -923,6 +925,7 @@ function syncFcControls() {
   const side = fcFirstSide();
   for (const b of document.querySelectorAll(".fc-seg-opt")) b.setAttribute("aria-pressed", String(b.dataset.side === side));
   $("fc-include").checked = fcInclude();
+  $("fc-context").checked = fcInContext();
 }
 
 // Fisher–Yates over the due cards (all cards with "Include memorised"); the card that ended the last pass
@@ -972,9 +975,10 @@ function renderFcCard() {
   if (fcShown === "en") { add("fc-main", card.en); return; }
   add("fc-main", card.sl);
   if (card.note) add("fc-note", card.note);
-  if (!card.example) return;
-  const ex = add("fc-example", card.example.sl);
-  add("fc-example-en", card.example.en, ex);
+  if (!card.example || !fcInContext()) return;
+  const ex = add("fc-example", "");
+  add("fc-example-head", "In Context", ex);
+  add("fc-example-sl", card.example.sl, ex);
   const a = $("fc-audio");
   const src = `/api/flashcards/audio?domainId=${encodeURIComponent(currentDomain.id)}&id=${encodeURIComponent(card.id)}`;
   if (a.getAttribute("src") === src) a.currentTime = 0; else a.src = src;
@@ -3010,6 +3014,12 @@ async function init() {
     await Promise.all(fcPending);
     fcPending = [];
     if (gen === fcGen) startPass(null);
+  });
+
+  $("fc-context").addEventListener("change", (e) => {
+    track("flashcards_setting_changed", { setting: "inContext", value: e.target.checked });
+    localStorage.setItem("flashcardsInContext", e.target.checked ? "1" : "0");
+    if (!e.target.checked) { fcStopClip(); if (fcDeck[fcPos] && fcShown === "sl") renderFcCard(); }
   });
 
   // Rehearsal tree overlay controls.
