@@ -59,6 +59,7 @@
     <div id="words-row" class="words-row" role="group" aria-labelledby="words-row-label" hidden>
       <span id="words-row-label" class="words-row-label">Words and Phrases</span>
       <button id="words-overview" class="words-chip" type="button">Overview</button>
+      <button id="words-flashcards" class="words-chip" type="button">Flashcards</button>
     </div>
     <div id="level-list" class="level-list"></div>
   </main>
@@ -66,7 +67,29 @@
   <!-- WORDS AND PHRASES — a domain's flashcard learnables, English next to Slovene (docs/features/flashcards/spec.md §3). -->
   <main id="words" class="screen" hidden>
     <h2 class="screen-title">Words and Phrases</h2>
+    <button id="words-flashcards-btn" class="words-chip words-flashcards-btn" type="button">Flashcards</button>
     <div id="words-list" class="words-list" role="list"></div>
+  </main>
+
+  <!-- CARD MODE — the flashcard drill over a domain's cards (docs/features/flashcards/spec.md §4). -->
+  <main id="flashcards" class="screen" hidden>
+    <div class="fc-controls">
+      <div id="fc-side" class="fc-seg" role="group" aria-label="First side">
+        <button type="button" class="fc-seg-opt" data-side="en" aria-pressed="true">English</button>
+        <button type="button" class="fc-seg-opt" data-side="sl" aria-pressed="false">Slovene</button>
+      </div>
+      <label class="fc-switch"><input id="fc-include" type="checkbox" role="switch" /> Include memorised</label>
+    </div>
+    <div id="fc-area" class="fc-area">
+      <button id="fc-card" class="fc-card" type="button" hidden></button>
+      <p id="fc-empty" class="fc-empty" hidden>Everything here is memorised.</p>
+    </div>
+    <div id="fc-rate" class="fc-rate" hidden>
+      <button id="fc-nailed" class="fc-btn" type="button">Nailed it</button>
+      <button id="fc-oops" class="fc-btn" type="button">Oops</button>
+    </div>
+    <div id="fc-toast" class="fc-toast" role="status" hidden>Shuffled. Going again.</div>
+    <audio id="fc-audio" preload="none"></audio>
   </main>
 
   <!-- ② LIVE AI TUTOR — ONE practice surface running either of the two speaking modes behind an
