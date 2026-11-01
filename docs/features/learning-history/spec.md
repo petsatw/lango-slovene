@@ -49,7 +49,8 @@ For each entry:
 - its translations (`DATA_DIR/live/<sessionId>.gloss.json`)
 - its improvement copy (`DATA_DIR/improve/<sessionId>.json`)
 
-The learner model `DATA_DIR/learners/<learnerId>.json` stays, with its progress credit.
+The learner model `DATA_DIR/learners/<learnerId>.json` stays, with its progress credit and flashcard state
+([flashcards](../flashcards/spec.md#7-flashcard-state)).
 
 ## 5. Owner access
 

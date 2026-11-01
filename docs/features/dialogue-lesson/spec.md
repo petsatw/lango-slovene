@@ -4,7 +4,8 @@ A domain's levels are dialogue lessons. A tap dialogue is a branching conversati
 through in an overlay; a spoken lesson is one the app plays on its own full-screen surface
 ([rehearsal dialogues](../../rehearsal-dialogues.md)). The learner can see how demanding a level is
 before opening it, move freely through a tap dialogue, and start either kind of lesson over at any time.
-A tap dialogue credits nothing; credit comes from spoken lessons and live sessions.
+A tap dialogue credits nothing; credit comes from spoken lessons and live sessions. Above the level
+cards, the "Words and Phrases" row opens the domain's [flashcards](../flashcards/spec.md#2-words-and-phrases-row).
 
 ## 1. Difficulty chip
 

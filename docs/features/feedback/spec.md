@@ -50,7 +50,7 @@ Each `feedback_submitted` event carries where the learner was when they opened t
 
 - `screen`: `dialogue` while the tap-dialogue overlay is open, `spoken` on the spoken-lesson screen,
   `live` on the tutor screen during a live session and on its wrap-up, and otherwise the id of the
-  screen showing (`home`, `practice`, `levels`, `a1`, `tutor`, `settings`, `history`).
+  screen showing (`home`, `practice`, `levels`, `words`, `flashcards`, `a1`, `tutor`, `settings`, `history`).
 - In a tap dialogue or spoken lesson: `domainId` and `level` of that lesson.
 - In a live session or on its wrap-up: `lessonId` of that session, as in `live_started`.
 - Props that don't apply are left out.

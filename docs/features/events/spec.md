@@ -47,7 +47,7 @@ Each accepted event becomes one line in `DATA_DIR/events/events.jsonl`:
 |---|---|---|
 | `app_open` | the app loads | `standalone` (home-screen app), `isFirstOpen`, `path` |
 | `tester_code_seen` | an invite link stores a code | — |
-| `screen_viewed` | `showScreen` runs | `screen` (`home`, `practice`, `levels`, `a1`, `tutor`, `scene`, `settings`, `history`) |
+| `screen_viewed` | `showScreen` runs | `screen` (`home`, `practice`, `levels`, `words`, `flashcards`, `a1`, `tutor`, `scene`, `settings`, `history`) |
 | `intro_completed` | a scene or level intro plays to the end | `kind` (`scene`, `level`), `id` |
 | `intro_quit` | the learner leaves an intro early | `kind`, `id` |
 | `level_started` | a level opens, including from a finder match | `domainId`, `level` |
@@ -62,9 +62,14 @@ Each accepted event becomes one line in `DATA_DIR/events/events.jsonl`:
 | `finder_query` | a finder search settles: the learner presses Enter or stops typing for 1 second | `resultCount` |
 | `finder_no_match` | a settled finder search shows no lessons | — |
 | `finder_match_opened` | a finder result is opened | `domainId` |
+| `flashcards_started` | card mode opens ([flashcards](../flashcards/spec.md#9-events)) | `domainId`, `from` (`overview`, `list`), `firstSide` (`en`, `sl`), `includeMemorised`, `deckSize` |
+| `flashcard_rated` | the rate call for a "Nailed it" or "Oops" tap settles | `domainId`, `learnableId`, `result` (`nailed`, `oops`), `firstSide`, `memorised` (`null` when the call failed), `hasAudio` |
+| `flashcards_pass_completed` | the last card of a flashcard pass is rated | `domainId`, `pass`, `cards` |
+| `flashcards_setting_changed` | a card-mode control changes | `setting` (`firstSide`, `includeMemorised`), `value` |
+| `flashcards_ended` | card mode closes | `domainId`, `rated`, `ms` |
 | `feedback_submitted` | a feedback sheet is sent | `surface`, `screen`, `domainId`, `level`, `lessonId`, plus `text` ([feedback](../feedback/spec.md#3-context)) |
 
-Back and Next in a tap dialogue record no event.
+Back and Next in a tap dialogue record no event. Turning a flashcard and playing its clip record no event.
 
 The finder events record that a search happened and its outcome. `finder_query` and `finder_no_match` are recorded
 once per distinct trimmed, non-empty query. The query text stays in the browser.
