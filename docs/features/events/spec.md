@@ -47,7 +47,7 @@ Each accepted event becomes one line in `DATA_DIR/events/events.jsonl`:
 |---|---|---|
 | `app_open` | the app loads | `standalone` (home-screen app), `isFirstOpen`, `path` |
 | `tester_code_seen` | an invite link stores a code | — |
-| `screen_viewed` | `showScreen` runs | `screen` (`home`, `practice`, `levels`, `a1`, `tutor`, `scene`) |
+| `screen_viewed` | `showScreen` runs | `screen` (`home`, `practice`, `levels`, `a1`, `tutor`, `scene`, `settings`, `history`) |
 | `intro_completed` | a scene or level intro plays to the end | `kind` (`scene`, `level`), `id` |
 | `intro_quit` | the learner leaves an intro early | `kind`, `id` |
 | `level_started` | a level opens | `scenarioId`, `level` |
