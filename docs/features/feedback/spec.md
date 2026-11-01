@@ -22,7 +22,7 @@ One standard sheet serves every point: a title, a labelled text box and Send.
 
 - The text box takes at most 1000 characters. Text is required: **Send** is disabled until the box holds
   text that isn't blank.
-- **Send** calls `track("feedback_submitted", { surface, screen, scenarioId, level, lessonId })` with the
+- **Send** calls `track("feedback_submitted", { surface, screen, domainId, level, lessonId })` with the
   trimmed text as `text`, closes the sheet and shows "Thanks". The context props follow §3.
 - Closing the sheet without sending records nothing.
 
@@ -51,7 +51,7 @@ Each `feedback_submitted` event carries where the learner was when they opened t
 - `screen`: `dialogue` while the tap-dialogue overlay is open, `spoken` on the spoken-lesson screen,
   `live` on the tutor screen during a live session and on its wrap-up, and otherwise the id of the
   screen showing (`home`, `practice`, `levels`, `a1`, `tutor`, `settings`, `history`).
-- In a tap dialogue or spoken lesson: `scenarioId` and `level` of that lesson.
+- In a tap dialogue or spoken lesson: `domainId` and `level` of that lesson.
 - In a live session or on its wrap-up: `lessonId` of that session, as in `live_started`.
 - Props that don't apply are left out.
 
@@ -77,4 +77,5 @@ Each `feedback_submitted` event carries where the learner was when they opened t
   characters by the server.
 - Delete my data and the 12-month inactivity sweep remove a learner's feedback
   ([data deletion](../data-deletion/spec.md#2-what-is-deleted)).
-- Readout: `jq -r 'select(.name == "feedback_submitted") | [.ts, (.testerCode // "-"), .props.surface, (.props.screen // "-"), (.props.scenarioId // .props.lessonId // "-"), (.text // "")] | @tsv' events.jsonl`
+- Readout, on the team readout's rows saved as `rows.jsonl` ([events](../events/spec.md#5-readout)):
+  `jq -r 'select(.kind == "event" and .name == "feedback_submitted") | [.ts, .tester, .props.surface, (.props.screen // "-"), (.props.domainId // .props.lessonId // "-"), (.text // "")] | @tsv' rows.jsonl`
