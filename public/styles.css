@@ -149,11 +149,14 @@ main.screen, main.home {
 }
 .words-list { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 8px; }
 .words-item {
-  display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: baseline;
+  display: grid; gap: 12px; align-items: baseline;
   background: var(--panel); border: 1px solid #2b2f38; border-radius: 12px; padding: 10px 14px;
 }
+.words-head, .words-item { grid-template-columns: 1fr 1fr 5.5em 1.2em; }
+.words-head { display: grid; gap: 12px; width: 100%; max-width: 520px; padding: 0 14px 4px; font-size: 12px; opacity: 0.7; }
 .words-sl { font-weight: 600; }
-.words-tick { color: var(--green); font-weight: 700; }
+.words-play { background: none; border: 0; color: inherit; cursor: pointer; font-size: 14px; padding: 2px 6px; }
+.words-tick { grid-column: 4; color: var(--green); font-weight: 700; }
 /* The list screen scrolls with the page, so the button sticks to the viewport (§3). */
 #words { overflow-y: visible; }
 .words-flashcards-btn { position: sticky; top: 0; align-self: flex-start; margin-bottom: 10px; z-index: 1; }
