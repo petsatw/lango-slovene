@@ -1,6 +1,7 @@
 {
   "id": "slavko-intro",
-  "name": "Slavko",
+  "name": "Meet Slavko",
+  "nameSl": "Spoznaj Slavka",
   "title": "Meeting Slavko",
   "summaryEN": "First conversation with Slavko: your name, where you're from, what languages you speak, asking him to slow down or repeat.",
   "tags": ["meet", "introduce", "name", "where are you from", "languages", "speak slovene", "slowly", "repeat", "what is this", "how do you say"],

@@ -1,6 +1,7 @@
 {
   "id": "bakery",
   "name": "Bakery",
+  "nameSl": "Pekarna",
   "title": "At the bakery (pekarna)",
   "summaryEN": "Buying bread, rolls and pastries at a bakery: ordering one or two of something, ordering by weight, asking prices, ordering a cake ahead.",
   "tags": ["bakery", "pekarna", "bread", "rolls", "pastry", "cake", "buying food", "shop", "weight", "kilo", "grams", "decagrams", "quantities", "numbers", "price"],

@@ -93,6 +93,8 @@ export interface Domain {
   id: string;
   /** Short label for the picker dropdown (e.g. "Café"). Falls back to title if absent. */
   name?: string;
+  /** Slovene translation of `name`, plain text. Absent for demo. */
+  nameSl?: string;
   title: string;
   /** One plain-English sentence of the situations this domain covers — read by the domain finder
    *  (server/match.ts). Optional; `lint:domain` requires it. */

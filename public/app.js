@@ -541,11 +541,11 @@ async function loadPractice() {
         const card = document.createElement("button");
         card.className = "domain-card";
         card.type = "button";
-        const n = s.dialogues.length;
         card.innerHTML =
-          `<span class="domain-name">${s.name}</span>` +
-          `<span class="domain-meta">${n} lesson${n === 1 ? "" : "s"}</span>` +
+          `<span class="domain-titles"><span class="domain-name"></span><span class="domain-meta"></span></span>` +
           `<span class="level-chevron">›</span>`;
+        card.querySelector(".domain-name").textContent = s.name;
+        card.querySelector(".domain-meta").textContent = s.nameSl || "";
         card.addEventListener("click", () => openDomain(s));
         el.appendChild(card);
       }
@@ -819,6 +819,7 @@ function openDomain(s) {
   currentDomain = s;
   dialogues = s.dialogues;
   $("levels-title").textContent = s.name;
+  $("levels-title-sl").textContent = s.nameSl || "";
   const list = $("level-list");
   list.innerHTML = "";
   dialogues.forEach((d, i) => {
