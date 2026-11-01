@@ -99,6 +99,10 @@ main.screen, main.home {
 .scenario-titles { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .scenario-name { font-size: 18px; font-weight: 600; flex: 1; }
 .scenario-meta { color: var(--muted); font-size: 13px; }
+/* A domain without a Slovene title (demo) shows the English title only: no empty line 2. */
+.scenario-meta:empty { display: none; }
+/* Levels header line 2: the Slovene title, left-aligned directly under the screen title. */
+.screen-subtitle { margin: -10px 0 14px; width: 100%; max-width: 520px; text-align: left; }
 
 /* PRACTICE — the crisp variant/level selector: number + label + what it teaches. */
 .level-card {
