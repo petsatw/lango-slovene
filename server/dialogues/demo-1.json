@@ -1,6 +1,6 @@
 {
   "id": "demo-l1",
-  "scenarioId": "demo",
+  "domainId": "demo",
   "level": 1,
   "levelLabel": "Basic",
   "title": "Meeting Slavko",
@@ -52,7 +52,7 @@
     "Ready?"
   ],
   "practice": {
-    "scenarioId": "library",
+    "domainId": "library",
     "level": 1
   },
   "root": "n1",

@@ -188,7 +188,7 @@ export function buildLessonPrompt(lessonId: string, learnerId: string): LessonPr
   // this tree's dialogue id (e.g. sprehod-l4), if it has one — with the lines the tree just had the
   // learner say as today's lines, all of them. The lines off the card join the targets, so the lesson
   // score can count what the tutor was told to steer toward.
-  const treeScene = liveScene(d.scenarioId);
+  const treeScene = liveScene(d.domainId);
   if (treeScene) {
     const live = treeScene.surfaces.live;
     const lines = focusIdsFor(d);
@@ -215,7 +215,7 @@ export function buildLessonPrompt(lessonId: string, learnerId: string): LessonPr
 
   // The scene, built the way the rehearsal handoff builds it — the situation and what the level just
   // practised, in English. Priming only: the tutor still composes its own Slovene from the palette.
-  const scenario = getScenario(d.scenarioId);
+  const scenario = getScenario(d.domainId);
   const sceneName = scenario ? scenario.name || scenario.title : null;
   const context = sceneName
     ? { scene: `${sceneName} — ${d.title}`, practiced: d.objectives.map((o) => o.descriptorEN) }

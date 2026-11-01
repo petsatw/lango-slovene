@@ -105,9 +105,9 @@ app.get("/gallery", (_req, res) => {
 
 // Active providers, the chosen scenario (with objectives for the dots + a fresh session), and the
 // scenario list (active + PLANNED) for the picker. NO keys — safe for the client.
-// ?scenarioId= selects which scenario to boot; getScenario falls back to CAFE for unknown/planned ids.
+// ?domainId= selects which scenario to boot; getScenario falls back to CAFE for unknown/planned ids.
 app.get("/api/config", (req, res) => {
-  const scenario = getScenario(req.query.scenarioId ? String(req.query.scenarioId) : undefined);
+  const scenario = getScenario(req.query.domainId ? String(req.query.domainId) : undefined);
   res.json({
     providers: { e2: getE2().name, e3: getE3().name },
     scenario: {
@@ -145,7 +145,7 @@ app.get("/api/config", (req, res) => {
 // `started` drives the live-tutor zero-state (empty learner → seed) so the home can route without a
 // second call.
 app.get("/api/practice", (req, res) => {
-  const scenarios = SCENARIOS.map((s) => ({ s, dialogues: getPublishedDialogues(s.id) }))
+  const domains = SCENARIOS.map((s) => ({ s, dialogues: getPublishedDialogues(s.id) }))
     .filter(({ dialogues }) => dialogues.length > 0)
     .map(({ s, dialogues }) => ({
       id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null,
@@ -165,7 +165,7 @@ app.get("/api/practice", (req, res) => {
     getPublishedDialogues(s.id).some((d) => (d.advance ?? "tap") === "audio");
   const sceneScenario = SCENARIOS.find((s) => s.onboarding && spoken(s)) ?? SCENARIOS.find(spoken);
   res.json({
-    scenarios,
+    domains,
     providers: { e2: getE2().name, e3: getE3().name },
     started: learnerStarted(learnerOf(req)),
     scene: sceneScenario?.id ?? null,
@@ -187,8 +187,8 @@ function finderIndex() {
 // keystroke in the browser with no network or model call (public/app.js mirrors tokenize/score).
 app.get("/api/match/index", (_req, res) => {
   res.json({
-    entries: finderIndex().map(({ tokens, scenarioTokens, nodes, ...e }) => ({
-      ...e, tokens: [...tokens], scenarioTokens: [...scenarioTokens],
+    entries: finderIndex().map(({ tokens, domainTokens, nodes, ...e }) => ({
+      ...e, tokens: [...tokens], domainTokens: [...domainTokens],
       nodes: nodes.map((n) => ({ ...n, tokens: [...n.tokens] })),
     })),
     synonyms: SYNONYMS, stop: [...STOP], threshold: MATCH_THRESHOLD,
@@ -209,8 +209,8 @@ app.post("/api/match", async (req, res) => {
 // The client posts the node it is leaving; the server walks the spine, plants that beat's learnables as
 // ATTEMPTS, and returns the next character line with its pacing.
 //
-//   POST /api/scene { scenarioId, level? }        → the opening line (credits nothing)
-//   POST /api/scene { scenarioId, level?, from }  → the learner spoke at `from`; advance
+//   POST /api/scene { domainId, level? }        → the opening line (credits nothing)
+//   POST /api/scene { domainId, level?, from }  → the learner spoke at `from`; advance
 //
 // `level` picks which spoken level of the scenario to play; absent → the lowest. Without it only the
 // first spoken level of a scenario is reachable, and every level after it ships unplayable.
@@ -221,7 +221,7 @@ app.post("/api/match", async (req, res) => {
 // LIVE tutor works from — a live session is opened against a lesson, so a handoff that names none lands
 // the learner on a surface that cannot start.
 function sceneHandoff(scene: Dialogue) {
-  const s = SCENARIOS.find((x) => x.id === scene.scenarioId);
+  const s = SCENARIOS.find((x) => x.id === scene.domainId);
   const focus = [...new Set(Object.values(scene.nodes)
     .filter((n) => n.speaker === "client")
     .flatMap((n) => n.learnables ?? []))];
@@ -229,18 +229,18 @@ function sceneHandoff(scene: Dialogue) {
     lessonId: scene.id,
     focus: focus.length ? focus : scene.introduces,
     role: s?.role ?? null,
-    context: { scene: `${s?.name ?? s?.title ?? scene.scenarioId} — ${scene.title}`,
+    context: { scene: `${s?.name ?? s?.title ?? scene.domainId} — ${scene.title}`,
                practiced: scene.objectives.map((o) => o.descriptorEN) },
   };
 }
 
 app.post("/api/scene", (req, res) => {
-  const { scenarioId, level, from, answer } = req.body ?? {};
-  if (typeof scenarioId !== "string") return res.status(400).json({ error: "scenarioId is required" });
+  const { domainId, level, from, answer } = req.body ?? {};
+  if (typeof domainId !== "string") return res.status(400).json({ error: "domainId is required" });
 
-  const spoken = getPublishedDialogues(scenarioId).filter((d) => (d.advance ?? "tap") === "audio");
+  const spoken = getPublishedDialogues(domainId).filter((d) => (d.advance ?? "tap") === "audio");
   const scene = typeof level === "number" ? spoken.find((d) => d.level === level) : spoken[0];
-  if (!scene) return res.status(404).json({ error: `No spoken scene for scenario "${scenarioId}"${typeof level === "number" ? ` level ${level}` : ""}` });
+  if (!scene) return res.status(404).json({ error: `No spoken scene for scenario "${domainId}"${typeof level === "number" ? ` level ${level}` : ""}` });
 
   const pacing = pacingFor(scene.pacing);
 
@@ -439,12 +439,12 @@ app.get("/api/a1", (req, res) => {
     const status = (id: string) => statusOf(model.learnables[id]);
     const mastered = ids.filter((id) => status(id) === "mastered").length;
     const attempted = ids.filter((id) => status(id) === "attempted").length;
-    const scenarios = c.scenarios.map((s) => {
-      const scn = SCENARIOS.find((x) => x.id === s.scenarioId);
-      const dlg = getDialoguesForScenario(s.scenarioId).find((d) => d.level === s.level);
+    const domains = c.domains.map((s) => {
+      const scn = SCENARIOS.find((x) => x.id === s.domainId);
+      const dlg = getDialoguesForScenario(s.domainId).find((d) => d.level === s.level);
       return {
-        scenarioId: s.scenarioId,
-        name: scn?.name ?? scn?.title ?? s.scenarioId,
+        domainId: s.domainId,
+        name: scn?.name ?? scn?.title ?? s.domainId,
         level: s.level,
         levelLabel: dlg?.levelLabel ?? `Level ${s.level}`,
         title: dlg?.title ?? "",
@@ -457,7 +457,7 @@ app.get("/api/a1", (req, res) => {
       total: ids.length,
       mastered,
       attempted,
-      scenarios,
+      domains,
       items: ids.map((id) => ({ id, sl: LEARNABLES[id]!.sl, gloss: LEARNABLES[id]!.gloss, status: status(id) })),
     };
   });
@@ -528,7 +528,7 @@ app.post("/api/turn", async (req, res) => {
     if (runId) {
       try {
         const e3 = getE3();
-        const scenario = getScenario(result.session.scenarioId);
+        const scenario = getScenario(result.session.domainId);
         // The opening + every tutor reply are the CHARACTER speaking → key by the character's voice
         // profile, so the captured/replayed clip matches what /api/speak (voice=character) synthesizes.
         const tutorTag = e3.voiceTagFor(characterVoiceProfile(scenario));
@@ -538,7 +538,7 @@ app.post("/api/turn", async (req, res) => {
           : [{ role: "tutor" as const, text: scenario.opening, audioKey: tutorKey(scenario.opening) }];
         sessions.appendTurns({
           id: runId,
-          scenarioId: result.session.scenarioId,
+          lessonId: result.session.domainId,
           seedTurns,
           turns: [
             {
@@ -625,7 +625,7 @@ app.post("/api/converse", async (req, res) => {
           : [{ role: "tutor" as const, text: opening, audioKey: tutorKey(opening) }];
         sessions.appendTurns({
           id: String(runId),
-          scenarioId: "free-chat",
+          lessonId: "free-chat",
           seedTurns,
           turns: [
             {
@@ -667,11 +667,11 @@ app.get("/api/speak", async (req, res) => {
   // Voice selection: `voice=character` → the scenario character's profile (in-scene lines: the tutor
   // reply / opening); `voice=<catalog profile id>` (e.g. shop-assistant, male-speaker) → that profile
   // (rehearsal-dialogue speakers); anything else/absent → the teacher voice (targets, narration, practice).
-  const scenarioIdQ = req.query.scenarioId ? String(req.query.scenarioId) : undefined;
+  const domainIdQ = req.query.domainId ? String(req.query.domainId) : undefined;
   const voiceQ = String(req.query.voice || "");
   const voiceProfile =
     voiceQ === "character"
-      ? characterVoiceProfile(getScenario(scenarioIdQ))
+      ? characterVoiceProfile(getScenario(domainIdQ))
       : voiceQ && CATALOG.voiceProfiles[voiceQ]
         ? voiceQ
         : undefined;
@@ -711,7 +711,7 @@ app.get("/api/speak", async (req, res) => {
 
   // Scenario tags (optional) so live clips are queryable by scenario/objective in the manifest.
   const objectiveId = req.query.objectiveId ? String(req.query.objectiveId) : undefined;
-  const meta = { provider: e3.name, voiceOrModel: e3.voiceTagFor(voiceProfile), model: e3.model, text, scenarioId: scenarioIdQ, objectiveId };
+  const meta = { provider: e3.name, voiceOrModel: e3.voiceTagFor(voiceProfile), model: e3.model, text, domainId: domainIdQ, objectiveId };
 
   // A conversational reply is a sentence the tutor composed about THIS learner — "Živjo, Kris! Si
   // študent?" — and persisting it would leave a permanent recording of their name in a store shared by
@@ -758,7 +758,7 @@ app.get("/api/speak", async (req, res) => {
 // M4 — serve a scenario's story-frame / scene image from the store (read-only: playback never
 // bills; `npm run build:assets` pre-generates them). objectiveId="scene" => the final all-in image.
 app.get("/api/image", (req, res) => {
-  const scenario = getScenario(String(req.query.scenarioId || ""));
+  const scenario = getScenario(String(req.query.domainId || ""));
   const story = scenario.scene?.story;
   if (!story) return res.status(404).json({ error: "no story for scenario" });
 
@@ -797,7 +797,7 @@ app.get("/api/sessions", (_req, res) => {
   if (!OPERATOR_TOOLS) return res.json({ sessions: [] });
   const summary = sessions.list().map((r) => ({
     id: r.id,
-    scenarioId: r.scenarioId,
+    lessonId: r.lessonId,
     createdAt: r.createdAt,
     status: r.status,
     turns: r.turns.length,

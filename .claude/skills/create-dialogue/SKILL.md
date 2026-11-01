@@ -132,9 +132,9 @@ finished.** Approval and generation are both R's; a run with no R present stops 
 > current choice; if you can name that reason, don't make the choice. Optimize for what that expert
 > would judge correct, never for what satisfies the stated constraints most cheaply.
 
-Work on a DRAFT under `.scratch/dialogue-drafts/<scenarioId>/` — nothing is written into `authoring/` or
+Work on a DRAFT under `.scratch/dialogue-drafts/<domainId>/` — nothing is written into `authoring/` or
 `server/` until R approves (PR semantics). On approval the reconcile input moves to
-`authoring/dialogues/<scenarioId>/reconcile-input.json`, where it is committed source; everything else in
+`authoring/dialogues/<domainId>/reconcile-input.json`, where it is committed source; everything else in
 the draft dir is working material and stays behind.
 
 ### Terms this file uses
@@ -160,7 +160,7 @@ whole stage is extraction from files already on disk — **no script emits it; C
 Nothing here is judged.
 
 **Which levels to read.** This scenario's `advance: "audio"` dialogues with a `level` below this one, the
-**five highest** of them (`server/dialogues.ts` groups by `scenarioId` and sorts ascending by `level`; it
+**five highest** of them (`server/dialogues.ts` groups by `domainId` and sorts ascending by `level`; it
 is the ordering the close screen's Next-lesson button walks forward — `nextLevel` in `server/server.ts`).
 Fewer than five exist → take all that exist. None exist (this is level 1, or every prior level is
 `advance: "tap"`) → the ledger and the cloud are **empty, and the brief says so in as many words**. An
@@ -210,7 +210,7 @@ from there:
 - **Advance mode.**
 - **The levels to author** — each `levelLabel`, `title`, and its ordered **objectives** as EN meanings +
   the grammar point each teaches.
-- A kebab/lowercase `scenarioId`.
+- A kebab/lowercase `domainId`.
 
 Extending an existing scenario: new levels must not re-introduce covered learnables.
 
@@ -681,7 +681,7 @@ completes; it is filled in two passes because the reading needs the nodes and th
 before the critique. Then invoke **`review-lesson-script`** per level:
 
 ```bash
-npm run script:lesson -- --from .scratch/dialogue-drafts/<scenarioId>/reconcile-input.json --level <n>
+npm run script:lesson -- --from .scratch/dialogue-drafts/<domainId>/reconcile-input.json --level <n>
 ```
 
 Run the reader once per answer to any fact the level asks or declares in `needs` (`--as gender=f`), because
@@ -808,7 +808,7 @@ Rules:
 After approval, and after the input has moved into place:
 
 ```
-npm run reconcile:dialogue -- authoring/dialogues/<scenarioId>/reconcile-input.json
+npm run reconcile:dialogue -- authoring/dialogues/<domainId>/reconcile-input.json
 ```
 
 It normalizes kinds, dedups (fail-loud on a duplicate surface — fix the delta upstream and re-run), assigns
@@ -824,7 +824,7 @@ real gate output to show; the committed run is the one above.
 npm run lint:dialogue && npm run lint:tree && npm run lint:a1 && npm run test:dialogue
 ```
 
-then `npm run lint:audio -- <scenarioId>` **for information only at this stage**.
+then `npm run lint:audio -- <domainId>` **for information only at this stage**.
 
 **A gate failure is the editor's to repair** (5b) — a duplicate surface, a node off the spine, a
 `focusSpan` that matches twice, a `slowSL` equal to its `sl`. Hand it the failing output verbatim with the
@@ -940,8 +940,8 @@ the editor returns. One editorial pass per rejection, then back to R.
 - **Audio — R runs these.** C prints the block; C does not run it.
 
   ```
-  npm run build:dialogue-assets -- <scenarioId> [--level n]   # lines
-  npm run build:dialogue-intros -- <scenarioId> [--level n]   # intro monologues
+  npm run build:dialogue-assets -- <domainId> [--level n]   # lines
+  npm run build:dialogue-intros -- <domainId> [--level n]   # intro monologues
   ```
 
   Each is preflight-gated (fails fast on an unset voice binding), idempotent, and billed only for new
@@ -950,7 +950,7 @@ the editor returns. One editorial pass per rejection, then back to R.
   `ready`.
 
 - **Verify the generation landed — REQUIRED, and the work is not done until it is green:**
-  `npm run lint:audio -- <scenarioId>`. This is the only check that a level claiming `audio: "ready"`
+  `npm run lint:audio -- <domainId>`. This is the only check that a level claiming `audio: "ready"`
   actually has its bytes; every other gate inspects JSON, not the store. The failure it catches is
   invisible at runtime — a missing clip makes the scene play **silent and too fast** without ever erroring
   (`/api/speak` 502s, the `<audio>` fires `onerror`, and `await sceneSay(...)` resolves instantly,
@@ -965,7 +965,7 @@ the editor returns. One editorial pass per rejection, then back to R.
   do nothing.
 
   ```
-  npm run build:alignments -- <scenarioId>     # measures clips already on disk — never synthesizes
+  npm run build:alignments -- <domainId>     # measures clips already on disk — never synthesizes
   ```
 
   then invoke the **`voice-key-phrases`** skill for the levels just built. It generates nothing and bills

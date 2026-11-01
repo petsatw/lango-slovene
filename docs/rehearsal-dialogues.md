@@ -31,14 +31,14 @@ built is auto-selecting which dialogue comes next (roadmap item 5).
 ## Data model
 
 One file per level: `server/dialogues/<scenario>-<level>.json`, loaded + validated at startup by
-[`server/dialogues.ts`](../server/dialogues.ts), **grouped by `scenarioId`** and sorted ascending by
+[`server/dialogues.ts`](../server/dialogues.ts), **grouped by `domainId`** and sorted ascending by
 `level` (levels must be unique within a scenario). A scenario with no dialogue file simply has none —
 the feature is optional per scenario.
 
 ```jsonc
 {
   "id": "bakery-l1",
-  "scenarioId": "bakery",          // which scenario this pairs with
+  "domainId": "bakery",          // which scenario this pairs with
   "level": 1,                       // 1..N, ascending difficulty; unique per scenario
   "levelLabel": "Survival",         // short human label for the tab
   "title": "Buy bread — the basics",
@@ -411,7 +411,7 @@ that every `introduces` id resolves, and reports which dialogue introduces which
 Pregenerate with:
 
 ```bash
-npm run build:dialogue-assets -- <scenarioId> [--level <n>] [--nodes <id,id,…>] [--regen]
+npm run build:dialogue-assets -- <domainId> [--level <n>] [--nodes <id,id,…>] [--regen]
 ```
 
 `--nodes` is an **audition**: it synthesizes only those node ids (a cheap pre-approval spot-check of a voice
@@ -462,7 +462,7 @@ which stays true, and `lint:tree` goes on checking the two agree.
 The **intro** monologue clips are a separate build (the line builder above deliberately skips them):
 
 ```bash
-npm run build:dialogue-intros -- <scenarioId> [--level <n>] [--regen]
+npm run build:dialogue-intros -- <domainId> [--level <n>] [--regen]
 ```
 
 [`server/scripts/build-dialogue-intros.ts`](../server/scripts/build-dialogue-intros.ts) synthesizes each

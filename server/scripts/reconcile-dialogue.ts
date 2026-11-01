@@ -46,7 +46,7 @@ function die(msg: string): never {
 
 // ---- Input shape (authored by the create-dialogue skill; see docs/authoring-pipeline.md) -----------
 // {
-//   scenario: { id, name?, title, status?, character, role?, setup, opening, register?:{form,variety} },
+//   domain: { id, name?, title, status?, character, role?, setup, opening, register?:{form,variety} },
 //   dialogueVoices: { npc, client },                       // shared across the scenario's levels
 //   dialogueAdvance?: "tap" | "audio",                     // default "tap" — how the learner advances
 //   dialoguePacing?: string,                               // spoken scenes: pacing profile id (catalog/pacing.json);
@@ -71,7 +71,7 @@ function die(msg: string): never {
 //                        without stopping to ask again */,
 //              frameEN? /* the English on-ramp shown before the scene opens */,
 //              tutorial? /* [{target,text}] — the run controls this level teaches, before its first line */,
-//              practice? /* {scenarioId,level} — the rehearsal dialogue "Go Deeper › Reading/Listening" opens */,
+//              practice? /* {domainId,level} — the rehearsal dialogue "Go Deeper › Reading/Listening" opens */,
 //              catalog: { reuse:[id…], new:[{id,kind,sl,gloss,predictableError?,core?,a1?,rank?}…] } } ],
 //   criticFixes?: [ { level, nodeId, field:"sl"|"en"|"deliverySL"|"slowSL"|"deliverySlowSL"|"context", oldExact, newExact } ],
 //   a1Candidates?: [ { learnableId, competencyId, note? } ]
@@ -90,13 +90,13 @@ try {
 }
 
 const rel = (p: string) => path.relative(ROOT, p);
-const S = input.scenario;
-if (!S || typeof S !== "object") die(`"scenario" object is required`);
+const S = input.domain;
+if (!S || typeof S !== "object") die(`"domain" object is required`);
 for (const k of ["id", "title", "character", "setup", "opening"]) {
-  if (typeof S[k] !== "string" || !S[k]) die(`scenario.${k} must be a non-empty string`);
+  if (typeof S[k] !== "string" || !S[k]) die(`domain.${k} must be a non-empty string`);
 }
-const scenarioId: string = S.id;
-if (!/^[a-z0-9_-]+$/.test(scenarioId)) die(`scenario.id "${scenarioId}" must be kebab/snake lowercase`);
+const domainId: string = S.id;
+if (!/^[a-z0-9_-]+$/.test(domainId)) die(`domain.id "${domainId}" must be kebab/snake lowercase`);
 
 const voices = input.dialogueVoices;
 if (!voices || typeof voices.npc !== "string" || typeof voices.client !== "string")
@@ -348,7 +348,7 @@ for (const lvl of input.levels) {
   for (const o of lvl.objectives) if (!o.label || !o.descriptorEN) die(`level ${lvl.level}: each objective needs label + descriptorEN`);
   selfCheckTree(lvl.level, lvl.root, lvl.nodes);
 
-  const file = path.join(DIALOGUES_DIR, `${scenarioId}-${lvl.level}.json`);
+  const file = path.join(DIALOGUES_DIR, `${domainId}-${lvl.level}.json`);
   // An author target that names a band ("advanced") is written in the classifier's own casing, so a
   // measured and an unmeasured level never disagree about how the same band is spelled.
   const band = bandByLevel.get(lvl.level);
@@ -361,8 +361,8 @@ for (const lvl of input.levels) {
   const pacing = (typeof input.dialoguePacing === "string" && input.dialoguePacing ? input.dialoguePacing : undefined)
     ?? existingPacing(file);
   const dialogue = {
-    id: `${scenarioId}-l${lvl.level}`,
-    scenarioId,
+    id: `${domainId}-l${lvl.level}`,
+    domainId,
     level: lvl.level,
     levelLabel: computedLabel,
     title: lvl.title,
@@ -393,11 +393,11 @@ if (mintedIds.size) {
 }
 
 // ---- Step 7: write/update the scenario MANIFEST (D2) — preserve any legacy scene/objectives ---------
-const manifestFile = path.join(SCENARIOS_DIR, `${scenarioId}.json`);
+const manifestFile = path.join(SCENARIOS_DIR, `${domainId}.json`);
 const prevManifest = existsSync(manifestFile) ? JSON.parse(readFileSync(manifestFile, "utf8")) : {};
 const manifest: any = {
   ...prevManifest,
-  id: scenarioId,
+  id: domainId,
   ...(S.name ? { name: S.name } : prevManifest.name ? { name: prevManifest.name } : {}),
   title: S.title,
   status: S.status ?? prevManifest.status ?? "active",
@@ -442,7 +442,7 @@ if (candidateReport.length) {
 }
 
 // ---- Summary ----------------------------------------------------------------------------------------
-console.log(`\n✅ reconcile-dialogue — ${scenarioId}`);
+console.log(`\n✅ reconcile-dialogue — ${domainId}`);
 console.log(`   minted ${mintedIds.size} new learnable(s): ${[...mintedIds].join(", ") || "(none)"}`);
 console.log(`   critic fixes applied: ${fixesApplied}`);
 for (const lvl of input.levels) {

@@ -125,7 +125,7 @@ each leads, what it introduces, what it reuses.
 
 ## Stage 6 — The map, to R
 
-Write `.scratch/dialogue-drafts/<scenarioId>/domain-map.md`:
+Write `.scratch/dialogue-drafts/<domainId>/domain-map.md`:
 1. **Settings** — the domain, the interlocutors with their registers, the voices, who speaks the learner's
    lines and their gender, the facts, the defaults taken.
 2. **The card** — core, bank, stock. One row per item: id, Slovene, English, kind, `existing` or `new`, the
@@ -175,7 +175,7 @@ R approves, or returns notes; one pass on the notes, then back to R.
 
 ## Stage 8 — The handoff
 
-Write `.scratch/<yyyy-mm-dd>-handoff-<scenarioId>-tap-trees.md` for a fresh session. Its objective is to
+Write `.scratch/<yyyy-mm-dd>-handoff-<domainId>-tap-trees.md` for a fresh session. Its objective is to
 author every level in the plan with **create-tap-tree**, on the "the plan exists" path. It carries:
 - **Anchors**:
   - `.claude/skills/create-tap-tree/SKILL.md`

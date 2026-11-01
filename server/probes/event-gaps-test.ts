@@ -36,7 +36,7 @@ let pass = false;
 try {
   await up();
   const practice = await (await fetch(`${base}/api/practice`)).json();
-  const lv = practice.scenarios
+  const lv = practice.domains
     .flatMap((sc: any) => sc.dialogues.map((d: any) => ({ sc, d })))
     .find((x: any) => (x.d.advance ?? "tap") !== "audio" && !x.d.intro && x.d.introduces?.length);
   if (!lv) throw new Error("no tap level with introduces");
@@ -128,7 +128,7 @@ try {
     "one finder_no_match": all.filter((r) => r.name === "finder_no_match").length === 1,
     "one finder_match_opened": all.filter((r) => r.name === "finder_match_opened").length === 1,
     "one level_started after finder_match_opened": startedAfter.length === 1
-      && startedAfter[0].props?.scenarioId === all[opened_i].props?.scenarioId && startedAfter[0].props?.level === lv.d.level,
+      && startedAfter[0].props?.domainId === all[opened_i].props?.domainId && startedAfter[0].props?.level === lv.d.level,
     "level_started pairs with completed/abandoned": paired,
     "no query text in the log": !leaks(readFileSync(log, "utf8")),
     "no query text in event payloads": payloads.length > 0 && !payloads.some(leaks),

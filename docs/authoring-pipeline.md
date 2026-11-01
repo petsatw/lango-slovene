@@ -88,8 +88,8 @@ Script: **`server/scripts/reconcile-dialogue.ts`**. Gates: `lint:dialogue`, `lin
 
 ### The reconcile input contract
 
-The orchestrator assembles ONE bundle at `authoring/dialogues/<scenarioId>/reconcile-input.json` — drafted
-under `.scratch/dialogue-drafts/<scenarioId>/` while it is still a proposal, moved into place on approval
+The orchestrator assembles ONE bundle at `authoring/dialogues/<domainId>/reconcile-input.json` — drafted
+under `.scratch/dialogue-drafts/<domainId>/` while it is still a proposal, moved into place on approval
 (it is source; see "The input is COMMITTED"). Reconcile writes its `a1-candidates.json` beside it; that one
 is gitignored, a worklist to be folded into the a1-map and spent.
 

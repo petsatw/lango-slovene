@@ -50,7 +50,7 @@ try {
   await page.route("**/v1/live/sessions", (route) =>
     route.fulfill({
       status: 201, contentType: "application/json",
-      body: JSON.stringify({ sessionId: "11111111-2222-3333-4444-555555555555", wsUrl: `ws://127.0.0.1:${port}/v1/live/sessions/probe`, ttlSec: 60, scenario: "Probe scenario" }),
+      body: JSON.stringify({ sessionId: "11111111-2222-3333-4444-555555555555", wsUrl: `ws://127.0.0.1:${port}/v1/live/sessions/probe`, ttlSec: 60, domain: "Probe scenario" }),
     }));
   await page.routeWebSocket(/\/v1\/live\/sessions\//, (ws) => {
     socket = ws;
@@ -141,7 +141,7 @@ try {
 
   // 3. A tap level.
   const practice = await (await fetch(`${base}/api/practice`)).json();
-  const lv = practice.scenarios
+  const lv = practice.domains
     .flatMap((sc: any) => sc.dialogues.map((d: any) => ({ sc, d })))
     .find((x: any) => (x.d.advance ?? "tap") === "tap");
   if (!lv) throw new Error("no tap level to play");
@@ -242,14 +242,14 @@ try {
   check("no feedback_submitted prop is null or empty", fb.every((r) => Object.values(r.props ?? {}).every((v) => v !== null && v !== "")),
     JSON.stringify(fb.map((r) => r.props)));
   // A spoken lesson without a level (the first-open one) carries no `level`.
-  expect("chip spoken", { surface: "chip", screen: "spoken", scenarioId: "*", level: "?" }, ["lessonId"]);
-  expect("chip dialogue", { surface: "chip", screen: "dialogue", scenarioId: lv.sc.id, level: lv.d.level }, ["lessonId"]);
-  expect("chip live", { surface: "chip", screen: "live", lessonId: "*" }, ["scenarioId", "level"]);
-  expect("header home", { surface: "header", screen: "home" }, ["scenarioId", "level", "lessonId"]);
-  expect("level end dialogue", { surface: "level_end", screen: "dialogue", scenarioId: lv.sc.id, level: lv.d.level });
-  expect("level end spoken", { surface: "level_end", screen: "spoken", scenarioId: "*", level: "?" }, ["lessonId"]);
+  expect("chip spoken", { surface: "chip", screen: "spoken", domainId: "*", level: "?" }, ["lessonId"]);
+  expect("chip dialogue", { surface: "chip", screen: "dialogue", domainId: lv.sc.id, level: lv.d.level }, ["lessonId"]);
+  expect("chip live", { surface: "chip", screen: "live", lessonId: "*" }, ["domainId", "level"]);
+  expect("header home", { surface: "header", screen: "home" }, ["domainId", "level", "lessonId"]);
+  expect("level end dialogue", { surface: "level_end", screen: "dialogue", domainId: lv.sc.id, level: lv.d.level });
+  expect("level end spoken", { surface: "level_end", screen: "spoken", domainId: "*", level: "?" }, ["lessonId"]);
   expect("live end", { surface: "live_end", screen: "live", lessonId: "*" });
-  expect("finder request", { surface: "finder_request", screen: "practice" }, ["scenarioId", "level", "lessonId"]);
+  expect("finder request", { surface: "finder_request", screen: "practice" }, ["domainId", "level", "lessonId"]);
   expect("header live", { surface: "header", screen: "live", lessonId: "*" });
 
   pass = failures.length === 0;

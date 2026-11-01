@@ -53,7 +53,7 @@ async function main() {
   });
   const created: any = await res.json();
   check("create answers 201", res.status === 201, String(res.status));
-  check("create carries the lesson's scenario name", created.scenario === scenarioName("demo-l1") && !!created.scenario, String(created.scenario));
+  check("create carries the lesson's scenario name", created.domain === scenarioName("demo-l1") && !!created.domain, String(created.domain));
   const frames: any[] = [];
   await new Promise<void>((resolve) => {
     const sock = new WebSocket(created.wsUrl);
@@ -135,7 +135,7 @@ async function main() {
   await page.route("**/v1/live/sessions", (route) =>
     route.fulfill({
       status: 201, contentType: "application/json",
-      body: JSON.stringify({ sessionId: "11111111-2222-3333-4444-555555555555", wsUrl: `ws://127.0.0.1:${port}/v1/live/sessions/probe`, ttlSec: 60, scenario: "Probe scenario" }),
+      body: JSON.stringify({ sessionId: "11111111-2222-3333-4444-555555555555", wsUrl: `ws://127.0.0.1:${port}/v1/live/sessions/probe`, ttlSec: 60, domain: "Probe scenario" }),
     }));
   await page.routeWebSocket(/\/v1\/live\/sessions\//, (ws) => {
     sent.length = 0;

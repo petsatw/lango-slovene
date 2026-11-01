@@ -1,6 +1,6 @@
 {
   "id": "upravna-enota-l2",
-  "scenarioId": "upravna-enota",
+  "domainId": "upravna-enota",
   "level": 2,
   "levelLabel": "Intermediate",
   "title": "Fee & notification",

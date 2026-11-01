@@ -2,7 +2,7 @@
 // objective rules a script CAN verify; the fuzzy criteria (native-not-textbook, flashcard atomicity,
 // register consistency, child-simple story) are the scenario-critic subagent's job, not this.
 //
-//   npm run lint:scenario -- <scenarioId>        # lint a loaded scenario
+//   npm run lint:scenario -- <domainId>        # lint a loaded scenario
 //   npm run lint:scenario -- --file <path.json>  # lint a draft file not yet in server/scenarios/
 //
 // Exit code 0 = pass, 1 = at least one failure (so the skill can gate on it). Shared-id reuse is

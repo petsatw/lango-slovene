@@ -67,7 +67,7 @@ for(const f of fs.readdirSync("server/dialogues").filter(f=>f.startsWith(id+"-")
 if(draft&&fs.existsSync(draft))for(const l of JSON.parse(fs.readFileSync(draft)).levels)if(!lv.some(x=>x.level===l.level))lv.push(l);
 const said={};for(const l of lv)for(const n of Object.values(l.nodes))if(n.speaker==="client")for(const x of n.learnables||[])(said[x]??=new Set).add(l.level);
 for(const [x,s] of Object.entries(said).sort()){const a=[...s].sort((p,q)=>p-q);console.log(x.padEnd(24),a.join(","),a.length<2?"  ← not reused":"")}
-' <scenarioId> .scratch/dialogue-drafts/<scenarioId>/reconcile-input.json
+' <domainId> .scratch/dialogue-drafts/<domainId>/reconcile-input.json
 ```
 
 It lists each learnable with the levels that have the learner say it. Held against the plan, it answers
@@ -199,16 +199,16 @@ missing reaction) is a `rewrite`.
 
 ## Stage 5 — Assemble, reconcile, gate
 
-Write the reconcile input at `.scratch/dialogue-drafts/<scenarioId>/reconcile-input.json`: `scenario`,
+Write the reconcile input at `.scratch/dialogue-drafts/<domainId>/reconcile-input.json`: `scenario`,
 `dialogueVoices`, `levels` (each with `level`, `levelLabel`, `title`, `objectives`, `root`, `nodes`,
 optional `intro` / `background`, and `catalog: {reuse, new}`), `criticFixes`, and `a1Candidates` for each
 new learnable. Omit `dialogueAdvance` (tap is the default). A learnable used by several levels goes in `new`
 on its first level only.
 
 ```bash
-npm run reconcile:dialogue -- .scratch/dialogue-drafts/<scenarioId>/reconcile-input.json
+npm run reconcile:dialogue -- .scratch/dialogue-drafts/<domainId>/reconcile-input.json
 npm run lint:dialogue && npm run lint:tree && npm run lint:a1 && npm run test:dialogue
-npm run lint:audio -- <scenarioId>        # the clip budget — information, not a gate
+npm run lint:audio -- <domainId>        # the clip budget — information, not a gate
 ```
 
 The draft reconcile **writes the real files** (`server/dialogues/`, the manifest, the catalog) so the gates
@@ -226,7 +226,7 @@ Present, per level:
   `{learnables}`:
 
   ```bash
-  node -e 'const r=require("./.scratch/dialogue-drafts/<scenarioId>/reconcile-input.json");for(const l of r.levels){console.log("\n## L"+l.level,l.title);for(const [id,n] of Object.entries(l.nodes))console.log(`${id.padEnd(7)} ${n.speaker==="npc"?"K":"  O"} ${n.deliverySL??n.sl}${n.context?"  ("+n.context+")":""}  → [${n.next}]\n          ${n.en}  {${(n.learnables||[]).join(",")}}`)}'
+  node -e 'const r=require("./.scratch/dialogue-drafts/<domainId>/reconcile-input.json");for(const l of r.levels){console.log("\n## L"+l.level,l.title);for(const [id,n] of Object.entries(l.nodes))console.log(`${id.padEnd(7)} ${n.speaker==="npc"?"K":"  O"} ${n.deliverySL??n.sl}${n.context?"  ("+n.context+")":""}  → [${n.next}]\n          ${n.en}  {${(n.learnables||[]).join(",")}}`)}'
   ```
 - the computed band against the target
 - the catalog delta, with each new item's gloss and predictable error
@@ -237,7 +237,7 @@ Then, across the scenario:
   their lines, so each can be seen to be an encounter's goodbye or else counted against the one in four —
 
   ```bash
-  node -e 'const r=require("./.scratch/dialogue-drafts/<scenarioId>/reconcile-input.json");for(const l of r.levels){const N=l.nodes,c=[];let f=0;for(const [id,n] of Object.entries(N)){if(n.speaker!=="npc"||n.next.length<2)continue;f++;if(new Set(n.next.map(x=>N[x].next.join())).size===1)c.push(`  ${id}: ${n.next.map(x=>N[x].sl).join(" | ")}`)}console.log(`L${l.level} forks ${f} converging ${c.length}\n${c.join("\n")}`)}'
+  node -e 'const r=require("./.scratch/dialogue-drafts/<domainId>/reconcile-input.json");for(const l of r.levels){const N=l.nodes,c=[];let f=0;for(const [id,n] of Object.entries(N)){if(n.speaker!=="npc"||n.next.length<2)continue;f++;if(new Set(n.next.map(x=>N[x].next.join())).size===1)c.push(`  ${id}: ${n.next.map(x=>N[x].sl).join(" | ")}`)}console.log(`L${l.level} forks ${f} converging ${c.length}\n${c.join("\n")}`)}'
   ```
 - the ledger, with findings (never said, said once)
 - the critic's notes and what happened to each fix
@@ -249,14 +249,14 @@ pass, then back to R.
 
 ## Stage 7 — On approve
 
-1. Move the input to `authoring/dialogues/<scenarioId>/reconcile-input.json`, reconcile from there, run the
+1. Move the input to `authoring/dialogues/<domainId>/reconcile-input.json`, reconcile from there, run the
    gates, and commit (source, generated dialogues, manifest, catalog, a1-map).
 2. **R generates the audio** — print this block; do not run it:
 
    ```bash
-   npm run build:dialogue-assets -- <scenarioId>
-   npm run build:dialogue-intros -- <scenarioId>     # only if a level has an intro
-   npm run lint:audio -- <scenarioId>                # required: every "ready" level has its bytes
+   npm run build:dialogue-assets -- <domainId>
+   npm run build:dialogue-intros -- <domainId>     # only if a level has an intro
+   npm run lint:audio -- <domainId>                # required: every "ready" level has its bytes
    ```
 3. R restarts the server; scenarios, dialogues and learnables load at startup.
 

@@ -1,6 +1,6 @@
 {
   "id": "sprehod-l10",
-  "scenarioId": "sprehod",
+  "domainId": "sprehod",
   "level": 10,
   "levelLabel": "Intermediate",
   "title": "The whole walk",

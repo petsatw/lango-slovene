@@ -33,7 +33,7 @@ export interface ObjectiveState {
 }
 
 export interface SessionState {
-  scenarioId: string;
+  domainId: string;
   objectives: ObjectiveState[];
   complete: boolean;
   turns: number;
@@ -182,7 +182,7 @@ export interface E2Result {
 /** One level the scenario finder offers the model to rank (server/match.ts). */
 export interface ScenarioCandidate {
   dialogueId: string;
-  scenarioId: string;
+  domainId: string;
   description: string; // scenario name + level title + summary + objectives, plain English
   lines: { id: string; sl: string; en: string }[]; // every line of the level, so the model can cite one
 }

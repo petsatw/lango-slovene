@@ -1,6 +1,6 @@
 {
   "id": "library-l1",
-  "scenarioId": "library",
+  "domainId": "library",
   "level": 1,
   "levelLabel": "Advanced",
   "title": "Welcome — a first look around",

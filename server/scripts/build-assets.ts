@@ -5,7 +5,7 @@
 // Idempotent and FREE on re-run: anything already in the store is a disk hit, no provider call. Shared
 // (catalog) assets render ONCE and are reused across scenarios (identical descriptor → identical key).
 //
-//   npm run build:assets -- <scenarioId>                 (defaults to "cafe")
+//   npm run build:assets -- <domainId>                 (defaults to "cafe")
 //
 // Surgical force-regenerate ONE leaf — delete that one key and regenerate only it; everything else is
 // left untouched. Frame/scene regens read the EXISTING per-asset renders to anchor (they do NOT
@@ -24,7 +24,7 @@ import { IMAGE_STYLE, IMAGE_FORMAT, relevantLabels } from "../adapters/image-sty
 import { CATALOG } from "../catalog";
 import { SCENARIOS, characterVoiceProfile } from "../scenarios";
 
-// ---- args: <scenarioId> [--regen <selector>] -----------------------------------------------------
+// ---- args: <domainId> [--regen <selector>] -----------------------------------------------------
 const rawArgs = process.argv.slice(2);
 const consumed = new Set<number>();
 let regen: string | undefined;
@@ -95,7 +95,7 @@ for (const item of audioItems) {
     const { hit } = await store.getOrCreate(
       key,
       "audio",
-      { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text: item.text, scenarioId: scenario.id, objectiveId: item.objectiveId },
+      { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text: item.text, domainId: scenario.id, objectiveId: item.objectiveId },
       async () => {
         const r = await e3.synthesize({ text: item.text, voiceProfile: item.voiceProfile });
         return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };
@@ -173,7 +173,7 @@ for (const f of frames) {
     const { hit, key: k } = await getOrCreateImage(f.imagePrompt, {
       ...IMAGE_FORMAT.frame,
       mode: "flashcard",
-      scenarioId: scenario.id,
+      domainId: scenario.id,
       objectiveId: f.objectiveId,
       referenceImages: sheet ? [sheet.dataUri] : undefined,
       referenceKeys: sheet ? [sheet.key] : undefined,
@@ -208,7 +208,7 @@ if (sceneImagePrompt && (!regen || regenScene)) {
       const { hit, key: k } = await getOrCreateImage(sceneImagePrompt, {
         ...IMAGE_FORMAT.scene,
         mode: "scene",
-        scenarioId: scenario.id,
+        domainId: scenario.id,
         objectiveId: "scene",
         referenceImages: sheet ? [sheet.dataUri] : undefined,
         referenceKeys: sheet ? [sheet.key] : undefined,

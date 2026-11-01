@@ -19,7 +19,7 @@ import path from "node:path";
 import { LEARNABLES } from "./learnables";
 
 export interface A1ScenarioRef {
-  scenarioId: string;
+  domainId: string;
   level: number;
 }
 
@@ -36,7 +36,7 @@ export interface A1Competency {
   /** Sample formulaic exponents (thematic domains; optional). */
   exponents?: string[];
   learnables: string[]; // catalog learnable ids that evidence this competency (may be [] for a frontier domain)
-  scenarios: A1ScenarioRef[]; // the scenario levels that advance it (may be [])
+  domains: A1ScenarioRef[]; // the scenario levels that advance it (may be [])
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -74,10 +74,10 @@ export function loadA1Map(): A1Map {
     }
     if (c.functions !== undefined) strArray(c.functions, `competency "${c.id}": functions`);
     if (c.exponents !== undefined) strArray(c.exponents, `competency "${c.id}": exponents`);
-    if (!Array.isArray(c.scenarios)) fail(`competency "${c.id}": scenarios must be an array`);
-    for (const s of c.scenarios) {
-      if (typeof s.scenarioId !== "string" || typeof s.level !== "number")
-        fail(`competency "${c.id}": each scenario needs { scenarioId, level }`);
+    if (!Array.isArray(c.domains)) fail(`competency "${c.id}": domains must be an array`);
+    for (const s of c.domains) {
+      if (typeof s.domainId !== "string" || typeof s.level !== "number")
+        fail(`competency "${c.id}": each scenario needs { domainId, level }`);
     }
   }
   const excluded = raw.excluded !== undefined ? strArray(raw.excluded, `"excluded"`) : [];

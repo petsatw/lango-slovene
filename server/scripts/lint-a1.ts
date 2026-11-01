@@ -8,7 +8,7 @@
 //   coverage. Its one live product job is the A1 Readiness screen (GET /api/a1), the learner's whole
 //   progress surface — so an item missing from it can be mastered with nothing visibly moving.
 //
-//   - REF INTEGRITY (error): every competency's { scenarioId, level } resolves to a real scenario + level.
+//   - REF INTEGRITY (error): every competency's { domainId, level } resolves to a real scenario + level.
 //   - READINESS COVERAGE (error): every `core: true` or `a1: true` learnable is named by ≥1 competency.
 //   - READOUT (informational): core size, above-A1, and per-dialogue band.
 //
@@ -48,15 +48,15 @@ for (const id of unmappedA1)
 // excluded but also mapped → redundant (harmless, but flag it)
 for (const id of excluded) if (mappedBy.has(id)) warns.push(`"${id}" is on 'excluded' but also mapped by ${mappedBy.get(id)!.join(", ")}`);
 
-// 2. Ref integrity — every { scenarioId, level } resolves to a scenario + a dialogue level.
-const scenarioIds = new Set(SCENARIOS.map((s) => s.id));
+// 2. Ref integrity — every { domainId, level } resolves to a scenario + a dialogue level.
+const domainIds = new Set(SCENARIOS.map((s) => s.id));
 const dialogueLevels = new Map<string, Set<number>>();
 for (const [sid, list] of Object.entries(DIALOGUES)) dialogueLevels.set(sid, new Set(list.map((d) => d.level)));
 for (const c of A1_MAP) {
-  for (const s of c.scenarios) {
-    if (!scenarioIds.has(s.scenarioId)) { errors.push(`competency "${c.id}": scenario ref "${s.scenarioId}" resolves to no scenario`); continue; }
-    if (!dialogueLevels.get(s.scenarioId)?.has(s.level))
-      errors.push(`competency "${c.id}": ref { ${s.scenarioId}, level ${s.level} } has no dialogue file`);
+  for (const s of c.domains) {
+    if (!domainIds.has(s.domainId)) { errors.push(`competency "${c.id}": scenario ref "${s.domainId}" resolves to no scenario`); continue; }
+    if (!dialogueLevels.get(s.domainId)?.has(s.level))
+      errors.push(`competency "${c.id}": ref { ${s.domainId}, level ${s.level} } has no dialogue file`);
   }
 }
 

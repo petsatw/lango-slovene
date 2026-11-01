@@ -44,7 +44,8 @@ export interface AssetMeta {
   text?: string; // audio source text
   prompt?: string; // the RAW authored image prompt (the editable intent)
   mimeType?: string; // actual content type of the bytes (e.g. image/jpeg) — recorded for detectability
-  scenarioId?: string;
+  domainId?: string;
+  seedId?: string;
   objectiveId?: string;
   // ---- image provenance (how it came to be) ----
   styleId?: string; // the visual-system version
@@ -165,7 +166,8 @@ export function put(key: string, type: AssetType, bytes: Buffer, meta: AssetMeta
     ...(meta.endpoint !== undefined ? { endpoint: meta.endpoint } : {}),
     ...(meta.referenceKeys !== undefined ? { referenceKeys: meta.referenceKeys } : {}),
     ...(meta.mimeType !== undefined ? { mimeType: meta.mimeType } : {}),
-    ...(meta.scenarioId !== undefined ? { scenarioId: meta.scenarioId } : {}),
+    ...(meta.domainId !== undefined ? { domainId: meta.domainId } : {}),
+    ...(meta.seedId !== undefined ? { seedId: meta.seedId } : {}),
     ...(meta.objectiveId !== undefined ? { objectiveId: meta.objectiveId } : {}),
     createdAt: new Date().toISOString(),
   };

@@ -22,10 +22,10 @@ const EVENTS: Record<string, string[]> = {
   screen_viewed: ["screen"],
   intro_completed: ["kind", "id"],
   intro_quit: ["kind", "id"],
-  level_started: ["scenarioId", "level"],
-  level_completed: ["scenarioId", "level", "ms"],
-  level_restarted: ["scenarioId", "level", "nodeId"],
-  level_abandoned: ["scenarioId", "level", "ms", "nodeId"],
+  level_started: ["domainId", "level"],
+  level_completed: ["domainId", "level", "ms"],
+  level_restarted: ["domainId", "level", "nodeId"],
+  level_abandoned: ["domainId", "level", "ms", "nodeId"],
   handoff_tapped: ["from"],
   gate_passed: ["via"],
   live_started: ["lessonId", "provider", "noSave"],
@@ -33,8 +33,8 @@ const EVENTS: Record<string, string[]> = {
   live_failed: ["lessonId", "provider", "reason"],
   finder_query: ["resultCount"],
   finder_no_match: [],
-  finder_match_opened: ["scenarioId"],
-  feedback_submitted: ["surface", "screen", "scenarioId", "level", "lessonId"],
+  finder_match_opened: ["domainId"],
+  feedback_submitted: ["surface", "screen", "domainId", "level", "lessonId"],
 };
 
 type Who = { learnerId: string; testerCode: string | null };

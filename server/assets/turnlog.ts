@@ -32,7 +32,7 @@ export interface TurnLogInput {
   sessionId?: string;
   runId?: string;
   level?: 1 | 2;
-  scenarioId?: string;
+  domainId?: string;
   seedId?: string;
   provider: string;
   model?: string;
@@ -133,7 +133,7 @@ export function record(input: TurnLogInput): void {
       runId: input.runId,
       ...(input.retain === false ? { retain: false } : {}),
       level: input.level,
-      scenarioId: input.scenarioId,
+      domainId: input.domainId,
       seedId: input.seedId,
       provider: input.provider,
       model: input.model,

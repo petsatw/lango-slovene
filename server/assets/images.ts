@@ -15,7 +15,7 @@ export const MAX_REFS = 3;
 export interface ImageRequest {
   aspectRatio: string;
   resolution: string;
-  scenarioId?: string;
+  domainId?: string;
   objectiveId?: string;
   // The anchor image(s) — typically ONE locally-composed labelled reference sheet (see
   // reference-sheet.ts). URLs / base64 data URIs / file_ids; capped to MAX_REFS.
@@ -63,7 +63,7 @@ export async function getOrCreateImage(
     endpoint,
     referenceKeys: req.referenceKeys,
     mimeType,
-    scenarioId: req.scenarioId,
+    domainId: req.domainId,
     objectiveId: req.objectiveId,
   });
   return { bytes, hit: false, key };

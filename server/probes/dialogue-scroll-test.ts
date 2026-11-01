@@ -30,7 +30,7 @@ try {
   const browser = await chromium.launch();
   const page = await (await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true })).newPage();
   const practice = await (await fetch(`${base}/api/practice`)).json();
-  const lv = practice.scenarios
+  const lv = practice.domains
     .flatMap((sc: any) => sc.dialogues.map((d: any) => ({ sc, d })))
     .find((x: any) => (x.d.advance ?? "tap") === "tap" && !x.d.intro);
   if (!lv) throw new Error("no tap-through level to open");

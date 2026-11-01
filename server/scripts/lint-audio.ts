@@ -49,7 +49,7 @@ const VOICES_FILE = path.join(__dirname, "..", "catalog", "voices.json");
 const MANIFEST = path.join(ROOT, "assets", "manifest.jsonl");
 
 type Miss = {
-  scenarioId: string; level: number; node: string; field: string;
+  domainId: string; level: number; node: string; field: string;
   voiceProfile: string; text: string; key: string; rekeyFrom: string | null;
   /** --shipped only: the bytes ARE on disk, they are simply not committed. A completely different fix —
    *  force-add them, never re-synthesize something already paid for and already sitting there. */
@@ -128,7 +128,7 @@ function checkClip(d: any, node: string, field: string, profile: string, text: s
   if (present) return;
   const prior = manifestTexts.get(text) ?? null;
   misses.push({
-    scenarioId: d.scenarioId, level: d.level, node, field,
+    domainId: d.domainId, level: d.level, node, field,
     voiceProfile: profile, text, key,
     rekeyFrom: prior && prior !== key ? prior : null,
     uncommitted: shipped && onDisk,
@@ -141,7 +141,7 @@ const files = existsSync(DIALOGUES_DIR)
 
 for (const f of files) {
   const d = JSON.parse(readFileSync(path.join(DIALOGUES_DIR, f), "utf8"));
-  if (only && d.scenarioId !== only) continue;
+  if (only && d.domainId !== only) continue;
 
   const npcProfile: string = d.voices?.npc;
   const spoken = (d.advance ?? "tap") === "audio";
@@ -149,7 +149,7 @@ for (const f of files) {
   // A level that honestly declares itself unbuilt is not a failure — that is what "pending" is FOR.
   // Report it so a headless run can see there is generation still to do, but never fail on it.
   if (d.audio !== "ready") {
-    pendingNotes.push(`${d.scenarioId} L${d.level} — audio: "pending" (not checked; run build:dialogue-assets)`);
+    pendingNotes.push(`${d.domainId} L${d.level} — audio: "pending" (not checked; run build:dialogue-assets)`);
     continue;
   }
   readyLevels++;
@@ -208,7 +208,7 @@ const fresh = misses.filter((m) => !m.uncommitted && !m.rekeyFrom);
 // not in the branch, so the deploy would serve nothing for them. Report them first and separately — the
 // fix is one force-add, and confusing this with "needs synthesis" would re-bill for bytes on disk.
 if (uncommitted.length) {
-  const scenarios = [...new Set(uncommitted.map((m) => m.scenarioId))];
+  const scenarios = [...new Set(uncommitted.map((m) => m.domainId))];
   console.error(`❌ ${uncommitted.length} clip(s) are ON DISK but NOT COMMITTED — the deploy would ship without them.`);
   console.error(`   scenario(s): ${scenarios.join(", ")}`);
   console.error(`   assets/ is gitignored by design (docs/DEPLOY.md); clips are force-added. These never were.`);
@@ -218,7 +218,7 @@ if (uncommitted.length) {
 
 const byLevel = new Map<string, Miss[]>();
 for (const m of misses.filter((x) => !x.uncommitted)) {
-  const k = `${m.scenarioId} L${m.level}`;
+  const k = `${m.domainId} L${m.level}`;
   (byLevel.get(k) ?? byLevel.set(k, []).get(k)!).push(m);
 }
 
@@ -236,8 +236,8 @@ for (const [level, ms] of byLevel) {
     }
     console.error("");
   }
-  const [scenarioId, lvl] = level.split(" L");
-  console.error(`   fix: npm run build:dialogue-assets -- ${scenarioId} --level ${lvl}\n`);
+  const [domainId, lvl] = level.split(" L");
+  console.error(`   fix: npm run build:dialogue-assets -- ${domainId} --level ${lvl}\n`);
 }
 
 console.error(`❌ FAIL — ${misses.length} missing clip(s): `

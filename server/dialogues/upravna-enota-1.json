@@ -1,6 +1,6 @@
 {
   "id": "upravna-enota-l1",
-  "scenarioId": "upravna-enota",
+  "domainId": "upravna-enota",
   "level": 1,
   "levelLabel": "Above A1",
   "title": "Submit the application",

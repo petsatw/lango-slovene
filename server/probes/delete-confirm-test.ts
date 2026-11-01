@@ -33,7 +33,7 @@ liveIds.forEach((sessionId, i) => {
   }));
 });
 writeFileSync(path.join(sessions, "tap-a.json"), JSON.stringify({
-  id: "tap-a", scenarioId: "fixture-scenario", createdAt: "2026-10-02T10:00:00.000Z", updatedAt: "2026-10-02T10:05:00.000Z",
+  id: "tap-a", lessonId: "fixture-scenario", createdAt: "2026-10-02T10:00:00.000Z", updatedAt: "2026-10-02T10:05:00.000Z",
   status: "completed", finalObjectives: [], learnerId, testerCode: "TEST-01",
   turns: [{ index: 0, role: "tutor", text: "Dober dan" }],
 }));

@@ -67,7 +67,7 @@ console.log("dialogue loader — introduces link:");
 // below. Real catalog ids and a real voice profile, so nothing here is mocked.
 const tree = (): any => ({
   id: "fixture-l1",
-  scenarioId: "fixture",
+  domainId: "fixture",
   level: 1,
   levelLabel: "Survival",
   title: "fixture",

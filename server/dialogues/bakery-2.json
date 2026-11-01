@@ -1,6 +1,6 @@
 {
   "id": "bakery-l2",
-  "scenarioId": "bakery",
+  "domainId": "bakery",
   "level": 2,
   "levelLabel": "Basic",
   "title": "Ordering by weight & choosing",

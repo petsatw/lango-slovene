@@ -40,7 +40,7 @@ let pass = false;
 try {
   await up();
   const practice = await (await fetch(`${base}/api/practice`)).json();
-  const levels = practice.scenarios.flatMap((sc: any) => sc.dialogues.map((d: any, i: number) => ({ sc, d, i })));
+  const levels = practice.domains.flatMap((sc: any) => sc.dialogues.map((d: any, i: number) => ({ sc, d, i })));
   const forks = (d: any) => {
     // forks along the path that takes the first option each time
     let n = 0, id = d.root;
@@ -204,9 +204,9 @@ try {
 
   const ev = rows();
   const restarted = ev.filter((r) => r.name === "level_restarted");
-  const completed = ev.filter((r) => r.name === "level_completed" && r.props.scenarioId === tap.sc.id && r.props.level === tap.d.level);
-  checks["two level_restarted rows with scenarioId, level, nodeId"] =
-    restarted.length === 2 && restarted.every((r) => r.props.scenarioId && r.props.level != null && r.props.nodeId) && beforePresses === 1;
+  const completed = ev.filter((r) => r.name === "level_completed" && r.props.domainId === tap.sc.id && r.props.level === tap.d.level);
+  checks["two level_restarted rows with domainId, level, nodeId"] =
+    restarted.length === 2 && restarted.every((r) => r.props.domainId && r.props.level != null && r.props.nodeId) && beforePresses === 1;
   checks["exactly one level_completed for the tap run"] = completed.length === 1;
   for (const r of restarted) console.log(JSON.stringify(r.props));
   for (const [name, ok] of Object.entries(checks)) console.log(`${ok ? "PASS" : "FAIL"}  ${name}`);

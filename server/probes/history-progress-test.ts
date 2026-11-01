@@ -51,18 +51,18 @@ liveLog("p-two", "2026-10-04T10:00:00.000Z", { progressed: [l1.id, l2.id] });
 liveLog("p-empty", "2026-10-03T10:00:00.000Z", { progressed: [] });
 liveLog("p-absent", "2026-10-02T10:00:00.000Z", {});
 writeFileSync(path.join(data, "sessions", "p-tap.json"), JSON.stringify({
-  id: "p-tap", scenarioId: tap.id, createdAt: "2026-10-01T10:00:00.000Z", updatedAt: "2026-10-01T10:05:00.000Z",
+  id: "p-tap", lessonId: tap.id, createdAt: "2026-10-01T10:00:00.000Z", updatedAt: "2026-10-01T10:05:00.000Z",
   status: "completed", learnerId, testerCode: "TEST-01",
   finalObjectives: [{ id: done.id, status: "completed", attempts: 1 }, { id: pend.id, status: "pending", attempts: 0 }],
   turns: [{ index: 0, role: "tutor", text: "Dober dan" }],
 }));
 
 const name = scene.name ?? scene.title;
-const expected: Record<string, { scenario: string; progressed: string[]; second: string }> = {
-  "p-two": { scenario: name, progressed: [l1.sl, l2.sl], second: `Progress on ${l1.sl}, ${l2.sl}` },
-  "p-empty": { scenario: name, progressed: [], second: "Practice" },
-  "p-absent": { scenario: name, progressed: [], second: "Practice" },
-  "p-tap": { scenario: tap.name ?? tap.title, progressed: [done.label], second: `Progress on ${done.label}` },
+const expected: Record<string, { domain: string; progressed: string[]; second: string }> = {
+  "p-two": { domain: name, progressed: [l1.sl, l2.sl], second: `Progress on ${l1.sl}, ${l2.sl}` },
+  "p-empty": { domain: name, progressed: [], second: "Practice" },
+  "p-absent": { domain: name, progressed: [], second: "Practice" },
+  "p-tap": { domain: tap.name ?? tap.title, progressed: [done.label], second: `Progress on ${done.label}` },
 };
 
 try {
@@ -75,8 +75,8 @@ try {
   const { entries } = await (await fetch(`${base}/api/history`, { headers: { "x-tester-code": "TEST-01" } })).json();
   for (const [id, want] of Object.entries(expected)) {
     const e = entries.find((x: any) => x.id === id);
-    check(`3. ${id} has scenario and progressed`, !!e && e.scenario === want.scenario && same(e.progressed, want.progressed),
-      JSON.stringify(e && { scenario: e.scenario, progressed: e.progressed }));
+    check(`3. ${id} has scenario and progressed`, !!e && e.domain === want.domain && same(e.progressed, want.progressed),
+      JSON.stringify(e && { domain: e.domain, progressed: e.progressed }));
   }
   check("3. no entry has a score", entries.length === 4 && entries.every((e: any) => !/score/i.test(JSON.stringify(e))));
 
@@ -99,8 +99,8 @@ try {
     const date = await page.evaluate((s) => new Date(s).toLocaleDateString(), startedAt);
     // The whole row carries no score: the formatted date (e.g. 10/4/2026) is the only number-slash-number allowed.
     const scoreFree = !/\d+\s*\/\s*\d+|%|score/i.test(row.text.split(date).join(" "));
-    check(`4. ${id} row reads "${want.scenario} · ${date}" over "${want.second}", and no score`,
-      row.head === `${want.scenario} · ${date}` && row.sub === want.second && scoreFree, JSON.stringify(row));
+    check(`4. ${id} row reads "${want.domain} · ${date}" over "${want.second}", and no score`,
+      row.head === `${want.domain} · ${date}` && row.sub === want.second && scoreFree, JSON.stringify(row));
   }
   await browser.close();
 } finally {

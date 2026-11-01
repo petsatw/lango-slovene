@@ -100,12 +100,12 @@ const scenarioById = new Map(SCENARIOS.map((s) => [s.id, s]));
 
 // every dialogue file must be declared by its scenario's manifest, with matching label + voices
 for (const d of allDialogues) {
-  const scn = scenarioById.get(d.scenarioId);
-  if (!scn) { errors.push(`${d.id}: scenarioId "${d.scenarioId}" resolves to no scenario`); continue; }
+  const scn = scenarioById.get(d.domainId);
+  if (!scn) { errors.push(`${d.id}: domainId "${d.domainId}" resolves to no scenario`); continue; }
   const decl = scn.surfaces?.dialogue;
-  if (!decl) { errors.push(`${d.id}: scenario "${d.scenarioId}" has a dialogue file but no surfaces.dialogue manifest`); continue; }
+  if (!decl) { errors.push(`${d.id}: scenario "${d.domainId}" has a dialogue file but no surfaces.dialogue manifest`); continue; }
   const lv = decl.levels.find((l) => l.level === d.level);
-  if (!lv) { errors.push(`${d.id}: level ${d.level} is not declared in the "${d.scenarioId}" manifest`); continue; }
+  if (!lv) { errors.push(`${d.id}: level ${d.level} is not declared in the "${d.domainId}" manifest`); continue; }
   if (lv.levelLabel !== d.levelLabel)
     errors.push(`${d.id}: levelLabel "${d.levelLabel}" ≠ manifest "${lv.levelLabel}"`);
   if (decl.voices.npc !== d.voices.npc || decl.voices.client !== d.voices.client)

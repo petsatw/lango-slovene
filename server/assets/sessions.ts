@@ -32,7 +32,7 @@ export interface SessionTurn {
 
 export interface SessionRecord {
   id: string;
-  scenarioId: string;
+  lessonId: string; // a domain id or "free-chat"
   createdAt: string;
   updatedAt: string;
   status: SessionStatus;
@@ -69,9 +69,14 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
+// A record stored with only `scenarioId` names its lesson by that key.
+function normalise(rec: any): SessionRecord {
+  return rec.lessonId === undefined && rec.scenarioId !== undefined ? { ...rec, lessonId: rec.scenarioId } : rec;
+}
+
 export function load(id: string): SessionRecord | null {
   const p = fileFor(id);
-  return existsSync(p) ? (JSON.parse(readFileSync(p, "utf8")) as SessionRecord) : null;
+  return existsSync(p) ? normalise(JSON.parse(readFileSync(p, "utf8"))) : null;
 }
 
 /** True when a record with this id exists and belongs to another learner. */
@@ -93,14 +98,14 @@ export function list(): SessionRecord[] {
   if (!existsSync(SESSIONS_DIR)) return [];
   return readdirSync(SESSIONS_DIR)
     .filter((f) => f.endsWith(".json"))
-    .map((f) => JSON.parse(readFileSync(path.join(SESSIONS_DIR, f), "utf8")) as SessionRecord)
+    .map((f) => normalise(JSON.parse(readFileSync(path.join(SESSIONS_DIR, f), "utf8"))))
     .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)); // newest first
 }
 
 // Append turns to a run's record (creating it on the first call), then persist.
 export function appendTurns(args: {
   id: string;
-  scenarioId: string;
+  lessonId: string;
   seedTurns?: Omit<SessionTurn, "index">[]; // e.g. the opening line — only used when creating the record
   turns: Omit<SessionTurn, "index">[];
   finalObjectives: ObjectiveState[];
@@ -113,7 +118,7 @@ export function appendTurns(args: {
   const ts = nowIso();
   const rec: SessionRecord = load(args.id) ?? {
     id: safeId(args.id),
-    scenarioId: args.scenarioId,
+    lessonId: args.lessonId,
     createdAt: ts,
     updatedAt: ts,
     status: "abandoned",

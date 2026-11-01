@@ -98,7 +98,7 @@ try {
   const tapFile = path.join(data, "sessions", "tap-TEST-01.json");
   mkdirSync(path.dirname(tapFile), { recursive: true });
   writeFileSync(tapFile, JSON.stringify({
-    id: "tap-TEST-01", scenarioId: "fixture-scenario", createdAt: "2026-10-02T10:00:00.000Z", updatedAt: "2026-10-02T10:05:00.000Z",
+    id: "tap-TEST-01", lessonId: "fixture-scenario", createdAt: "2026-10-02T10:00:00.000Z", updatedAt: "2026-10-02T10:05:00.000Z",
     status: "completed", finalObjectives: [], learnerId: idOf("TEST-01"), testerCode: "TEST-01",
     turns: [{ index: 0, role: "tutor", text: "Dober dan" }],
   }));

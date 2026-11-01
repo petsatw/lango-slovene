@@ -21,7 +21,7 @@
 // server (dialogue JSON loads at startup only).
 //
 // Input shape:
-//   { "scenarioId": "slavko-intro",
+//   { "domainId": "slavko-intro",
 //     "pointers": [
 //       { "level": 2, "node": "c4", "from": "n5", "fromLevel": 2, "kind": "whole",
 //         "why": "the phrase IS the whole line — no cut, true prosody" },
@@ -68,17 +68,17 @@ try {
   die(`input is not valid JSON: ${e.message}`);
 }
 
-const scenarioId: string = draft.scenarioId;
-if (typeof scenarioId !== "string" || !scenarioId) die(`"scenarioId" is required`);
+const domainId: string = draft.domainId;
+if (typeof domainId !== "string" || !domainId) die(`"domainId" is required`);
 if (!Array.isArray(draft.pointers)) die(`"pointers" must be an array`);
 
 // The scenario's committed levels — the source of truth for what a node id means and which clip it owns.
 const levels = new Map<number, any>();
 for (const f of readdirSync(DIALOGUES_DIR).filter((x: string) => x.endsWith(".json"))) {
   const d = validateDialogue(f, JSON.parse(readFileSync(path.join(DIALOGUES_DIR, f), "utf8")));
-  if (d.scenarioId === scenarioId) levels.set(d.level, d);
+  if (d.domainId === domainId) levels.set(d.level, d);
 }
-if (!levels.size) die(`no dialogues for scenario "${scenarioId}"`);
+if (!levels.size) die(`no dialogues for scenario "${domainId}"`);
 
 const e3 = getE3();
 
@@ -125,7 +125,7 @@ for (const p of draft.pointers) {
     if (tokenize(srcNode.sl).join(" ") !== tokenize(client.sl).join(" ")) voicing.heard = srcNode.sl;
   } else if (p.kind === "span") {
     const a = store.readAlign(key);
-    if (!a) die(`${where}: ${p.fromLevel}/${p.from} has no alignment — run: npm run build:alignments -- ${scenarioId}`);
+    if (!a) die(`${where}: ${p.fromLevel}/${p.from} has no alignment — run: npm run build:alignments -- ${domainId}`);
     // The alignment is keyed to the audio, but a re-authored LINE with unchanged audio would leave the
     // stored transcript behind. Refuse rather than cut a span from timings measured against other words.
     if (a.text !== srcNode.sl)
@@ -153,7 +153,7 @@ for (const p of draft.pointers) {
 }
 
 // ---- Write into the AUTHORING input, which reconcile:dialogue owns downstream ----------------------
-const authoringFile = path.join(ROOT, "authoring", "dialogues", scenarioId, "reconcile-input.json");
+const authoringFile = path.join(ROOT, "authoring", "dialogues", domainId, "reconcile-input.json");
 if (!existsSync(authoringFile)) die(`no authoring input at ${path.relative(ROOT, authoringFile)} — this writer edits the hand-authored source, never server/dialogues/*.json`);
 const authoring = JSON.parse(readFileSync(authoringFile, "utf8"));
 
@@ -167,7 +167,7 @@ for (const r of resolved) {
   node.audio = r.voicing;
 }
 
-console.log(`\n▶ reconcile:keyphrase-audio — ${scenarioId}  (${resolved.length} pointer(s), ${changed} changed)`);
+console.log(`\n▶ reconcile:keyphrase-audio — ${domainId}  (${resolved.length} pointer(s), ${changed} changed)`);
 for (const r of resolved) {
   const v = r.voicing;
   const span = v.kind === "span" ? `  words ${v.words[0]}–${v.words[1]}  ${v.startMs}–${v.endMs}ms` : "  whole clip";
@@ -185,6 +185,6 @@ if (dryRun) {
 writeFileSync(authoringFile, JSON.stringify(authoring, null, 2) + "\n");
 console.log(`\n✅ wrote ${path.relative(ROOT, authoringFile)}`);
 console.log(`   Next: npm run reconcile:dialogue -- ${path.relative(ROOT, authoringFile)}`);
-console.log(`         npm run lint:keyphrase-audio -- ${scenarioId}`);
+console.log(`         npm run lint:keyphrase-audio -- ${domainId}`);
 console.log(`         restart the server — dialogue JSON loads at startup only.\n`);
 process.exit(0);

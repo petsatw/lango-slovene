@@ -1,7 +1,7 @@
 // script:lesson — print a spoken lesson AS THE STUDENT EXPERIENCES IT: the conversation, in order, and
 // nothing else.
 //
-//   npm run script:lesson -- <scenarioId> [--level <n>] [--as <fact>=<value>] [--json]
+//   npm run script:lesson -- <domainId> [--level <n>] [--as <fact>=<value>] [--json]
 //   npm run script:lesson -- --from <reconcile-input.json> [--level <n>] […]
 //
 // `--from` reads the authoring pipeline's own reconcile input, so a lesson can be read as a conversation
@@ -36,19 +36,19 @@ const asJson = argv.includes("--json");
 const levelArg = flag("level");
 const fromPath = flag("from");
 // The first bare word that is not some flag's value.
-let scenarioId: string | undefined;
+let domainId: string | undefined;
 for (let i = 0; i < argv.length; i++) {
   if (argv[i]!.startsWith("--")) { if (argv[i] !== "--json") i++; continue; }
-  scenarioId = argv[i];
+  domainId = argv[i];
   break;
 }
 
-const USAGE = "usage: npm run script:lesson -- <scenarioId> [--level <n>] [--as <fact>=<value>] [--json]\n" +
+const USAGE = "usage: npm run script:lesson -- <domainId> [--level <n>] [--as <fact>=<value>] [--json]\n" +
               "       npm run script:lesson -- --from <reconcile-input.json> [--level <n>] […]";
 
 /** What this script needs of a lesson, from either source. */
 interface Lesson {
-  scenarioId: string;
+  domainId: string;
   level: number;
   title: string;
   root: string;
@@ -71,7 +71,7 @@ function fromCatalog(id: string): Lesson {
     process.exit(2);
   }
   return {
-    scenarioId: id, level: d.level, title: d.title, root: d.root,
+    domainId: id, level: d.level, title: d.title, root: d.root,
     nodes: d.nodes as Record<string, DialogueNode>,
     npcVoice: d.voices.npc ?? "npc",
     spoken: d.advance === "audio",
@@ -92,16 +92,16 @@ function fromInput(path: string): Lesson {
     process.exit(2);
   }
   return {
-    scenarioId: raw.scenario?.id ?? path, level: lv.level, title: lv.title ?? "",
+    domainId: raw.domain?.id ?? path, level: lv.level, title: lv.title ?? "",
     root: lv.root, nodes: lv.nodes ?? {},
     npcVoice: raw.dialogueVoices?.npc ?? "npc",
     spoken: raw.dialogueAdvance === "audio",
-    onboarding: !!raw.scenario?.onboarding,
+    onboarding: !!raw.domain?.onboarding,
   };
 }
 
-if (!fromPath && !scenarioId) { console.error(USAGE); process.exit(2); }
-const lesson = fromPath ? fromInput(fromPath) : fromCatalog(scenarioId!);
+if (!fromPath && !domainId) { console.error(USAGE); process.exit(2); }
+const lesson = fromPath ? fromInput(fromPath) : fromCatalog(domainId!);
 
 // ---- The spine ------------------------------------------------------------------------------------
 // A spoken lesson plays `next[0]` and only `next[0]`. Resolving that here is the whole reason the
@@ -192,7 +192,7 @@ for (const f of factsOnSpine) {
 // ---- Output ---------------------------------------------------------------------------------------
 if (asJson) {
   console.log(JSON.stringify({
-    lesson: { scenarioId: lesson.scenarioId, level: lesson.level, title: lesson.title },
+    lesson: { domainId: lesson.domainId, level: lesson.level, title: lesson.title },
     path: chosen, beats, forks,
   }, null, 2));
   process.exit(0);
@@ -201,7 +201,7 @@ if (asJson) {
 const PAD = " ".repeat(14);
 const say = (s: string) => console.log(PAD + s);
 
-console.log(`LESSON: ${lesson.scenarioId} · level ${lesson.level} — "${lesson.title}"`);
+console.log(`LESSON: ${lesson.domainId} · level ${lesson.level} — "${lesson.title}"`);
 if (lesson.onboarding)
   console.log(`The student has never heard Slovene before.`);
 // A spoken lesson IS this one conversation. A branching tree is many, and this prints the first —

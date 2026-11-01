@@ -52,7 +52,7 @@ function applyProgress(scenario: Scenario, prev: SessionState, progress: Objecti
   const turns = prev.turns + 1;
   const complete = objectives.every((o) => o.status === "completed") || turns >= TURN_CAP;
 
-  return { scenarioId: scenario.id, objectives, complete, turns };
+  return { domainId: scenario.id, objectives, complete, turns };
 }
 
 export async function understand(input: {
@@ -66,7 +66,7 @@ export async function understand(input: {
   /** Did this session agree to its data being kept (server/assets/retention.ts). */
   retain?: boolean;
 }): Promise<UnderstandResult> {
-  const scenario = getScenario(input.session?.scenarioId);
+  const scenario = getScenario(input.session?.domainId);
   const session = input.session ?? freshSession(scenario);
 
   // MASTERY layer: read the model so presentation can steer toward the still-unmastered learnable
@@ -99,7 +99,7 @@ export async function understand(input: {
     learnerId: input.learnerId,
     testerCode: input.testerCode ?? null,
     runId: input.runId,
-    scenarioId: scenario.id,
+    domainId: scenario.id,
     provider: e2.name,
     model: process.env.GEMINI_MODEL,
     e2Ms,
@@ -280,7 +280,7 @@ export async function runTurn(input: {
   const e3 = getE3();
 
   // The tutor reply IS the character speaking → synthesize in the character's voice profile.
-  const voiceProfile = characterVoiceProfile(getScenario(u.session.scenarioId));
+  const voiceProfile = characterVoiceProfile(getScenario(u.session.domainId));
   const voiceTag = e3.voiceTagFor(voiceProfile);
 
   // Through the persistent store: reuse the canonical clip if we've already synthesized this

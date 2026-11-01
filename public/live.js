@@ -239,7 +239,7 @@ export async function startLive({ lessonId, accessCode, provider, learnerId, run
   starting = true;
   ending = false;
   abandoned = false;
-  emit("created", { scenario: data.scenario });
+  emit("created", { domain: data.domain });
 
   // Echo cancellation is not optional here: the mic is open while the tutor is speaking through the
   // speakers, and without it the tutor hears itself and answers itself.

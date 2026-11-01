@@ -232,7 +232,7 @@ single most likely source of a silent bug in this design, and it gets a lint.
 `.claude/skills/voice-key-phrases/SKILL.md`. Mirrors `create-dialogue`'s
 author → critic → reconcile → gate → ReviewPackage shape.
 
-**Input.** A `scenarioId` (optionally one level).
+**Input.** A `domainId` (optionally one level).
 
 **Stage 0 — gather (L).** Read the scenario's spoken levels. Collect:
 - the **key phrases**: distinct client `sl` per level, in met order — the same list the close screen
@@ -285,7 +285,7 @@ JSON. The skill never writes files itself.
 
 **Stage 5 — ReviewPackage (PR semantics).** A table: phrase → chosen utterance with the span marked
 in context → duration → the critic's verdict → or the reason for no button. Nothing is written until
-approved. Drafts under `.scratch/keyphrase-drafts/<scenarioId>/`.
+approved. Drafts under `.scratch/keyphrase-drafts/<domainId>/`.
 
 ### 3.5 What lands in the dialogue JSON
 

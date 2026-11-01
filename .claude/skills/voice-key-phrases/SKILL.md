@@ -42,7 +42,7 @@ gate will reject it — as it should.
 ## Guardrails
 
 - **Never write `server/dialogues/*.json`.** `reconcile:dialogue` owns those files. The pointers go into
-  `authoring/dialogues/<scenarioId>/reconcile-input.json` via `reconcile:keyphrase-audio`.
+  `authoring/dialogues/<domainId>/reconcile-input.json` via `reconcile:keyphrase-audio`.
 - **Never change which phrases are listed.** The list is the client lines the learner produced, computed by
   `keyPhrases()` in `server/server.ts`. That selection is about the learner and is not yours to revisit.
 - **The join is an id equality, never a similarity score.** A delivery is a candidate only if its npc node
@@ -58,7 +58,7 @@ gate will reject it — as it should.
 
 ## Procedure
 
-Work on a draft under `.scratch/keyphrase-drafts/<scenarioId>/`. **Nothing is written into `authoring/`
+Work on a draft under `.scratch/keyphrase-drafts/<domainId>/`. **Nothing is written into `authoring/`
 until the operator approves** (PR semantics).
 
 ### 0 — Gather (L). No judgment yet.
@@ -67,7 +67,7 @@ until the operator approves** (PR semantics).
   shows, computed by the same rule. A line with no letters (`"___"`, the learner saying their own name) is
   not a phrase. Never re-judge this set.
 - **Every npc utterance in the scenario**, across *all* levels: node id, level, `sl`, and its `learnables`.
-- **The alignments.** `npm run build:alignments -- <scenarioId>` (add `--dry-run` first to see the scope).
+- **The alignments.** `npm run build:alignments -- <domainId>` (add `--dry-run` first to see the scope).
   Then read each clip's `words[]` — index, text, start/end. Indices are real words; the provider's
   whitespace tokens are already stripped, so index *n* is word *n*.
 - **The catalog frames** for every shared id (`server/catalog/learnables.json`). A frame stores its slot as
@@ -146,13 +146,13 @@ not omissions. Then stop and ask for approval.
 
 ### 4 — Reconcile (L), on approval only
 
-Write the draft `pointers.json` — `{ scenarioId, pointers: [{ level, node, from, fromLevel, kind,
+Write the draft `pointers.json` — `{ domainId, pointers: [{ level, node, from, fromLevel, kind,
 words?, why }] }` — and run:
 
 ```
-npm run reconcile:keyphrase-audio -- .scratch/keyphrase-drafts/<scenarioId>/pointers.json --dry-run
-npm run reconcile:keyphrase-audio -- .scratch/keyphrase-drafts/<scenarioId>/pointers.json
-npm run reconcile:dialogue -- authoring/dialogues/<scenarioId>/reconcile-input.json
+npm run reconcile:keyphrase-audio -- .scratch/keyphrase-drafts/<domainId>/pointers.json --dry-run
+npm run reconcile:keyphrase-audio -- .scratch/keyphrase-drafts/<domainId>/pointers.json
+npm run reconcile:dialogue -- authoring/dialogues/<domainId>/reconcile-input.json
 ```
 
 The reconcile derives every `startMs`/`endMs` and every `heard` from the alignment itself. Supply a
@@ -161,8 +161,8 @@ timestamp and it refuses.
 ### 5 — Gate (L)
 
 ```
-npm run lint:keyphrase-audio -- <scenarioId>
-npm run lint:audio -- <scenarioId>
+npm run lint:keyphrase-audio -- <domainId>
+npm run lint:audio -- <domainId>
 ```
 
 Then **restart the server** — dialogue JSON loads at startup only — and **play the app**. Open a level,

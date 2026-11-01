@@ -1,6 +1,6 @@
 {
   "id": "library-l7",
-  "scenarioId": "library",
+  "domainId": "library",
   "level": 7,
   "levelLabel": "Above A1",
   "title": "Opening hours",

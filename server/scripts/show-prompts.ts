@@ -3,8 +3,8 @@
 // provenance from the manifest; reconstructs deterministically (and labels it) for images generated
 // before provenance was recorded.
 //
-//   npm run prompts -- <scenarioId>              # view
-//   npm run prompts -- <scenarioId> --backfill   # write computed provenance into matching manifest
+//   npm run prompts -- <domainId>              # view
+//   npm run prompts -- <domainId> --backfill   # write computed provenance into matching manifest
 //                                                 # entries that lack it (exact, deterministic; backs up first)
 //   npm run prompts -- --file <path.json>        # preview a DRAFT scenario's assembled prompts (no commit)
 

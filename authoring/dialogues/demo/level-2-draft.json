@@ -1,7 +1,7 @@
 {
   "note": "PARKED, INCOMPLETE. Demo level 2 is the lesson that teaches the run controls. It has no dialogue yet — this file holds only the tutorial slice, lifted off demo-l1 where it did not belong. Nothing loads it: the server reads server/dialogues/*.json, and authoring/ is touched only by the authoring scripts. To finish it, author the lesson through create-dialogue and carry `tutorial` onto it.",
   "id": "demo-l2",
-  "scenarioId": "demo",
+  "domainId": "demo",
   "level": 2,
   "title": "The controls",
   "tutorial": [
