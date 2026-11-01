@@ -12,7 +12,6 @@
 import { appendFileSync, mkdirSync, readdirSync, statSync, unlinkSync } from "node:fs";
 import path from "node:path";
 import { DATA_DIR } from "./store";
-import * as retention from "./retention";
 
 const DIR = process.env.TURNLOG_DIR || path.join(DATA_DIR, "turnlog");
 const MEDIA_DIR = path.join(DIR, "media");
@@ -24,8 +23,8 @@ let seq = 0;
 
 export interface TurnLogInput {
   path: "free" | "seed" | "scenario" | "live";
-  /** Did this session agree to its data being kept. `false` marks the row for the retention sweep,
-   *  which empties its text and leaves the credit (server/assets/retention.ts). Omitted = kept. */
+  /** Did this session agree to its data being kept. `false` marks the row as belonging to a session that
+   *  declined retention (server/assets/retention.ts). Omitted = kept. */
   retain?: boolean;
   /** Whose turn this is, the allowlisted code it came in on, and the sitting it belongs to. */
   learnerId: string;
@@ -117,7 +116,6 @@ export function record(input: TurnLogInput): void {
   try {
     mkdirSync(DIR, { recursive: true });
     sweepMedia();
-    retention.sweep();
 
     const ts = new Date().toISOString();
     const id = `${Date.now().toString(36)}-${(seq++).toString(36)}`;

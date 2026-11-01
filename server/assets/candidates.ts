@@ -9,7 +9,8 @@ import { ASSET_DIR } from "./store";
 import type { ObservedItem } from "../types";
 import { stripPersonal } from "./pseudonymise";
 
-const PATH = process.env.CANDIDATES_PATH || path.join(ASSET_DIR, "catalog-candidates.jsonl");
+export const CANDIDATES_PATH = process.env.CANDIDATES_PATH || path.join(ASSET_DIR, "catalog-candidates.jsonl");
+const PATH = CANDIDATES_PATH;
 
 export function record(items: ObservedItem[]): void {
   if (!items.length) return;

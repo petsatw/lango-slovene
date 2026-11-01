@@ -62,6 +62,15 @@ one `Authorization:` header from it. Chris adds both secrets. Body:
 On `pr-open`, `comment_url` and `question` are `null` and `pr_url` is the ready PR. A missing secret or a
 failed POST logs a line and leaves the run's outcome unchanged.
 
+**Merge alert.** `merge-alert.yml` POSTs to the same URL, with the same `Authorization:` header, when a PR
+merges into `mvp` or a `release/*` branch. Body:
+
+```json
+{"event": "pr-merged", "pr": 96, "base": "mvp", "pr_url": "<PR url>", "title": "<PR title>"}
+```
+
+A missing secret or a failed POST logs a line, and the job still passes.
+
 **Retry.** Answer the question on the issue, then add `ready-for-claude` again. The run continues from
 `claude/issue-N` and the same PR. Each label is a fresh run; attempts are not counted.
 
