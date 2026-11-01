@@ -35,7 +35,7 @@ ended".
 In this order:
 
 1. The title (§2.1).
-2. "You practised: {scenario}", where `{scenario}` is the `scenario` field of the create response
+2. "You practised: {domain}", where `{domain}` is the `domain` field of the create response
    (§3).
 3. The progress block, which follows the progress result (§3):
 
@@ -59,8 +59,8 @@ lessons screen, through the tutor start screen
 
 ## 3. Progress result
 
-- The create response (`POST /v1/live/sessions`) carries `scenario`: the name of the scenario the
-  session's lesson belongs to (the scene for a scene id, the tree's scenario for a tree id), as
+- The create response (`POST /v1/live/sessions`) carries `domain`: the name of the domain the
+  session's lesson belongs to (the domain itself for a domain id, the level's domain for a level id), as
   `server/live/prompt.ts` resolves it.
 - After `{"type":"state","status":"ended"}` the server keeps the socket open while `settleSession`
   checks the session ([session end](../no-save-session/spec.md#2-session-end)), at most
