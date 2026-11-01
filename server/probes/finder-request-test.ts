@@ -1,5 +1,5 @@
-// Acceptance check for the "Request a scenario" sheet: text leads and is required, the thumbs are an optional
-// add-on after it, and the header Feedback sheet keeps the rating layout.
+// Acceptance check for the "Request a scenario" sheet: its title, label and placeholder, and Send enabled only
+// once there is text.
 //   npx tsx server/probes/finder-request-test.ts
 import { spawn } from "node:child_process";
 import { mkdtempSync, readFileSync } from "node:fs";
@@ -38,20 +38,12 @@ try {
   await page.evaluate(() => document.getElementById("scene-quit")!.click());
   await page.waitForFunction(() => !document.getElementById("home")!.hidden);
 
-  // The sheet's parts in document order, by id.
-  const sheet = () => page.evaluate(() => {
-    const ids = ["feedback-prompt", "feedback-text", "feedback-rating-label", "feedback-up"];
-    const order = ids.slice().sort((a, b) =>
-      (document.getElementById(a)!.compareDocumentPosition(document.getElementById(b)!) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
-    return {
-      title: document.getElementById("feedback-title")!.textContent,
-      label: document.getElementById("feedback-prompt")!.textContent,
-      placeholder: document.getElementById("feedback-text")!.getAttribute("placeholder"),
-      line: document.getElementById("feedback-rating-label")!.textContent,
-      order,
-      sendDisabled: (document.getElementById("feedback-send") as HTMLButtonElement).disabled,
-    };
-  });
+  const sheet = () => page.evaluate(() => ({
+    title: document.getElementById("feedback-title")!.textContent,
+    label: document.getElementById("feedback-prompt")!.textContent,
+    placeholder: document.getElementById("feedback-text")!.getAttribute("placeholder"),
+    sendDisabled: (document.getElementById("feedback-send") as HTMLButtonElement).disabled,
+  }));
 
   await page.locator('.tile[data-go="practice"]').click();
   const request = async () => {
@@ -70,16 +62,8 @@ try {
 
   await request();
   await page.locator("#feedback-text").fill("a scenario about frumious things");
-  await page.locator("#feedback-down").click();
   await page.locator("#feedback-send").click();
   await page.waitForSelector("#feedback", { state: "hidden" });
-
-  await page.evaluate(() => document.getElementById("header-feedback")!.click());
-  const header = await sheet();
-  await page.locator("#feedback-text").fill("typed only");
-  const headerTextOnly = await page.locator("#feedback-send").isDisabled();
-  await page.locator("#feedback-up").click();
-  const headerRated = await page.locator("#feedback-send").isEnabled();
 
   await page.evaluate(() => {
     Object.defineProperty(document, "visibilityState", { value: "hidden", configurable: true });
@@ -89,20 +73,15 @@ try {
   await browser.close();
 
   const fb = rows().filter((r) => r.name === "feedback_submitted");
-  for (const r of fb) console.log([r.props.surface, r.props.rating, r.props.hasText, r.text].join("\t"));
+  for (const r of fb) console.log([r.props.surface, r.text].join("\t"));
   const checks = {
     "request title": first.title === "Request a scenario",
-    "request label": first.label === "What would you like to practise?",
-    "request placeholder": first.placeholder === "For example, ordering at a bakery",
-    "request line text": first.line === "How's Vadi so far? (optional)",
-    "request order: label, field, line, thumbs": first.order.join() === "feedback-prompt,feedback-text,feedback-rating-label,feedback-up",
+    "request label": first.label === "Describe what you want to learn",
+    "request placeholder": first.placeholder === "For example, booking a table at a restaurant",
     "request Send disabled when empty": first.sendDisabled,
-    "text alone enables Send": enabledByText,
+    "text enables Send": enabledByText,
     "Thanks shown, sheet closed": thanks,
-    "two finder_request rows, ratings null and down": fb.length === 2 && fb.every((r) => r.props.surface === "finder_request" && r.props.hasText === true && typeof r.text === "string") && fb[0].props.rating === null && fb[1].props.rating === "down",
-    "header title Feedback": header.title === "Feedback",
-    "header thumbs before field": header.order.indexOf("feedback-up") < header.order.indexOf("feedback-text"),
-    "header Send disabled until thumb": header.sendDisabled && headerTextOnly && headerRated,
+    "two finder_request rows with text": fb.length === 2 && fb.every((r) => r.props.surface === "finder_request" && typeof r.text === "string"),
   };
   for (const [name, ok] of Object.entries(checks)) console.log(`${ok ? "PASS" : "FAIL"}  ${name}`);
   pass = Object.values(checks).every(Boolean);

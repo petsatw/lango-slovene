@@ -33,7 +33,7 @@ const EVENTS: Record<string, string[]> = {
   finder_query: ["resultCount"],
   finder_no_match: [],
   finder_match_opened: ["scenarioId"],
-  feedback_submitted: ["surface", "rating", "hasText"],
+  feedback_submitted: ["surface", "screen", "scenarioId", "level", "lessonId"],
 };
 
 type Who = { learnerId: string; testerCode: string | null };

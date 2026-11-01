@@ -69,46 +69,32 @@ function track(name, props = {}, text) {
 }
 setInterval(flushEvents, 10_000);
 
-// ---- Feedback sheet (docs/features/feedback/spec.md): thumbs + optional text; closing records nothing. ----
+// ---- Feedback sheet (docs/features/feedback/spec.md): one required text box; closing records nothing. ----
+const FEEDBACK_LABELS = {
+  level_end: "How did this go for you?",
+  live_end: "How did this go for you?",
+  header: "Let us know what you think.",
+};
 let feedbackSurface = null;
-let feedbackRating = null;
 let feedbackCloseTimer = null;
 function openFeedback(surface) {
   clearTimeout(feedbackCloseTimer);
   feedbackSurface = surface;
-  feedbackRating = null;
-  $("feedback-up").setAttribute("aria-pressed", "false");
-  $("feedback-down").setAttribute("aria-pressed", "false");
   $("feedback-text").value = "";
   $("feedback-send").disabled = true;
   $("feedback-thanks").hidden = true;
   const request = surface === "finder_request";
   $("feedback-title").textContent = request ? "Request a scenario" : "Feedback";
-  $("feedback-prompt").textContent = request ? "What would you like to practise?" : "Anything to add? (optional)";
-  $("feedback-text").placeholder = request ? "For example, ordering at a bakery" : "";
-  $("feedback-rating-label").hidden = !request;
-  // Rating sheet: thumbs lead. Request sheet: the text leads and the thumbs follow it.
-  if (request) $("feedback-send").before($("feedback-rating-label"), $("feedback-up").parentElement);
-  else $("feedback-prompt").before($("feedback-up").parentElement);
+  $("feedback-prompt").textContent = request ? "Describe what you want to learn" : FEEDBACK_LABELS[surface];
+  $("feedback-text").placeholder = request ? "For example, booking a table at a restaurant" : "";
   $("feedback").hidden = false;
 }
-function setFeedbackRating(r) {
-  feedbackRating = r;
-  $("feedback-up").setAttribute("aria-pressed", String(r === "up"));
-  $("feedback-down").setAttribute("aria-pressed", String(r === "down"));
-  updateFeedbackSend();
-}
-function updateFeedbackSend() {
-  $("feedback-send").disabled = feedbackSurface === "finder_request" ? !$("feedback-text").value.trim() : !feedbackRating;
-}
-$("feedback-text").addEventListener("input", updateFeedbackSend);
-$("feedback-up").addEventListener("click", () => setFeedbackRating("up"));
-$("feedback-down").addEventListener("click", () => setFeedbackRating("down"));
+$("feedback-text").addEventListener("input", () => { $("feedback-send").disabled = !$("feedback-text").value.trim(); });
 $("feedback-close").addEventListener("click", () => { $("feedback").hidden = true; });
 $("feedback-send").addEventListener("click", () => {
   const text = $("feedback-text").value.trim().slice(0, 1000);
-  if (feedbackSurface === "finder_request" ? !text : !feedbackRating) return;
-  track("feedback_submitted", { surface: feedbackSurface, rating: feedbackRating, hasText: !!text }, text);
+  if (!text) return;
+  track("feedback_submitted", { surface: feedbackSurface }, text);
   $("feedback-send").disabled = true;
   $("feedback-thanks").hidden = false;
   feedbackCloseTimer = setTimeout(() => { $("feedback").hidden = true; }, 1200);
@@ -1126,6 +1112,25 @@ function startDialogueTree() {
   // Offer the "try it for real" handoff whenever this level ties itself to catalog learnables.
   $("dialogue-handoff").hidden = !(dialogue.introduces && dialogue.introduces.length);
   presentNpcNode(dialogue.root);
+}
+
+// Lock the page while #dialogue is visible: overflow hidden stops wheel, touch and keyboard scrolls, and a
+// scroll listener puts back the offset after programmatic scrolls (overflow hidden still allows those).
+{
+  let lockedY = null;
+  const hold = () => { if (lockedY !== null && window.scrollY !== lockedY) window.scrollTo(0, lockedY); };
+  new MutationObserver(() => {
+    const open = !$("dialogue").hidden;
+    if (open === (lockedY !== null)) return;
+    document.documentElement.classList.toggle("dialogue-open", open);
+    if (open) {
+      lockedY = window.scrollY;
+      window.addEventListener("scroll", hold);
+    } else {
+      window.removeEventListener("scroll", hold);
+      lockedY = null;
+    }
+  }).observe($("dialogue"), { attributes: true, attributeFilter: ["hidden"] });
 }
 
 function closeDialogue() {

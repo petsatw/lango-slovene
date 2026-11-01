@@ -411,15 +411,9 @@ main {
 .history-head, .history-progress { display: block; }
 .history-progress { color: var(--muted); font-size: 13px; }
 .history-entry-body { display: block; margin: 8px 4px; color: var(--muted); font-size: 14px; }
-.feedback-overlay { z-index: 30; }
+.story-overlay.feedback-overlay { z-index: 50; } /* above the spoken scene (40), whose close screen opens it */
 .access-code { width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 12px; font-size: 16px; border-radius: 10px; border: 1px solid #3a4452; background: #11151b; color: #fff; }
 .story-card.feedback-card { text-align: left; max-width: 420px; }
-.feedback-rating { display: flex; justify-content: center; gap: 16px; margin: 0 0 14px; }
-.feedback-thumb {
-  font-size: 28px; padding: 8px 20px; cursor: pointer;
-  background: transparent; border: 2px solid #2b2f38; border-radius: 14px;
-}
-.feedback-thumb[aria-pressed="true"] { border-color: var(--green); background: rgba(11, 110, 79, 0.25); }
 .feedback-text {
   width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 10px;
   background: var(--panel); color: inherit; font: inherit;
@@ -472,7 +466,7 @@ main {
 }
 .dialogue-level.active { color: #fff; background: var(--green); border-color: var(--green); }
 .dialogue-convo {
-  flex: 1; min-height: 0; overflow-y: auto;
+  flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
   display: flex; flex-direction: column; gap: 10px;
   padding: 8px 2px; margin: 6px 0;
 }
@@ -580,7 +574,7 @@ main {
 /* Choices: each is a distinct tappable card with a trailing "›" — the same select cue the scenario and
  * level cards use — so it reads unmistakably as "tap to choose", no instruction line needed. */
 .choice-list {
-  flex: 1; min-height: 0; overflow-y: auto;
+  flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
   display: flex; flex-direction: column; gap: 8px; padding: 3px; /* room for card shadows */
 }
 /* The live choice is the ONE thing to do now: amber accent (a hue nothing else uses), a filled number
@@ -635,6 +629,9 @@ main {
 }
 .dialogue-handoff:hover { color: #fff; border-color: var(--green); }
 .dialogue-handoff:active { transform: scale(0.98); }
+
+/* The page behind the dialogue overlay (and any sheet over it) stays put; its scroll position is kept. */
+html.dialogue-open, html.dialogue-open body { overflow: hidden; overscroll-behavior: none; }
 
 .story-overlay {
   position: fixed; inset: 0; z-index: 20;

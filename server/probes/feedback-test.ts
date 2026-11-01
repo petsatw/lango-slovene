@@ -46,7 +46,6 @@ try {
   await page.waitForFunction(() => !document.getElementById("home")!.hidden);
 
   const send = async (text: string) => {
-    await page.locator("#feedback-up").click();
     await page.locator("#feedback-text").fill(text);
     await page.locator("#feedback-send").click();
     await page.waitForSelector("#feedback", { state: "hidden" });
@@ -54,7 +53,6 @@ try {
 
   // 1. Header link, from home: a sheet closed without sending, then one sent.
   await page.locator("#header-feedback").click();
-  await page.locator("#feedback-down").click();
   await page.locator("#feedback-text").fill("closed unsent");
   await page.locator("#feedback-close").click();
   await page.locator("#header-feedback").click();
@@ -86,12 +84,12 @@ try {
   await browser.close();
 
   const fb = rows().filter((r) => r.name === "feedback_submitted");
-  for (const r of fb) console.log([r.ts, r.props.surface, r.props.rating, r.props.hasText, r.text].join("\t"));
+  for (const r of fb) console.log([r.ts, r.props.surface, r.text].join("\t"));
   const checks = {
     "exactly three feedback_submitted rows": fb.length === 3,
     "surfaces header, finder_request, level_end": JSON.stringify(fb.map((r) => r.props.surface).sort()) === JSON.stringify(["finder_request", "header", "level_end"]),
     "the unsent sheet recorded nothing": !readFileSync(log, "utf8").includes("closed unsent"),
-    "text and rating stored": fb.every((r) => r.props.rating === "up" && r.props.hasText === true && typeof r.text === "string"),
+    "text stored, no rating": fb.every((r) => r.props.rating === undefined && r.props.hasText === undefined && typeof r.text === "string"),
   };
   for (const [name, ok] of Object.entries(checks)) console.log(`${ok ? "PASS" : "FAIL"}  ${name}`);
   pass = Object.values(checks).every(Boolean);

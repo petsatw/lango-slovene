@@ -47,26 +47,27 @@ Each accepted event becomes one line in `DATA_DIR/events/events.jsonl`:
 |---|---|---|
 | `app_open` | the app loads | `standalone` (home-screen app), `isFirstOpen`, `path` |
 | `tester_code_seen` | an invite link stores a code | — |
-| `screen_viewed` | `showScreen` runs | `screen` (`home`, `practice`, `levels`, `a1`, `tutor`, `scene`) |
+| `screen_viewed` | `showScreen` runs | `screen` (`home`, `practice`, `levels`, `a1`, `tutor`, `scene`, `settings`, `history`) |
 | `intro_completed` | a scene or level intro plays to the end | `kind` (`scene`, `level`), `id` |
 | `intro_quit` | the learner leaves an intro early | `kind`, `id` |
-| `level_started` | a level opens | `scenarioId`, `level` |
+| `level_started` | a level opens, including from a finder match | `scenarioId`, `level` |
 | `level_completed` | a level reaches its end | `scenarioId`, `level`, `ms` |
 | `level_abandoned` | the learner leaves a level before its end | `scenarioId`, `level`, `ms`, `nodeId` |
 | `level_restarted` | the learner presses "↻ Start over" in a tap dialogue or spoken lesson ([dialogue lesson](../dialogue-lesson/spec.md#23-start-over)) | `scenarioId`, `level`, `nodeId` |
-| `handoff_tapped` | a "practise it live" entry is tapped | `from` (`home`, `finder`, `level`) |
+| `handoff_tapped` | a "practise it live" entry is tapped | `from` (`home`, `finder`, `level`: the spoken lesson's "Speak Live with AI" or the tap level's "Now try it for real") |
 | `gate_passed` | the server grants live access | `via` (`tester_code`, `access_code`) |
 | `live_started` | a live session connects | `lessonId`, `provider`, `noSave` |
 | `live_ended` | a live session ends | `lessonId`, `provider`, `sec`, `reason` (`user`, `ttl`) |
 | `live_failed` | a live session cannot start or drops | `lessonId`, `provider`, `reason` (`error`, `capacity`, `forbidden`) |
-| `finder_query` | a finder search is submitted | `resultCount` |
-| `finder_no_match` | a submitted search shows no lessons | — |
+| `finder_query` | a finder search settles: the learner presses Enter or stops typing for 1 second | `resultCount` |
+| `finder_no_match` | a settled finder search shows no lessons | — |
 | `finder_match_opened` | a finder result is opened | `scenarioId` |
 | `feedback_submitted` | a feedback sheet is sent | `surface`, `screen`, `scenarioId`, `level`, `lessonId`, plus `text` ([feedback](../feedback/spec.md#3-context)) |
 
 Back and Next in a tap dialogue record no event.
 
-The finder events record that a search happened and its outcome. The query text stays in the browser.
+The finder events record that a search happened and its outcome. `finder_query` and `finder_no_match` are recorded
+once per distinct trimmed, non-empty query. The query text stays in the browser.
 
 ## 5. Readout
 
