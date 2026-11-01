@@ -1,0 +1,51 @@
+name: Merge alert
+
+# Posts {"event":"pr-merged",...} to the run alert webhook when a PR merges into mvp or release/*.
+# It never fails and never prints the key.
+on:
+  pull_request:
+    types: [closed]
+    branches: [mvp, 'release/**']
+
+permissions: {}
+
+jobs:
+  alert:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Merge alert
+        continue-on-error: true
+        env:
+          PR: ${{ github.event.pull_request.number }}
+          BASE: ${{ github.event.pull_request.base.ref }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          TITLE: ${{ github.event.pull_request.title }}
+          CLAUDE_BLOCK_WEBHOOK_URL: ${{ secrets.CLAUDE_BLOCK_WEBHOOK_URL }}
+          CLAUDE_BLOCK_WEBHOOK_KEY: ${{ secrets.CLAUDE_BLOCK_WEBHOOK_KEY }}
+        run: |
+          # The key is the full Authorization header line or only its value. Trim surrounding whitespace and
+          # send it as-is, adding "Authorization: " only when the key does not start with it.
+          set +x
+          key=$CLAUDE_BLOCK_WEBHOOK_KEY
+          key="${key#"${key%%[![:space:]]*}"}"
+          key="${key%"${key##*[![:space:]]}"}"
+          if [ -z "$CLAUDE_BLOCK_WEBHOOK_URL" ] || [ -z "$key" ]; then
+            echo "Merge alert webhook secrets are not set; no alert sent."
+            exit 0
+          fi
+          shopt -s nocasematch
+          if [[ $key != authorization:* ]]; then key="Authorization: $key"; fi
+          shopt -u nocasematch
+          printf '%s\n' "$key" > /tmp/webhook-headers
+          jq -n --argjson pr "$PR" --arg base "$BASE" --arg pr_url "$PR_URL" --arg title "$TITLE" \
+            '{event: "pr-merged", pr: $pr, base: $base, pr_url: $pr_url, title: $title}' > /tmp/alert.json || true
+          code=$(curl -sS --max-time 10 -X POST -H 'Content-Type: application/json' -H @/tmp/webhook-headers \
+            --data-binary @/tmp/alert.json -o /dev/null -w '%{http_code}' "$CLAUDE_BLOCK_WEBHOOK_URL") || true
+          rm -f /tmp/webhook-headers
+          case "$code" in
+            2??) echo "Merge alert sent (HTTP $code)." ;;
+            *) echo "::warning::Merge alert webhook failed (HTTP ${code:-none})." ;;
+          esac
+          exit 0
