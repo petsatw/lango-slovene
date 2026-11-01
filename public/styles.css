@@ -751,6 +751,11 @@ body.in-scene header { display: none; }
   transition: opacity 200ms ease, background 140ms ease;
 }
 .scene-chip:active { background: rgba(255, 255, 255, 0.16); }
+/* Five run chips on a 320px screen: tighter, so the cluster clears the Feedback chip at the upper left. */
+@media (max-width: 359px) {
+  .scene-chips { right: 10px; gap: 4px; }
+  .scene-chip { width: 36px; height: 36px; border-radius: 18px; }
+}
 /* Unavailable, not absent — a beat with no slow clip dims the tortoise rather than removing it, so the
    cluster keeps its shape and nothing slides sideways between beats. */
 .scene-chip[aria-disabled="true"] { opacity: 0.25; pointer-events: none; }

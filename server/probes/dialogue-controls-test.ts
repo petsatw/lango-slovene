@@ -91,7 +91,7 @@ try {
     return { x: r.left + r.width / 2 - c.left, y: r.top + r.height / 2 - c.top, w: c.width, h: c.height };
   });
   console.log("nav row centre in card:", JSON.stringify(box));
-  checks["row in the card's lower-left quadrant"] =box.x < box.w / 2 && box.y > box.h / 2;
+  checks["row in the card's lower-left quadrant"] = box.x < box.w / 2 && box.y > box.h / 2;
 
   const T0 = await bubbles();
   await choices().nth(1).click(); await waitFork(); const T1 = await bubbles();
@@ -186,7 +186,6 @@ try {
     await page.waitForFunction((w) => document.getElementById("scene-caption")!.innerText !== w, was, { timeout: 30000 });
   }
   await page.waitForFunction(() => document.getElementById("scene-back")!.getAttribute("aria-disabled") !== "true", null, { timeout: 30000 });
-  checks["spoken: « enabled after stepping"] = await chipOn("scene-back");
   await flush();
   const model = () => { try { return numbers(JSON.parse(readFileSync(learnerFile, "utf8"))); } catch { return {}; } };
   const modelBefore = model();
