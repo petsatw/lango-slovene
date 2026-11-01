@@ -83,6 +83,9 @@ try {
     ({ src: m.currentSrc, paused: m.paused, t: m.currentTime })).filter((m) => m.src.includes("/api/flashcards/audio")));
   const playing = async (id: string) => (await media()).filter((m) => m.src === `${base}${audioPath(id)}` && !m.paused);
   const allPaused = async () => (await media()).every((m) => m.paused);
+  // Waits until the clip for id is playing past t seconds.
+  const waitPlaying = (id: string, t: number) => page.waitForFunction(([src, t]) => [...(window as any).__media].some((m: HTMLMediaElement) =>
+    m.currentSrc === src && m.currentTime > t && !m.paused), [`${base}${audioPath(id)}`, t] as const);
   const tapPlay = (id: string) => page.locator(`#words-list .words-item:nth-child(${order.indexOf(id) + 1}) .words-play`).click();
   const flush = () => page.evaluate(() => {
     Object.defineProperty(document, "visibilityState", { value: "hidden", configurable: true });
@@ -133,7 +136,6 @@ try {
   order = cardsRouted.map((c: any) => c.id);
   eq("buttons", list.map((r) => [r.buttons, r.label, r.third]),
     cardsRouted.map((c: any) => (c.example ? [1, "Hear it in context", "▶"] : [0, null, ""])));
-  if (list[order.indexOf("skakati")]!.buttons !== 0) fail("skakati has a button");
   const withEx: string[] = cardsRouted.filter((c: any) => c.example).map((c: any) => c.id);
   if (withEx.length < 8 || !withEx.includes("star_sem_let")) fail(`cards with an example: ${withEx.length}`);
   const [B, C, D, E, F, G] = withEx.filter((id) => id !== "star_sem_let").slice(0, 6) as [string, string, string, string, string, string];
@@ -165,29 +167,25 @@ try {
   const want = cards.cards.map((c: { id: string; en: string; sl: string }) => [c.en, c.sl, c.id === "star_sem_let" ? "✓" : null]);
   eq("row text", list.map((r) => [r.en, r.sl, r.tickText]), want);
   eq("tick name", list.filter((r) => r.tick).map((r) => r.tick), ["Memorised"]);
-  eq("tick only on star_sem_let", list.map((r) => r.tick).indexOf("Memorised"), order.indexOf("star_sem_let"));
 
   // 9. ▶ plays from the start, restarts, and plays one clip at a time.
   const A = "star_sem_let";
   await tapPlay(A);
-  await page.waitForFunction(() => [...(window as any).__media].some((m: HTMLMediaElement) => m.currentTime > 0.5 && !m.paused));
+  await waitPlaying(A, 0.5);
   eq("A request", audioStatus.get(`${base}${audioPath(A)}`), [200]);
   eq("A requests", audioReqs.filter((u) => u.endsWith(audioPath(A))).length, 1);
-  if ((await playing(A)).length !== 1) fail("A not playing");
-  await page.evaluate((i) => {
-    const m = [...(window as any).__media][0] as HTMLMediaElement;
+  await page.evaluate(([i, src]) => {
+    const m = [...(window as any).__media].find((e: HTMLMediaElement) => e.currentSrc === src) as HTMLMediaElement;
     (document.querySelectorAll("#words-list .words-item")[i]!.querySelector(".words-play") as HTMLElement).click();
     (window as any).__after = m.currentTime;
-  }, order.indexOf(A));
+  }, [order.indexOf(A), `${base}${audioPath(A)}`] as const);
   if ((await page.evaluate(() => (window as any).__after)) >= 0.3) fail("A did not restart");
   await page.waitForTimeout(500);
   const again = await playing(A);
   if (again.length !== 1 || again[0]!.t <= 0) fail("A not playing after restart");
 
   await tapPlay(B);
-  await page.waitForFunction(() => [...(window as any).__media].some((m: HTMLMediaElement) => m.currentTime > 0.2 && !m.paused));
-  eq("B playing", (await playing(B)).length, 1);
-  eq("A no longer playing", (await playing(A)).length, 0);
+  await waitPlaying(B, 0.2);
   eq("only B unpaused", (await media()).filter((m) => !m.paused).map((m) => m.src), [`${base}${audioPath(B)}`]);
 
   // 10. Leaving stops it: Back, then the Flashcards button.
@@ -196,7 +194,7 @@ try {
   eq("paused after Back", await allPaused(), true);
   await openList();
   await tapPlay(B);
-  await page.waitForFunction(() => [...(window as any).__media].some((m: HTMLMediaElement) => m.currentTime > 0.2 && !m.paused));
+  await waitPlaying(B, 0.2);
   await page.click("#words-flashcards-btn");
   await page.waitForFunction(() => !document.getElementById("flashcards")!.hidden);
   eq("paused after Flashcards button", await allPaused(), true);
@@ -212,7 +210,7 @@ try {
   eq("404 screen unchanged", await shape(), before);
   eq("404 requested once", audioReqs.filter((u) => u.endsWith(audioPath(C))).length, 1);
   await tapPlay(D);
-  await page.waitForFunction((src) => [...(window as any).__media].some((m: HTMLMediaElement) => m.currentSrc === src && m.currentTime > 0.2 && !m.paused), `${base}${audioPath(D)}`);
+  await waitPlaying(D, 0.2);
 
   // 12. Playing records no event.
   await page.click("#back");
@@ -234,7 +232,7 @@ try {
   eq("heading with switch off", await page.evaluate(() => (document.getElementById("words") as HTMLElement).innerText.includes("Hear it in context")), true);
   const H = withEx.filter((id) => ![A, B, C, D, E, F, G].includes(id))[0]!;
   await tapPlay(H);
-  await page.waitForFunction((src) => [...(window as any).__media].some((m: HTMLMediaElement) => m.currentSrc === src && m.currentTime > 0.2 && !m.paused), `${base}${audioPath(H)}`);
+  await waitPlaying(H, 0.2);
   eq("H request", audioStatus.get(`${base}${audioPath(H)}`), [200]);
 
   await page.click("#back");
