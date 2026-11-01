@@ -411,6 +411,14 @@ main {
 .history-head, .history-progress { display: block; }
 .history-progress { color: var(--muted); font-size: 13px; }
 .history-entry-body { display: block; margin: 8px 4px; color: var(--muted); font-size: 14px; }
+.feedback-chip {
+  position: fixed; z-index: 45;
+  left: 12px; top: calc(10px + env(safe-area-inset-top));
+  background: rgba(10, 12, 16, 0.6); color: var(--muted);
+  border: 1px solid #2b2f38; border-radius: 999px;
+  padding: 5px 12px; font-size: 13px; cursor: pointer;
+}
+.feedback-chip[hidden] { display: none; }
 .story-overlay.feedback-overlay { z-index: 50; } /* above the spoken scene (40), whose close screen opens it */
 .access-code { width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 12px; font-size: 16px; border-radius: 10px; border: 1px solid #3a4452; background: #11151b; color: #fff; }
 .story-card.feedback-card { text-align: left; max-width: 420px; }

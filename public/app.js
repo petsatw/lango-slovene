@@ -74,12 +74,28 @@ const FEEDBACK_LABELS = {
   level_end: "How did this go for you?",
   live_end: "How did this go for you?",
   header: "Let us know what you think.",
+  chip: "Let us know what you think.",
 };
 let feedbackSurface = null;
 let feedbackCloseTimer = null;
+let feedbackContext = {};
+// Where the learner was when the sheet opened (docs/features/feedback/spec.md#3-context).
+function currentFeedbackContext() {
+  if (!$("dialogue").hidden && dialogue) return { screen: "dialogue", scenarioId: dialogue.scenarioId, level: dialogue.level };
+  if (currentScreen === "scene") return { screen: "spoken", scenarioId: scene.scenarioId, level: scene.level };
+  if (currentScreen === "tutor" && liveSessionShowing()) return { screen: "live", lessonId: liveLessonId };
+  return { screen: currentScreen };
+}
+function liveSessionShowing() { return liveActive() || !!wrapUp; }
+// The chip is on screen while the dialogue overlay, the spoken lesson or a live session (and its wrap-up) shows.
+function syncFeedbackChip() {
+  $("feedback-chip").hidden = $("dialogue").hidden && currentScreen !== "scene"
+    && !(currentScreen === "tutor" && liveSessionShowing());
+}
 function openFeedback(surface) {
   clearTimeout(feedbackCloseTimer);
   feedbackSurface = surface;
+  feedbackContext = currentFeedbackContext();
   $("feedback-text").value = "";
   $("feedback-send").disabled = true;
   $("feedback-thanks").hidden = true;
@@ -94,12 +110,13 @@ $("feedback-close").addEventListener("click", () => { $("feedback").hidden = tru
 $("feedback-send").addEventListener("click", () => {
   const text = $("feedback-text").value.trim().slice(0, 1000);
   if (!text) return;
-  track("feedback_submitted", { surface: feedbackSurface }, text);
+  track("feedback_submitted", { surface: feedbackSurface, ...feedbackContext }, text);
   $("feedback-send").disabled = true;
   $("feedback-thanks").hidden = false;
   feedbackCloseTimer = setTimeout(() => { $("feedback").hidden = true; }, 1200);
 });
 $("header-feedback").addEventListener("click", () => openFeedback("header"));
+$("feedback-chip").addEventListener("click", () => openFeedback("chip"));
 $("scene-feedback").addEventListener("click", () => openFeedback("level_end"));
 $("live-feedback").addEventListener("click", () => openFeedback("live_end"));
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushEvents(); });
@@ -193,6 +210,7 @@ function showScreen(id) {
   $("obs").hidden = id !== "tutor" || !obsEnabled; // dev affordance, opt-in per tab — see obsEnabled
   // The scene owns the whole viewport — beat 15 is zero chrome, header included.
   document.body.classList.toggle("in-scene", id === "scene");
+  syncFeedbackChip();
 }
 
 function openHome() { stopAllAudio(); showScreen("home"); }
@@ -1135,6 +1153,7 @@ function startDialogueTree() {
     const open = !$("dialogue").hidden;
     if (open === (lockedY !== null)) return;
     document.documentElement.classList.toggle("dialogue-open", open);
+    syncFeedbackChip();
     if (open) {
       lockedY = window.scrollY;
       window.addEventListener("scroll", hold);
@@ -1203,6 +1222,7 @@ const liveParams = new URLSearchParams(location.search);
 let mode = "live";
 let holding = false;       // tap mode: the button is down and the mic is open
 let freeChatBegun = false; // tap mode opens with the tutor speaking first — once per session
+let liveLessonId = ""; // the lesson the live session was started for
 let liveSessionId = ""; // the live session's id; /api/gloss caches translations with it
 let liveTick = null;      // polls tutor-speaking, which no message reports (see liveSpeaking)
 let liveObjectives = [];   // the Slovene of each line the tutor steers toward, sent at connect
@@ -1254,6 +1274,7 @@ function renderPractice() {
     opt.disabled = live || holding || seedActive;
   }
 
+  syncFeedbackChip();
   const showObjectives = mode === "live" && live && liveObjectives.length > 0;
   $("objectives-row").hidden = !showObjectives;
   if (!showObjectives) setObjectivesOpen(false);
@@ -1307,6 +1328,7 @@ async function toggleLive() {
 
 async function connectLive(lessonId, code) {
   const btn = $("practice-talk");
+  liveLessonId = lessonId;
   btn.disabled = true;
   $("live-state").textContent = "connecting…";
   liveBubbles.clear(); // ids are per-session; a stale one would revise last session's bubble
@@ -1418,6 +1440,7 @@ onLive("created", ({ scenario }) => {
 
 function resetWrapUp() {
   wrapUp = null;
+  syncFeedbackChip();
   $("live-wrapup").hidden = true;
   document.querySelector(".practice-surface").classList.remove("wrapped");
 }
@@ -1429,6 +1452,7 @@ function openWrapUp(pressed) {
   liveTick = null;
   document.querySelector(".practice-surface").classList.add("wrapped");
   $("live-wrapup").hidden = false;
+  syncFeedbackChip();
   renderWrapUp();
   renderPractice();
 }
