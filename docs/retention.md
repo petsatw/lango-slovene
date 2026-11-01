@@ -14,7 +14,7 @@ so the learner's own deletes, Delete my data and the sweeps can find it.
 | 3 | `sessions/<runId>.json` | `turns[].text`, `turns[].userVerbatim`, `turns[].audioKey` | learning history | — | with its session |
 | 4 | `live/<sessionId>.gloss.json` | translations of the session's lines | learning history | deleted right after scoring | with its session |
 | 5 | `improve/<sessionId>.json` | transcripts passed through `stripPersonal` | when the session has `improve: true` | never written | 90 days, consent withdrawn, with its session |
-| 6 | `learners/<learnerId>.json` | learnable counts, `facts.gender`, `lastSeenAt` | kept | progress credit kept | Delete my data, 12-month sweep |
+| 6 | `learners/<learnerId>.json` | learnable counts, `flashcards` state, `facts.gender`, `lastSeenAt` | kept | progress credit kept | Delete my data, 12-month sweep |
 | 7 | `events/events.jsonl` | event rows, feedback `text` | kept | kept | Delete my data, 12-month sweep |
 | 8 | `catalog-candidates.jsonl` | `surface`, `gloss`, `at`, passed through `stripPersonal` | written | written | 12 months |
 | 9 | server stdout | error messages, `LIVE_DEBUG=1` vendor event names; never the team readout key or its `Authorization` header | — | — | host log retention, 30 days |

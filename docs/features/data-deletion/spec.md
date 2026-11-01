@@ -14,7 +14,8 @@ months without use.
 ## 2. What is deleted
 
 `deleteLearner(learnerId)` in `server/assets/deletion.ts` removes:
-- the learner model `DATA_DIR/learners/<learnerId>.json`, with progress and gender
+- the learner model `DATA_DIR/learners/<learnerId>.json`, with progress, flashcard state
+  ([flashcards](../flashcards/spec.md#7-flashcard-state)) and gender
 - every history entry and what it removes
   ([what a delete removes](../learning-history/spec.md#4-what-a-delete-removes))
 - all of the learner's turn-log rows
