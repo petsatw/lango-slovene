@@ -174,8 +174,11 @@ let runId = null;            // THIS sitting on the practice surface — both mo
 // ---- Screen router — one screen visible at a time; the tree + obs are overlays on top. ----
 const SCREENS = ["home", "practice", "levels", "tutor", "a1", "scene", "settings", "history"];
 let currentScreen = "home";
+// The finder's pending settle (1 s after typing stops). Leaving the practice screen cancels it.
+let finderSettleTimer = null;
 
 function showScreen(id) {
+  if (id !== "practice") clearTimeout(finderSettleTimer);
   // Leaving the practice surface ends whatever it was running. A live session left open behind a
   // screen the learner has walked away from is a metered vendor billing an empty room, and the consent
   // that was granted for it does not carry to the next visit.
@@ -721,7 +724,6 @@ function treePath(d, nodeId) {
   return null;
 }
 
-let finderSettleTimer = null;
 $("finder-input").addEventListener("input", (e) => {
   clearTimeout(finderSettleTimer);
   const text = e.target.value.trim();

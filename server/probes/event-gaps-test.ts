@@ -1,5 +1,6 @@
 // Acceptance check for the event gaps: a live handoff from a tap level, finder searches that settle while
-// typing, and a level opened from a finder match each leave a row in the log; no row holds the query text.
+// typing, and a level opened from a finder match each leave exactly one row in the log. A search that is
+// cleared, left or opened before it settles records nothing, and no row or event payload holds query text.
 //   npx tsx server/probes/event-gaps-test.ts
 import { spawn } from "node:child_process";
 import { mkdtempSync, readFileSync } from "node:fs";
@@ -24,6 +25,8 @@ async function up() {
 }
 
 const NO_MATCH = "zxqv wibble frumious";
+const CLEARED = "qqzx plonk";
+const LEFT = "vvkk blorp";
 const log = path.join(data, "events", "events.jsonl");
 const rows = () => {
   try { return readFileSync(log, "utf8").trim().split("\n").filter(Boolean).map((l) => JSON.parse(l)); } catch { return []; }
@@ -37,9 +40,17 @@ try {
     .flatMap((sc: any) => sc.dialogues.map((d: any) => ({ sc, d })))
     .find((x: any) => (x.d.advance ?? "tap") !== "audio" && !x.d.intro && x.d.introduces?.length);
   if (!lv) throw new Error("no tap level with introduces");
+  const index = await (await fetch(`${base}/api/match/index`)).json();
+  const entry = index.entries.find((e: any) => e.dialogueId === lv.d.id);
+  const word = entry?.nodes.flatMap((n: any) => n.tokens).find((t: string) => t.length > 3 && /^[a-z]+$/.test(t) && !t.endsWith("s"));
+  if (!word) throw new Error("no line word for the finder match");
+  const MATCH = `${lv.sc.name} ${word}`;
+  const QUERIES = [NO_MATCH, CLEARED, LEFT, MATCH];
 
   const browser = await chromium.launch();
   const page = await (await browser.newContext()).newPage();
+  const payloads: string[] = [];
+  page.on("request", (r) => { if (r.url().endsWith("/api/event")) payloads.push(r.postData() || ""); });
   await page.goto(`${base}/?c=TEST-01`);
   await page.waitForFunction(() => !document.getElementById("scene")!.hidden);
   await page.evaluate(() => document.getElementById("scene-quit")!.click());
@@ -63,42 +74,64 @@ try {
   await input.press("Enter");
   await page.waitForFunction(() => !/Finding the best match/.test(document.getElementById("finder-results")!.textContent || ""));
 
-  // Finder, match: type a tap level's scenario name and open a match.
+  // Unsettled searches record nothing: one cleared before the second is up, one left by going home.
   await input.fill("");
-  await input.pressSequentially(lv.sc.name, { delay: 20 });
+  await input.pressSequentially(CLEARED, { delay: 20 });
+  await input.fill("");
   await page.waitForTimeout(1500);
-  await page.waitForSelector("#finder-results .level-card");
-  const cards = page.locator("#finder-results .level-card");
-  let opened = false;
-  for (let i = 0; i < (await cards.count()) && !opened; i++) {
-    await cards.nth(i).click();
-    opened = await page.waitForFunction(() => !document.getElementById("dialogue")!.hidden, null, { timeout: 2000 }).then(() => true, () => false);
-    if (!opened) {
-      await page.evaluate(() => document.getElementById("back")!.click());
-      await page.waitForFunction(() => !document.getElementById("practice")!.hidden);
-    }
-  }
-  if (!opened) throw new Error("no finder match opened a tap level");
+  await input.pressSequentially(LEFT, { delay: 20 });
+  await page.evaluate(() => document.getElementById("back")!.click());
+  await page.waitForFunction(() => !document.getElementById("home")!.hidden);
+  await page.waitForTimeout(1500);
+  await page.locator('.tile[data-go="practice"]').click();
+
+  // Finder, match: the scenario name plus a word from one of the level's lines, so its card carries a
+  // snippet and opens at that line (openLevelAt). The settled count is the number of cards shown.
+  const card = page.locator("#finder-results .level-card").filter({ hasText: lv.d.title });
+  await input.fill("");
+  await input.pressSequentially(MATCH, { delay: 20 });
+  await page.waitForTimeout(1500);
+  await card.first().waitFor();
+  const shown = await page.locator("#finder-results .level-card").count();
+
+  // The same search in capitals is a distinct query; opening its match before it settles records no search.
+  await input.fill("");
+  await input.pressSequentially(MATCH.toUpperCase(), { delay: 10 });
+  await card.first().click();
+  await page.waitForFunction(() => !document.getElementById("dialogue")!.hidden);
+  await page.waitForTimeout(1500);
 
   await page.evaluate(() => {
     Object.defineProperty(document, "visibilityState", { value: "hidden", configurable: true });
     document.dispatchEvent(new Event("visibilitychange"));
   });
-  for (let i = 0; i < 20 && !rows().some((r) => r.name === "level_started" && rows().some((q) => q.name === "finder_match_opened")); i++) await page.waitForTimeout(250);
+  for (let i = 0; i < 20 && !rows().some((r) => r.name === "finder_match_opened"); i++) await page.waitForTimeout(250);
   await browser.close();
 
   const all = rows();
   for (const r of all) console.log([r.name, JSON.stringify(r.props)].join("\t"));
   const q = all.filter((r) => r.name === "finder_query");
   const opened_i = all.findIndex((r) => r.name === "finder_match_opened");
-  const after = opened_i >= 0 ? all.slice(opened_i + 1).find((r) => r.name === "level_started") : undefined;
+  const startedAfter = opened_i >= 0 ? all.slice(opened_i + 1).filter((r) => r.name === "level_started") : [];
+  // Each level_started is closed by one level_completed or level_abandoned before the next one begins.
+  let open = false, paired = true;
+  for (const r of all) {
+    if (r.name === "level_started") { if (open) paired = false; open = true; }
+    if (r.name === "level_completed" || r.name === "level_abandoned") { if (!open) paired = false; open = false; }
+  }
+  const leaks = (s: string) => QUERIES.some((t) => s.toLowerCase().includes(t.toLowerCase()));
   const checks = {
-    "handoff_tapped from level": all.some((r) => r.name === "handoff_tapped" && r.props?.from === "level"),
-    "one no-match finder_query": q.filter((r) => r.props?.resultCount === 0).length === 1,
+    "one handoff_tapped, from level": all.filter((r) => r.name === "handoff_tapped").length === 1
+      && all.some((r) => r.name === "handoff_tapped" && r.props?.from === "level"),
+    "two settled finder_query (no-match, then match)": q.length === 2 && q[0].props?.resultCount === 0 && q[1].props?.resultCount > 0,
+    "resultCount equals the cards shown": q[1]?.props?.resultCount === shown,
     "one finder_no_match": all.filter((r) => r.name === "finder_no_match").length === 1,
-    "matching finder_query": q.some((r) => r.props?.resultCount > 0),
-    "level_started after finder_match_opened": !!after && after.props?.scenarioId === all[opened_i].props?.scenarioId && after.props?.level != null,
-    "no query text in the log": !/wibble/.test(readFileSync(log, "utf8")),
+    "one finder_match_opened": all.filter((r) => r.name === "finder_match_opened").length === 1,
+    "one level_started after finder_match_opened": startedAfter.length === 1
+      && startedAfter[0].props?.scenarioId === all[opened_i].props?.scenarioId && startedAfter[0].props?.level === lv.d.level,
+    "level_started pairs with completed/abandoned": paired,
+    "no query text in the log": !leaks(readFileSync(log, "utf8")),
+    "no query text in event payloads": payloads.length > 0 && !payloads.some(leaks),
   };
   for (const [name, ok] of Object.entries(checks)) console.log(`${ok ? "PASS" : "FAIL"}  ${name}`);
   pass = Object.values(checks).every(Boolean);
