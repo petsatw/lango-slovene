@@ -8,13 +8,13 @@
 //
 // So a live session now opens exactly the way tapping "now try it for real" at the end of a rehearsal
 // does. It builds the same three inputs the free-chat turn builds — the witness selection (palette +
-// bounded targets), the scenario's pinned role, and the scene priming — and hands them to the shared
+// bounded targets), the domain's pinned role, and the scene priming — and hands them to the shared
 // body in server/prompt.ts. One string, two callers: the live tutor cannot drift from the production
 // prompt without the drift showing up in free chat too.
 //
-// A SCENE is the exception, by design: a scenario with a `live` surface brings its own harness — the
+// A SCENE is the exception, by design: a domain with a `live` surface brings its own harness — the
 // scene's Slovene instructions to the tutor — and the app appends the day's scheduled lines and the shape
-// of the lesson (scenePrompt below). Opened by the scenario id, or by one of the scenario's trees, whose
+// of the lesson (scenePrompt below). Opened by the domain id, or by one of the domain's trees, whose
 // handoff takes the tree's lines as the day's.
 //
 // WHAT IS STILL DIFFERENT, and it is not small:
@@ -30,7 +30,7 @@ import { LEARNABLES, type Learnable } from "../learnables";
 import * as learner from "../assets/learner";
 import { selectForScene, selectForWitness, type SceneSelection } from "../mastery";
 import { conversationTeachingBody } from "../prompt";
-import { getScenario, harnessText, SCENARIOS, type LiveSurface, type Scenario } from "../scenarios";
+import { getDomain, harnessText, DOMAINS, type LiveSurface, type Domain } from "../domains";
 
 /** Every dialogue by id — the live session addresses a lesson the same way the rehearsal player does. */
 function lessonIndex(): Map<string, Dialogue> {
@@ -83,14 +83,14 @@ const SPOKEN_TAIL = [
   "OPEN with the single Slovene word «Začnemo?» and then wait for them to answer.",
 ].join("\n");
 
-/** A scenario whose `live` surface makes it a scene the tutor plays from its own harness. */
-function liveScene(id: string): (Scenario & { surfaces: { live: LiveSurface } }) | undefined {
-  const s = SCENARIOS.find((x) => x.id === id && x.status === "active");
-  return s?.surfaces?.live ? (s as Scenario & { surfaces: { live: LiveSurface } }) : undefined;
+/** A domain whose `live` surface makes it a scene the tutor plays from its own harness. */
+function liveScene(id: string): (Domain & { surfaces: { live: LiveSurface } }) | undefined {
+  const s = DOMAINS.find((x) => x.id === id && x.status === "active");
+  return s?.surfaces?.live ? (s as Domain & { surfaces: { live: LiveSurface } }) : undefined;
 }
 
 /** Today's lines as the scene prompt lists them: headed groups, in the order the tutor works through
- *  them. A scenario-id session has the schedule's three; a tree handoff has one, the tree's lines. */
+ *  them. A domain-id session has the schedule's three; a tree handoff has one, the tree's lines. */
 type LineGroup = { heading: string; lines: Learnable[] };
 
 function scheduleGroups(sel: SceneSelection): LineGroup[] {
@@ -103,7 +103,7 @@ function scheduleGroups(sel: SceneSelection): LineGroup[] {
 }
 
 /** A harness may hold one section per session, each headed `## @<id>` — a tree's dialogue id, or the
- *  scenario id for a session opened by the scene itself. Everything before the first such heading is the
+ *  domain id for a session opened by the scene itself. Everything before the first such heading is the
  *  shared preamble. A session plays the preamble plus its own section, or the preamble alone when it has
  *  none. A harness with no sections (trznica.md) is the whole text. */
 export function harnessFor(raw: string, id: string): string {
@@ -188,7 +188,7 @@ export function buildLessonPrompt(lessonId: string, learnerId: string): LessonPr
   // this tree's dialogue id (e.g. sprehod-l4), if it has one — with the lines the tree just had the
   // learner say as today's lines, all of them. The lines off the card join the targets, so the lesson
   // score can count what the tutor was told to steer toward.
-  const treeScene = liveScene(d.scenarioId);
+  const treeScene = liveScene(d.domainId);
   if (treeScene) {
     const live = treeScene.surfaces.live;
     const lines = focusIdsFor(d);
@@ -215,8 +215,8 @@ export function buildLessonPrompt(lessonId: string, learnerId: string): LessonPr
 
   // The scene, built the way the rehearsal handoff builds it — the situation and what the level just
   // practised, in English. Priming only: the tutor still composes its own Slovene from the palette.
-  const scenario = getScenario(d.scenarioId);
-  const sceneName = scenario ? scenario.name || scenario.title : null;
+  const domain = getDomain(d.domainId);
+  const sceneName = domain ? domain.name || domain.title : null;
   const context = sceneName
     ? { scene: `${sceneName} — ${d.title}`, practiced: d.objectives.map((o) => o.descriptorEN) }
     : null;
@@ -225,7 +225,7 @@ export function buildLessonPrompt(lessonId: string, learnerId: string): LessonPr
     knows,
     targets,
     undefined, // the default directive — a relaxed everyday chat, same as free chat
-    scenario?.role ?? null,
+    domain?.role ?? null,
     context,
   ) + SPOKEN_TAIL;
 

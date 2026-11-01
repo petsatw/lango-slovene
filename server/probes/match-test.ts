@@ -1,10 +1,10 @@
-// Scenario-finder tests (server/match.ts).
-//   (unit)   the keyword layer against the REAL scenario + dialogue data (pure, no I/O beyond loading JSON)
+// Domain-finder tests (server/match.ts).
+//   (unit)   the keyword layer against the REAL domain + dialogue data (pure, no I/O beyond loading JSON)
 //   (--live) the Gemini NLU layer on real Gemini (needs GEMINI_API_KEY; bills a few cheap text calls)
 // Run: `npm run test:match`  (add `-- --live` for the real-Gemini leg).
 
 import "dotenv/config";
-import { SCENARIOS } from "../scenarios";
+import { DOMAINS } from "../domains";
 import { getPublishedDialogues } from "../dialogues";
 import { getE2 } from "../adapters/index";
 import { buildIndex, keywordRank, matchSituation, selectMatches, tokenize } from "../match";
@@ -16,7 +16,7 @@ function check(name: string, cond: boolean, detail = ""): void {
 }
 
 const index = buildIndex(
-  SCENARIOS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null,
+  DOMAINS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null,
     summaryEN: s.summaryEN, tags: s.tags, dialogues: getPublishedDialogues(s.id) }))
     .filter((s) => s.dialogues.length > 0),
 );
@@ -27,18 +27,18 @@ console.log("\n=== match — keyword layer (unit) ===");
 check("tokenize strips diacritics + plural", tokenize("Tržnica apples").join(" ") === "trznica apple");
 
 const market = top("buying produce at the farmers market, ordering different weights and numbers of things");
-check("farmers market + weights → trznica first", market[0]?.scenarioId === "trznica", ids(market));
+check("farmers market + weights → trznica first", market[0]?.domainId === "trznica", ids(market));
 check("farmers market → the by-weight level is offered", market.some((m) => m.dialogueId === "trznica-l3"), ids(market));
 
 const permit = top("renew residence permit");
-check("residence permit → upravna-enota first", permit[0]?.scenarioId === "upravna-enota", ids(permit));
+check("residence permit → upravna-enota first", permit[0]?.domainId === "upravna-enota", ids(permit));
 
 const coffee = top("I would like to order a coffee");
-check("coffee → cafe or restaurant first", ["cafe", "restaurant"].includes(coffee[0]?.scenarioId ?? ""), ids(coffee));
+check("coffee → cafe or restaurant first", ["cafe", "restaurant"].includes(coffee[0]?.domainId ?? ""), ids(coffee));
 
 const sn = coffee[0]?.snippet;
 check("coffee → snippet from a restaurant line containing kava/kavo",
-  coffee[0]?.scenarioId === "restaurant" && !!sn && /\bkav[oa]\b/i.test(sn.lines[0]?.sl ?? ""), JSON.stringify(sn));
+  coffee[0]?.domainId === "restaurant" && !!sn && /\bkav[oa]\b/i.test(sn.lines[0]?.sl ?? ""), JSON.stringify(sn));
 check("coffee snippet: node is a real line of that level + 'coffee' is a highlight term",
   !!sn && index.find((e) => e.dialogueId === coffee[0]!.dialogueId)!.nodes.some((n) => n.id === sn.nodeId) && sn.terms.includes("coffee"),
   JSON.stringify(sn));
@@ -47,7 +47,7 @@ check("kilo of tomatoes → trznica-l3 with the tomato line", top("kilo of tomat
 
 const coffeeOne = top("coffee");
 check("single word 'coffee' → restaurant with a kava/kavo snippet",
-  coffeeOne[0]?.scenarioId === "restaurant" && /\bkav[oa]\b/i.test(coffeeOne[0]?.snippet?.lines[0]?.sl ?? ""), ids(coffeeOne));
+  coffeeOne[0]?.domainId === "restaurant" && /\bkav[oa]\b/i.test(coffeeOne[0]?.snippet?.lines[0]?.sl ?? ""), ids(coffeeOne));
 
 const vet = top("I need to go to the vet");
 check("vet → no match (live fallback only)", vet.length === 0, ids(vet));
@@ -64,11 +64,11 @@ if (process.argv.includes("--live")) {
     const e2 = getE2();
     const run = (t: string) => matchSituation(t, index, e2);
     const m1 = await run("buying produce at the farmers market, ordering different weights and numbers of things");
-    check("live: market → trznica first, ranker=model", m1.ranker === "model" && m1.matches[0]?.scenarioId === "trznica", ids(m1.matches));
+    check("live: market → trznica first, ranker=model", m1.ranker === "model" && m1.matches[0]?.domainId === "trznica", ids(m1.matches));
     const m2 = await run("renew residence permit");
-    check("live: permit → upravna-enota first", m2.matches[0]?.scenarioId === "upravna-enota", ids(m2.matches));
+    check("live: permit → upravna-enota first", m2.matches[0]?.domainId === "upravna-enota", ids(m2.matches));
     const m3 = await run("I would like to order a coffee");
-    check("live: coffee → cafe/restaurant first", ["cafe", "restaurant"].includes(m3.matches[0]?.scenarioId ?? ""), ids(m3.matches));
+    check("live: coffee → cafe/restaurant first", ["cafe", "restaurant"].includes(m3.matches[0]?.domainId ?? ""), ids(m3.matches));
     const sn3 = m3.matches[0]?.snippet;
     check("live: coffee snippet node belongs to its level", !!sn3 &&
       index.find((e) => e.dialogueId === m3.matches[0]!.dialogueId)!.nodes.some((n) => n.id === sn3.nodeId), JSON.stringify(sn3));

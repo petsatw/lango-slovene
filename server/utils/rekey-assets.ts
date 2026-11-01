@@ -22,7 +22,8 @@ import { getE4 } from "../adapters/index";
 import { IMAGE_STYLE, IMAGE_FORMAT, stripTokens, singleAssetSheetPrompt } from "../adapters/image-style";
 import { assetRenderKey } from "../assets/images";
 import { getObject, CATALOG } from "../catalog";
-import { SCENARIOS } from "../scenarios";
+import { DOMAINS } from "../domains";
+import { domainIdOf } from "../domain-id";
 
 const apply = process.argv.slice(2).includes("--apply");
 const harvest = process.argv.slice(2).includes("--harvest");
@@ -40,24 +41,24 @@ const manifest: any[] = existsSync(manifestPath)
 // asset's canonical render. Copy frame bytes → assetRenderKey (free byte-op, like a re-key). The four
 // below were mapped by review (an existing frame == the canonical for that object).
 if (harvest) {
-  const HARVEST: { scenario: string; objectiveId: string; label: string; catalogId?: string }[] = [
-    { scenario: "bakery", objectiveId: "order_bread", label: "LOAF" },
-    { scenario: "bakery", objectiveId: "order_rolls", label: "ROLLS" },
-    { scenario: "cafe", objectiveId: "order_coffee", label: "COFFEE" },
-    { scenario: "bakery", objectiveId: "ask_price", label: "PRICE_TAG", catalogId: "price_tag" },
+  const HARVEST: { domain: string; objectiveId: string; label: string; catalogId?: string }[] = [
+    { domain: "bakery", objectiveId: "order_bread", label: "LOAF" },
+    { domain: "bakery", objectiveId: "order_rolls", label: "ROLLS" },
+    { domain: "cafe", objectiveId: "order_coffee", label: "COFFEE" },
+    { domain: "bakery", objectiveId: "ask_price", label: "PRICE_TAG", catalogId: "price_tag" },
   ];
   console.log(`\n=== rekey:assets --harvest${apply ? "  --apply" : "  (dry run)"} ===`);
   let n = 0;
   for (const h of HARVEST) {
-    const s = SCENARIOS.find((x) => x.id === h.scenario);
+    const s = DOMAINS.find((x) => x.id === h.domain);
     const fr = s?.scene?.story?.frames.find((f) => f.objectiveId === h.objectiveId);
-    if (!fr) { console.log(`   ✗ ${h.label}: frame ${h.scenario}/${h.objectiveId} not found`); continue; }
+    if (!fr) { console.log(`   ✗ ${h.label}: frame ${h.domain}/${h.objectiveId} not found`); continue; }
     const frameKey = keyFor(fr.imagePrompt, IMAGE_FORMAT.frame);
     if (!store.has(frameKey, "image")) { console.log(`   ✗ ${h.label}: source frame not on disk`); continue; }
     const asset = h.catalogId ? getObject(h.catalogId) : s!.scene!.assets!.find((a) => a.label === h.label)!;
     const dstKey = assetRenderKey({ label: asset.label, descriptor: asset.descriptor });
     if (store.has(dstKey, "image")) { console.log(`   · ${h.label}: canonical already present`); continue; }
-    console.log(`   ${apply ? "harvest" : "would "} ${h.label} ← ${h.scenario}/${h.objectiveId}  ${frameKey.slice(0, 10)}… → ${dstKey.slice(0, 10)}…`);
+    console.log(`   ${apply ? "harvest" : "would "} ${h.label} ← ${h.domain}/${h.objectiveId}  ${frameKey.slice(0, 10)}… → ${dstKey.slice(0, 10)}…`);
     if (apply) {
       store.put(dstKey, "image", store.read(frameKey, "image")!, {
         provider: "harvest",
@@ -67,7 +68,7 @@ if (harvest) {
         aspectRatio: IMAGE_FORMAT.asset.aspectRatio,
         resolution: IMAGE_FORMAT.asset.resolution,
         mimeType: "image/jpeg",
-        scenarioId: h.scenario,
+        domainId: h.domain,
         objectiveId: `asset:${asset.label}`,
         referenceKeys: [frameKey], // provenance: harvested from this frame
       });
@@ -99,7 +100,7 @@ if (process.argv.slice(2).includes("--audio")) {
     if (!store.has(old.key, "audio")) { missing++; continue; }
     copied++;
     if (!apply) continue;
-    const meta = { provider: old.provider, voiceOrModel: voiceId!, model, text: old.text, scenarioId: old.scenarioId, objectiveId: old.objectiveId };
+    const meta = { provider: old.provider, voiceOrModel: voiceId!, model, text: old.text, domainId: domainIdOf(old), seedId: old.seedId, objectiveId: old.objectiveId };
     store.put(newKey, "audio", store.read(old.key, "audio")!, { ...meta, mimeType: old.mimeType });
     const align = store.read(old.key, "align");
     if (align) store.put(newKey, "align", align, meta);
@@ -140,7 +141,7 @@ const renderList: string[] = [];
 
 console.log(`\n=== rekey:assets (${IMAGE_STYLE.id})${apply ? "  --apply" : "  (dry run)"} ===`);
 
-for (const s of SCENARIOS.filter((s) => s.status === "active")) {
+for (const s of DOMAINS.filter((s) => s.status === "active")) {
   const story = s.scene?.story;
   if (!story) continue;
   const items = [
@@ -155,7 +156,7 @@ for (const s of SCENARIOS.filter((s) => s.status === "active")) {
       continue;
     }
     // The same picture iff its only change is the {{ }} notation: stripped new prompt == an old render's
-    // prompt. Match by prompt CONTENT across all scenarios — frames with identical prompts (greet,
+    // prompt. Match by prompt CONTENT across all domains — frames with identical prompts (greet,
     // ask_price, pay_leave) are one shared image (content-addressed), as they were before.
     const target = stripTokens(it.prompt);
     const old = manifest.find((e) => e.type === "image" && e.prompt === target && store.has(e.key, "image"));
@@ -172,7 +173,7 @@ for (const s of SCENARIOS.filter((s) => s.status === "active")) {
           aspectRatio: it.fmt.aspectRatio,
           resolution: it.fmt.resolution,
           mimeType: old.mimeType || "image/jpeg",
-          scenarioId: s.id,
+          domainId: s.id,
           objectiveId: it.objectiveId,
           referenceKeys: [old.key], // provenance: re-keyed from this old render
         });

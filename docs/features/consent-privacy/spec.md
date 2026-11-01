@@ -67,7 +67,7 @@ The Settings screen, opened from the app header, shows:
 
 | Data | Kept |
 |---|---|
-| Learning progress and gender | until 12 months after last use, or until Delete my data |
+| Learning progress (flashcard state included) and gender | until 12 months after last use, or until Delete my data |
 | Learning history: live logs, session records, turn-log rows, translations of session lines | until 12 months after last use, or until the learner deletes the session or all sessions |
 | No-save session: live log, turn-log row, translations | deleted at session end, right after scoring, whatever the scoring outcome |
 | Improvement copies | 90 days, or until the learner withdraws consent |

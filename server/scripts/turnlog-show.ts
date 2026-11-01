@@ -9,13 +9,14 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { LOG_PATH } from "../assets/turnlog";
+import { domainIdOf } from "../domain-id";
 
 const args = process.argv.slice(2);
 const full = args.includes("--full");
 const n = Number(args.find((a) => /^\d+$/.test(a))) || 10;
 
 if (!existsSync(LOG_PATH)) {
-  console.log(`No turn log yet at ${LOG_PATH}\n(Run a turn — free chat, seed, or scenario — then re-run this.)`);
+  console.log(`No turn log yet at ${LOG_PATH}\n(Run a turn — free chat, seed, or domain — then re-run this.)`);
   process.exit(0);
 }
 
@@ -26,7 +27,7 @@ console.log(`Turn log — last ${turns.length} of ${lines.length}  (${LOG_PATH})
 
 for (const t of turns) {
   const tag =
-    t.path === "free" ? `free L${t.level ?? "?"}` : t.path === "seed" ? `seed:${t.seedId}` : `scenario:${t.scenarioId}`;
+    t.path === "free" ? `free L${t.level ?? "?"}` : t.path === "seed" ? `seed:${t.seedId}` : `scenario:${domainIdOf(t)}`;
   const audio = t.audio ? `  audio ${t.audio.bytes}B ${t.audio.file}` : "";
   console.log(`── ${t.ts}  [${tag}]  ${t.provider}${t.model ? "/" + t.model : ""}  ${t.e2Ms}ms${audio}`);
 

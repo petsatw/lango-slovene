@@ -1,6 +1,6 @@
 // lint:tree — the STRUCTURAL gate for rehearsal-dialogue trees (handoff B2). Complements lint:dialogue
 // (which checks the dialogue↔catalog seam) by checking the SHAPE of each tree and its agreement with the
-// scenario MANIFEST (D2). What a script CAN check deterministically it errors on; the one thing it can't
+// domain MANIFEST (D2). What a script CAN check deterministically it errors on; the one thing it can't
 // judge — whether a re-convergence node reads coherently on every incoming path — it SURFACES for human
 // review rather than pretending to rule on.
 //
@@ -16,7 +16,7 @@
 //   supported shape, not a warning.
 
 import { DIALOGUES } from "../dialogues";
-import { SCENARIOS } from "../scenarios";
+import { DOMAINS } from "../domains";
 import { inDegrees, reachableFrom, canReachTerminal, type TreeNodes } from "./dialogue-lib";
 
 const errors: string[] = [];
@@ -96,16 +96,16 @@ for (const d of allDialogues) {
 }
 
 // ---- 2. Manifest ↔ files consistency (D2 — the manifest is the source of truth) --------------------
-const scenarioById = new Map(SCENARIOS.map((s) => [s.id, s]));
+const domainById = new Map(DOMAINS.map((s) => [s.id, s]));
 
-// every dialogue file must be declared by its scenario's manifest, with matching label + voices
+// every dialogue file must be declared by its domain's manifest, with matching label + voices
 for (const d of allDialogues) {
-  const scn = scenarioById.get(d.scenarioId);
-  if (!scn) { errors.push(`${d.id}: scenarioId "${d.scenarioId}" resolves to no scenario`); continue; }
+  const scn = domainById.get(d.domainId);
+  if (!scn) { errors.push(`${d.id}: domainId "${d.domainId}" resolves to no domain`); continue; }
   const decl = scn.surfaces?.dialogue;
-  if (!decl) { errors.push(`${d.id}: scenario "${d.scenarioId}" has a dialogue file but no surfaces.dialogue manifest`); continue; }
+  if (!decl) { errors.push(`${d.id}: domain "${d.domainId}" has a dialogue file but no surfaces.dialogue manifest`); continue; }
   const lv = decl.levels.find((l) => l.level === d.level);
-  if (!lv) { errors.push(`${d.id}: level ${d.level} is not declared in the "${d.scenarioId}" manifest`); continue; }
+  if (!lv) { errors.push(`${d.id}: level ${d.level} is not declared in the "${d.domainId}" manifest`); continue; }
   if (lv.levelLabel !== d.levelLabel)
     errors.push(`${d.id}: levelLabel "${d.levelLabel}" ≠ manifest "${lv.levelLabel}"`);
   if (decl.voices.npc !== d.voices.npc || decl.voices.client !== d.voices.client)
@@ -115,7 +115,7 @@ for (const d of allDialogues) {
 }
 
 // every manifest-declared level must have a file
-for (const scn of SCENARIOS) {
+for (const scn of DOMAINS) {
   const decl = scn.surfaces?.dialogue;
   if (!decl) continue;
   const levels = new Set((DIALOGUES[scn.id] ?? []).map((d) => d.level));

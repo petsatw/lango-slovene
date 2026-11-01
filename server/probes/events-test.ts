@@ -39,7 +39,7 @@ try {
 
   // A new learner is put into their first lesson; leave it, then play a tap-through level to its end.
   const practice = await (await fetch(`${base}/api/practice`)).json();
-  const lv = practice.scenarios
+  const lv = practice.domains
     .flatMap((sc: any) => sc.dialogues.map((d: any) => ({ sc, d })))
     .find((x: any) => (x.d.advance ?? "tap") === "tap" && !x.d.intro);
   if (!lv) throw new Error("no tap-through level to play");
@@ -47,7 +47,7 @@ try {
   await page.evaluate(() => document.getElementById("scene-quit")!.click());
   await page.waitForFunction(() => !document.getElementById("home")!.hidden);
   await page.locator('.tile[data-go="practice"]').click();
-  await page.locator(".scenario-card").filter({ hasText: lv.sc.name }).first().click();
+  await page.locator(".domain-card").filter({ hasText: lv.sc.name }).first().click();
   await page.locator("#level-list .level-card").nth(lv.sc.dialogues.indexOf(lv.d)).click();
   for (let i = 0; i < 40 && !(await page.locator("#dialogue-choices.is-terminal").count()); i++) {
     await page.locator("#dialogue-choices .dialogue-choice").first().click({ timeout: 2000 }).catch(() => {});

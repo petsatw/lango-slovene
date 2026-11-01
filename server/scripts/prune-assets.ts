@@ -1,8 +1,8 @@
 // Garbage-collect orphaned IMAGE assets from the store. An image file is "live" iff its key is a
-// per-asset render / frame / scene key of some ACTIVE scenario at the current style + format. Images
+// per-asset render / frame / scene key of some ACTIVE domain at the current style + format. Images
 // are ONLY ever authored assets (there is no runtime image generation — asset renders/frames/scene are
 // all produced by build:assets), so any image on disk that is not in the live set is dead: superseded
-// by an IMAGE_STYLE.id bump, a re-authored prompt, a renamed label, or a removed scenario.
+// by an IMAGE_STYLE.id bump, a re-authored prompt, a renamed label, or a removed domain.
 //
 // AUDIO is deliberately NOT pruned here: the store also holds live-session tutor clips that are valid
 // cache but are not authored assets, so an authored-key test would wrongly delete them.
@@ -18,14 +18,15 @@ import { getE4 } from "../adapters/index";
 import { IMAGE_STYLE, IMAGE_FORMAT, relevantLabels } from "../adapters/image-style";
 import { assetRenderKey } from "../assets/images";
 import { referenceSheetKey } from "../assets/reference-sheet";
-import { SCENARIOS } from "../scenarios";
+import { DOMAINS } from "../domains";
+import { domainIdOf } from "../domain-id";
 
 const apply = process.argv.slice(2).includes("--apply");
 const img = getE4();
 
-// The set of image keys that SHOULD exist for the current active scenarios at the current style.
+// The set of image keys that SHOULD exist for the current active domains at the current style.
 const live = new Set<string>();
-for (const s of SCENARIOS.filter((s) => s.status === "active")) {
+for (const s of DOMAINS.filter((s) => s.status === "active")) {
   const assets = s.scene?.assets ?? [];
   const story = s.scene?.story;
   const key = (prompt: string, f: { aspectRatio: string; resolution: string }) =>
@@ -56,7 +57,7 @@ const files = existsSync(imageDir) ? readdirSync(imageDir).filter((f) => f.endsW
 const orphans = files.map((f) => f.replace(/\.jpg$/, "")).filter((keyName) => !live.has(keyName));
 
 console.log(`\n=== prune:assets (${IMAGE_STYLE.id}) ===`);
-console.log(`live image keys (active scenarios): ${live.size}`);
+console.log(`live image keys (active domains): ${live.size}`);
 console.log(`image files on disk:                ${files.length}`);
 console.log(`orphaned (dead) image files:        ${orphans.length}`);
 
@@ -65,7 +66,7 @@ if (orphans.length === 0) {
   process.exit(0);
 }
 
-// Annotate each orphan with what the manifest remembers about it (scenario/objective), for the report.
+// Annotate each orphan with what the manifest remembers about it (domain/objective), for the report.
 const manifestPath = path.join(store.ASSET_DIR, "manifest.jsonl");
 const lines = existsSync(manifestPath) ? readFileSync(manifestPath, "utf8").split("\n").filter(Boolean) : [];
 const metaByKey = new Map<string, any>();
@@ -75,7 +76,7 @@ for (const l of lines) {
 }
 for (const k of orphans) {
   const m = metaByKey.get(k);
-  const tag = m ? `${m.scenarioId ?? "?"}/${m.objectiveId ?? "?"} (${m.styleId ?? "?"})` : "(no manifest record)";
+  const tag = m ? `${domainIdOf(m) ?? m.seedId ?? "?"}/${m.objectiveId ?? "?"} (${m.styleId ?? "?"})` : "(no manifest record)";
   console.log(`  ${apply ? "del " : "would del "} ${k.slice(0, 16)}…  ${tag}`);
 }
 

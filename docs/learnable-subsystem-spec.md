@@ -17,7 +17,7 @@ and must change. This document adds only what they deliberately stop short of: t
 
 Grounded in the current app: [orchestrator.ts](../server/orchestrator.ts) (`applyProgress`,
 `TURN_CAP=14`, ephemeral session), [prompt.ts](../server/prompt.ts) (turn policy, the single-retry
-ratchet, the **per-objective** verdict), [types.ts](../server/types.ts), [scenarios.ts](../server/scenarios.ts)
+ratchet, the **per-objective** verdict), [types.ts](../server/types.ts), [domains.ts](../server/domains.ts)
 + [catalog.ts](../server/catalog.ts), [adapters/gemini.ts](../server/adapters/gemini.ts) (E2 response
 schema), [assets/sessions.ts](../server/assets/sessions.ts) (the durable-JSON-on-disk pattern this
 follows).
@@ -50,14 +50,14 @@ sitting (the *scene layer*). The mastery loop adds a **second, durable layer**: 
 `attempts`/`successes` on disk across sittings, and **per-learnable crediting** from the same E2 verdict.
 The two layers are independent: scene completion never gates mastery and vice-versa. Presentation reads
 the learner model to pick, within each objective, the still-unmastered learnable to steer toward. Free
-conversation is the same crediting machine with a scenario-less prompt bounded by the learner model.
+conversation is the same crediting machine with a domain-less prompt bounded by the learner model.
 
 ```
             ┌────────────────────── SCENE LAYER (exists, ephemeral) ──────────────────────┐
   /api/turn │  applyProgress: objective pending→recast→completed ; 14-turn cap ; complete  │
             └─────────────────────────────────────────────────────────────────────────────┘
             ┌──────────────────── MASTERY LAYER (new, durable on disk) ───────────────────┐
-            │  presentObjectives(scenario, learnerModel) → which learnable to steer to      │
+            │  presentObjectives(domain, learnerModel) → which learnable to steer to      │
             │  E2 returns learnable_progress[] → applyCredit(model, …) → assets/learner.json│
             └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -96,9 +96,9 @@ interface Learnable {
 
 ### 2.2 Objective → learnable references (schema change)
 
-The `Objective` (in `server/types.ts`, authored in `server/scenarios/*.json`) gains references to the
+The `Objective` (in `server/types.ts`, authored in `server/domains/*.json`) gains references to the
 learnables it exercises. Today an objective carries `targetSL`; that stays (back-compat + the scene's
-default steer line). Added fields, **both optional** so un-migrated scenarios keep working:
+default steer line). Added fields, **both optional** so un-migrated domains keep working:
 
 ```ts
 interface Objective {
@@ -217,7 +217,7 @@ model[id] = entry
 
 ### 3.2 Presentation (the pure rule — `presentObjectives`)
 
-Pure function `presentObjectives(scenario, model, threshold)` → per-objective view used to build the
+Pure function `presentObjectives(domain, model, threshold)` → per-objective view used to build the
 prompt. Per objective (when it has `learnables`):
 
 ```
@@ -244,7 +244,7 @@ Rules this encodes (stories Part 2 "Groups & presentation", "Patterns vs vocab")
   groups authored yet; noted as future).
 - **No fancy ordering** — authored order, "next unmastered." Ranking is **not** applied in-scene.
 
-Scenarios **without** `learnables` (un-migrated) produce an empty presentation and the prompt falls back
+Domains **without** `learnables` (un-migrated) produce an empty presentation and the prompt falls back
 to today's behaviour exactly.
 
 ### 3.3 One turn (in-scene), end to end
@@ -252,11 +252,11 @@ to today's behaviour exactly.
 ```
 POST /api/turn (audio + history + session)
   → load learner model (assets/learner.json)
-  → presentObjectives(scenario, model) → enriched objective lines (active target, predictable error,
+  → presentObjectives(domain, model) → enriched objective lines (active target, predictable error,
        mastered/review flags)
-  → buildSystemPrompt(scenario, session, presentation)   // scene layer unchanged + mastery-aware lines
+  → buildSystemPrompt(domain, session, presentation)   // scene layer unchanged + mastery-aware lines
   → E2.understand → { …, objectiveProgress, learnableProgress }
-  → applyProgress(scenario, session, objectiveProgress)  // SCENE layer — unchanged
+  → applyProgress(domain, session, objectiveProgress)  // SCENE layer — unchanged
   → applyCredit(model, learnableProgress, THRESHOLD); save model   // MASTERY layer — new, durable
   → capture run (best-effort, unchanged) ; return UnderstandResult (+ optional learner snapshot)
 ```
@@ -286,9 +286,9 @@ the dot is already ●).
 > the situation-first, server-bounded **focus set + allowlist** design — see free-conversation.md and the
 > consensus run. This section documents the first cut; the bounded design is the target.
 
-The same crediting machine with a scenario-less prompt:
+The same crediting machine with a domain-less prompt:
 
-- `POST /api/converse` (audio + history + `level: 1 | 2`). No scenario, no objectives, no scene.
+- `POST /api/converse` (audio + history + `level: 1 | 2`). No domain, no objectives, no scene.
 - `buildConversationPrompt(model, level, catalog)`:
   - **knows** = every learnable in the model, which is every one the learner has tried to produce. It
     reaches the prompt under the heading THE LEARNER KNOWS.
@@ -322,14 +322,14 @@ The same crediting machine with a scenario-less prompt:
 | `server/types.ts` | `Objective.learnables?`, `Objective.fillerLines?`; `LearnableProgress`; `E2Result.learnableProgress`; `LearnerModel`/`LearnableMastery` |
 | `server/mastery.ts` | NEW — `THRESHOLD`, `applyCredit`, `presentObjectives` (pure) |
 | `server/assets/learner.ts` | NEW — durable store (`load`/`save`, `LEARNER_PATH`) |
-| `server/scenarios.ts` | validate the new objective fields; resolve nothing else |
+| `server/domains.ts` | validate the new objective fields; resolve nothing else |
 | `server/prompt.ts` | accept presentation; add mastery-aware objective lines + a `learnable_progress` instruction; NEW `buildConversationPrompt` |
 | `server/adapters/gemini.ts` | add `learnable_progress` to the response schema + parse it |
 | `server/orchestrator.ts` | load model → present → credit → save; `understand` also returns `learnableProgress`; NEW `converse` (free chat) + the seed branch (scripted adapter) |
 | `server/seeds.ts` + `server/seeds/getting-started.json` | NEW — the audio-only onboarding **seed** dialogue + loader |
 | `server/adapters/seed-scripted.ts` | NEW — the static-dialogue adapter that stands in for the model in the seed |
 | `server/server.ts` | `POST /api/converse` (also hosts the seed via `seedId`/`begin`); `GET /api/learner`; `started` flag in `/api/config` |
-| `server/scenarios/cafe.json` | author `learnables` on objectives (worked example) |
+| `server/domains/cafe.json` | author `learnables` on objectives (worked example) |
 | `public/app.js` | free-chat toggle (off → Tutorial → L1 → L2); seed + free chat delivered through the chat surface + push-to-talk |
 | `package.json` | `test:learnable`, `probe:converse`, `learner`, `build:seed-assets` scripts |
 | `docs/*` | DATA-MODEL (new shapes), ARCHITECTURE (the second layer), stories Part 6 (flub→decrement) |
@@ -352,8 +352,8 @@ learnables + a few core items from the ranked library.
 real file; and `npm run dev` boots (loader runs at startup).
 
 **Phase 2 — Objective→learnable references.** Add `learnables?`/`fillerLines?` to the `Objective` type +
-`validateScenario`; author them on `cafe.json` (`order_coffee → ["eno_femacc","kava"]`, the chunks).
-*Verify:* extend `lint:scenario`/load to assert every referenced learnable id exists; `npm run dev` boots
+`validateDomain`; author them on `cafe.json` (`order_coffee → ["eno_femacc","kava"]`, the chunks).
+*Verify:* extend `lint:domain`/load to assert every referenced learnable id exists; `npm run dev` boots
 café; existing `npm run test:mastery` still green (scene layer untouched).
 
 **Phase 3 — Learner model + crediting (pure + store).** `server/mastery.ts` (`THRESHOLD`, `applyCredit`),

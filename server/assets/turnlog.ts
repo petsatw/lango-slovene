@@ -1,5 +1,5 @@
 // Per-turn OBSERVABILITY log — the single most important diagnostic for the mastery loop.
-// Every E2 turn (free chat, seed, scenario) appends one JSONL line holding the full TEXT in/out:
+// Every E2 turn (free chat, seed, domain) appends one JSONL line holding the full TEXT in/out:
 // the system prompt, the history, and the model's complete output (verbatim transcription, reply,
 // correction, and the per-learnable credit verdicts). Text is logged IN FULL and kept.
 //
@@ -32,7 +32,7 @@ export interface TurnLogInput {
   sessionId?: string;
   runId?: string;
   level?: 1 | 2;
-  scenarioId?: string;
+  domainId?: string;
   seedId?: string;
   provider: string;
   model?: string;
@@ -133,7 +133,7 @@ export function record(input: TurnLogInput): void {
       runId: input.runId,
       ...(input.retain === false ? { retain: false } : {}),
       level: input.level,
-      scenarioId: input.scenarioId,
+      domainId: input.domainId,
       seedId: input.seedId,
       provider: input.provider,
       model: input.model,

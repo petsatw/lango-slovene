@@ -8,6 +8,7 @@ import { Router } from "express";
 import { DATA_DIR } from "./assets/store";
 import { EVENTS_PATH } from "./events";
 import { LEARNABLES } from "./learnables";
+import { domainIdOf } from "./domain-id";
 
 export const teamRouter = Router();
 
@@ -49,7 +50,7 @@ function eventRows(): Keyed[] {
       ts: e.ts,
       learnerId: e.learnerId,
       tester: e.testerCode != null,
-      props: e.props,
+      props: domainIdOf(e.props) !== undefined ? { ...e.props, domainId: domainIdOf(e.props) } : e.props,
     };
     if (e.name === "feedback_submitted" && typeof e.text === "string") row.text = e.text;
     out.push({ ts: e.ts, k: `${base}#${n}`, row });

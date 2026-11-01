@@ -1,14 +1,15 @@
 # Dialogue lesson
 
-A scenario's levels are dialogue lessons. A tap dialogue is a branching conversation the learner clicks
+A domain's levels are dialogue lessons. A tap dialogue is a branching conversation the learner clicks
 through in an overlay; a spoken lesson is one the app plays on its own full-screen surface
 ([rehearsal dialogues](../../rehearsal-dialogues.md)). The learner can see how demanding a level is
 before opening it, move freely through a tap dialogue, and start either kind of lesson over at any time.
-A tap dialogue credits nothing; credit comes from spoken lessons and live sessions.
+A tap dialogue credits nothing; credit comes from spoken lessons and live sessions. Above the level
+cards, the "Words and Phrases" row opens the domain's [flashcards](../flashcards/spec.md#2-words-and-phrases-row).
 
 ## 1. Difficulty chip
 
-Each level card on the scenario's levels screen shows a difficulty chip beside the level's task. The
+Each level card on the domain's levels screen shows a difficulty chip beside the level's task. The
 chip follows the level's `levelLabel`, which `lint:a1` computes from the level's band
 ([difficulty model](../../dialogue-difficulty-model.md#4-levellabel-is-derived-from-the-computed-band)):
 
@@ -52,7 +53,7 @@ Each control's accessible name is its plain word: "Start over", "Back" and "Next
 
 - **↻ Start over** stops any line that is playing, clears the conversation and the steps, and plays the
   level again from its first line, as when the level opened. The intro does not play again.
-- It records `level_restarted` with the level's `scenarioId` and `level`, and `nodeId`: the character
+- It records `level_restarted` with the level's `domainId` and `level`, and `nodeId`: the character
   line the learner was at ([event list](../events/spec.md#4-event-list)).
 - The spoken lesson has its own Start over (§4.1).
 
@@ -84,7 +85,7 @@ and ✕ (close the lesson).
   the close screen.
 - Pressing it stops the line that is playing, leaves the close screen if it is showing, and plays the
   lesson again from its first line, with the « trail starting fresh. The on-ramp does not play again.
-- It records `level_restarted` with the lesson's `scenarioId` and `level`, and `nodeId`: the line the
+- It records `level_restarted` with the lesson's `domainId` and `level`, and `nodeId`: the line the
   learner was at.
 - The credit and attempts the learner earned before pressing it stay in the learner model. Pressing it
   sends nothing to the server about the learner model; the lines of the new walk count as any walk does.

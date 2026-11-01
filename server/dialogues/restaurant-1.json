@@ -1,6 +1,6 @@
 {
   "id": "restaurant-l1",
-  "scenarioId": "restaurant",
+  "domainId": "restaurant",
   "level": 1,
   "levelLabel": "Basic",
   "title": "Order & pay — a first visit",

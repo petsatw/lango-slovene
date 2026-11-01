@@ -12,7 +12,7 @@ host that serves the repo.
 
 ## The three audio paths (they have different homes)
 
-A scenario's sound comes from three independent mechanisms. Ship logic differs for each.
+A domain's sound comes from three independent mechanisms. Ship logic differs for each.
 
 | Path | Where the bytes live | How it's served | How it ships |
 |---|---|---|---|
@@ -56,9 +56,9 @@ used when the clips were built; the model id must match too (default `eleven_v3`
 *names* are also tabled in [rehearsal-dialogues.md](rehearsal-dialogues.md); the concrete values above are the
 source of truth.
 
-**Deriving the mapping for a new profile or scenario:** the store's `manifest.jsonl` records the voice-*id
+**Deriving the mapping for a new profile or domain:** the store's `manifest.jsonl` records the voice-*id
 string*, not the profile name, and a shared phrase (e.g. `Dober dan`) is spoken by more than one profile — so
-map per-scenario through the dialogue's `voices` block, then confirm with recipe A before trusting it.
+map per-domain through the dialogue's `voices` block, then confirm with recipe A before trusting it.
 
 ### Other deploy env
 
@@ -92,11 +92,11 @@ map per-scenario through the dialogue's `voices` block, then confirm with recipe
 ## Shipping dialogue audio (the force-commit step)
 
 `assets/` is gitignored ([.gitignore](../.gitignore)), so `build:dialogue-assets` output does **not** travel with
-a git deploy on its own. After generating a scenario's clips, add them explicitly:
+a git deploy on its own. After generating a domain's clips, add them explicitly:
 
 ```bash
 git add -f assets/audio assets/align    # content-addressed dialogue clips + their word timings
-git commit -m "chore(assets): ship <scenario> audio"
+git commit -m "chore(assets): ship <domain> audio"
 ```
 
 Commit `assets/audio` and `assets/align` only. Keep `assets/sessions/`, `assets/turnlog/`, `assets/live/`,
@@ -139,7 +139,7 @@ ELEVENLABS_VOICE_ID=fSzEIez35vDdOs4DQwVh ELEVENLABS_VOICE_ID_MALE=Jcyy5bkqt86ud0
 ELEVENLABS_VOICE_ID_SHOP_ASSISTANT=MMDUS1hxcZnX8i9ZdqNf TURNLOG=0 PORT=8797 \
 ./node_modules/.bin/tsx server/server.ts &
 
-curl -s -o /dev/null -D - "http://localhost:8797/api/speak?text=<sl>&scenarioId=<id>&voice=<profile>" \
+curl -s -o /dev/null -D - "http://localhost:8797/api/speak?text=<sl>&domainId=<id>&voice=<profile>" \
   | grep -i x-audio-cache          # expect: X-Audio-Cache: hit
 ```
 
@@ -152,7 +152,7 @@ node -e 'const d=require("./server/dialogues/restaurant-1.json");const n=[d.root
 ### Recipe B — live probe against the deployed URL
 
 ```bash
-curl -s -o /dev/null -D - "$BASE/api/speak?text=<sl>&scenarioId=<id>&voice=female-speaker" \
+curl -s -o /dev/null -D - "$BASE/api/speak?text=<sl>&domainId=<id>&voice=female-speaker" \
   | grep -i "x-audio-cache\|^HTTP"
 ```
 

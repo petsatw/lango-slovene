@@ -1,7 +1,7 @@
 // playthrough:lesson — print a spoken lesson AS IT PLAYS ON SCREEN: every beat, with the thing the app
 // does to it. The companion to `script:lesson`, and deliberately its opposite.
 //
-//   npm run playthrough:lesson -- <scenarioId> [--level <n>] [--as <fact>=<value>] [--json]
+//   npm run playthrough:lesson -- <domainId> [--level <n>] [--as <fact>=<value>] [--json]
 //   npm run playthrough:lesson -- --from <reconcile-input.json> [--level <n>] […]
 //
 // `script:lesson` answers "does the talking make sense" by throwing the app away. This answers the
@@ -23,7 +23,7 @@
 import { readFileSync } from "node:fs";
 import { DIALOGUES, resolveNode, type Dialogue, type DialogueNode, type DialogueObjective,
          type TutorialStep } from "../dialogues";
-import { SCENARIOS } from "../scenarios";
+import { DOMAINS } from "../domains";
 import { getFact } from "../facts";
 import { pacingFor, type PacingProfile } from "../pacing";
 import { sceneShape, type BeatSurface } from "../scene-shape";
@@ -38,19 +38,19 @@ const flag = (name: string) => {
 const asJson = argv.includes("--json");
 const levelArg = flag("level");
 const fromPath = flag("from");
-let scenarioId: string | undefined;
+let domainId: string | undefined;
 for (let i = 0; i < argv.length; i++) {
   if (argv[i]!.startsWith("--")) { if (argv[i] !== "--json") i++; continue; }
-  scenarioId = argv[i];
+  domainId = argv[i];
   break;
 }
 
-const USAGE = "usage: npm run playthrough:lesson -- <scenarioId> [--level <n>] [--as <fact>=<value>] [--json]\n" +
+const USAGE = "usage: npm run playthrough:lesson -- <domainId> [--level <n>] [--as <fact>=<value>] [--json]\n" +
               "       npm run playthrough:lesson -- --from <reconcile-input.json> [--level <n>] […]";
 
 /** What this script needs of a lesson, from either source. */
 interface Lesson {
-  scenarioId: string;
+  domainId: string;
   level: number;
   levelLabel: string;
   title: string;
@@ -71,20 +71,20 @@ interface Lesson {
 function fromCatalog(id: string): Lesson {
   const levels = DIALOGUES[id] ?? [];
   if (!levels.length) {
-    console.error(`no dialogue found for scenario "${id}" (have: ${Object.keys(DIALOGUES).join(", ")})`);
+    console.error(`no dialogue found for domain "${id}" (have: ${Object.keys(DIALOGUES).join(", ")})`);
     process.exit(2);
   }
   const d: Dialogue | undefined = levelArg ? levels.find((x) => x.level === Number(levelArg)) : levels[0];
   if (!d) {
-    console.error(`scenario "${id}" has no level ${levelArg} (have: ${levels.map((x) => x.level).join(", ")})`);
+    console.error(`domain "${id}" has no level ${levelArg} (have: ${levels.map((x) => x.level).join(", ")})`);
     process.exit(2);
   }
   return {
-    scenarioId: id, level: d.level, levelLabel: d.levelLabel, title: d.title, root: d.root,
+    domainId: id, level: d.level, levelLabel: d.levelLabel, title: d.title, root: d.root,
     nodes: d.nodes as Record<string, DialogueNode>,
     npcVoice: d.voices.npc ?? "npc",
     spoken: d.advance === "audio",
-    onboarding: !!SCENARIOS.find((s) => s.id === id)?.onboarding,
+    onboarding: !!DOMAINS.find((s) => s.id === id)?.onboarding,
     pacing: pacingFor(d.pacing), pacingId: d.pacing ?? "onboarding",
     objectives: d.objectives ?? [], introduces: d.introduces ?? [],
     audioState: String(d.audio), frameEN: d.frameEN ?? [], tutorial: d.tutorial ?? [],
@@ -103,19 +103,19 @@ function fromInput(path: string): Lesson {
   }
   const pacingId = lv.pacing ?? raw.dialoguePacing ?? "onboarding";
   return {
-    scenarioId: raw.scenario?.id ?? path, level: lv.level, levelLabel: lv.levelLabel ?? "",
+    domainId: raw.domain?.id ?? path, level: lv.level, levelLabel: lv.levelLabel ?? "",
     title: lv.title ?? "", root: lv.root, nodes: lv.nodes ?? {},
     npcVoice: raw.dialogueVoices?.npc ?? "npc",
     spoken: raw.dialogueAdvance === "audio",
-    onboarding: !!raw.scenario?.onboarding,
+    onboarding: !!raw.domain?.onboarding,
     pacing: pacingFor(pacingId), pacingId,
     objectives: lv.objectives ?? [], introduces: lv.introduces ?? [],
     audioState: String(lv.audio ?? "pending"), frameEN: lv.frameEN ?? [], tutorial: lv.tutorial ?? [],
   };
 }
 
-if (!fromPath && !scenarioId) { console.error(USAGE); process.exit(2); }
-const lesson = fromPath ? fromInput(fromPath) : fromCatalog(scenarioId!);
+if (!fromPath && !domainId) { console.error(USAGE); process.exit(2); }
+const lesson = fromPath ? fromInput(fromPath) : fromCatalog(domainId!);
 
 // ---- The spine ------------------------------------------------------------------------------------
 const spine: Array<{ id: string; node: DialogueNode }> = [];
@@ -328,7 +328,7 @@ for (const f of factsOnSpine) {
 // ---- Output ---------------------------------------------------------------------------------------
 if (asJson) {
   console.log(JSON.stringify({
-    lesson: { scenarioId: lesson.scenarioId, level: lesson.level, title: lesson.title,
+    lesson: { domainId: lesson.domainId, level: lesson.level, title: lesson.title,
               pacing: lesson.pacingId, audio: lesson.audioState },
     path: facts, objectives: lesson.objectives, introduces: lesson.introduces,
     frameEN: lesson.frameEN, tutorial: lesson.tutorial,
@@ -346,7 +346,7 @@ const row = (r: Row) => {
   for (const l of lines.slice(1)) console.log(`      ${" ".repeat(W)}${l}`);
 };
 
-console.log(`PLAYTHROUGH: ${lesson.scenarioId} · level ${lesson.level} — "${lesson.title}"`);
+console.log(`PLAYTHROUGH: ${lesson.domainId} · level ${lesson.level} — "${lesson.title}"`);
 console.log(`Every beat as it plays on screen. Beat numbers match \`script:lesson\`.`);
 console.log(`»…« marks the span the caption emphasises. Timings are the "${lesson.pacingId}" pacing profile.`);
 if (lesson.onboarding) console.log(`This is the learner's first Slovene, ever.`);

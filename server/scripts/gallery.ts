@@ -1,5 +1,5 @@
 // Catalog gallery — a clean visual index of EVERYTHING we have rendered to date: every catalog object
-// and actor, every composed concept (locations + atomic depictions), and every scenario's scene + frames.
+// and actor, every composed concept (locations + atomic depictions), and every domain's scene + frames.
 // Read-only: resolves each node to its render key and links the on-disk image; generates nothing.
 //
 // Served live by the dev server at GET /gallery (server.ts): buildGalleryHtml() rebuilds the page from the
@@ -13,7 +13,7 @@ import { IMAGE_STYLE, IMAGE_FORMAT } from "../adapters/image-style";
 import { assetRenderKey } from "../assets/images";
 import { conceptRenderKey } from "../assets/compose";
 import { loadCatalog } from "../catalog";
-import { loadScenarios } from "../scenarios";
+import { loadDomains } from "../domains";
 
 const esc = (s: string) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
 
@@ -22,10 +22,10 @@ const esc = (s: string) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", 
 // "/gallery/image" when the dev server serves the page live.
 export function buildGalleryHtml(opts: { imgBase?: string } = {}): string {
   const imgBase = opts.imgBase ?? "image";
-  // Read catalog + scenarios FRESH from disk every call, so the live /gallery route reflects new or
+  // Read catalog + domains FRESH from disk every call, so the live /gallery route reflects new or
   // edited entries on a plain browser refresh — no server restart. (The image store is already read live.)
   const catalog = loadCatalog();
-  const scenarios = loadScenarios();
+  const domains = loadDomains();
   const e4 = getE4();
   const imgKey = (prompt: string, fmt: { aspectRatio: string; resolution: string }) =>
     store.imageKey(e4.name, e4.model, IMAGE_STYLE.id, fmt.aspectRatio, fmt.resolution, prompt);
@@ -72,8 +72,8 @@ export function buildGalleryHtml(opts: { imgBase?: string } = {}): string {
     })
     .join("");
 
-  // ---- scenarios (scene + frames) --------------------------------------------------------------
-  const scenarioSections = scenarios.filter((s) => s.status === "active")
+  // ---- domains (scene + frames) --------------------------------------------------------------
+  const domainSections = domains.filter((s) => s.status === "active")
     .map((s) => {
       const story = s.scene?.story;
       const sceneKey = story?.sceneImagePrompt ? imgKey(story.sceneImagePrompt, IMAGE_FORMAT.scene) : "";
@@ -86,7 +86,7 @@ export function buildGalleryHtml(opts: { imgBase?: string } = {}): string {
           return `<figure>${thumb(key, f.objectiveId)}<figcaption><b>${esc(o?.targetSL ?? f.objectiveId)}</b><div class="desc"><code>${esc(f.objectiveId)}</code></div></figcaption></figure>`;
         })
         .join("");
-      return `<section class="scenario"><h2>${esc(s.name ?? s.title)} <code>${esc(s.id)}</code> <span class="role">${esc(s.character)}</span></h2>${scene}<div class="grid frames">${frames}</div></section>`;
+      return `<section class="domain"><h2>${esc(s.name ?? s.title)} <code>${esc(s.id)}</code> <span class="role">${esc(s.character)}</span></h2>${scene}<div class="grid frames">${frames}</div></section>`;
     })
     .join("");
 
@@ -119,16 +119,16 @@ code{background:#0b0d11;border:1px solid var(--line);border-radius:4px;padding:0
 .desc{color:var(--muted);font-size:11px;margin-top:4px}
 .tag{display:inline-block;background:#2a2f38;color:#cfd3da;border-radius:4px;padding:0 6px;font-size:10px;margin-left:4px}
 .tag.fig{background:#1d4ed8}.tag.loc{background:var(--accent)}
-.scenario .scene{margin-bottom:14px}.scenario .scene .thumb{aspect-ratio:16/9;max-width:640px}
+.domain .scene{margin-bottom:14px}.domain .scene .thumb{aspect-ratio:16/9;max-width:640px}
 .role{color:var(--muted);font-weight:400;font-size:12px}
 .frames{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 .count{color:var(--muted);font-weight:400;font-size:12px}
 </style></head><body><div class="wrap">
 <h1>lango-slovenian — catalog gallery</h1>
-<p class="lead">Every rendered object, actor, concept and scenario to date · style <code>${esc(IMAGE_STYLE.id)}</code> · ${renderedCount} canonical renders on disk</p>
+<p class="lead">Every rendered object, actor, concept and domain to date · style <code>${esc(IMAGE_STYLE.id)}</code> · ${renderedCount} canonical renders on disk</p>
 <section><h2>Objects <span class="count">${Object.keys(catalog.objects).length}</span></h2><div class="grid">${objectCards}</div></section>
 <section><h2>Actors <span class="count">${Object.keys(catalog.characters).length}</span></h2><div class="grid">${actorCards}</div></section>
 <section><h2>Concepts &amp; locations <span class="count">${Object.keys(catalog.concepts).length}</span></h2><div class="grid">${conceptCards}</div></section>
-${scenarioSections}
+${domainSections}
 </div></body></html>`;
 }

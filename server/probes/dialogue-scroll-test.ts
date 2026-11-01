@@ -30,7 +30,7 @@ try {
   const browser = await chromium.launch();
   const page = await (await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true })).newPage();
   const practice = await (await fetch(`${base}/api/practice`)).json();
-  const lv = practice.scenarios
+  const lv = practice.domains
     .flatMap((sc: any) => sc.dialogues.map((d: any) => ({ sc, d })))
     .find((x: any) => (x.d.advance ?? "tap") === "tap" && !x.d.intro);
   if (!lv) throw new Error("no tap-through level to open");
@@ -47,9 +47,9 @@ try {
   const scrollPage = async () => { await page.evaluate(() => window.scrollTo(0, 300)); await page.waitForTimeout(100); return sy(); };
   check((await scrollPage()) > 0, "could not scroll the page on Practice");
 
-  // Opening a scenario moves the page; record the offset once the level list is showing, just before the level opens.
+  // Opening a domain moves the page; record the offset once the level list is showing, just before the level opens.
   // DOM clicks: Playwright's own click scrolls the target into view, which would move the recorded offset.
-  await page.locator(".scenario-card").filter({ hasText: lv.sc.name }).first().evaluate((el) => (el as HTMLElement).click());
+  await page.locator(".domain-card").filter({ hasText: lv.sc.name }).first().evaluate((el) => (el as HTMLElement).click());
   const y0 = await scrollPage();
   check(y0 > 0, `could not scroll the page (scrollY ${y0})`);
   await page.locator("#level-list .level-card").nth(lv.sc.dialogues.indexOf(lv.d)).evaluate((el) => (el as HTMLElement).click());
@@ -122,8 +122,8 @@ try {
   await page.locator("#feedback-close").click();
   await page.waitForSelector("#feedback", { state: "hidden" });
   await held(y0, "after the feedback sheet closed over the dialogue");
-  await page.locator("#dialogue-choices .restart").click();
-  await page.waitForSelector("#dialogue-choices .dialogue-choice:not(.restart)");
+  await page.locator("#dialogue-restart").click();
+  await page.waitForSelector("#dialogue-choices .choice-list .dialogue-choice");
   await held(y0, "after starting the level over");
 
   // Close: the position is kept and the page scrolls again.
@@ -134,7 +134,7 @@ try {
 
   // A second dialogue locks at the page's new offset and releases it again, through the handoff when the
   // level offers one, otherwise through the close button.
-  await page.locator(".scenario-card").filter({ hasText: lv.sc.name }).first().evaluate((el) => (el as HTMLElement).click());
+  await page.locator(".domain-card").filter({ hasText: lv.sc.name }).first().evaluate((el) => (el as HTMLElement).click());
   const y1 = await (async () => { await page.evaluate(() => window.scrollTo(0, 450)); await page.waitForTimeout(100); return sy(); })();
   check(y1 > 0 && y1 !== y0, `could not move the page before the second dialogue (scrollY ${y1})`);
   await page.locator("#level-list .level-card").nth(lv.sc.dialogues.indexOf(lv.d)).evaluate((el) => (el as HTMLElement).click());

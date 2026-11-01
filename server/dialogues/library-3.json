@@ -1,6 +1,6 @@
 {
   "id": "library-l3",
-  "scenarioId": "library",
+  "domainId": "library",
   "level": 3,
   "levelLabel": "Above A1",
   "title": "Returning a book",

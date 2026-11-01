@@ -1,6 +1,6 @@
 {
   "id": "library-l5",
-  "scenarioId": "library",
+  "domainId": "library",
   "level": 5,
   "levelLabel": "Advanced",
   "title": "WiFi & printing",

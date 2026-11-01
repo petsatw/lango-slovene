@@ -10,13 +10,13 @@ export interface ConversationTurn {
 
 export type ObjectiveStatus = "pending" | "recast" | "completed";
 
-/** A micro-objective the student should learn to PRODUCE in a scenario. */
+/** A micro-objective the student should learn to PRODUCE in a domain. */
 export interface Objective {
   id: string;
   label: string; // short English label for the UI dot
   targetSL: string; // canonical correct Slovenian the student should produce (default/primary line)
   hintEN: string; // internal guidance for the model — never lectured to the student
-  /** Catalog learnable ids this objective exercises (carrier pattern + fillers). Optional: a scenario
+  /** Catalog learnable ids this objective exercises (carrier pattern + fillers). Optional: a domain
    *  without it keeps today's behaviour exactly (no durable mastery for that objective). See
    *  docs/learnable-subsystem-spec.md §2.2. */
   learnables?: string[];
@@ -33,7 +33,7 @@ export interface ObjectiveState {
 }
 
 export interface SessionState {
-  scenarioId: string;
+  domainId: string;
   objectives: ObjectiveState[];
   complete: boolean;
   turns: number;
@@ -71,6 +71,13 @@ export interface LearnableMastery {
   lastAttemptAt?: string;
 }
 
+/** A learner's self-rating of one flashcard (docs/features/flashcards/spec.md §7). */
+export interface FlashcardState {
+  nailed: number;        // "Nailed it" taps
+  memorisedAt?: string;  // ISO; set on every "Nailed it" that leaves nailed >= FLASHCARD_THRESHOLD
+  lastRatedAt?: string;  // ISO; set on every rating
+}
+
 /** The whole learner model — one durable, local, single-learner model (assets/learner.json).
  *
  *  Two kinds of knowledge live here and stay separate. `learnables` is what the learner can SAY, earned
@@ -78,13 +85,15 @@ export interface LearnableMastery {
  *  or put words in their mouth (server/facts.ts). A fact is given once, by the learner, at a beat that
  *  asks for it; nothing infers one.
  *
- *  BOTH fields are rebuilt by hand in `learner.load`/`learner.save` (assets/learner.ts). Adding a third
- *  means editing those two functions as well as this interface — the field would otherwise round-trip to
- *  undefined with nothing raised. */
+ *  Every field is rebuilt by hand in `shape()` (assets/learner.ts), which `learner.load`/`learner.save`
+ *  both go through. Adding one means editing `shape()` as well as this interface — the field would
+ *  otherwise round-trip to undefined with nothing raised. */
 export interface LearnerModel {
   learnables: Record<string, LearnableMastery>;
   /** fact id → the stored answer, e.g. `{ gender: "f" }`. Present once the learner has answered one. */
   facts: Record<string, string>;
+  /** learnable id → the learner's flashcard self-rating (server/flashcards.ts), kept beside mastery. */
+  flashcards?: Record<string, FlashcardState>;
   updatedAt: string; // ISO
   /** When a request last resolved this learner, at most hourly. The retention sweep deletes a learner
    *  unused for 12 months (server/assets/retention.ts). */
@@ -172,24 +181,24 @@ export interface E2Result {
   correction: string;
   /** Per-objective verdict for THIS turn — the model's read of what the student produced (SCENE layer). */
   objectiveProgress: ObjectiveProgress[];
-  /** Per-learnable verdict for THIS turn — drives the durable MASTERY layer. Empty when the scenario
-   *  authors no learnables (back-compat) or in non-scenario modes that exercise none. */
+  /** Per-learnable verdict for THIS turn — drives the durable MASTERY layer. Empty when the domain
+   *  authors no learnables (back-compat) or in non-domain modes that exercise none. */
   learnableProgress: LearnableProgress[];
   /** The objective the tutor is now steering toward. */
   focusObjectiveId: string;
 }
 
-/** One level the scenario finder offers the model to rank (server/match.ts). */
-export interface ScenarioCandidate {
+/** One level the domain finder offers the model to rank (server/match.ts). */
+export interface LevelCandidate {
   dialogueId: string;
-  scenarioId: string;
-  description: string; // scenario name + level title + summary + objectives, plain English
+  domainId: string;
+  description: string; // domain name + level title + summary + objectives, plain English
   lines: { id: string; sl: string; en: string }[]; // every line of the level, so the model can cite one
 }
 
 /** The model's ranking of candidates for a learner's free-text situation. It decides nothing: the
  *  server drops unknown ids and applies the threshold + cap. */
-export interface ScenarioRanking {
+export interface LevelRanking {
   matches: { dialogueId: string; score: number; reason: string; nodeId?: string }[];
   fallback: { scene: string; role: string | null };
 }
@@ -215,9 +224,9 @@ export interface E2Adapter {
    *  reveal translation on a LIVE transcript, where there is no JSON turn to carry a gloss back.
    *  Optional so adapters without a text path can omit it. */
   gloss?(sl: string): Promise<string>;
-  /** Scenario finder re-rank: score each candidate level 0..1 for the learner's situation + write a
+  /** Domain finder re-rank: score each candidate level 0..1 for the learner's situation + write a
    *  free-chat scene for when none fits. Text only. Optional — the keyword ranker covers its absence. */
-  rankScenarios?(input: { query: string; candidates: ScenarioCandidate[] }): Promise<ScenarioRanking>;
+  rankLevels?(input: { query: string; candidates: LevelCandidate[] }): Promise<LevelRanking>;
   /** Read a FINISHED spoken session against the learnable catalog and report one reading per learnable
    *  the learner produced. Text only — the whole conversation in order, both roles — and it decides no
    *  credit. Optional so adapters without a text path can omit it. */
@@ -290,7 +299,7 @@ export interface UnderstandResult {
   providers: { e2: string };
 }
 
-/** Free-conversation turn result (spec §3.5) — no scenario, no objectives, no session; the same
+/** Free-conversation turn result (spec §3.5) — no domain, no objectives, no session; the same
  *  per-learnable verdict drives the durable mastery layer. */
 export interface ConverseResult {
   userVerbatim: string;

@@ -40,22 +40,59 @@
     </div>
   </main>
 
-  <!-- ① PRACTICE — scenario list. The two group headings ARE this screen's titles; the back button and
-       the wordmark already say where you are. Tap a scenario → its levels. -->
+  <!-- ① PRACTICE — domain list. The two group headings ARE this screen's titles; the back button and
+       the wordmark already say where you are. Tap a domain → its levels. -->
   <main id="practice" class="screen" hidden>
-    <!-- Scenario finder: type-ahead from a static index as you type; Enter → the NLU match on the server. -->
+    <!-- Domain finder: type-ahead from a static index as you type; Enter → the NLU match on the server. -->
     <form id="finder" class="finder" autocomplete="off">
       <input id="finder-input" type="search" enterkeyhint="search"
              placeholder="What do you want to practise? e.g. buying vegetables at the market" />
     </form>
     <div id="finder-results" class="level-list" hidden></div>
-    <div id="scenario-list" class="scenario-list"></div>
+    <div id="domain-list" class="domain-list"></div>
   </main>
 
-  <!-- ① PRACTICE — variant/level selector for one scenario. Tap a level → the rehearsal tree. -->
+  <!-- ① PRACTICE — variant/level selector for one domain. Tap a level → the rehearsal tree. -->
   <main id="levels" class="screen" hidden>
     <h2 id="levels-title" class="screen-title">—</h2>
+    <p id="levels-title-sl" class="domain-meta screen-subtitle"></p>
+    <div id="words-row" class="words-row" role="group" aria-labelledby="words-row-label" hidden>
+      <span id="words-row-label" class="words-row-label">Words and Phrases</span>
+      <button id="words-overview" class="words-chip" type="button">Overview</button>
+      <button id="words-flashcards" class="words-chip" type="button">Flashcards</button>
+    </div>
     <div id="level-list" class="level-list"></div>
+  </main>
+
+  <!-- WORDS AND PHRASES — a domain's flashcard learnables, English next to Slovene (docs/features/flashcards/spec.md §3). -->
+  <main id="words" class="screen" hidden>
+    <h2 class="screen-title">Words and Phrases</h2>
+    <button id="words-flashcards-btn" class="words-chip words-flashcards-btn" type="button">Flashcards</button>
+    <div class="words-head"><span></span><span></span><span>Hear it in context</span></div>
+    <div id="words-list" class="words-list" role="list"></div>
+    <audio id="words-audio" preload="none"></audio>
+  </main>
+
+  <!-- CARD MODE — the flashcard drill over a domain's cards (docs/features/flashcards/spec.md §4). -->
+  <main id="flashcards" class="screen" hidden>
+    <div class="fc-controls">
+      <div id="fc-side" class="fc-seg" role="group" aria-label="First side">
+        <button type="button" class="fc-seg-opt" data-side="en" aria-pressed="true">English</button>
+        <button type="button" class="fc-seg-opt" data-side="sl" aria-pressed="false">Slovene</button>
+      </div>
+      <label class="fc-switch"><input id="fc-include" type="checkbox" role="switch" /> Include memorised</label>
+      <label class="fc-switch"><input id="fc-context" type="checkbox" role="switch" /> Hear it in context</label>
+    </div>
+    <div id="fc-area" class="fc-area">
+      <button id="fc-card" class="fc-card" type="button" hidden></button>
+      <p id="fc-empty" class="fc-empty" hidden>Everything here is memorised.</p>
+    </div>
+    <div id="fc-rate" class="fc-rate" hidden>
+      <button id="fc-nailed" class="fc-btn" type="button">Nailed it</button>
+      <button id="fc-oops" class="fc-btn" type="button">Oops</button>
+    </div>
+    <div id="fc-toast" class="fc-toast" role="status" hidden>Shuffled. Going again.</div>
+    <audio id="fc-audio" preload="none"></audio>
   </main>
 
   <!-- ② LIVE AI TUTOR — ONE practice surface running either of the two speaking modes behind an
@@ -94,7 +131,7 @@
       <!-- The wrap-up: replaces the transcript and the talk controls when a live session ends. -->
       <section id="live-wrapup" class="live-wrapup" hidden>
         <h2 id="wrapup-title" class="wrapup-title"></h2>
-        <p id="wrapup-scenario"></p>
+        <p id="wrapup-domain"></p>
         <div id="wrapup-progress"></div>
         <p id="wrapup-nosave" hidden>This conversation wasn't saved.</p>
         <button id="live-feedback" class="play-fallback" type="button">Give feedback</button>
@@ -144,8 +181,8 @@
   </div>
 
   <!-- SPOKEN SCENE — the first-meeting surface. Full-bleed image, the character, a caption low on
-       screen, one mic button, and no chrome at all: no header, no back, no counters. The mic is the
-       only control, and nothing here judges what the learner says. -->
+       screen, one mic button, and almost no chrome: no header, no back, no counters. The run chips and the
+       Feedback chip are the scene's only chrome, and nothing here judges what the learner says. -->
   <main id="scene" class="scene" hidden>
     <div id="scene-bg" class="scene-bg"></div>
     <!-- The three things the learner can always do TO THE RUN — hear the line slower, move on, leave.
@@ -156,6 +193,7 @@
       <button id="scene-slower" class="scene-chip" type="button" title="Say it slower" aria-label="Say it slower">🐢</button>
       <button id="scene-back" class="scene-chip" type="button" title="Back to the previous line" aria-label="Back to the previous line">«</button>
       <button id="scene-skip" class="scene-chip" type="button" title="Skip to the next line" aria-label="Skip to the next line">»</button>
+      <button id="scene-restart" class="scene-chip" type="button" title="Start over" aria-label="Start over" aria-disabled="true">↻</button>
       <button id="scene-quit" class="scene-chip" type="button" title="Close the lesson" aria-label="Close the lesson">✕</button>
     </div>
     <!-- The on-ramp: the English that tells a first-time learner what this is, what is about to happen,
@@ -262,11 +300,19 @@
            conversation fades in when the intro ends or is skipped. -->
       <button id="dialogue-intro" class="dialogue-intro" type="button" hidden></button>
       <div id="dialogue-choices" class="dialogue-choices"></div>
+      <div id="dialogue-nav" class="dialogue-nav">
+        <button id="dialogue-restart" class="dialogue-nav-btn" type="button" aria-label="Start over">↻ Start over</button>
+        <button id="dialogue-back" class="dialogue-nav-btn" type="button" aria-label="Back" disabled>Back</button>
+        <button id="dialogue-next" class="dialogue-nav-btn" type="button" aria-label="Next" disabled>Next</button>
+      </div>
       <!-- Introduce→reinforce handoff: drop from the rehearsed tree straight into a live chat biased
            toward exactly the learnables this level introduced, where mastery is earned. -->
       <button id="dialogue-handoff" class="dialogue-handoff" type="button" hidden>Now try it for real →</button>
     </div>
   </div>
+
+  <!-- The floating Feedback chip: on the dialogue overlay, the spoken lesson and a live session. -->
+  <button id="feedback-chip" class="feedback-chip" type="button" hidden>Feedback</button>
 
   <!-- Feedback sheet: one sheet for every feedback point (docs/features/feedback/spec.md). -->
   <div id="feedback" class="story-overlay feedback-overlay" hidden>

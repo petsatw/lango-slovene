@@ -34,7 +34,7 @@ async function chips(page: any, name: string): Promise<string[]> {
   await page.evaluate(() => (document.getElementById("scene-quit") as HTMLElement | null)?.click());
   await page.waitForFunction(() => !document.getElementById("home")!.hidden);
   await page.click('.tile[data-go="practice"]');
-  await page.locator(".scenario-card", { hasText: name }).first().click();
+  await page.locator(".domain-card", { hasText: name }).first().click();
   await page.waitForSelector("#level-list .level-chip");
   return page.$$eval("#level-list .level-chip", (els: Element[]) => els.map((e) => (e.textContent || "").trim()));
 }
@@ -44,15 +44,15 @@ try {
   const practice = await (await fetch(`${base}/api/practice`)).json();
   const browser = await chromium.launch();
 
-  // 1. Forced labels on the first scenario's first five dialogues.
+  // 1. Forced labels on the first domain's first five dialogues.
   const labels = Object.keys(EXPECT);
-  const first = practice.scenarios[0];
+  const first = practice.domains[0];
   const dialogues = Array.from({ length: 5 }, (_, i) => ({ ...first.dialogues[i % first.dialogues.length], levelLabel: labels[i] }));
   const page = await (await browser.newContext()).newPage();
   await page.route("**/api/practice", async (route) => {
     const res = await route.fetch();
     const j = await res.json();
-    j.scenarios[0] = { ...j.scenarios[0], dialogues };
+    j.domains[0] = { ...j.domains[0], dialogues };
     await route.fulfill({ response: res, json: j });
   });
   await page.goto(`${base}/?c=TEST-01`);
@@ -63,7 +63,7 @@ try {
   const page2 = await (await browser.newContext()).newPage();
   await page2.goto(`${base}/?c=TEST-01`);
   await page2.waitForFunction(() => !document.getElementById("scene")!.hidden || !document.getElementById("home")!.hidden);
-  for (const sc of practice.scenarios) {
+  for (const sc of practice.domains) {
     const got = await chips(page2, sc.name);
     eq(`${sc.name} chip count`, got.length, sc.dialogues.length);
     sc.dialogues.forEach((d: any, i: number) => {

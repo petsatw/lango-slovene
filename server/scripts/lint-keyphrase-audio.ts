@@ -5,7 +5,7 @@
 // reading the JSON is exactly the part that fails silently. A span whose milliseconds drifted from its
 // audio still plays; it just plays the wrong words, and nothing errors.
 //
-//   npm run lint:keyphrase-audio -- [scenarioId]     # all scenarios if omitted
+//   npm run lint:keyphrase-audio -- [domainId]     # all domains if omitted
 //
 // What it enforces, in the order a pointer can go wrong:
 //   1. the referenced node exists, in the level named, and is an NPC node;
@@ -32,20 +32,20 @@ import { validateDialogue, type Dialogue } from "../dialogues";
 import { LEARNABLES } from "../learnables";
 import { words as tokenize, frameFor, normSurface } from "./dialogue-lib";
 
-const onlyScenario = process.argv.slice(2).find((a) => !a.startsWith("--"));
+const onlyDomain = process.argv.slice(2).find((a) => !a.startsWith("--"));
 const DIALOGUES_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "dialogues");
 
 const all = readdirSync(DIALOGUES_DIR)
   .filter((f) => f.endsWith(".json"))
   .map((f) => validateDialogue(f, JSON.parse(readFileSync(path.join(DIALOGUES_DIR, f), "utf8"))));
 
-const byScenario = new Map<string, Dialogue[]>();
+const byDomain = new Map<string, Dialogue[]>();
 for (const d of all) {
-  if (onlyScenario && d.scenarioId !== onlyScenario) continue;
-  (byScenario.get(d.scenarioId) ?? byScenario.set(d.scenarioId, []).get(d.scenarioId)!).push(d);
+  if (onlyDomain && d.domainId !== onlyDomain) continue;
+  (byDomain.get(d.domainId) ?? byDomain.set(d.domainId, []).get(d.domainId)!).push(d);
 }
-if (!byScenario.size) {
-  console.error(`\n❌ lint:keyphrase-audio: no dialogues${onlyScenario ? ` for scenario "${onlyScenario}"` : ""}.\n`);
+if (!byDomain.size) {
+  console.error(`\n❌ lint:keyphrase-audio: no dialogues${onlyDomain ? ` for domain "${onlyDomain}"` : ""}.\n`);
   process.exit(1);
 }
 
@@ -66,7 +66,7 @@ function frameParts(sl: string): { fixed: Set<string>; optional: Set<string>; ha
   return { fixed, optional, hasSlot: sl.includes("___") };
 }
 
-for (const [scenarioId, levels] of byScenario) {
+for (const [domainId, levels] of byDomain) {
   const byLevel = new Map(levels.map((d) => [d.level, d]));
 
   for (const d of levels) {
@@ -74,11 +74,11 @@ for (const [scenarioId, levels] of byScenario) {
       const v = node.audio;
       if (!v) continue;
       pointers++;
-      const at = `${scenarioId} L${d.level}/${nodeId} "${node.sl}"`;
+      const at = `${domainId} L${d.level}/${nodeId} "${node.sl}"`;
 
       // 1 — the target exists, in the level named, and is the character's.
       const src = byLevel.get(v.level);
-      if (!src) { problems.push(`${at}: points at level ${v.level}, which this scenario does not have`); continue; }
+      if (!src) { problems.push(`${at}: points at level ${v.level}, which this domain does not have`); continue; }
       const srcNode = src.nodes[v.from];
       if (!srcNode) { problems.push(`${at}: points at node "${v.from}" in L${v.level}, which does not exist`); continue; }
       if (srcNode.speaker !== "npc") { problems.push(`${at}: points at L${v.level}/${v.from}, a ${srcNode.speaker} node — only the character owns clips`); continue; }
@@ -107,7 +107,7 @@ for (const [scenarioId, levels] of byScenario) {
         // 3 — a measurement exists, and it measured the words this node says NOW.
         const a = store.readAlign(key);
         if (!a) {
-          problems.push(`${at}: L${v.level}/${v.from} has no alignment — run: npm run build:alignments -- ${scenarioId}`);
+          problems.push(`${at}: L${v.level}/${v.from} has no alignment — run: npm run build:alignments -- ${domainId}`);
           continue;
         }
         if (a.text !== srcNode.sl) {
@@ -207,16 +207,16 @@ for (const [scenarioId, levels] of byScenario) {
       const hasAudio = store.has(key, "audio");
       const align = store.readAlign(key);
       if (align && !hasAudio)
-        problems.push(`${scenarioId} L${d.level}/${nodeId}: an ALIGNMENT survives with no audio behind it — `
+        problems.push(`${domainId} L${d.level}/${nodeId}: an ALIGNMENT survives with no audio behind it — `
           + `something deleted the clip without deleting its timings. Use store.removeAudioAndAlign.`);
       if (align && hasAudio && align.text !== node.sl)
-        problems.push(`${scenarioId} L${d.level}/${nodeId}: its alignment was measured against "${align.text}" but the `
+        problems.push(`${domainId} L${d.level}/${nodeId}: its alignment was measured against "${align.text}" but the `
           + `line now says "${node.sl}" — re-run build:alignments --regen before any span is cut from it`);
     }
   }
 }
 
-console.log(`\n▶ lint:keyphrase-audio${onlyScenario ? ` — ${onlyScenario}` : ""}`);
+console.log(`\n▶ lint:keyphrase-audio${onlyDomain ? ` — ${onlyDomain}` : ""}`);
 console.log(`   ${pointers} voicing pointer(s): ${wholes} whole-clip, ${spans} span`);
 for (const n of notes) console.log(`   ⚠️  ${n}`);
 if (problems.length) {

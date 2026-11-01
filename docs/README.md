@@ -9,16 +9,16 @@
 **Reference** (the depth ARCHITECTURE links into)
 
 - [FILE-MAP.md](FILE-MAP.md) — the project layout: every directory, module, script, and command → its file.
-- [DATA-MODEL.md](DATA-MODEL.md) — the HTTP API and the concrete data shapes (scenario, session, catalog,
+- [DATA-MODEL.md](DATA-MODEL.md) — the HTTP API and the concrete data shapes (domain, session, catalog,
   adapter interfaces).
 - [asset-pipeline.md](asset-pipeline.md) — the asset toolkit, the key model, and the render-vs-rekey decision.
 - [SECRETS.md](SECRETS.md) — API keys and the key-isolation boundary.
 - [server/utils/](../server/utils/README.md) — asset-store maintenance utilities (re-keying, etc.).
 
-**The scenario engine** (how new lessons are made)
+**The domain engine** (how new lessons are made)
 
-- [scenario-authoring.md](scenario-authoring.md) — the rubric every scenario must pass.
-- the create-scenario skill ([../.claude/skills/create-scenario/](../.claude/skills/create-scenario/SKILL.md)) — the procedure that authors one.
+- [domain-authoring.md](domain-authoring.md) — the rubric every domain must pass.
+- the create-domain skill ([../.claude/skills/create-domain/](../.claude/skills/create-domain/SKILL.md)) — the procedure that authors one.
 - [research/](research/) — the expert-panel research the design rests on (preserved as-is), including
   [onboarding-first-two-minutes-2026-08-21/](research/onboarding-first-two-minutes-2026-08-21/SUMMARY.md) —
   the first-run design (read its [DESIGN-CRITIQUE.md](research/onboarding-first-two-minutes-2026-08-21/DESIGN-CRITIQUE.md)

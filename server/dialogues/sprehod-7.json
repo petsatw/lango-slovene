@@ -1,6 +1,6 @@
 {
   "id": "sprehod-l7",
-  "scenarioId": "sprehod",
+  "domainId": "sprehod",
   "level": 7,
   "levelLabel": "Basic",
   "title": "A child gets too close",

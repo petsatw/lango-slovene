@@ -82,22 +82,27 @@ main.screen, main.home {
 .tile-title { font-size: 16px; font-weight: 600; }
 .tile-sub { font-size: 12px; color: var(--muted); line-height: 1.3; }
 
-/* PRACTICE — scenario list. */
-.scenario-list, .level-list { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 10px; }
-.scenario-card {
+/* PRACTICE — domain list. */
+.domain-list, .level-list { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 10px; }
+.domain-card {
   display: flex; align-items: center; gap: 12px;
   background: var(--panel); color: var(--text);
   border: 1px solid #2b2f38; border-radius: 14px;
   padding: 16px 18px; cursor: pointer; text-align: left;
   transition: border-color 0.12s ease;
 }
-.scenario-card:hover { border-color: var(--green); }
+.domain-card:hover { border-color: var(--green); }
 /* Two groups on one screen: the spoken lessons, and the conversations to read through. They carry the
    screen-title styling because with no heading above them they ARE this screen's headings. */
-.scenario-group { margin: 18px 0 4px; font-size: 20px; font-weight: 700; text-align: left; }
-.scenario-group:first-child { margin-top: 4px; }
-.scenario-name { font-size: 18px; font-weight: 600; flex: 1; }
-.scenario-meta { color: var(--muted); font-size: 13px; }
+.domain-group { margin: 18px 0 4px; font-size: 20px; font-weight: 700; text-align: left; }
+.domain-group:first-child { margin-top: 4px; }
+.domain-titles { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.domain-name { font-size: 18px; font-weight: 600; flex: 1; }
+.domain-meta { color: var(--muted); font-size: 13px; }
+/* A domain without a Slovene title (demo) shows the English title only: no empty line 2. */
+.domain-meta:empty { display: none; }
+/* Levels header line 2: the Slovene title, left-aligned directly under the screen title. */
+.screen-subtitle { margin: -10px 0 14px; width: 100%; max-width: 520px; text-align: left; }
 
 /* PRACTICE — the crisp variant/level selector: number + label + what it teaches. */
 .level-card {
@@ -129,6 +134,57 @@ main.screen, main.home {
 .chip-beginner     { color: #4ec38a; background: rgba(11, 110, 79, 0.22);  border-color: rgba(78, 195, 138, 0.35); }
 .chip-intermediate { color: var(--amber); background: rgba(224, 163, 54, 0.16); border-color: rgba(224, 163, 54, 0.35); }
 .chip-advanced     { color: #ff8a8a; background: rgba(255, 107, 107, 0.14); border-color: rgba(255, 107, 107, 0.35); }
+/* Words and Phrases row above the level cards, and the list screen it opens. */
+.words-row {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; max-width: 520px; box-sizing: border-box; margin: 0 0 10px;
+  background: var(--panel); border: 1px solid #2b2f38; border-radius: 14px; padding: 12px 16px;
+}
+.words-row[hidden] { display: none; }
+.words-row-label { font-size: 16px; font-weight: 600; }
+.words-chip {
+  background: rgba(10, 12, 16, 0.6); color: var(--muted);
+  border: 1px solid #2b2f38; border-radius: 999px;
+  padding: 5px 12px; font-size: 13px; cursor: pointer;
+}
+.words-list { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 8px; }
+.words-item {
+  display: grid; gap: 12px; align-items: baseline;
+  background: var(--panel); border: 1px solid #2b2f38; border-radius: 12px; padding: 10px 14px;
+}
+/* rem, not em: the heading's smaller font must not narrow its third column, so it sits over the ▶. */
+.words-head, .words-item { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 4.5rem 1rem; }
+.words-head { display: grid; gap: 12px; width: 100%; max-width: 520px; padding: 0 15px 4px; font-size: 12px; opacity: 0.7; }
+.words-head > :nth-child(3) { text-align: center; }
+.words-sl { font-weight: 600; }
+.words-hear { text-align: center; }
+.words-play { background: none; border: 0; color: inherit; cursor: pointer; font-size: 14px; padding: 8px 14px; margin: -8px 0; }
+.words-tick { grid-column: 4; color: var(--green); font-weight: 700; }
+/* The list screen scrolls with the page, so the button sticks to the viewport (§3). */
+#words { overflow-y: visible; }
+.words-flashcards-btn { position: sticky; top: 0; align-self: flex-start; margin-bottom: 10px; z-index: 1; }
+/* Card mode. */
+.fc-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; width: 100%; max-width: 520px; margin-bottom: 12px; }
+.fc-seg { display: inline-flex; border: 1px solid #2b2f38; border-radius: 999px; overflow: hidden; }
+.fc-seg-opt { background: transparent; color: var(--muted); border: 0; padding: 6px 14px; font-size: 14px; cursor: pointer; }
+.fc-seg-opt[aria-pressed="true"] { background: var(--panel); color: var(--text); font-weight: 600; }
+.fc-switch { font-size: 14px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.fc-area { width: 100%; max-width: 520px; flex: 1; display: flex; flex-direction: column; min-height: 280px; }
+.fc-card {
+  position: relative; flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; padding: 24px; box-sizing: border-box; text-align: center; font: inherit; color: var(--text);
+  background: var(--panel); border: 1px solid #2b2f38; border-radius: 18px; cursor: pointer;
+}
+.fc-card[hidden], .fc-empty[hidden], .fc-rate[hidden], .fc-toast[hidden] { display: none; }
+.fc-main { font-size: 28px; font-weight: 600; }
+.fc-note { font-size: 14px; color: var(--muted); }
+.fc-example { font-size: 15px; display: flex; flex-direction: column; gap: 2px; }
+.fc-example-head { color: var(--muted); font-size: 13px; }
+.fc-tick { position: absolute; top: 12px; right: 14px; color: var(--green); font-weight: 700; }
+.fc-empty { margin: auto; color: var(--muted); font-size: 18px; }
+.fc-rate { display: flex; gap: 12px; width: 100%; max-width: 520px; margin-top: 12px; }
+.fc-btn { flex: 1; padding: 14px; font-size: 16px; font-weight: 600; border-radius: 12px; border: 1px solid #2b2f38; background: var(--panel); color: var(--text); cursor: pointer; }
+.fc-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--panel); border: 1px solid #2b2f38; border-radius: 999px; padding: 10px 18px; font-size: 14px; }
 .level-chevron { color: var(--muted); font-size: 22px; flex-shrink: 0; }
 
 /* Live tutor screen: keep the talk button anchored at the bottom (override the screen top-align). */
@@ -161,7 +217,7 @@ main.tutor { justify-content: center; }
 .a1-detail-title { font-size: 20px; font-weight: 700; margin: 6px 0 4px; }
 .a1-descriptor { color: var(--muted); font-size: 14px; margin: 0 0 12px; line-height: 1.4; }
 .a1-section { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 16px 0 8px; }
-.a1-scenario {
+.a1-domain {
   width: 100%;
   display: flex; align-items: center; gap: 14px;
   background: var(--panel); color: var(--text);
@@ -169,7 +225,7 @@ main.tutor { justify-content: center; }
   padding: 12px 14px; cursor: pointer; text-align: left;
   transition: border-color 0.12s ease;
 }
-.a1-scenario:hover { border-color: var(--green); }
+.a1-domain:hover { border-color: var(--green); }
 .a1-items { display: flex; flex-direction: column; gap: 4px; }
 .a1-item { font-size: 14px; padding: 6px 10px; border-radius: 8px; background: #181b21; color: var(--muted); }
 .a1-item em { color: #6b727e; font-style: normal; font-size: 12px; }
@@ -178,16 +234,6 @@ main.tutor { justify-content: center; }
 .a1-item.a1-attempted span { color: #ffd479; }
 .a1-item.a1-unseen span { color: #4b515c; }
 
-/* Scenario picker: dropdown of the chosen scenario + its one-line description. */
-.scenario-row { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
-.scenario-select {
-  background: var(--panel); color: var(--text);
-  border: 1px solid var(--green); border-radius: 999px;
-  padding: 4px 10px; font-size: 14px; cursor: pointer;
-  /* Keep the closed picker no wider than a long word; the open list still shows full labels. */
-  max-width: 11ch; text-overflow: ellipsis;
-}
-.scenario-desc { color: var(--muted); font-size: 15px; }
 
 /* Objectives collapse behind a bar (immersion-first): the label stays visible; the descriptor card
    slides down on tap. Height-animated via max-height so it can transition — the parent's `.open` state
@@ -411,6 +457,15 @@ main {
 .history-head, .history-progress { display: block; }
 .history-progress { color: var(--muted); font-size: 13px; }
 .history-entry-body { display: block; margin: 8px 4px; color: var(--muted); font-size: 14px; }
+.feedback-chip {
+  position: fixed; z-index: 45;
+  left: 12px; top: calc(10px + env(safe-area-inset-top));
+  background: rgba(10, 12, 16, 0.6); color: var(--muted);
+  border: 1px solid #2b2f38; border-radius: 999px;
+  padding: 5px 12px; font-size: 13px; cursor: pointer;
+}
+.feedback-chip[hidden] { display: none; }
+.feedback-chip.below-header { top: 58px; } /* under the header's "‹ Home" (top 24px, 30px tall), above the tagline */
 .story-overlay.feedback-overlay { z-index: 50; } /* above the spoken scene (40), whose close screen opens it */
 .access-code { width: 100%; box-sizing: border-box; margin: 0 0 12px; padding: 12px; font-size: 16px; border-radius: 10px; border: 1px solid #3a4452; background: #11151b; color: #fff; }
 .story-card.feedback-card { text-align: left; max-width: 420px; }
@@ -503,11 +558,13 @@ main {
 .dialogue-card .dialogue-convo,
 .dialogue-card .dialogue-choices,
 .dialogue-card .dialogue-hint,
+.dialogue-card .dialogue-nav,
 .dialogue-card .dialogue-handoff { transition: opacity 1s ease; }
 .dialogue-card.intro-active #dialogue-title,
 .dialogue-card.intro-active .dialogue-convo,
 .dialogue-card.intro-active .dialogue-choices,
 .dialogue-card.intro-active .dialogue-hint,
+.dialogue-card.intro-active .dialogue-nav,
 .dialogue-card.intro-active .dialogue-handoff { opacity: 0; pointer-events: none; }
 .dialogue-intro {
   position: absolute; bottom: 16px; right: 16px; z-index: 2;
@@ -527,7 +584,7 @@ main {
   display: flex; flex-direction: column; flex: none;
   margin-top: 8px; height: clamp(190px, 26dvh, 244px);
 }
-.dialogue-choices.is-terminal { height: auto; } /* lone restart button — no fixed box */
+.dialogue-choices.is-terminal { height: auto; } /* the Feedback button alone — no fixed box */
 
 /* "More choices" cue: a bottom fade with a labeled amber pill, shown ONLY on a >2-choice fork and until
  * it's scrolled to the end. Absent on a 2-choice fork. Purely a hint — pointer-events off so it never
@@ -571,7 +628,7 @@ main {
 .hint-btn .chev { font-size: 10px; line-height: 1; transition: transform 0.25s ease; }
 .hint-btn.expanded .chev { transform: rotate(180deg); }
 
-/* Choices: each is a distinct tappable card with a trailing "›" — the same select cue the scenario and
+/* Choices: each is a distinct tappable card with a trailing "›" — the same select cue the domain and
  * level cards use — so it reads unmistakably as "tap to choose", no instruction line needed. */
 .choice-list {
   flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
@@ -612,12 +669,13 @@ main {
 @media (prefers-reduced-motion: no-preference) {
   .choice-list .dialogue-choice { animation: choice-in 0.26s ease; }
 }
-/* Restart is a lone terminal action, not a choice — keep it green + centered, no amber/badge/elevation. */
-.dialogue-choice.restart {
-  justify-content: center; background: var(--green); color: #fff;
-  border: 1px solid var(--green); border-radius: 12px; font-size: 16px; box-shadow: none;
+/* Start over, Back and Next: one row at the lower left of the card, on screen for the whole conversation. */
+.dialogue-nav { display: flex; gap: 8px; width: fit-content; margin-top: 8px; }
+.dialogue-nav-btn {
+  background: none; color: var(--muted); border: 1px solid #3a4250; border-radius: 999px;
+  padding: 8px 14px; font-size: 14px; font-weight: 600; cursor: pointer;
 }
-.dialogue-choice.restart:hover { background: var(--green-press); box-shadow: none; }
+.dialogue-nav-btn:disabled { opacity: 0.35; cursor: default; }
 /* Introduce→reinforce handoff: a SECONDARY exit to free chat — a quiet right-aligned pill, never the
  * loudest thing on screen (solid full-width is reserved for the live choices above). */
 .dialogue-handoff {
@@ -739,6 +797,11 @@ body.in-scene header { display: none; }
   transition: opacity 200ms ease, background 140ms ease;
 }
 .scene-chip:active { background: rgba(255, 255, 255, 0.16); }
+/* Five run chips on a 320px screen: tighter, so the cluster clears the Feedback chip at the upper left. */
+@media (max-width: 359px) {
+  .scene-chips { right: 10px; gap: 4px; }
+  .scene-chip { width: 36px; height: 36px; border-radius: 18px; }
+}
 /* Unavailable, not absent — a beat with no slow clip dims the tortoise rather than removing it, so the
    cluster keeps its shape and nothing slides sideways between beats. */
 .scene-chip[aria-disabled="true"] { opacity: 0.25; pointer-events: none; }
@@ -958,7 +1021,7 @@ body.in-scene header { display: none; }
 .phrase-en { grid-column: 1 / -1; font-size: 14px; color: var(--muted); }
 .phrase-en.held { display: none; }
 
-/* Scenario finder (Practice screen) */
+/* Domain finder (Practice screen) */
 .finder { width: 100%; max-width: 520px; margin-bottom: 10px; }
 .finder input { width: 100%; box-sizing: border-box; padding: 12px 14px; font-size: 16px; border-radius: 12px; border: 1px solid #ccc; }
 #finder-results { margin-bottom: 18px; }

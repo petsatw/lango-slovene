@@ -1,6 +1,6 @@
 {
   "id": "sprehod-l2",
-  "scenarioId": "sprehod",
+  "domainId": "sprehod",
   "level": 2,
   "levelLabel": "Basic",
   "title": "Questions about the puppy",

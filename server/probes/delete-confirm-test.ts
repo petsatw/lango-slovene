@@ -33,7 +33,7 @@ liveIds.forEach((sessionId, i) => {
   }));
 });
 writeFileSync(path.join(sessions, "tap-a.json"), JSON.stringify({
-  id: "tap-a", scenarioId: "fixture-scenario", createdAt: "2026-10-02T10:00:00.000Z", updatedAt: "2026-10-02T10:05:00.000Z",
+  id: "tap-a", lessonId: "fixture-scenario", createdAt: "2026-10-02T10:00:00.000Z", updatedAt: "2026-10-02T10:05:00.000Z",
   status: "completed", finalObjectives: [], learnerId, testerCode: "TEST-01",
   turns: [{ index: 0, role: "tutor", text: "Dober dan" }],
 }));
@@ -72,7 +72,7 @@ try {
   const allIds = await page.$$eval(".history-entry", (els) => els.map((e) => (e as HTMLElement).dataset.id!));
   check("history lists the three seeded sessions", allIds.length === 3, JSON.stringify(allIds));
 
-  const victim = allIds[0];
+  const victim = allIds[0]!;
   await page.click(".history-entry .history-delete");
   await page.waitForFunction((n) => document.querySelectorAll(".history-entry").length === n, allIds.length - 1);
   check("Delete: confirm text", dialogs[0] === "Delete this session? Your progress stays.", String(dialogs[0]));

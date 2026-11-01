@@ -1,4 +1,4 @@
-// Pregenerate audio for a scenario's REHEARSAL dialogues (the predetermined branching trees).
+// Pregenerate audio for a domain's REHEARSAL dialogues (the predetermined branching trees).
 //
 // For every node it synthesizes the speaker's line in that speaker's voice profile (dialogue.voices),
 // keyed by the CLEAN display line (node.sl) so /api/speak — which only knows the on-screen text — finds
@@ -19,7 +19,7 @@
 // client starts showing play buttons for it. Idempotent + FREE on re-run (disk hits). Bills only on new
 // lines. Use --regen to force a re-roll (e.g. after changing a delivery note).
 //
-//   npm run build:dialogue-assets -- <scenarioId> [--level <n>] [--nodes <id,id,…>] [--regen]
+//   npm run build:dialogue-assets -- <domainId> [--level <n>] [--nodes <id,id,…>] [--regen]
 //   npm run build:dialogue-assets -- bakery --level 1            # just the Survival level
 //   npm run build:dialogue-assets -- bakery --level 1 --regen    # re-synthesize it (delivery changed)
 //   npm run build:dialogue-assets -- bakery --level 1 --nodes n1,c1a,c1b   # AUDITION a few lines only
@@ -38,7 +38,7 @@ import { validateDialogue, nodeForms } from "../dialogues";
 import { isSynthesized } from "./dialogue-lib";
 
 const args = process.argv.slice(2);
-const scenarioId = args.find(
+const domainId = args.find(
   (a) => !a.startsWith("--") && args[args.indexOf(a) - 1] !== "--level" && args[args.indexOf(a) - 1] !== "--nodes",
 );
 const levelIdx = args.indexOf("--level");
@@ -48,8 +48,8 @@ const auditionNodes =
   nodesIdx >= 0 ? new Set((args[nodesIdx + 1] ?? "").split(",").map((s) => s.trim()).filter(Boolean)) : undefined;
 const regen = args.includes("--regen");
 
-if (!scenarioId) {
-  console.error("Usage: npm run build:dialogue-assets -- <scenarioId> [--level <n>] [--regen]");
+if (!domainId) {
+  console.error("Usage: npm run build:dialogue-assets -- <domainId> [--level <n>] [--regen]");
   process.exit(1);
 }
 
@@ -57,11 +57,11 @@ const DIALOGUES_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), ".
 const files = readdirSync(DIALOGUES_DIR)
   .filter((f) => f.endsWith(".json"))
   .map((f) => ({ file: f, d: validateDialogue(f, JSON.parse(readFileSync(path.join(DIALOGUES_DIR, f), "utf8"))) }))
-  .filter(({ d }) => d.scenarioId === scenarioId && (onlyLevel === undefined || d.level === onlyLevel))
+  .filter(({ d }) => d.domainId === domainId && (onlyLevel === undefined || d.level === onlyLevel))
   .sort((a, b) => a.d.level - b.d.level);
 
 if (!files.length) {
-  console.error(`No dialogues for scenario "${scenarioId}"${onlyLevel !== undefined ? ` level ${onlyLevel}` : ""}.`);
+  console.error(`No dialogues for domain "${domainId}"${onlyLevel !== undefined ? ` level ${onlyLevel}` : ""}.`);
   process.exit(1);
 }
 
@@ -87,7 +87,7 @@ const e3 = getE3();
   }
   if (e3.name === "elevenlabs" && !process.env.ELEVENLABS_API_KEY) problems.push(`ELEVENLABS_API_KEY is not set (see docs/SECRETS.md)`);
   if (problems.length) {
-    console.error(`\n❌ preflight failed for "${scenarioId}" — nothing synthesized (would half-complete otherwise):`);
+    console.error(`\n❌ preflight failed for "${domainId}" — nothing synthesized (would half-complete otherwise):`);
     for (const p of problems) console.error(`   • ${p}`);
     console.error(`\n   Set the missing binding(s) in .env, then re-run. build:dialogue-assets is idempotent — already-built clips are free.\n`);
     process.exit(1);
@@ -135,7 +135,7 @@ for (const { file, d } of files) {
       const { hit } = await store.getOrCreate(
         key,
         "audio",
-        { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text: node.sl, scenarioId: d.scenarioId, objectiveId: `dialogue:${d.id}:${id}${value ? `:${value}` : ""}` },
+        { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text: node.sl, domainId: d.domainId, objectiveId: `dialogue:${d.id}:${id}${value ? `:${value}` : ""}` },
         async () => {
           const r = await e3.synthesize({ text: genText, voiceProfile });
           return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };
@@ -168,7 +168,7 @@ for (const { file, d } of files) {
         const { hit } = await store.getOrCreate(
           xKey,
           "audio",
-          { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text: x.text, scenarioId: d.scenarioId, objectiveId: `dialogue:${d.id}:${id}${value ? `:${value}` : ""}:${x.suffix}` },
+          { provider: e3.name, voiceOrModel: voiceTag, model: e3.model, text: x.text, domainId: d.domainId, objectiveId: `dialogue:${d.id}:${id}${value ? `:${value}` : ""}:${x.suffix}` },
           async () => {
             const r = await e3.synthesize({ text: x.say, voiceProfile, ...(x.speed !== undefined ? { speed: x.speed } : {}) });
             return { bytes: Buffer.from(r.audioBase64, "base64"), mimeType: r.mimeType };

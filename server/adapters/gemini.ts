@@ -9,8 +9,8 @@ import type {
   LiveTargetReading,
   WitnessResult,
   WitnessTarget,
-  ScenarioCandidate,
-  ScenarioRanking,
+  LevelCandidate,
+  LevelRanking,
 } from "../types";
 
 const BASE = "https://generativelanguage.googleapis.com/v1beta/models";
@@ -411,7 +411,7 @@ export class GeminiE2 implements E2Adapter {
     return String(data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "").trim();
   }
 
-  async rankScenarios(input: { query: string; candidates: ScenarioCandidate[] }): Promise<ScenarioRanking> {
+  async rankLevels(input: { query: string; candidates: LevelCandidate[] }): Promise<LevelRanking> {
     const key = requireKey();
     const list = input.candidates
       .map((c) => `- ${c.dialogueId}: ${c.description}\n` + c.lines.map((l) => `    [${l.id}] ${l.sl} (${l.en})`).join("\n"))

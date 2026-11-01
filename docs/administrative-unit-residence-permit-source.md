@@ -2,10 +2,10 @@
 
 **At the Administrative Unit – Residence and Work Permit**
 
-> Source reference: a bilingual (Slovenian/English) practice dialogue for the scenario of
+> Source reference: a bilingual (Slovenian/English) practice dialogue for the situation of
 > submitting a residence-and-work-permit application at a Slovenian administrative unit
 > (*upravna enota*). Reproduced in full for provenance; use as source material when
-> authoring the corresponding rehearsal-dialogue scenario.
+> authoring the corresponding rehearsal-dialogue domain.
 
 ---
 

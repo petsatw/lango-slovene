@@ -1,6 +1,6 @@
 {
   "id": "bakery-l1",
-  "scenarioId": "bakery",
+  "domainId": "bakery",
   "level": 1,
   "levelLabel": "Basic",
   "title": "Buy bread — the basics",

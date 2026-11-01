@@ -11,14 +11,14 @@ import { EVENTS_PATH } from "../events";
 import type { LiveTranscript } from "../live/log";
 import { DIALOGUES } from "../dialogues";
 import { LEARNABLES } from "../learnables";
-import { SCENARIOS } from "../scenarios";
+import { DOMAINS } from "../domains";
 
 export interface HistoryEntry {
   id: string;
   kind: "live" | "tap";
   lessonId: string;
-  /** The name of the scenario the lesson belongs to; the lessonId when none resolves. */
-  scenario: string;
+  /** The name of the domain the lesson belongs to; the lessonId when none resolves. */
+  domain: string;
   startedAt: string;
   endedAt: string;
   /** Learner-facing names of the objectives the session made progress on. */
@@ -26,14 +26,14 @@ export interface HistoryEntry {
   transcripts: LiveTranscript[];
 }
 
-/** A lesson id is a scenario id (a scene) or a dialogue id (a tree of a scenario). */
-function scenarioOf(lessonId: string) {
-  const scenarioId = Object.values(DIALOGUES).flat().find((d) => d.id === lessonId)?.scenarioId ?? lessonId;
-  return SCENARIOS.find((s) => s.id === scenarioId);
+/** A lesson id is a domain id (a scene) or a dialogue id (a tree of a domain). */
+function domainOf(lessonId: string) {
+  const domainId = Object.values(DIALOGUES).flat().find((d) => d.id === lessonId)?.domainId ?? lessonId;
+  return DOMAINS.find((s) => s.id === domainId);
 }
 
-export const scenarioName = (lessonId: string): string => {
-  const s = scenarioOf(lessonId);
+export const domainName = (lessonId: string): string => {
+  const s = domainOf(lessonId);
   return s ? s.name ?? s.title : lessonId;
 };
 
@@ -59,7 +59,7 @@ function fromLive(log: any): HistoryEntry {
     id: log.sessionId,
     kind: "live",
     lessonId: log.lessonId,
-    scenario: scenarioName(log.lessonId),
+    domain: domainName(log.lessonId),
     startedAt: log.startedAt,
     endedAt: log.endedAt,
     progressed: ((log.progressed ?? []) as string[]).map((id) => LEARNABLES[id]?.sl ?? id),
@@ -68,17 +68,18 @@ function fromLive(log: any): HistoryEntry {
 }
 
 function fromTap(rec: any): HistoryEntry {
+  const lessonId: string = rec.lessonId ?? rec.scenarioId; // a record stored before `lessonId` has only `scenarioId`
   const objectives: any[] = rec.finalObjectives ?? [];
   return {
     id: rec.id,
     kind: "tap",
-    lessonId: rec.scenarioId,
-    scenario: scenarioName(rec.scenarioId),
+    lessonId,
+    domain: domainName(lessonId),
     startedAt: rec.createdAt,
     endedAt: rec.updatedAt,
     progressed: objectives
       .filter((o) => o.status === "completed")
-      .map((o) => scenarioOf(rec.scenarioId)?.objectives.find((x) => x.id === o.id)?.label ?? o.id),
+      .map((o) => domainOf(lessonId)?.objectives.find((x) => x.id === o.id)?.label ?? o.id),
     transcripts: (rec.turns ?? []).map((t: any) => ({
       ts: rec.createdAt,
       role: t.role === "student" ? "user" : "tutor",

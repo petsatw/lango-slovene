@@ -37,7 +37,7 @@ These layers underpin every theme and every skill.
 
 ### 1.3 Core Lexical Inventory
 - A1-core (~350 highest-frequency lemmas that appear across virtually all A1 materials) + A1-larger set (bringing the productive target to roughly 900–1,000 items).
-- Organised by the 10 thematic domains below + a small set of universal items (numbers, time, colours, basic adjectives of size/quality, common prepositions, politeness markers).
+- Organised by the 10 A1 themes below + a small set of universal items (numbers, time, colours, basic adjectives of size/quality, common prepositions, politeness markers).
 - Distinction between *recognition vocabulary* (slightly wider) and *productive vocabulary* (smaller, highly practised set of chunks).
 
 ### 1.4 Pragmatic / Sociolinguistic Competence
@@ -67,9 +67,9 @@ subset and emphasise chunking + intelligibility.
 
 ---
 
-## 3. Thematic Taxonomy (10 Core Domains)
+## 3. Thematic Taxonomy (10 A1 Themes)
 
-Each domain contains: sub-topics / content inventory · key language functions (CAN-DO) · typical formulaic
+Each A1 theme contains: sub-topics / content inventory · key language functions (CAN-DO) · typical formulaic
 patterns / sample exponents (shared across modes) · mode-specific realisation notes.
 
 ### 3.1 Osebna identiteta (Personal Identity)
@@ -156,16 +156,16 @@ is built (guardrail: no A1 engine, no auto-competency-assignment).*
 > (basic = ≥80% core · intermediate = ≥80% tagged-A1 · advanced = beyond). New catalog items get a deliberate
 > tag-or-not-A1 decision at mint — judged on merit and tagged when the item is A1 material.
 
-**Competency buckets = 4 foundational layers + 10 thematic domains (14 total).** The `a1-map.json`
+**Competency buckets = 4 foundational layers + 10 A1 themes (14 total).** The `a1-map.json`
 `competencies` list is regrown from the 6 invented placeholders to these 14 grounded buckets. Each carries
 a `kind: "foundational" | "thematic"` so the readiness UI can group them. Thematic buckets carry their
 CAN-DO functions and sample exponents from §3.
 
-**Learnable → competency is many-to-many.** A single learnable maps into *both* a thematic domain and one or
+**Learnable → competency is many-to-many.** A single learnable maps into *both* a thematic A1 theme and one or
 more foundational layers — e.g. a pattern like `Stara sem ___ let` maps to **3.1 Personal Identity** *and*
 **1.2 Morphosyntax** *and* **1.1 (numbers)**. `lint:a1`'s rule is *every learnable maps to ≥1 competency (of
 either kind) or is on the explicit `excluded` list* — it does **not** require every competency to hold ≥N
-learnables (a foundational layer may be sparsely covered by the shipped scenarios; the coverage report
+learnables (a foundational layer may be sparsely covered by the shipped domains; the coverage report
 surfaces that, it is not an error).
 
 **The catalog is the PRODUCTION inventory only.** The minting rubric (D4) mints a learnable iff the learner
@@ -194,6 +194,6 @@ weighted scoring is computed now — deferred with the rest of the A1 scoring en
   `status: "production"` (default; `recognition` reserved, unused in MVP).
 - optional top-level `excluded[]` list of learnable ids deliberately unmapped.
 - `loadA1Map`'s existing forward check (every listed learnable exists in the catalog) stays; `lint:a1` **gates**
-  on ref-resolution (every `{scenarioId, level}` resolves) and otherwise **reports** — per-dialogue band, and
+  on ref-resolution (every `{domainId, level}` resolves) and otherwise **reports** — per-dialogue band, and
   which learnables sit in the tagged-A1 superset vs the curated core. The core grows by deliberate promotion,
   so the lint reads the map rather than pushing items into it (see dialogue-difficulty-model.md §2, §7).

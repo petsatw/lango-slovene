@@ -1,6 +1,6 @@
 {
   "id": "sprehod-l5",
-  "scenarioId": "sprehod",
+  "domainId": "sprehod",
   "level": 5,
   "levelLabel": "Basic",
   "title": "Explaining my dogs",

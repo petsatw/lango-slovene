@@ -22,7 +22,7 @@ so the mechanism follows once the capability and its success signal are clear.
 ## The one idea
 
 Everything the learner masters is a **learnable**. There are three kinds — **vocabulary**, **chunk**,
-**pattern** — and only learnables carry durable, cross-session mastery. A scenario's **objective** is
+**pattern** — and only learnables carry durable, cross-session mastery. A domain's **objective** is
 *not* a learnable: it is a delivery construct that drives the learner to produce one or more learnables
 in a scene. **Assets** illustrate learnables, many-to-many. The subsystem is the catalog of learnables,
 the per-learner memory of how well each is owned, and the means to bring the right one back.
@@ -33,7 +33,7 @@ These are the load-bearing *shape* choices (not mechanisms):
 
 1. **The learnable is the unit of mastery.** Three kinds (below). Everything the learner gets durably
    better at is one of them.
-2. **Objectives deliver; they own no assets.** An objective is authored per scenario, **references one
+2. **Objectives deliver; they own no assets.** An objective is authored per domain, **references one
    or more learnables**, and structures how they're elicited and sequenced in the scene. Visuals come
    from its learnables, not from the objective.
 3. **Assets illustrate learnables, many-to-many.** One `car` image serves both the vocabulary `avto`
@@ -72,8 +72,8 @@ kinds live in **one learnable catalog** (the language catalog), parallel to the 
 | entity | is |
 |---|---|
 | **learnable** | vocabulary · chunk · pattern — the unit of mastery (one learnable catalog) |
-| **objective** | a scenario-delivery construct: references learnables, structures elicitation/sequence |
-| **scenario** | a bounded transaction; ordered objectives + a scene |
+| **objective** | a domain-delivery construct: references learnables, structures elicitation/sequence |
+| **domain** | a bounded transaction; ordered objectives + a scene |
 | **asset catalog** | objects · characters · concepts/locations · voices (unchanged) |
 | **learner model** | per-learner durable memory of how well each learnable is owned |
 
@@ -81,7 +81,7 @@ kinds live in **one learnable catalog** (the language catalog), parallel to the 
 |---|---|---|
 | objective **references** learnable | the learnables this objective exercises | 1..N |
 | learnable **illustrated-by** asset | a visual/audio that depicts it | 0..N, many-to-many |
-| scenario **practises** learnables (via its objectives) | derived | — |
+| domain **practises** learnables (via its objectives) | derived | — |
 | learner-model **remembers** learnables | durable, cross-session | — |
 
 ## Capabilities — what it must do, and how you'd know it works
@@ -109,11 +109,11 @@ across varied fillers — and stay sensible for items that sit between kinds.
 memorizing a **pattern** as a fixed string); borderline items are still handled well; nothing is
 mistaught because it was filed under the "wrong" kind.
 
-### D. Make every scenario real practice of core learnables
-**Need:** each scenario gives genuine, useful practice of high-leverage core learnables, so the system
+### D. Make every domain real practice of core learnables
+**Need:** each domain gives genuine, useful practice of high-leverage core learnables, so the system
 always has real opportunities to bring back what's due.
-**Evident when working:** due learnables get meaningful reps as the learner moves through scenarios; a
-token mention doesn't satisfy it; a reviewer would agree the scenario actually exercises its core
+**Evident when working:** due learnables get meaningful reps as the learner moves through domains; a
+token mention doesn't satisfy it; a reviewer would agree the domain actually exercises its core
 learnables.
 
 ### E. Correct in the way that most helps, right now
@@ -130,14 +130,14 @@ learner is met where they left off.
 and what's due; no returning session starts from zero; the stored state stays small and replaceable.
 
 ### G. Bring the right learnable back at the right time
-**Need:** resurface a learnable when it helps it stick, and route the learner to scenarios that exercise
+**Need:** resurface a learnable when it helps it stick, and route the learner to domains that exercise
 it — led by what the learner needs and cares about, not a fixed timetable.
 **Evident when working:** shaky and aging learnables reappear in fresh contexts before they're lost;
 what the learner is working toward shows up; resurfacing feels timely, not mechanical or nagging.
 
 ## How it wraps the rest of the app
 
-- **Scenarios** are where learnables get practised — capability **D**; the authoring rubric + critic
+- **Domains** are where learnables get practised — capability **D**; the authoring rubric + critic
   judge whether that practice is real (the linter can only check that it's present).
 - **The asset catalog** relates to this subsystem only through the learnable **illustrated-by** asset
   edge; the relational ontology is unchanged.

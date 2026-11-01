@@ -80,6 +80,7 @@ One row per line of `DATA_DIR/events/events.jsonl` ([event row](../events/spec.m
 ```
 
 - `name`, `ts`, `learnerId` and `props` are copied from the line, and `text` on `feedback_submitted`.
+  `props` name the domain by `domainId` ([stored keys](../terminology/spec.md#4-wire-and-stored-keys)).
 - `tester` is `true` when the line's `testerCode` is set. The code itself is not returned: a tester code
   opens the live tutor, and `learnerId` already groups a tester's rows
   ([learnerId](../tester-identity/spec.md#3-learnerid)).

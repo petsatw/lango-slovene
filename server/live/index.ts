@@ -19,7 +19,7 @@ import * as retention from "../assets/retention";
 import * as events from "../events";
 import { glossOf } from "./gloss";
 import { settleSession } from "./grader";
-import { scenarioName } from "../assets/deletion";
+import { domainName } from "../assets/deletion";
 import { keytermsFor } from "./match";
 import type { LiveState, LiveErrorCode } from "./types";
 import type { LiveTranscript } from "./log";
@@ -78,7 +78,7 @@ liveRouter.post("/v1/live/sessions", (req, res) => {
     sessionId: s.sessionId,
     wsUrl: `${scheme}://${host}/v1/live/sessions/${s.sessionId}?token=${s.token}`,
     ttlSec: registry.SESSION_TTL_SEC,
-    scenario: scenarioName(lessonId),
+    domain: domainName(lessonId),
   });
 });
 

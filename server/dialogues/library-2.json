@@ -1,6 +1,6 @@
 {
   "id": "library-l2",
-  "scenarioId": "library",
+  "domainId": "library",
   "level": 2,
   "levelLabel": "Advanced",
   "title": "Borrowing a book",

@@ -22,7 +22,7 @@ import type { LiveSessionLog } from "../live/log";
 interface Run {
   runId: string | null;
   mode: "live" | "tap";
-  /** The lesson the live session was working, or the scenario the turns were recorded under. */
+  /** The lesson the live session was working, or the domain the turns were recorded under. */
   subject: string;
   provider: string | null;
   startedAt: string;
@@ -77,7 +77,7 @@ function tapRuns(): Run[] {
   return sessions.list().map((rec) => ({
     runId: rec.id,
     mode: "tap" as const,
-    subject: rec.scenarioId,
+    subject: rec.lessonId,
     provider: rec.provider ?? null,
     startedAt: rec.createdAt,
     endedAt: rec.updatedAt,

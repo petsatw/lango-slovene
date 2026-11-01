@@ -1,6 +1,6 @@
 {
   "id": "sprehod-l4",
-  "scenarioId": "sprehod",
+  "domainId": "sprehod",
   "level": 4,
   "levelLabel": "Basic",
   "title": "Asking for space",

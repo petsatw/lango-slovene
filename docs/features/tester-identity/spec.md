@@ -8,7 +8,7 @@ the code across browsers and devices, Safari and the iOS home-screen app include
 - The invite link carries the code as `?c=<code>`. The client stores it in `localStorage.testerCode`,
   removes `?c=` from the address bar, and sends it as the `x-tester-code` header on every API call
   that reads or writes learner data, including the live session create call. Media loads
-  (`/api/speak`, `/api/image`) are shared across learners and carry no learner headers.
+  (`/api/speak`, `/api/image`, `/api/flashcards/audio`) are shared across learners and carry no learner headers.
 - A code in a later link replaces the stored one.
 
 ## 2. Allowlist

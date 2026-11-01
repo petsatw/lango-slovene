@@ -16,7 +16,7 @@ single rule that governs everything here:
 
 ## The data model — everything is a catalog item
 
-There is no "scenario-local" asset. Every visible thing is a catalog entry with a stable id; scenarios
+There is no "domain-local" asset. Every visible thing is a catalog entry with a stable id; domains
 reference it by id. Catalog lives in `server/catalog/*.json`, loaded by `server/catalog.ts`.
 
 | Kind | File | Shape | Render |
@@ -29,7 +29,7 @@ reference it by id. Catalog lives in `server/catalog/*.json`, loaded by `server/
 This is the **relational ontology** — the *edges* between nodes are the model; see
 [ARCHITECTURE.md › The asset model](ARCHITECTURE.md#the-asset-model) for the full map.
 
-- A scenario's `scene.assets` entries are always `{ ref: "<id>" }` (object, character, **or concept**);
+- A domain's `scene.assets` entries are always `{ ref: "<id>" }` (object, character, **or concept**);
   its character is `characterRef`. A character resolves, for composition, to its `visualRef` object.
 - **Identity metadata** (`gender`) on people both fixes the depiction and drives Slovene agreement.
   Its absence is what let the customer drift male.
@@ -68,9 +68,9 @@ intentional. You decide, per dependent, whether the change warrants a regenerati
 
 Free / no provider calls:
 - **Live catalog gallery** at `GET /gallery` (e.g. `localhost:8787/gallery`) — a visual index of every
-  rendered object, actor, concept/location, and each scenario's scene + flashcard frames, rebuilt from the
+  rendered object, actor, concept/location, and each domain's scene + flashcard frames, rebuilt from the
   current catalog + on-disk renders on every request. Just refresh after rendering or editing the catalog —
-  no restart, no script, no static file. Read-only. (The catalog/scenario source files are also the asset
+  no restart, no script, no static file. Read-only. (The catalog/domain source files are also the asset
   graph: `composedFrom` = built-from, `scene.assets` = used-by.)
 - `npm run rekey:assets [-- --apply]` — re-key frames whose only change is the `{{TOKEN}}` brace
   notation (same picture → copy bytes to the new key).
@@ -80,7 +80,7 @@ Free / no provider calls:
   asset's existing render bytes to its new key, for every asset whose picture is unchanged. Skips ones
   already at the new key (e.g. people you re-rendered first). This is **how you change style without
   regenerating** the assets the change doesn't actually affect.
-- `npm run lint:scenario -- <id|--file>` · `npm run prompts -- <id|--file>` — validate / preview prompts.
+- `npm run lint:domain -- <id|--file>` · `npm run prompts -- <id|--file>` — validate / preview prompts.
 
 Billed (generate images — only on explicit request):
 - `npm run render:asset -- <catalogId> [<catalogId>…] [--force]` — render canonical asset(s) by id
@@ -88,9 +88,9 @@ Billed (generate images — only on explicit request):
 - `npm run render:concept -- <conceptId> [<conceptId>…] [--force]` — render composed concept(s):
   resolves `composedFrom` → their canonical renders → labelled montage → anchored generation. `--force`
   is required to refresh a concept after a constituent changed (its prompt key is otherwise a cache hit).
-- `npm run build:assets -- <id> [--regen frame:<obj>|scene|audio:…]` — materialize a whole scenario
+- `npm run build:assets -- <id> [--regen frame:<obj>|scene|audio:…]` — materialize a whole domain
   (audio + frames + scene), or surgically re-roll one leaf.
-- `npm run build:dialogue-assets -- <id> [--level <n>] [--regen]` — pregenerate a scenario's
+- `npm run build:dialogue-assets -- <id> [--level <n>] [--regen]` — pregenerate a domain's
   **rehearsal-dialogue** audio (per-speaker voice profile), flipping each level to `audio:ready`. Keys on
   the clean display line; when a node has a `deliverySL` (the line with inline eleven_v3 audio tags) that
   is what's synthesized while the key stays the display line — so voice direction never changes the key.

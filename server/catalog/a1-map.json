@@ -1,5 +1,5 @@
 {
-  "_note": "A1 coverage map — competency → the catalog learnables that evidence it + the scenario levels that advance it. GROUNDED in docs/a1-taxonomy.md: 3 foundational layers (1.1 phonology/numbers · 1.2 morphosyntax · 1.4 pragmatics) + the 10 thematic domains (3.1–3.10). learnable→competency is many-to-many. A bucket may be EMPTY (a domain the shipped scenarios don't reach yet — the readiness frontier); that is legitimate, surfaced by lint:a1 coverage, not an error. Progress is read from the durable learner model. lint:a1 requires every learnable that is core and/or a1-tagged to be mapped here OR on `excluded` — an unmapped one is invisible on the A1 Readiness screen. Above-A1 items are not tracked here.",
+  "_note": "A1 coverage map — competency → the catalog learnables that evidence it + the domain levels that advance it. GROUNDED in docs/a1-taxonomy.md: 3 foundational layers (1.1 phonology/numbers · 1.2 morphosyntax · 1.4 pragmatics) + the 10 A1 themes (3.1–3.10). learnable→competency is many-to-many. A bucket may be EMPTY (an A1 theme the shipped domains don't reach yet — the readiness frontier); that is legitimate, surfaced by lint:a1 coverage, not an error. Progress is read from the durable learner model. lint:a1 requires every learnable that is core and/or a1-tagged to be mapped here OR on `excluded` — an unmapped one is invisible on the A1 Readiness screen. Above-A1 items are not tracked here.",
   "_modes": "The MVP exercises 3 of the 4 A1 skill modes — Speaking, Listening, Reading (every audio clip is paired with its text). Writing is out of scope by design. No weighted cross-mode scoring engine is built (deferred to ROADMAP item 5).",
   "competencies": [
     {
@@ -79,17 +79,17 @@
         "sop",
         "pest"
       ],
-      "scenarios": [
+      "domains": [
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 1
         },
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 2
         },
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 3
         }
       ]
@@ -216,41 +216,41 @@
         "naj",
         "vas"
       ],
-      "scenarios": [
+      "domains": [
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 1
         },
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 2
         },
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 3
         },
         {
-          "scenarioId": "restaurant",
+          "domainId": "restaurant",
           "level": 1
         },
         {
-          "scenarioId": "restaurant",
+          "domainId": "restaurant",
           "level": 2
         },
         {
-          "scenarioId": "restaurant",
+          "domainId": "restaurant",
           "level": 3
         },
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 2
         },
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 3
         },
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 4
         }
       ]
@@ -325,41 +325,41 @@
         "takole",
         "dobro"
       ],
-      "scenarios": [
+      "domains": [
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 3
         },
         {
-          "scenarioId": "restaurant",
+          "domainId": "restaurant",
           "level": 2
         },
         {
-          "scenarioId": "restaurant",
+          "domainId": "restaurant",
           "level": 3
         },
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 1
         },
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 3
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 3
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 4
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 5
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 9
         }
       ]
@@ -440,9 +440,9 @@
         "hcerka",
         "student"
       ],
-      "scenarios": [
+      "domains": [
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 5
         }
       ]
@@ -486,9 +486,9 @@
         "kljuc",
         "deznik"
       ],
-      "scenarios": [
+      "domains": [
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 3
         }
       ]
@@ -524,9 +524,9 @@
         "recept",
         "tableta"
       ],
-      "scenarios": [
+      "domains": [
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 3
         }
       ]
@@ -621,29 +621,29 @@
         "je_zrelo",
         "blitva"
       ],
-      "scenarios": [
+      "domains": [
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 1
         },
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 2
         },
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 3
         },
         {
-          "scenarioId": "restaurant",
+          "domainId": "restaurant",
           "level": 1
         },
         {
-          "scenarioId": "restaurant",
+          "domainId": "restaurant",
           "level": 2
         },
         {
-          "scenarioId": "restaurant",
+          "domainId": "restaurant",
           "level": 3
         }
       ]
@@ -765,57 +765,57 @@
         "naprej",
         "hrana"
       ],
-      "scenarios": [
+      "domains": [
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 2
         },
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 3
         },
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 5
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 1
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 2
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 3
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 4
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 5
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 6
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 7
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 8
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 9
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 10
         }
       ]
@@ -937,25 +937,25 @@
         "sop",
         "pest"
       ],
-      "scenarios": [
+      "domains": [
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 1
         },
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 2
         },
         {
-          "scenarioId": "restaurant",
+          "domainId": "restaurant",
           "level": 1
         },
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 2
         },
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 5
         }
       ]
@@ -1018,33 +1018,33 @@
         "hcerka",
         "pa_do_jutri"
       ],
-      "scenarios": [
+      "domains": [
         {
-          "scenarioId": "bakery",
+          "domainId": "bakery",
           "level": 3
         },
         {
-          "scenarioId": "restaurant",
+          "domainId": "restaurant",
           "level": 2
         },
         {
-          "scenarioId": "restaurant",
+          "domainId": "restaurant",
           "level": 3
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 6
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 7
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 8
         },
         {
-          "scenarioId": "sprehod",
+          "domainId": "sprehod",
           "level": 9
         }
       ]
@@ -1082,21 +1082,21 @@
         "ucitelj",
         "student"
       ],
-      "scenarios": [
+      "domains": [
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 1
         },
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 2
         },
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 3
         },
         {
-          "scenarioId": "library",
+          "domainId": "library",
           "level": 4
         }
       ]
@@ -1127,7 +1127,7 @@
         "prijava",
         "ucitelj"
       ],
-      "scenarios": []
+      "domains": []
     },
     {
       "id": "transport_orientation",
@@ -1192,7 +1192,7 @@
         "prepovedano",
         "informacije"
       ],
-      "scenarios": []
+      "domains": []
     }
   ],
   "excluded": [

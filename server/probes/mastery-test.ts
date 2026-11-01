@@ -8,7 +8,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { understand } from "../orchestrator";
-import { getScenario, freshSession } from "../scenarios";
+import { getDomain, freshSession } from "../domains";
 import { DEFAULT_LEARNER_ID } from "../assets/learner";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -19,11 +19,11 @@ if (!existsSync(clip)) {
   process.exit(1);
 }
 
-const scenario = getScenario("cafe");
+const domain = getDomain("cafe");
 const audioBase64 = readFileSync(clip).toString("base64");
 
 try {
-  const r = await understand({ audioBase64, mimeType: "audio/mp3", history: [], session: freshSession(scenario),
+  const r = await understand({ audioBase64, mimeType: "audio/mp3", history: [], session: freshSession(domain),
                               learnerId: DEFAULT_LEARNER_ID });
   console.log(`✅ mastery turn OK  e2=${r.timings.e2Ms}ms`);
   console.log(`   verbatim: ${r.userVerbatim}`);

@@ -2,7 +2,7 @@
 // (provider | model | styleId | aspectRatio | resolution | prompt) ⇒ same key ⇒ regeneration is free.
 //
 // `aspectRatio`/`resolution` are explicit (typed API args, not prose). `referenceImages` anchor the
-// output to the scenario's reference sheet (character/setting consistency). `styled: false` sends the
+// output to the domain's reference sheet (character/setting consistency). `styled: false` sends the
 // prompt verbatim — used for the reference sheet, whose prompt is already complete.
 
 import * as store from "./store";
@@ -15,7 +15,7 @@ export const MAX_REFS = 3;
 export interface ImageRequest {
   aspectRatio: string;
   resolution: string;
-  scenarioId?: string;
+  domainId?: string;
   objectiveId?: string;
   // The anchor image(s) — typically ONE locally-composed labelled reference sheet (see
   // reference-sheet.ts). URLs / base64 data URIs / file_ids; capped to MAX_REFS.
@@ -63,7 +63,7 @@ export async function getOrCreateImage(
     endpoint,
     referenceKeys: req.referenceKeys,
     mimeType,
-    scenarioId: req.scenarioId,
+    domainId: req.domainId,
     objectiveId: req.objectiveId,
   });
   return { bytes, hit: false, key };
@@ -71,7 +71,7 @@ export async function getOrCreateImage(
 
 // The per-asset CANONICAL RENDER through the store. Content-addressed on the single-asset prompt, so a
 // shared (catalog) asset — identical descriptor everywhere — renders ONCE and is reused across
-// scenarios. Plain text-to-image (no anchor); the prompt already carries the full house style.
+// domains. Plain text-to-image (no anchor); the prompt already carries the full house style.
 export async function getOrCreateAssetRender(
   asset: { label: string; descriptor: string },
 ): Promise<{ bytes: Buffer; hit: boolean; key: string }> {

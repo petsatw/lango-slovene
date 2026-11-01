@@ -83,7 +83,7 @@ export function getLearnable(id: string): Learnable {
 }
 
 /** Resolve a list of learnable ids to their catalog entries, failing on any unknown id. Used by the
- *  scenario loader to validate objective.learnables references at startup. */
+ *  domain loader to validate objective.learnables references at startup. */
 export function resolveLearnables(ids: string[]): Learnable[] {
   return ids.map(getLearnable);
 }

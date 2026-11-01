@@ -1,6 +1,6 @@
 {
   "id": "trznica-l2",
-  "scenarioId": "trznica",
+  "domainId": "trznica",
   "level": 2,
   "levelLabel": "Basic",
   "title": "Koliko stane?",

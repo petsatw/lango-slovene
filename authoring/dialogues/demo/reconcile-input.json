@@ -1,5 +1,5 @@
 {
-  "scenario": {
+  "domain": {
     "id": "demo",
     "name": "Demo",
     "title": "Demo",
@@ -497,7 +497,7 @@
         ]
       },
       "practice": {
-        "scenarioId": "library",
+        "domainId": "library",
         "level": 1
       }
     },

@@ -1,8 +1,8 @@
 # Architecture
 
 Govori is a voice tutor for everyday Slovene. You hold a button and speak — mixed English is fine —
-the server understands you, replies in native Slovene, and corrects by recasting. It ships with four
-scenarios (café, bakery, butcher, pharmacy) and an engine that authors new ones.
+the server understands you, replies in native Slovene, and corrects by recasting. It ships with a set of
+domains and an engine that authors new ones.
 
 This is the **keystone document**. It explains what the system is, what you can do with it, why it's
 shaped the way it is, and how the parts fit — then points to the satellite docs that carry the depth.
@@ -19,7 +19,7 @@ Read it top to bottom to get oriented; follow the links when you need detail. A 
 - [The teaching model](#the-teaching-model)
 - [The asset model](#the-asset-model) — the relational ontology
 - [State and persistence](#state-and-persistence)
-- [The scenario engine](#the-scenario-engine)
+- [The domain engine](#the-domain-engine)
 - [What's built vs. what's next](#whats-built-vs-whats-next)
 - [Map of the docs](#map-of-the-docs)
 
@@ -33,7 +33,7 @@ the tutor doing less talking than the learner. Every run is recorded so it can b
 Underneath, the teaching is **owned by the app, not the language model**: the server tracks what the
 learner is meant to produce, decides when each objective is met, and rebuilds the model's instructions
 from that state on every turn. Everything provider-specific — understanding, voice, images — sits
-behind a swappable adapter. New scenarios aren't hand-written; a quality-gated engine authors them.
+behind a swappable adapter. New domains aren't hand-written; a quality-gated engine authors them.
 
 ## What you can do with it
 
@@ -50,7 +50,7 @@ extending, or authoring content for the system). While the heart of the app is l
 | **Free practice** | Hear the canonical phrase for each objective, record your own attempt **locally**, play it back to compare. No upload, no API spend. | practice panel |
 | **Live progress** | Objective dots `pending ○ → recast ◐ → completed ●`; an end-of-session takeaway lists the phrases you can now say, each replayable. | objective dots · takeaway |
 | **Past runs / replay** | Every run is captured. Reopen the list, replay any run turn-by-turn (free, from the store), and **name** or **favorite** a run. | `GET /api/sessions` · `GET /api/sessions/:id` · `POST /api/sessions/:id/meta` |
-| **Scenario picker** | Switch among active scenarios (planned ones are listed but disabled); each boots a fresh session. | `GET /api/config?scenarioId=` |
+| **Domain picker** | Switch among active domains (planned ones are listed but disabled); each boots a fresh session. | `GET /api/config?domainId=` |
 | **Live observability** | An on-screen overlay mirrors state, active providers, what was heard (verbatim), the reply, the recast note, and timings — so failures are visible, not mysterious. | overlay |
 
 ### Operator (CLI + env)
@@ -60,8 +60,8 @@ extending, or authoring content for the system). While the heart of the app is l
 | **Run / serve** | `npm run dev` · `npm run start` | thin Node/Express server; serves the PWA, `/api`, and `/gallery`. |
 | **Probe a provider** | `npm run probe:e2` · `npm run probe:e3` | cheap credential/latency check before a large run. |
 | **End-to-end verify** | `npm run replay` · `npm run test:mastery` | real recorded audio through the full pipeline / through the mastery loop. |
-| **Author a scenario** | the create-scenario skill · `npm run lint:scenario` | deterministic lint gates the skill; a `--self-directed` mode discovers the next scenario itself. See [scenario-authoring.md](scenario-authoring.md). |
-| **Materialize assets** | `npm run build:assets -- <id> [--regen frame:<obj>\|scene\|audio:…]` | builds a scenario's audio + frames + scene; `--regen` surgically re-rolls one leaf. |
+| **Author a domain** | the create-domain skill · `npm run lint:domain` | deterministic lint gates the skill; a `--self-directed` mode discovers the next domain itself. See [domain-authoring.md](domain-authoring.md). |
+| **Materialize assets** | `npm run build:assets -- <id> [--regen frame:<obj>\|scene\|audio:…]` | builds a domain's audio + frames + scene; `--regen` surgically re-rolls one leaf. |
 | **Render catalog assets** | `npm run render:asset` · `npm run render:concept` | render one object/character, or a composed concept/location. |
 | **Re-key without regenerating** | `npm run rekey:assets [-- --restyle\|--harvest\|--apply]` | move bytes to new keys when the picture is unchanged — billing-free. See [asset-pipeline.md](asset-pipeline.md). |
 | **Inspect / audit** | `GET /gallery` (live) · `npm run prompts` · `npm run prune:assets` | visual catalog index; exact prompts + provenance; remove unused assets. |
@@ -79,7 +79,7 @@ render-vs-rekey decision model are in [asset-pipeline.md](asset-pipeline.md).
 2. **Everything provider-specific is an adapter.** Understanding (E2), voice (E3), and image
    generation (E4) sit behind adapters chosen by one `.env` line. Swapping a provider — or, later, the
    language — never touches the core.
-3. **Scenarios are data, not code.** A scenario is a JSON file (`server/scenarios/*.json`) that
+3. **Domains are data, not code.** A domain is a JSON file (`server/domains/*.json`) that
    references shared assets by catalog id. Adding one is authoring data, not changing the engine.
 4. **Visible assets are a relational catalog, built once.** Every depictable thing is a node with a
    stable id; scenes are *composed* from those nodes and anchored to a build-once location "set". Cost
@@ -123,9 +123,9 @@ render-vs-rekey decision model are in [asset-pipeline.md](asset-pipeline.md).
 - **Durable stores** — the content-addressed **asset store** (audio + images,
   [`server/assets/store.ts`](../server/assets/store.ts)) and the **session records**
   (`assets/sessions/*.json`). Both survive restarts.
-- **The scenario engine** — an out-of-band authoring pipeline (a skill + scripts) that writes scenario
+- **The domain engine** — an out-of-band authoring pipeline (a skill + scripts) that writes domain
   JSON and materializes its assets. It is **not** part of the request path; see
-  [The scenario engine](#the-scenario-engine).
+  [The domain engine](#the-domain-engine).
 
 The request surface (every `/api` route + `/gallery`, with request/response shapes) is documented in
 [DATA-MODEL.md › HTTP API](DATA-MODEL.md#http-api).
@@ -168,7 +168,7 @@ recognition.**
 
 What the rebuilt prompt enforces every turn:
 
-- **Register-first.** The scenario declares `ti`/`vi` and the variety (`pogovorni`/`knjižni`); the
+- **Register-first.** The domain declares `ti`/`vi` and the variety (`pogovorni`/`knjižni`); the
   tutor fixes that before each reply, which also keeps replies as terse as a real local.
 - **Recast, don't lecture.** Say the correct form back inside an in-character reply; never explain
   grammar, never break character, always Slovene-only.
@@ -181,7 +181,7 @@ What the rebuilt prompt enforces every turn:
 
 The full pedagogy — the 18-step learning loop, the rubrics, and the research behind each rule — is in
 [research/](research/) (the expert panel) and codified into the authoring
-[rubric](scenario-authoring.md). This describes the **inner loop** (one sitting). The **outer loop** —
+[rubric](domain-authoring.md). This describes the **inner loop** (one sitting). The **outer loop** —
 **count-based mastery across contexts** on a persistent learner model — is now **built** (the mastery
 loop, item 4; see [learnable-subsystem-spec.md](learnable-subsystem-spec.md)). What's still out is
 **cross-session spaced *resurfacing*** (scheduling *what to bring back when*), which is tutor-leads (item 5).
@@ -206,14 +206,14 @@ Object-vs-character-vs-concept is only *how* the render is produced (a descripto
 is the one resolver that turns any id into its render, recursively.
 
 **The edges, end to end:**
-- scenario → `characterRef` → a **character** (its voice + identity)
-- scenario.scene → `scene.assets: [{ ref }]` → **objects / characters / concepts** (the cast, the props, and the **location**)
+- domain → `characterRef` → a **character** (its voice + identity)
+- domain.scene → `scene.assets: [{ ref }]` → **objects / characters / concepts** (the cast, the props, and the **location**)
 - character → `type` / `visualRef` → **objects** (a generic role now; a named individual — "Nataša the baker" — later, pointing at her own render)
 - concept → `composedFrom` → objects / characters / **concepts**
 
 That last edge is what makes a **scene a composition**: a scene anchors on a **location concept** (the
 "standing set" — counter + fixtures, built and rendered *once*), plus the cast and props. Many
-scenarios can play on the same set, so cost is *sets + scenes*, not *sets × scenes* — the film/game
+domains can play on the same set, so cost is *sets + scenes*, not *sets × scenes* — the film/game
 model. The simple case keeps everything thin (`baker` the actor points at `baker` the object); the
 shape scales to named individuals, multi-type actors, and reusable sets without new kinds.
 
@@ -260,22 +260,22 @@ So "no persistence" is **not** accurate: artifacts, runs, **and** the cross-sitt
 durable. What's still missing is the *tutor that leads* — the layer that chooses what to practise next
 from this model (roadmap 5).
 
-## The scenario engine
+## The domain engine
 
-New scenarios aren't hand-written. A pipeline authors the Slovene, checks it with a **deterministic
+New domains aren't hand-written. A pipeline authors the Slovene, checks it with a **deterministic
 linter**, and has an **independent critic** sign off before it ships; then `build:assets` materializes
 the audio and images and it auto-appears in the picker. A `--self-directed` mode lets the engine
-*discover* the best next scenario from the existing repertoire plus the research principles (generation
+*discover* the best next domain from the existing repertoire plus the research principles (generation
 still gated on approval).
 
-- The procedure is the create-scenario skill (`.claude/skills/create-scenario`).
-- The acceptance rubric every scenario must pass is [scenario-authoring.md](scenario-authoring.md).
+- The procedure is the create-domain skill (`.claude/skills/create-domain`).
+- The acceptance rubric every domain must pass is [domain-authoring.md](domain-authoring.md).
 - Making the procedure tool-neutral (any agent, any language) is [roadmap](ROADMAP.md) item 7.
 
 ## What's built vs. what's next
 
 **Built today**, all running against real providers and verified end-to-end: the live turn loop and the
-server-owned mastery rules; four scenarios (café, bakery, butcher, pharmacy) each with a narrated story,
+server-owned mastery rules; the shipped domains, each with a narrated story,
 per-objective flashcard frames, and a scene composed on a reusable location set; the relational asset
 catalog (objects · actors · composed concepts/locations · voices) and the content-addressed store;
 durable session capture, replay, and favorites; the generation engine and its gates (including
@@ -303,9 +303,9 @@ decision-tree exchanges at ascending competency levels, with pregenerated per-sp
 |---|---|---|
 | **ARCHITECTURE.md** (this) | the system: what it is, what you can do, why it's shaped this way | getting oriented; deciding where a change belongs |
 | [FILE-MAP.md](FILE-MAP.md) | the project layout — every directory, module, script, and command → its file | finding where something lives |
-| [DATA-MODEL.md](DATA-MODEL.md) | the HTTP API and the concrete data shapes (scenario, session, catalog, adapter interfaces) | building a client, extending the model, or adding a provider |
+| [DATA-MODEL.md](DATA-MODEL.md) | the HTTP API and the concrete data shapes (domain, session, catalog, adapter interfaces) | building a client, extending the model, or adding a provider |
 | [asset-pipeline.md](asset-pipeline.md) | the asset toolkit, the key model, and the render-vs-rekey decision | generating, restyling, or auditing assets |
-| [scenario-authoring.md](scenario-authoring.md) | the acceptance rubric for a scenario, objective, story, frames, and scene | authoring or reviewing a scenario |
+| [domain-authoring.md](domain-authoring.md) | the acceptance rubric for a domain, objective, story, frames, and scene | authoring or reviewing a domain |
 | [rehearsal-dialogues.md](rehearsal-dialogues.md) | the click-through branching **decision-tree** rehearsal mode — schema, levels, delivery notes, audio | authoring, wiring, or generating audio for a rehearsal dialogue |
 | [ROADMAP.md](ROADMAP.md) | the future state and the dependency-ordered pieces to get there | planning what to build next |
 | [learnable-subsystem.md](learnable-subsystem.md) | the cross-session memory subsystem (design): patterns + vocabulary as durable units, the learner model, mastery | building roadmap 4 (memory) or designing the learner model |
