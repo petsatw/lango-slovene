@@ -11,7 +11,7 @@ import { chromium, type Page } from "playwright";
 const port = 20000 + Math.floor(Math.random() * 20000);
 const base = `http://127.0.0.1:${port}`;
 const data = mkdtempSync(path.join(tmpdir(), "live-access-"));
-const env = { ...process.env, PORT: String(port), DATA_DIR: data, LIVE_ACCESS_CODE: "GOOD-CODE", TESTER_CODES: "TEST-01" };
+const env: NodeJS.ProcessEnv = { ...process.env, PORT: String(port), DATA_DIR: data, LIVE_ACCESS_CODE: "GOOD-CODE", TESTER_CODES: "TEST-01" };
 for (const k of ["GEMINI_API_KEY", "GOOGLE_API_KEY", "XAI_API_KEY", "GROK_API_KEY"]) delete env[k];
 const child = spawn(process.execPath, ["--import", "tsx", "server/server.ts"], { env, stdio: "ignore" });
 

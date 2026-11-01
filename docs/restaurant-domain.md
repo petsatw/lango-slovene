@@ -1,11 +1,11 @@
-# Restaurant scenario — authoring brief (MVP content)
+# Restaurant domain — authoring brief (MVP content)
 
-The MVP ships **two** canned scenarios: **bakery** (already built) and **restaurant** (this brief). The
-restaurant scenario is the first thing the team will look at, so it must be crisp and correct.
+The MVP ships **two** canned domains: **bakery** (already built) and **restaurant** (this brief). The
+restaurant domain is the first thing the team will look at, so it must be crisp and correct.
 
 Source: the operator's "Zmaj Slavko v restavraciji" infographic (6 panels + a vocabulary key). We take
 **three** panels as the three ascending levels, mirroring bakery (Survival → Basic A1 → Full A1). Author
-via the **gated procedure** — orchestrator specs → `slovenian-author` writes the tree → `scenario-critic`
+via the **gated procedure** — orchestrator specs → `slovenian-author` writes the tree → `domain-critic`
 signs off → `lint:dialogue` reconciles the derived learnables. **Never transcribe the panel bubbles
 verbatim** — several contain grammar slips; the author fixes them.
 
@@ -17,7 +17,7 @@ verbatim** — several contain grammar slips; the author fixes them.
 | 6 · Paying the bill | folded into **L1** (completes the visit) |
 | 3 · Pizza with friends | **L2 Intermediate** |
 | 4 · Romantic dinner | **L3 Advanced** (enriched, optional toast from Panel 5) |
-| 5 · Birthday | optional toast graft into L3, else a future scenario |
+| 5 · Birthday | optional toast graft into L3, else a future domain |
 | 2 · Business lunch | **EXCLUDED** (operator: not restaurant-core) |
 
 ## Voices & character
@@ -29,10 +29,10 @@ verbatim** — several contain grammar slips; the author fixes them.
 
 ## Required small refactor (MVP disentangling)
 The dialogue schema hard-codes the NPC speaker as `"baker"` (`DialogueSpeaker = "baker" | "client"`,
-plus the root/voices checks in `server/dialogues.ts`). Generalize to **`"npc" | "client"`** so scenarios
+plus the root/voices checks in `server/dialogues.ts`). Generalize to **`"npc" | "client"`** so domains
 are generic, and migrate the three bakery files (`speaker: "baker"→"npc"`, `voices.baker→voices.npc`,
 and the `app.js` bubble/voice lookup + `build-dialogue-assets`). Small, mechanical, and it's the right
-"scenarios aren't bakery-specific" move for the MVP.
+"domains aren't bakery-specific" move for the MVP.
 
 ## The three levels
 
@@ -93,7 +93,7 @@ play buttons) — same cost gate as bakery.
 
 ## Definition of done (restaurant content)
 Three `server/dialogues/restaurant-{1,2,3}.json` (speaker `npc`/`client`, voices npc=female-speaker /
-client=male-speaker, `introduces` populated) + a `restaurant` scenario registered so it appears in the
-Practice-scenarios list · derived learnables added to the catalog (author→critic→`lint:dialogue` green) ·
+client=male-speaker, `introduces` populated) + a `restaurant` domain registered so it appears in the
+Practice-domains list · derived learnables added to the catalog (author→critic→`lint:dialogue` green) ·
 `test:dialogue` + `lint:dialogue` pass · the speaker-enum generalization applied and bakery migrated.
 Audio stays `pending` until the operator builds it.

@@ -1,4 +1,4 @@
-// Free-conversation probe — runs a REAL student clip through the scenario-less converse() path on real
+// Free-conversation probe — runs a REAL student clip through the domain-less converse() path on real
 // Gemini and prints the reply + the per-learnable verdicts credited to the durable model. No mocks.
 // Uses fixtures/out/e3-probe.mp3 (run `npm run probe:e3` first). Writes to a TEMP learner model so it
 // never pollutes the real assets/learner.json.
@@ -28,7 +28,7 @@ try {
   const audioBase64 = readFileSync(clip).toString("base64");
 
   // Seed a little history so the conversation is in-reach of what the fixture actually says ("Dober dan…
-  // kava…") — free conversation is normally entered AFTER some scenario practice, not from zero.
+  // kava…") — free conversation is normally entered AFTER some domain practice, not from zero.
   const id = learner.DEFAULT_LEARNER_ID;
   learner.save(
     id,

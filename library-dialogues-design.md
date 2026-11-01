@@ -1,6 +1,6 @@
 # Library rehearsal dialogues — coverage-first design (honor the original flowchart)
 
-**Design draft** for the `library` scenario. The goal is to **honor the native-speaker submission**
+**Design draft** for the `library` domain. The goal is to **honor the native-speaker submission**
 ([library-visit-flowchart.md](library-visit-flowchart.md)) — its full breadth and its complications. Built on
 the reframed model in [docs/dialogue-difficulty-model.md](docs/dialogue-difficulty-model.md): difficulty is
 **computed after authoring**, above-A1 content is **classified by band**, and trees may have **>2 choices**
@@ -8,12 +8,12 @@ with context carried as **choice text or a parenthetical**.
 
 **Content source of truth = `library-visit-flowchart.md`.** The lines there (her Slovene) are the seeds;
 this doc specifies *structure + mapping decisions*, not final language. The create-dialogue pipeline routes
-every line through `slovenian-author` + `scenario-critic` before writing — reuse her wording wherever it
+every line through `slovenian-author` + `domain-critic` before writing — reuse her wording wherever it
 holds; only simplify a line if the pipeline flags it, and record why.
 
 ## Fixed decisions
 
-- **One `library` scenario, six dialogues = her six sections.** Each dialogue is one branching tree that
+- **One `library` domain, six dialogues = her six sections.** Each dialogue is one branching tree that
   covers that section's situations *including* its complications (no ID, expired card, unpaid fine, book
   unavailable, reading-room-only, overdue, damaged) — every situation and complication is carried, at
   whatever band it computes to.

@@ -14,9 +14,9 @@ import {
   presentObjectives,
   selectForWitness,
 } from "./mastery";
-import { buildSystemPrompt, buildConversationPrompt, type ScenarioContext } from "./prompt";
+import { buildSystemPrompt, buildConversationPrompt, type HandoffContext } from "./prompt";
 import { getLearnable } from "./learnables";
-import { getScenario, freshSession, characterVoiceProfile, type Scenario } from "./scenarios";
+import { getDomain, freshSession, characterVoiceProfile, type Domain } from "./domains";
 import { getSeed } from "./seeds";
 import { scriptedSeedTurn } from "./adapters/seed-scripted";
 import type {
@@ -35,7 +35,7 @@ const TURN_CAP = 14; // safety stop so a session can't run forever
 //  - "completed"  → status completed
 //  - "attempted" → status recast (must resurface before it can be completed)
 // Session completes when all objectives are completed, or the turn cap is hit.
-function applyProgress(scenario: Scenario, prev: SessionState, progress: ObjectiveProgress[]): SessionState {
+function applyProgress(domain: Domain, prev: SessionState, progress: ObjectiveProgress[]): SessionState {
   const byId = new Map(prev.objectives.map((o) => [o.id, { ...o }]));
 
   for (const p of progress) {
@@ -46,13 +46,13 @@ function applyProgress(scenario: Scenario, prev: SessionState, progress: Objecti
     else if (o.status !== "completed") o.status = "recast";
   }
 
-  const objectives = scenario.objectives.map(
+  const objectives = domain.objectives.map(
     (def) => byId.get(def.id) ?? { id: def.id, status: "pending" as const, attempts: 0 },
   );
   const turns = prev.turns + 1;
   const complete = objectives.every((o) => o.status === "completed") || turns >= TURN_CAP;
 
-  return { scenarioId: scenario.id, objectives, complete, turns };
+  return { scenarioId: domain.id, objectives, complete, turns };
 }
 
 export async function understand(input: {
@@ -66,14 +66,14 @@ export async function understand(input: {
   /** Did this session agree to its data being kept (server/assets/retention.ts). */
   retain?: boolean;
 }): Promise<UnderstandResult> {
-  const scenario = getScenario(input.session?.scenarioId);
-  const session = input.session ?? freshSession(scenario);
+  const domain = getDomain(input.session?.scenarioId);
+  const session = input.session ?? freshSession(domain);
 
   // MASTERY layer: read the model so presentation can steer toward the still-unmastered learnable
   // within each objective (and stop pushing mastered ones).
   const model = learner.load(input.learnerId);
-  const presentation = presentObjectives(scenario.objectives, model);
-  const systemPrompt = buildSystemPrompt(scenario, session, presentation);
+  const presentation = presentObjectives(domain.objectives, model);
+  const systemPrompt = buildSystemPrompt(domain, session, presentation);
   const e2 = getE2();
 
   const t0 = performance.now();
@@ -86,7 +86,7 @@ export async function understand(input: {
   const e2Ms = Math.round(performance.now() - t0);
 
   // Credit the durable mastery layer (independent of the scene layer) and persist. A turn with no
-  // learnable verdicts (un-authored scenario) is a no-op write of the unchanged model.
+  // learnable verdicts (un-authored domain) is a no-op write of the unchanged model.
   let saved = model;
   if (r.learnableProgress.length) {
     saved = applyCredit(model, r.learnableProgress);
@@ -99,7 +99,7 @@ export async function understand(input: {
     learnerId: input.learnerId,
     testerCode: input.testerCode ?? null,
     runId: input.runId,
-    scenarioId: scenario.id,
+    scenarioId: domain.id,
     provider: e2.name,
     model: process.env.GEMINI_MODEL,
     e2Ms,
@@ -115,14 +115,14 @@ export async function understand(input: {
     userSaid: r.userSaid,
     tutorReply: r.tutorReply,
     correction: r.correction,
-    session: applyProgress(scenario, session, r.objectiveProgress),
+    session: applyProgress(domain, session, r.objectiveProgress),
     learnableProgress: r.learnableProgress,
     timings: { e2Ms },
     providers: { e2: e2.name },
   };
 }
 
-// Free conversation (spec §3.5) — a scenario-less turn bounded by the durable learner model. Same E2
+// Free conversation (spec §3.5) — a domain-less turn bounded by the durable learner model. Same E2
 // hop, same per-learnable crediting; no objectives, no scene, no session.
 export async function converse(input: {
   audioBase64?: string;
@@ -133,7 +133,7 @@ export async function converse(input: {
   begin?: boolean; // return the opening line, credit nothing (seed step 0, or free chat's "Začnemo?")
   role?: string | null; // free chat: the pinned role the client carries back each turn (null = decide)
   focusLearnables?: string[]; // rehearsal→free-chat handoff: bias this turn's targets toward these ids
-  context?: ScenarioContext | null; // rehearsal→free-chat handoff: the scene + practiced objectives (English priming)
+  context?: HandoffContext | null; // rehearsal→free-chat handoff: the scene + practiced objectives (English priming)
   learnerId: string;
   testerCode?: string | null;
   runId?: string;
@@ -280,7 +280,7 @@ export async function runTurn(input: {
   const e3 = getE3();
 
   // The tutor reply IS the character speaking → synthesize in the character's voice profile.
-  const voiceProfile = characterVoiceProfile(getScenario(u.session.scenarioId));
+  const voiceProfile = characterVoiceProfile(getDomain(u.session.scenarioId));
   const voiceTag = e3.voiceTagFor(voiceProfile);
 
   // Through the persistent store: reuse the canonical clip if we've already synthesized this

@@ -1,11 +1,11 @@
-// DIALOGUE framework — predetermined BRANCHING rehearsal dialogues paired with a scenario.
+// DIALOGUE framework — predetermined BRANCHING rehearsal dialogues paired with a domain.
 //
 // A dialogue is a fully authored decision tree: an NPC (waiter, baker, …) speaks, the learner picks
 // among a few canned client replies, the NPC responds, and so on. It is REHEARSAL ONLY — exposure before the live
 // mic. Nothing here credits mastery (contrast the seed, which plants attempts): the learner clicks
 // through to see/hear/translate a typical exchange, then produces it for real in the live tutor.
 //
-// Not the visual scenario engine and not the seed: no images, no objectives, no model — just a node
+// Not the visual domain engine and not the seed: no images, no objectives, no model — just a node
 // graph plus (once built) pregenerated per-speaker audio. `audio` gates the client's play affordance so
 // a no-audio click-through preview can't trigger a billed live synthesis.
 //
@@ -77,7 +77,7 @@ export interface DialogueStallHandler {
  *  In a spoken scene the learner's lines are never synthesized — we own no recording of them, and putting
  *  the character's voice on their line and calling it theirs would be a lie. But the Key Phrases panel
  *  still wants a "hear it": the phrase was TAUGHT, and the character models it himself somewhere in the
- *  scenario. So this points at the npc node that says it, and — when only part of that line is the phrase —
+ *  domain. So this points at the npc node that says it, and — when only part of that line is the phrase —
  *  at the word range within it. Nothing is ever synthesized to satisfy a pointer; it can only ever aim at
  *  a clip that already exists.
  *
@@ -88,7 +88,7 @@ export interface DialogueVoicing {
   /** The npc node id whose clip is played. A node id, never raw text, so a reviewer reading the diff sees
    *  WHICH of the character's lines this phrase was taken from. */
   from: string;
-  /** Which level of this scenario `from` lives in. Sourcing across levels is allowed — the best delivery
+  /** Which level of this domain `from` lives in. Sourcing across levels is allowed — the best delivery
    *  of a phrase is not always in the lesson that teaches it. */
   level: number;
   /** `"whole"` — play the clip end to end (the phrase IS the whole line: no seek, no cut, true prosody).
@@ -312,7 +312,7 @@ export interface TutorialStep {
 export interface Dialogue {
   id: string;
   scenarioId: string;
-  /** Competency level within the scenario: 1..N, ascending difficulty. A scenario may pair several. */
+  /** Competency level within the domain: 1..N, ascending difficulty. A domain may pair several. */
   level: number;
   /** Short human label for the level (e.g. "Survival", "Basic A1", "Full A1"). */
   levelLabel: string;
@@ -664,7 +664,7 @@ export function loadDialogues(): Record<string, Dialogue[]> {
   try {
     files = readdirSync(DIALOGUES_DIR).filter((f) => f.endsWith(".json")).sort();
   } catch {
-    return out; // no dialogues dir yet — the feature is optional per scenario
+    return out; // no dialogues dir yet — the feature is optional per domain
   }
   for (const f of files) {
     const d = validateDialogue(f, JSON.parse(readFileSync(path.join(DIALOGUES_DIR, f), "utf8")));
@@ -674,22 +674,22 @@ export function loadDialogues(): Record<string, Dialogue[]> {
     list.sort((a, b) => a.level - b.level);
     const levels = list.map((d) => d.level);
     if (new Set(levels).size !== levels.length)
-      throw new Error(`Duplicate dialogue level for scenario "${scenarioId}": ${levels.join(", ")}`);
+      throw new Error(`Duplicate dialogue level for domain "${scenarioId}": ${levels.join(", ")}`);
   }
   return out;
 }
 
 export const DIALOGUES: Record<string, Dialogue[]> = loadDialogues();
 
-/** EVERY rehearsal dialogue paired with a scenario (ascending by level), whatever its status, or [] if
+/** EVERY rehearsal dialogue paired with a domain (ascending by level), whatever its status, or [] if
  *  none is authored. This is the authoring view — lints, script/playthrough and the builders use it, so
  *  a staged or retired level is still checked, still printable, and still buildable. */
-export function getDialoguesForScenario(scenarioId: string): Dialogue[] {
+export function getDialoguesForDomain(scenarioId: string): Dialogue[] {
   return DIALOGUES[scenarioId] ?? [];
 }
 
-/** The levels of a scenario the LEARNER may reach. The app-facing endpoints serve this view, so a draft
+/** The levels of a domain the LEARNER may reach. The app-facing endpoints serve this view, so a draft
  *  or retired level is neither listed nor openable by hand-typed level number. */
 export function getPublishedDialogues(scenarioId: string): Dialogue[] {
-  return getDialoguesForScenario(scenarioId).filter((d) => (d.status ?? "active") === "active");
+  return getDialoguesForDomain(scenarioId).filter((d) => (d.status ?? "active") === "active");
 }

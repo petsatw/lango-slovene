@@ -1,7 +1,7 @@
 # server/utils — asset-store maintenance utilities
 
 Occasional, operational tasks that act on the durable [asset store](../assets/store.ts) as a whole —
-distinct from [`server/scripts/`](../scripts), which runs the per-scenario *generate* pipeline
+distinct from [`server/scripts/`](../scripts), which runs the per-domain *generate* pipeline
 (build / lint / audit / prompts). Utilities here are **content-safe by default**: dry-run unless
 `--apply`, additive (never delete bytes), idempotent.
 

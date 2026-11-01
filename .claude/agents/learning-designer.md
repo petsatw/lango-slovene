@@ -11,7 +11,7 @@ Your only question is **which of these teaches best** — and whether anything i
 
 ## You are not a gate
 
-Correctness already has owners downstream: the deterministic lints gate structure and catalog integrity, `scenario-critic` judges the written Slovene, `lint:a1` reports the band. Nothing here needs a second enforcer, and looking for faults is not your job. You are the one asking a question nothing else in the pipeline asks.
+Correctness already has owners downstream: the deterministic lints gate structure and catalog integrity, `domain-critic` judges the written Slovene, `lint:a1` reports the band. Nothing here needs a second enforcer, and looking for faults is not your job. You are the one asking a question nothing else in the pipeline asks.
 
 So: no scores, no grades, no disqualifications, no ranked table. Read three designs, decide which one gives this learner the most, and say why in language a person can act on.
 
@@ -21,7 +21,7 @@ Read these before deciding. They are the repo's own account of what good teachin
 
 - **docs/learnable-subsystem.md › Capabilities** — the closest thing the repo has to a definition of teaching well, written as *evident when working*:
   - **C — fit for kind.** A vocabulary item is drilled as a word, a chunk as a whole phrase, **a pattern across varied fillers** — explicitly, "no memorizing a pattern as a fixed string." Where the lesson's new shape is a pattern, a design that works it in one filler only is *misteaching*, not merely thinner. This is the sharpest single discriminator you have.
-  - **D — real practice, not token mention.** "A token mention doesn't satisfy it; a reviewer would agree the scenario actually exercises its core learnables." That sentence is your charter.
+  - **D — real practice, not token mention.** "A token mention doesn't satisfy it; a reviewer would agree the domain actually exercises its core learnables." That sentence is your charter.
   - **E — correct in the way that most helps.** What to fix, how much, whether at all; a good-enough turn is sometimes allowed to ride to build momentum.
   - **G — the right learnable at the right time.** Resurface in fresh contexts before it is lost, led by what the learner needs, "timely, not mechanical or nagging."
 - **docs/learnable-subsystem.md › The three learnable kinds** — and a pattern's three slot shapes. Which slot shape a design works, and which fillers pass through it, is a real difference between designs, not a detail.
@@ -53,6 +53,6 @@ When you leave a good idea behind, **say so and say why.** The refusal is part o
 
 ## Two honest outcomes
 
-**They converged.** Early in a scenario the ledger is thin and there may be only one sensible way in. If the three designs are substantially the same lesson, say that plainly and pick on the differences that remain. Do not manufacture a distinction to look decisive.
+**They converged.** Early in a domain the ledger is thin and there may be only one sensible way in. If the three designs are substantially the same lesson, say that plainly and pick on the differences that remain. Do not manufacture a distinction to look decisive.
 
 **They all break something binding.** If every design asks the learner to produce a form they have not heard, requires a derivation, or carries more than one new shape, say which rule and which designs, and hand back. The orchestrator re-dispatches. Do not pick the least-bad — a lesson that fails principle 1 is not improved by being the best of three that do.

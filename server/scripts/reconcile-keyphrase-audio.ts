@@ -15,7 +15,7 @@
 //   npm run reconcile:keyphrase-audio -- <path-to-keyphrase-pointers.json> [--dry-run]
 //   npm run reconcile:keyphrase-audio -- .scratch/keyphrase-drafts/slavko-intro/pointers.json --dry-run
 //
-// It writes the pointers into the scenario's authoring/dialogues/<id>/reconcile-input.json — the
+// It writes the pointers into the domain's authoring/dialogues/<id>/reconcile-input.json — the
 // hand-authored source of truth — NOT into server/dialogues/*.json, which `reconcile:dialogue` owns and
 // which nothing else may touch. Run `npm run reconcile:dialogue` afterwards to propagate, then restart the
 // server (dialogue JSON loads at startup only).
@@ -72,13 +72,13 @@ const scenarioId: string = draft.scenarioId;
 if (typeof scenarioId !== "string" || !scenarioId) die(`"scenarioId" is required`);
 if (!Array.isArray(draft.pointers)) die(`"pointers" must be an array`);
 
-// The scenario's committed levels — the source of truth for what a node id means and which clip it owns.
+// The domain's committed levels — the source of truth for what a node id means and which clip it owns.
 const levels = new Map<number, any>();
 for (const f of readdirSync(DIALOGUES_DIR).filter((x: string) => x.endsWith(".json"))) {
   const d = validateDialogue(f, JSON.parse(readFileSync(path.join(DIALOGUES_DIR, f), "utf8")));
   if (d.scenarioId === scenarioId) levels.set(d.level, d);
 }
-if (!levels.size) die(`no dialogues for scenario "${scenarioId}"`);
+if (!levels.size) die(`no dialogues for domain "${scenarioId}"`);
 
 const e3 = getE3();
 
@@ -95,7 +95,7 @@ const resolved: Resolved[] = [];
 for (const p of draft.pointers) {
   const where = `pointer ${p.level}/${p.node}`;
   const dst = levels.get(p.level);
-  if (!dst) die(`${where}: scenario has no level ${p.level}`);
+  if (!dst) die(`${where}: domain has no level ${p.level}`);
   const client = dst.nodes[p.node];
   if (!client) die(`${where}: no such node`);
   if (client.speaker !== "client") die(`${where}: "${p.node}" is an ${client.speaker} node — a voicing pointer belongs on the LEARNER's line`);

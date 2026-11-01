@@ -74,8 +74,8 @@ builds the same three inputs a free-chat turn builds and hands them to the share
 - **the witness selection** — `familiar` (everything the learner has touched: the tutor's palette) and a
   bounded `targets` set (capped at 8) led by this lesson's produced learnables, exactly as the
   rehearsal→free-chat handoff selects them;
-- **the role** — the scenario's pinned Slovene role noun (`natakarica`), or the decide-one-now block if
-  the scenario names none;
+- **the role** — the domain's pinned Slovene role noun (`natakarica`), or the decide-one-now block if
+  the domain names none;
 - **the scene** — the situation and what this level just practised, in English priming.
 
 So the tutor arrives knowing the register, the persona, the situation, the learner's whole usable
@@ -104,9 +104,9 @@ npm run prompt:live -- restaurant-l1     # no args lists the lesson ids
 
 ### A scene with its own harness
 
-A scenario may declare a `live` surface: the tutor plays that scene from the scene's **harness**, its own
+A domain may declare a `live` surface: the tutor plays that scene from the scene's **harness**, its own
 Slovene instructions to the tutor (who she is, what the stall holds, what she says). Open it by the
-scenario id — `/?lesson=trznica`.
+domain id — `/?lesson=trznica`.
 
 ```json
 "surfaces": { "live": { "harness": "trznica.md", "close": "Jutri imamo še več.",
@@ -120,7 +120,7 @@ The harness replaces the shared body for that session. The app appends what it o
   before the least produced. These are what the tutor steers toward. The grader scores the **whole
   card** — core, bank and `stock` (the goods the lines are filled with) — so anything on it the learner
   says is credited, scheduled today or not;
-- **how the lesson runs** — open as the harness says, else on the scenario's `opening`; stay in the
+- **how the lesson runs** — open as the harness says, else on the domain's `opening`; stay in the
   situation, no praise, grammar or English; once the encounter is done and each line said, a second
   shorter one where each comes up once more (unless the harness says to end after the first); then the
   `close` line, said once.
@@ -132,17 +132,17 @@ credited once, when the session ends, like any live session.
 npm run prompt:live -- trznica
 ```
 
-A **tree** of that scenario hands off to the same scene. "Now try it for real" at the end of a `trznica`
+A **tree** of that domain hands off to the same scene. "Now try it for real" at the end of a `trznica`
 tap tree opens the harness with one list of today's lines: every client line of the tree just walked
 through, in tree order, uncapped. The grader scores the whole card plus any of those lines not on it.
-Trees of scenarios without a `live` surface keep the shared body.
+Trees of domains without a `live` surface keep the shared body.
 
 ```bash
 npm run prompt:live -- trznica-l8
 ```
 
 **Per-session situations.** A harness may hold one section per session, headed `## @<id>`: a tree's
-dialogue id (`## @sprehod-l4 — Intermediate 1 · Asking for space`), or the scenario id (`## @sprehod`)
+dialogue id (`## @sprehod-l4 — Intermediate 1 · Asking for space`), or the domain id (`## @sprehod`)
 for the session opened by the scene itself. Everything before the first such heading is the shared
 preamble. A session plays the preamble plus its own section, or the preamble alone when it has none, so
 the tutor plays that dialogue's people, setting and register. A harness without sections (trznica.md) is

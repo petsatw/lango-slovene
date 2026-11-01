@@ -1,10 +1,10 @@
-// Scenario-finder tests (server/match.ts).
-//   (unit)   the keyword layer against the REAL scenario + dialogue data (pure, no I/O beyond loading JSON)
+// Domain-finder tests (server/match.ts).
+//   (unit)   the keyword layer against the REAL domain + dialogue data (pure, no I/O beyond loading JSON)
 //   (--live) the Gemini NLU layer on real Gemini (needs GEMINI_API_KEY; bills a few cheap text calls)
 // Run: `npm run test:match`  (add `-- --live` for the real-Gemini leg).
 
 import "dotenv/config";
-import { SCENARIOS } from "../scenarios";
+import { DOMAINS } from "../domains";
 import { getPublishedDialogues } from "../dialogues";
 import { getE2 } from "../adapters/index";
 import { buildIndex, keywordRank, matchSituation, selectMatches, tokenize } from "../match";
@@ -16,7 +16,7 @@ function check(name: string, cond: boolean, detail = ""): void {
 }
 
 const index = buildIndex(
-  SCENARIOS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null,
+  DOMAINS.map((s) => ({ id: s.id, name: s.name ?? s.title, title: s.title, role: s.role ?? null,
     summaryEN: s.summaryEN, tags: s.tags, dialogues: getPublishedDialogues(s.id) }))
     .filter((s) => s.dialogues.length > 0),
 );

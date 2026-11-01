@@ -10,10 +10,10 @@ about *where things are*. For the why, read ARCHITECTURE; for schemas and the HT
 | Path | What it is |
 |---|---|
 | `public/` | the browser PWA (the entire client) |
-| `server/` | the Node/Express backend, adapters, catalog, scenarios, scripts |
+| `server/` | the Node/Express backend, adapters, catalog, domains, scripts |
 | `assets/` | **generated, durable** output — the content-addressed store + session records (git-ignored) |
 | `docs/` | this documentation set |
-| `.claude/skills/create-scenario/` | the scenario-authoring procedure (the engine's "front end") |
+| `.claude/skills/create-domain/` | the domain-authoring procedure (the engine's "front end") |
 | `.env` | provider keys + selection (never committed — see [SECRETS.md](SECRETS.md)) |
 
 ## The client — `public/`
@@ -34,11 +34,11 @@ The client holds the live `SessionState` in memory and talks only to `/api`. Key
 | `server/server.ts` | HTTP endpoints + the hot-audio LRU; serves the PWA, `/api`, and `/gallery`. Captures each run. |
 | `server/orchestrator.ts` | runs a turn: the E2 understand call + the **deterministic mastery rules** (`applyProgress`, `TURN_CAP`); credits the durable learner model; `converse` (free conversation) |
 | `server/prompt.ts` | builds the tutor system prompt fresh each turn (turn policy + mastery-aware lines); `buildConversationPrompt` |
-| `server/match.ts` | the **scenario finder**: pure keyword index/score + synonym map (`buildIndex`, `keywordRank`) and `matchSituation` (E2 `rankScenarios` NLU over the whole catalog, keyword fallback). Endpoints `GET /api/match/index` (client type-ahead) + `POST /api/match` |
-| `server/scenarios.ts` | loads `scenarios/*.json`; `getScenario`, `freshSession`, `characterVoiceProfile` |
+| `server/match.ts` | the **domain finder**: pure keyword index/score + synonym map (`buildIndex`, `keywordRank`) and `matchSituation` (E2 `rankLevels` NLU over the whole catalog, keyword fallback). Endpoints `GET /api/match/index` (client type-ahead) + `POST /api/match` |
+| `server/domains.ts` | loads `domains/*.json`; `getDomain`, `freshSession`, `characterVoiceProfile` |
 | `server/learnables.ts` | loads + validates the **learnable catalog** (`catalog/learnables.json`); `getLearnable`, `LEARNABLES` |
 | `server/seeds.ts` | loads + validates the **seed** onboarding dialogues (`seeds/*.json`); `getSeed`, `SEEDS`, `STARTER_SEED_ID` |
-| `server/dialogues.ts` | loads + validates the **rehearsal dialogues** (`dialogues/*.json`), grouped by scenario, level-sorted; `getDialoguesForScenario`. See [rehearsal-dialogues.md](rehearsal-dialogues.md) |
+| `server/dialogues.ts` | loads + validates the **rehearsal dialogues** (`dialogues/*.json`), grouped by domain, level-sorted; `getDialoguesForDomain`. See [rehearsal-dialogues.md](rehearsal-dialogues.md) |
 | `server/adapters/dialogue-scripted.ts` | the **dialogue-tree adapter** — one step of an authored tree in either input mode: `advanceDialogue` picks the client line (tapped choice, or `next[0]` when spoken), returns the attempts to plant, never judges the audio. Pure; the caller credits |
 | `server/adapters/seed-scripted.ts` | the **seed adapter** — a static-dialogue stand-in for the model: `scriptedSeedTurn` returns the next scripted line + attempts; `converse` uses it when `seedId` is set |
 | `server/mastery.ts` | the durable mastery-layer pure rules: `applyCredit` (threshold/flub), `presentObjectives`, free-conv selection, `inspect` |
@@ -81,16 +81,16 @@ it in `index.ts`, set the env var. The core never changes.
 
 Field-level detail and examples are in [DATA-MODEL.md › The catalog](DATA-MODEL.md#the-catalog).
 
-### Scenarios — `server/scenarios/` (data, not code)
+### Domains — `server/domains/` (data, not code)
 
-`bakery.json` · `butcher.json` · `cafe.json` · `lekarna.json` — one JSON per scenario, referencing
-assets by catalog id. Full shape in [DATA-MODEL.md › A scenario](DATA-MODEL.md#a-scenario).
-`harness/<name>.md` — a live scene's Slovene instructions to the tutor, named by the scenario's
+`bakery.json` · `butcher.json` · `cafe.json` · `lekarna.json` — one JSON per domain, referencing
+assets by catalog id. Full shape in [DATA-MODEL.md › A domain](DATA-MODEL.md#a-domain).
+`harness/<name>.md` — a live scene's Slovene instructions to the tutor, named by the domain's
 `surfaces.live.harness` ([live-tutor.md](live-tutor.md#a-scene-with-its-own-harness)).
 
 ### Rehearsal dialogues — `server/dialogues/` (data, not code)
 
-`<scenario>-<level>.json` — one JSON per scenario × competency level (e.g. `bakery-1/2/3.json`), a
+`<domain>-<level>.json` — one JSON per domain × competency level (e.g. `bakery-1/2/3.json`), a
 pre-authored branching decision tree with pregenerated per-speaker audio. Full shape + pipeline in
 [rehearsal-dialogues.md](rehearsal-dialogues.md).
 
@@ -105,21 +105,21 @@ Every operator command maps to a file here (or in `server/probes/` / `server/uti
 | `npm run probe:e3` | `server/probes/e3-probe.ts` | check E3 with a real synthesis |
 | `npm run replay` | `server/probes/replay.ts` | real recorded audio → full E2+E3 pipeline, verify output |
 | `npm run test:mastery` | `server/probes/mastery-test.ts` | one clip through the mastery loop, verify objective progress |
-| `npm run test:match` | `server/probes/match-test.ts` | scenario finder — keyword layer on the real catalog; `--live` for the Gemini NLU leg |
+| `npm run test:match` | `server/probes/match-test.ts` | domain finder — keyword layer on the real catalog; `--live` for the Gemini NLU leg |
 | `npm run test:learnable` | `server/probes/learnable-test.ts` | durable mastery rules — unit + temp-file store + `--live` end-to-end |
 | `npm run probe:converse` | `server/probes/converse-probe.ts` | one clip through free conversation; verify reply + per-learnable crediting |
 | `npm run test:live-match` | `server/probes/live-match-test.ts` | live-mode crediting on plain inputs — transcriber hints, the verdict rule, the lesson score |
 | `npm run test:retention` | `server/probes/retention-test.ts` | the record writers + the retention sweep against a temp asset dir — what a declining session leaves behind |
 | `npm run probe:live-credit` | `server/probes/live-credit-probe.ts` | grade a RECORDED live session and print both evidence channels; writes nothing. No args lists the sessions |
 | `npm run build:seed-assets` | `server/scripts/build-seed-assets.ts` | pre-build the seed's teacher-voice line audio for the starter pack (operator-run; bills) |
-| `npm run build:dialogue-assets` | `server/scripts/build-dialogue-assets.ts` | pregenerate a scenario's **rehearsal-dialogue** audio (per-speaker voice; `deliverySL` drives synthesis), flip each level to `audio:ready`; `--level <n>`, `--regen` (operator-run; bills). Also emits each node's `slowSL` chunked-slow clip |
+| `npm run build:dialogue-assets` | `server/scripts/build-dialogue-assets.ts` | pregenerate a domain's **rehearsal-dialogue** audio (per-speaker voice; `deliverySL` drives synthesis), flip each level to `audio:ready`; `--level <n>`, `--regen` (operator-run; bills). Also emits each node's `slowSL` chunked-slow clip |
 | `npm run build:backchannels` | `server/scripts/build-backchannels.ts` | pregenerate a voice profile's **backchannels** (`"Mhm."`) — declared on `voices.json`, not on any tree; `[<profile>] [--regen]` (operator-run; bills) |
 | `npm run learner` | `server/scripts/learner-show.ts` | print the learner model on disk — the file store, with each learnable's status and the facts on record |
 | `npm run runs` | `server/scripts/runs.ts` | both speaking modes' records of a sitting, normalised to one shape; `-- <runId>` for transcripts, `-- --json` for a scorer |
-| `npm run build:assets` | `server/scripts/build-assets.ts` | materialize a scenario's audio + images; `--regen` for one leaf |
+| `npm run build:assets` | `server/scripts/build-assets.ts` | materialize a domain's audio + images; `--regen` for one leaf |
 | `npm run render:asset` | `server/scripts/render-asset.ts` | render one/more catalog objects or characters by id |
 | `npm run render:concept` | `server/scripts/render-concept.ts` | render one/more composed concepts (greet, leave, a location) |
-| `npm run lint:scenario` | `server/scripts/lint-scenario.ts` | the deterministic scenario linter (gates the engine) |
+| `npm run lint:domain` | `server/scripts/lint-domain.ts` | the deterministic domain linter (gates the engine) |
 | `npm run prompts` | `server/scripts/show-prompts.ts` | view the exact prompts sent to E4 + provenance; `--backfill` to reconstruct |
 | `npm run prune:assets` | `server/scripts/prune-assets.ts` | remove unused assets from the store |
 | `npm run fetch:assets` | `server/scripts/fetch-assets.ts` | download/refresh assets from upstream (sustainability bundle) |
