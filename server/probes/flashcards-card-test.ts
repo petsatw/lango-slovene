@@ -92,7 +92,7 @@ try {
     const main = await text("#fc-card .fc-main");
     return cards.find((c) => c.en === main || c.sl === main) ?? fail(`unknown card text ${main}`);
   };
-  const tap = () => page.click("#fc-card");
+  const tap = () => page.click("#fc-face");
   const rate = async (result: "nailed" | "oops") => {
     if (!(await visible("#fc-rate"))) await tap();
     await page.click(result === "nailed" ? "#fc-nailed" : "#fc-oops");
@@ -115,6 +115,7 @@ try {
   inCard = true;
   await openCardMode();
 
+  await page.setViewportSize({ width: 390, height: 667 });
   // 3. Controls and the first card, English side.
   eq("segments", await page.$$eval(".fc-seg-opt", (els: Element[]) => els.map((e) => [(e.textContent || "").trim(), e.getAttribute("aria-pressed")])), [["English", "true"], ["Slovene", "false"]]);
   eq("include off", await page.isChecked("#fc-include"), false);
@@ -122,6 +123,9 @@ try {
   eq("english side", await text("#fc-card .fc-main"), card.en);
   eq("no chips", await visible("#fc-rate"), false);
   eq("no audio yet", audio.length, 0);
+  const firstNavTop = await page.$eval("#fc-back", (e: Element) => e.getBoundingClientRect().top);
+  const reservedFooter = await page.$eval("#fc-rate", (e: Element) => e.getBoundingClientRect().height);
+  eq("hidden chips reserve footer space", reservedFooter > 0, true);
 
   // 4. Tap: Slovene side, example, one clip answering 200, chips; tap again: English and paused.
   await tap();
@@ -137,6 +141,13 @@ try {
     eq("no clip request", audio.length, 0);
   }
   eq("chips shown", await visible("#fc-rate"), true);
+  eq("first turn keeps nav stable", await page.$eval("#fc-back", (e: Element) => e.getBoundingClientRect().top), firstNavTop);
+  eq("showing chips keeps footer size", await page.$eval("#fc-rate", (e: Element) => e.getBoundingClientRect().height), reservedFooter);
+  if (card.example) {
+    await page.click(".fc-example .hint-btn");
+    eq("hint keeps nav stable", await page.$eval("#fc-back", (e: Element) => e.getBoundingClientRect().top), firstNavTop);
+    eq("hint keeps card side", await text("#fc-card .fc-main"), card.sl);
+  }
   await tap();
   eq("back to english", await text("#fc-card .fc-main"), card.en);
   if (card.example) eq("clip paused", await audioPaused(), true);
@@ -164,15 +175,15 @@ try {
   eq("back returns to the first card", await cardId(), firstId);
   // Swipe left / right is Next / Back: no rating, no wrap, the new card on its first side.
   const swipe = async (dx: number) => {
-    const b = await page.$eval("#fc-face", (e: Element) => { const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+    const b = await page.$eval("#fc-face", (e: Element) => { const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + 20 }; });
     await page.mouse.move(b.x, b.y);
     await page.mouse.down();
     await page.mouse.move(b.x + dx, b.y + 4, { steps: 5 });
     await page.mouse.up();
   };
-  await swipe(-150);
+  await swipe(-190); // release outside the face: the gesture still belongs to it
   eq("swipe left is next", await cardId(), secondId);
-  await swipe(150);
+  await swipe(190);
   eq("swipe right is back", await cardId(), firstId);
   await swipe(150);
   eq("swipe right on the first card stays", await cardId(), firstId);
