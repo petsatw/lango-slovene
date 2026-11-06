@@ -928,6 +928,7 @@ async function openFlashcards(from) {
   $("fc-card").hidden = true;
   $("fc-empty").hidden = true;
   $("fc-rate").hidden = true;
+  $("fc-nav").hidden = true;
   const res = await api(`/api/flashcards?domainId=${encodeURIComponent(currentDomain.id)}`);
   if (!res.ok || gen !== fcGen) return;
   fcCards = (await res.json()).cards;
@@ -972,6 +973,7 @@ function showFcCard() {
   $("fc-empty").hidden = !!card;
   $("fc-card").hidden = !card;
   $("fc-rate").hidden = true;
+  $("fc-nav").hidden = !card;
   if (!card) return;
   fcShown = fcFirstSide();
   renderFcCard();
@@ -1000,6 +1002,22 @@ function renderFcCard() {
   const ex = add("fc-example", "");
   add("fc-example-head", "In Context", ex);
   add("fc-example-sl", card.example.sl, ex);
+  const hint = add("hint-btn", "", ex);
+  hint.setAttribute("role", "button");
+  hint.tabIndex = 0;
+  hint.innerHTML = `<span class="hint-label">hint</span><span class="chev">▾</span>`;
+  let en = null;
+  const toggle = (e) => {
+    e.stopPropagation(); // the card under it only turns on a tap of the card itself
+    e.preventDefault();
+    const show = !en;
+    hint.classList.toggle("expanded", show);
+    hint.setAttribute("aria-expanded", String(show));
+    if (show) en = add("fc-example-en", card.example.en, ex); else { en.remove(); en = null; }
+  };
+  hint.setAttribute("aria-expanded", "false");
+  hint.addEventListener("click", toggle);
+  hint.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") toggle(e); });
   const a = $("fc-audio");
   const src = `/api/flashcards/audio?domainId=${encodeURIComponent(currentDomain.id)}&id=${encodeURIComponent(card.id)}`;
   if (a.getAttribute("src") === src) a.currentTime = 0; else a.src = src;
@@ -1037,6 +1055,7 @@ async function rateFcCard(result) {
   const gen = fcGen;
   fcStopClip();
   $("fc-rate").hidden = true;
+  $("fc-nav").hidden = true;
   await Promise.all(fcPending);
   fcPending = [];
   if (gen !== fcGen) return;
@@ -3018,6 +3037,8 @@ async function init() {
   $("words-flashcards").addEventListener("click", () => openFlashcards("levels"));
   $("words-flashcards-btn").addEventListener("click", () => openFlashcards("words"));
   $("fc-card").addEventListener("click", turnFcCard);
+  $("fc-back").addEventListener("click", () => { if (fcPos > 0) { fcPos--; showFcCard(); } });
+  $("fc-next").addEventListener("click", () => { if (fcPos < fcDeck.length - 1) { fcPos++; showFcCard(); } });
   $("fc-nailed").addEventListener("click", () => rateFcCard("nailed"));
   $("fc-oops").addEventListener("click", () => rateFcCard("oops"));
   for (const b of document.querySelectorAll(".fc-seg-opt")) {

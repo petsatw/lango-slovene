@@ -106,11 +106,13 @@ Three controls sit above the card and stay on screen:
 - English side: `en`, large.
 - Slovene side: `sl`, large. Under it, smaller, the `note` when the card has one. With "Hear it in
   context" on, the card ends with the In Context section: the heading "In Context" and, under it, the
-  example's `sl` (§6). The section shows nothing else.
+  example's `sl` (§6) and a `hint` control (a chevron pill, as in the tap tree).
 - The In Context section is on the Slovene side only. The English side never shows it, since the
   example would give the answer away. A card with no example, or any card with "Hear it in context" off,
   shows no section.
-- The example's `en` is never shown, on either side or anywhere else in card mode.
+- The example's `en` is hidden until the learner taps `hint`, which shows it under the `sl`; a second tap
+  hides it. A tap on `hint` does not turn the card and records no event. The `en` is never shown on the
+  English side or without that tap.
 - Audio, with "Hear it in context" on: each time the Slovene side comes into view, the example clip plays
   from the start (§6.4). This happens when a card opens Slovene first and on every turn to Slovene. The
   clip stops on a turn to English, on a rating, on turning "Hear it in context" off and on leaving card
@@ -122,6 +124,10 @@ Three controls sit above the card and stay on screen:
 
 ### 4.3 Rating
 
+- Back and Next sit outside the card, under it. Back shows the previous card of the pass and Next the
+  following one, including cards not yet seen, each on the first side as if newly shown; on the first
+  card Back does nothing, and on the last card Next does nothing and starts no pass. Neither rates or
+  records an event, and a tap on the card still only turns it. A card returned to can be turned and rated again; the rating then advances forward.
 - "Nailed it" and "Oops" appear after the card's first turn and stay until one is tapped.
 - "Nailed it" calls `POST /api/flashcards/rate` with `result: "nailed"` (§8) and shows the next card.
 - "Oops" calls the same route with `result: "oops"` (§7) and shows the next card.
@@ -149,7 +155,7 @@ screen shows no card and no chips, and the controls stay.
 
 | Field | Value |
 |---|---|
-| `en` | the learnable's `gloss` up to its first " — " |
+| `en` | the learnable's `gloss` up to its first " — ": only the phrase asked for, with no Slovene, grammar note or parenthetical |
 | `note` | the rest of the `gloss` after that " — ", when there is one |
 | `sl` | the learnable's `sl`, verbatim, `___` slots and slash alternatives included |
 
@@ -178,7 +184,8 @@ node's base line. This is the key the dialogue's own play button reads through
 ### 6.2 Choice
 
 Candidates are ranked by these keys in turn, and the first candidate whose clip is on disk
-(`store.has(key, "audio")`) is the example:
+(`store.has(key, "audio")`) is the example. When a slash alternative of the card's `sl` has more than one
+word, only form-matching candidates qualify, so the card has no example when none matches (§6.3):
 1. A form match first. A line matches when, for at least one slash alternative of the card's `sl`, every
    word of that alternative appears among the line's words. Words are runs of letters or digits,
    lowercased, with `___` removed.
