@@ -76,7 +76,7 @@ try {
   const bk = (id: string) => bakery.find((c) => c.id === id)?.en;
   eq("bakery en", [bk("ali_or"), bk("razumem"), bk("dekagram"), bk("vzel_bom")], ["or", "to understand", "decagram", "I'll take ___."]);
   for (const d of Object.keys(DIALOGUES)) for (const c of deckFor(d) ?? []) {
-    if (/[()]|[čšžČŠŽ]/.test(c.en)) fail(`${d} ${c.id}: en "${c.en}" carries a parenthetical or Slovene`);
+    if (/[()]|[čšžČŠŽ]|(^|\s)'/.test(c.en)) fail(`${d} ${c.id}: en "${c.en}" carries a parenthetical or quoted Slovene`);
   }
   // A multi-word card takes only a form-matching example (#146).
   const prip = bakery.find((c) => c.id === "priporocate") ?? fail("no priporocate card");

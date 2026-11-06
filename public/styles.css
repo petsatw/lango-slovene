@@ -177,7 +177,7 @@ main.screen, main.home {
 }
 .fc-nav { margin: 12px 0 0; }
 .fc-nav[hidden] { display: none; }
-.fc-example .hint-btn { align-self: flex-start; margin-top: 6px; }
+.fc-example .hint-btn { align-self: center; margin-top: 6px; }
 .fc-card[hidden], .fc-empty[hidden], .fc-rate[hidden], .fc-toast[hidden] { display: none; }
 .fc-main { font-size: 28px; font-weight: 600; }
 .fc-note { font-size: 14px; color: var(--muted); }

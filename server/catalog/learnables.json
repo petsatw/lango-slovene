@@ -377,7 +377,7 @@
   "stirje_siri": {
     "kind": "chunk",
     "sl": "pico s štirimi siri",
-    "gloss": "a four-cheese pizza. — instrumental after 's'",
+    "gloss": "a four-cheese pizza — instrumental after 's'",
     "predictableError": "beginners say 's štiri sire'; after 's' it must be instrumental plural: 's štirimi siri'.",
     "a1": true
   },
@@ -501,7 +501,7 @@
   "sem_ime": {
     "kind": "pattern",
     "sl": "Sem / Si / Je / Sva / Sta / Smo / Ste / So ___.",
-    "gloss": "the copula 'biti', any person and the dual — I am / you are / he is / the two are ___ ('Še mladiček je.', 'Oba sta moja.', 'Ali je vaš pes prijazen?')",
+    "gloss": "I am / you are / he is / the two are ___ — the copula 'biti', any person and the dual ('Še mladiček je.', 'Oba sta moja.', 'Ali je vaš pes prijazen?')",
     "predictableError": "the 'Moje ime je ___' calque instead of the natural 'Sem ___'; jaz is usually dropped; and in the 2nd person, carrying the 1sg over as 'Ti sem ___' — the 2sg copula is 'si'",
     "core": true,
     "a1": true
@@ -1736,7 +1736,7 @@
   "govorim_lang": {
     "kind": "pattern",
     "sl": "(Ne) govorim (dobro) ___.",
-    "gloss": "I speak / I do not speak well ___ — the slot takes the language adverb: slovensko, angleško",
+    "gloss": "I speak / I do not speak ___ — 'dobro' adds 'well'; the slot takes the language adverb: slovensko, angleško",
     "predictableError": "the slot takes the ADVERB — slovensko, angleško — not the noun slovenščino or the adjective angleški; and dobro goes BEFORE the language, not after it on the English pattern",
     "core": true,
     "a1": true
@@ -3838,7 +3838,7 @@
   "povohati": {
     "kind": "vocabulary",
     "sl": "povohati",
-    "gloss": "to sniff; 'povohati se' = to sniff each other",
+    "gloss": "to sniff — 'povohati se' = to sniff each other",
     "predictableError": "using the plural 'se povohajo' for two dogs — exactly two take the dual: 'Ali se lahko povohata?'",
     "a1": true
   },

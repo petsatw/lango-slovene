@@ -125,9 +125,9 @@ Three controls sit above the card and stay on screen:
 ### 4.3 Rating
 
 - Back and Next sit outside the card, under it. Back shows the previous card of the pass and Next the
-  following one, including cards not yet seen; on the first card Back does nothing, and on the last card
-  Next does nothing and starts no pass. Neither rates or records an event, and a tap on the card still only
-  turns it. A card returned to can be turned and rated again; the rating then advances forward.
+  following one, including cards not yet seen, each on the first side as if newly shown; on the first
+  card Back does nothing, and on the last card Next does nothing and starts no pass. Neither rates or
+  records an event, and a tap on the card still only turns it. A card returned to can be turned and rated again; the rating then advances forward.
 - "Nailed it" and "Oops" appear after the card's first turn and stay until one is tapped.
 - "Nailed it" calls `POST /api/flashcards/rate` with `result: "nailed"` (§8) and shows the next card.
 - "Oops" calls the same route with `result: "oops"` (§7) and shows the next card.
