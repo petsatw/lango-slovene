@@ -71,6 +71,16 @@ try {
   const ime = card("ime_mi_je");
   eq("ime_mi_je en", ime.en, "my / your / his / her name is ___");
   eq("ime_mi_je note", ime.note, "the person is a dative pronoun ('Ime mu je Enzo.')");
+  // The English side is only the phrase (#146).
+  const bakery = deckFor("bakery") ?? fail("no bakery deck");
+  const bk = (id: string) => bakery.find((c) => c.id === id)?.en;
+  eq("bakery en", [bk("ali_or"), bk("razumem"), bk("dekagram"), bk("vzel_bom")], ["or", "to understand", "decagram", "I'll take ___."]);
+  for (const d of Object.keys(DIALOGUES)) for (const c of deckFor(d) ?? []) {
+    if (/[()]|[čšžČŠŽ]/.test(c.en)) fail(`${d} ${c.id}: en "${c.en}" carries a parenthetical or Slovene`);
+  }
+  // A multi-word card takes only a form-matching example (#146).
+  const prip = bakery.find((c) => c.id === "priporocate") ?? fail("no priporocate card");
+  if (prip.example && /Priporočam/.test(prip.example.sl)) fail(`priporocate example is "${prip.example.sl}"`);
   // Every demo example is a line some synthesized node carries for that card (a spoken level's client lines are not).
   for (const c of deckFor("demo") ?? []) {
     if (!c.example) continue;
