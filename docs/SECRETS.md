@@ -96,6 +96,4 @@ Treat it as **burned**:
 ## 7. Verifying you're clean (safe commands — none print secrets)
 - `git status` — `.env` must **not** appear as tracked or staged.
 - `git check-ignore .env` — should print `.env` (confirms it's ignored).
-- `npm run probe:e2` / `npm run probe:e3` — confirm the server can *read* the keys and reach the providers, **without** ever printing the key (probes log only provider name + success/latency).
-
 > These checks tell you the key is staged correctly by observing *behavior*, never by displaying the secret.

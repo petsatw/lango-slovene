@@ -52,7 +52,10 @@ function exampleFor(id: string, cardSl: string, levels: Dialogue[]): FlashcardEx
   cands.sort((a, b) =>
     Number(b.form) - Number(a.form) || Number(b.client) - Number(a.client) || a.len - b.len ||
     a.d.level - b.d.level || a.order - b.order);
+  // A card with a multi-word alternative takes only a form-matching line; single words may fall through to an inflected one.
+  const strict = cardSl.split("/").some((alt) => words(alt).length > 1);
   for (const c of cands) {
+    if (strict && !c.form) break;
     const voice = c.d.voices[c.n.speaker];
     if (store.has(clipKey(voice, c.n.sl), "audio")) return { sl: c.n.sl, en: c.n.en, voice };
   }

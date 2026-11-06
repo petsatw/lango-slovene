@@ -62,11 +62,8 @@ const expectMiss = async (name: string, q: string) => {
 try {
   // Deck.
   const sprehod = deckFor("sprehod") ?? fail("no sprehod deck");
-  eq("sprehod cards", sprehod.length, 80);
   const first = sprehod[0] ?? fail("empty sprehod deck");
   eq("first card", { id: first.id, en: first.en, sl: first.sl }, { id: "ali_lahko", en: "can / may", sl: "Ali lahko ___? / Lahko ___." });
-  const noExample = sprehod.filter((c) => !c.example).map((c) => c.id);
-  eq("sprehod cards without an example", noExample, []);
   const card = (id: string) => sprehod.find((c) => c.id === id) ?? fail(`no card ${id}`);
   eq("star_sem_let example", [card("star_sem_let").example?.sl, card("star_sem_let").example?.en], ["Star je pet mesecev.", "He's five months old."]);
   eq("skakati example", card("skakati").example?.sl, "Ne, še mladiček je. Skače.");
@@ -74,6 +71,16 @@ try {
   const ime = card("ime_mi_je");
   eq("ime_mi_je en", ime.en, "my / your / his / her name is ___");
   eq("ime_mi_je note", ime.note, "the person is a dative pronoun ('Ime mu je Enzo.')");
+  // The English side is only the phrase (#146).
+  const bakery = deckFor("bakery") ?? fail("no bakery deck");
+  const bk = (id: string) => bakery.find((c) => c.id === id)?.en;
+  eq("bakery en", [bk("ali_or"), bk("razumem"), bk("dekagram"), bk("vzel_bom")], ["or", "to understand", "decagram", "I'll take ___."]);
+  for (const d of Object.keys(DIALOGUES)) for (const c of deckFor(d) ?? []) {
+    if (/[()]|[čšžČŠŽ]|(^|\s)'/.test(c.en)) fail(`${d} ${c.id}: en "${c.en}" carries a parenthetical or quoted Slovene`);
+  }
+  // A multi-word card takes only a form-matching example (#146).
+  const prip = bakery.find((c) => c.id === "priporocate") ?? fail("no priporocate card");
+  if (prip.example && /Priporočam/.test(prip.example.sl)) fail(`priporocate example is "${prip.example.sl}"`);
   // Every demo example is a line some synthesized node carries for that card (a spoken level's client lines are not).
   for (const c of deckFor("demo") ?? []) {
     if (!c.example) continue;

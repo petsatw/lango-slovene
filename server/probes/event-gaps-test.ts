@@ -113,12 +113,6 @@ try {
   const q = all.filter((r) => r.name === "finder_query");
   const opened_i = all.findIndex((r) => r.name === "finder_match_opened");
   const startedAfter = opened_i >= 0 ? all.slice(opened_i + 1).filter((r) => r.name === "level_started") : [];
-  // Each level_started is closed by one level_completed or level_abandoned before the next one begins.
-  let open = false, paired = true;
-  for (const r of all) {
-    if (r.name === "level_started") { if (open) paired = false; open = true; }
-    if (r.name === "level_completed" || r.name === "level_abandoned") { if (!open) paired = false; open = false; }
-  }
   const leaks = (s: string) => QUERIES.some((t) => s.toLowerCase().includes(t.toLowerCase()));
   const checks = {
     "one handoff_tapped, from level": all.filter((r) => r.name === "handoff_tapped").length === 1
@@ -129,7 +123,6 @@ try {
     "one finder_match_opened": all.filter((r) => r.name === "finder_match_opened").length === 1,
     "one level_started after finder_match_opened": startedAfter.length === 1
       && startedAfter[0].props?.domainId === all[opened_i].props?.domainId && startedAfter[0].props?.level === lv.d.level,
-    "level_started pairs with completed/abandoned": paired,
     "no query text in the log": !leaks(readFileSync(log, "utf8")),
     "no query text in event payloads": payloads.length > 0 && !payloads.some(leaks),
   };

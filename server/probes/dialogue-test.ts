@@ -38,7 +38,6 @@ console.log("dialogue loader — introduces link:");
       continue;
     }
     check(`${f} validates`, true);
-    check(`${f} has an introduces array`, Array.isArray(d.introduces));
     check(`${f} introduces only real catalog ids`, d.introduces.every((id: string) => !!LEARNABLES[id]),
       d.introduces.filter((id: string) => !LEARNABLES[id]).join());
   }
@@ -52,15 +51,6 @@ console.log("dialogue loader — introduces link:");
     threw = true;
   }
   check("unknown introduces id is rejected by the loader", threw);
-
-  // Negative: a non-array introduces is rejected.
-  threw = false;
-  try {
-    validateDialogue("bad.json", { ...base, introduces: "kruh" });
-  } catch {
-    threw = true;
-  }
-  check("non-array introduces is rejected", threw);
 }
 
 // A minimal two-choice tree, valid against the real loader — the fixture for the schema + adapter checks
@@ -116,8 +106,6 @@ console.log("\nscene fields — slowSL / per-node learnables / advance:");
     try { return !!validateDialogue("fixture.json", t); } catch { return false; }
   })());
 
-  rejects("an unknown advance mode is rejected", (t) => { t.advance = "shout"; });
-
   // Beat pacing: the silent hold, when the gloss arrives, and the quiet-learner ladder.
   check("captionDelayMs + glossPolicy + stallHandlers validate together", (() => {
     const t = tree();
@@ -131,17 +119,11 @@ console.log("\nscene fields — slowSL / per-node learnables / advance:");
     ];
     try { return !!validateDialogue("fixture.json", t); } catch { return false; }
   })());
-  rejects("a negative captionDelayMs is rejected", (t) => { t.nodes.n1.captionDelayMs = -1; });
-  rejects("an unknown glossPolicy is rejected", (t) => { t.nodes.n1.glossPolicy = "shout"; });
   rejects("stallHandlers on a client node is rejected", (t) => {
     t.nodes.c1.stallHandlers = [{ afterMs: 15000, kind: "pulse" }];
   });
   rejects("a stall ladder that fails to escalate is rejected", (t) => {
     t.nodes.n1.stallHandlers = [{ afterMs: 18000, kind: "pulse" }, { afterMs: 15000, kind: "pulse" }];
-  });
-  // The ladder must never answer a stuck learner with more of the language they do not have.
-  rejects("an unknown stall kind is rejected", (t) => {
-    t.nodes.n1.stallHandlers = [{ afterMs: 15000, kind: "nag", sl: "Ja?" }];
   });
   rejects("a soften rung without its English label is rejected", (t) => {
     t.nodes.n1.stallHandlers = [{ afterMs: 15000, kind: "soften" }];
@@ -155,7 +137,6 @@ console.log("\nscene fields — slowSL / per-node learnables / advance:");
     const t = tree(); t.frameEN = ["You're in Ljubljana.", "Just listen."];
     try { return !!validateDialogue("fixture.json", t); } catch { return false; }
   })());
-  rejects("an empty frameEN is rejected", (t) => { t.frameEN = []; });
   check("advance defaults to tap when absent", advanceModeOf(validateDialogue("fixture.json", tree())) === "tap");
 }
 

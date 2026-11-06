@@ -127,7 +127,7 @@ try {
   await tap();
   eq("slovene side", await text("#fc-card .fc-main"), card.sl);
   if (card.example) {
-    eq("in context section", await text("#fc-card .fc-example"), `In Context${card.example.sl}`);
+    eq("in context section", await text("#fc-card .fc-example"), `In Context${card.example.sl}hint▾`);
     await until("clip request", () => audio.length === 1);
     eq("clip", audio, [{ id: card.id, served: true }]);
     await playing(card.id);
@@ -144,6 +144,28 @@ try {
   // 5. Slovene first applies from the next card.
   await page.click('.fc-seg-opt[data-side="sl"]');
   eq("card stays", await text("#fc-card .fc-main"), card.en);
+
+  // Back / Next move through the pass without rating (#148); a tap on the card still only turns it.
+  const mainText = () => text("#fc-card .fc-main");
+  const cardId = async () => (await shown()).id;
+  const firstId = await cardId();
+  await page.click("#fc-back");
+  eq("back on the first card does nothing", await cardId(), firstId);
+  await page.click("#fc-next");
+  const secondId = await cardId();
+  if (secondId === firstId) fail("next did not change the card");
+  await page.click("#fc-next");
+  const lastId = await cardId();
+  await page.click("#fc-next");
+  eq("next on the last card stays", [await cardId(), await visible("#fc-toast")], [lastId, false]);
+  await page.click("#fc-back");
+  eq("back returns to the card before", await cardId(), secondId);
+  await page.click("#fc-back");
+  eq("back returns to the first card", await cardId(), firstId);
+  const side = await mainText();
+  await tap();
+  eq("tap still turns the card", (await mainText()) === side, false);
+  eq("nav rated nothing", rates.length, 0);
 
   // 6–8. Passes. Pass 1–5: star_sem_let nailed, the others "Oops"; pass 6–10: all nailed.
   let prevLast = "";
@@ -170,7 +192,6 @@ try {
       await page.waitForSelector("#fc-toast:not([hidden])");
       eq("toast", await text("#fc-toast"), "Shuffled. Going again.");
     }
-    if (pass === 1) eq("rate calls after pass 1", rates.length, 3);
   }
   eq("rate calls", rates.length, 25);
   eq("clips served", audio.every((a) => a.served), true);

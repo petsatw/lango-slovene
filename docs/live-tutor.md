@@ -204,8 +204,6 @@ as something else is one waiting to be written down.
 
 ```bash
 npm run test:live-match                      # hints, verdict rule, lesson score, on plain inputs
-npm run probe:live-credit                    # list recorded sessions
-npm run probe:live-credit -- <sessionId>     # grade one, read-only, writes nothing
 ```
 
 ### What it leaves behind

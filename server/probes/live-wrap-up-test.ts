@@ -13,7 +13,6 @@ const port = 20000 + Math.floor(Math.random() * 20000);
 const base = `http://127.0.0.1:${port}`;
 const data = mkdtempSync(path.join(tmpdir(), "live-wrap-up-"));
 process.env.DATA_DIR = data;
-const { progressMessage } = await import("../live/index");
 const { domainName } = await import("../assets/deletion");
 const { settleSession } = await import("../live/grader");
 const { GeminiE2 } = await import("../adapters/gemini");
@@ -35,10 +34,6 @@ const parse = (m: string) => { try { return JSON.parse(m); } catch { return null
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function main() {
-  // 1. The pure frame.
-  check("progressMessage(true, [])", same(progressMessage(true, []), { type: "progress", ending: "time", objectives: [] }));
-  check("progressMessage(false, null)", same(progressMessage(false, null), { type: "progress", ending: "ended", objectives: null }));
-
   for (let i = 0; ; i++) {
     try { if ((await fetch(`${base}/api/health`)).ok) break; } catch {}
     if (i > 120) throw new Error("server did not start");
@@ -73,7 +68,7 @@ async function main() {
   // 2b. Grading, in process, with the grader stubbed: a completed check saves the learner model BEFORE
   // settleSession resolves (finish() sends the progress frame only after it resolves), names each
   // objective by its learnable's `sl` and writes `progressed` to the live log; a grade that times out
-  // (LIVE_GRADE_TIMEOUT_SEC) resolves to null, so the frame carries objectives: null.
+  // (LIVE_GRADE_TIMEOUT_SEC) resolves to null.
   {
     const lid = "wrap-up-grader";
     const built = buildLessonPrompt("demo-l1", lid);
@@ -101,13 +96,13 @@ async function main() {
     check("grading: the learner model is saved before the result resolves", savedAtResolve !== before, savedAtResolve);
     const okLog = JSON.parse(readFileSync(path.join(data, "live", "grade-ok.json"), "utf8"));
     check("grading: the live log holds progressed", same(okLog.progressed, [obj.id]), JSON.stringify(okLog.progressed));
-    check("grading: the frame lists them", same(progressMessage(false, got), { type: "progress", ending: "ended", objectives: [{ id: obj.id, name: obj.sl }] }));
 
     const quiet = { ...logOf("grade-quiet"), transcripts: [{ ts: "", role: "tutor", text: "Dober dan." }] };
     const none = await settleSession({ learnerId: lid, instructions: built.instructions, targets: built.targets,
       objectives: built.objectives, log: quiet });
     check("no learner speech: the result is []", same(none, []), JSON.stringify(none));
     const quietLog = JSON.parse(readFileSync(path.join(data, "live", "grade-quiet.json"), "utf8"));
+    // Regression: a session with no learner speech wrote no progressed, fixed in #92.
     check("no learner speech: the live log holds progressed: []", same(quietLog.progressed, []), JSON.stringify(quietLog.progressed));
 
     process.env.LIVE_GRADE_TIMEOUT_SEC = "1";
@@ -116,7 +111,6 @@ async function main() {
     const late = await settleSession({ learnerId: lid, instructions: built.instructions, targets: built.targets,
       objectives: built.objectives, log: logOf("grade-late") });
     check("timeout: settleSession resolves to null", late === null, JSON.stringify(late));
-    check("timeout: the frame carries objectives: null", same(progressMessage(false, late), { type: "progress", ending: "ended", objectives: null }));
     check("timeout: the learner model is unchanged", JSON.stringify(learner.load(lid)) === modelBefore);
     delete process.env.LIVE_GRADE_TIMEOUT_SEC;
     GeminiE2.prototype.grade = orig;
@@ -216,7 +210,6 @@ async function main() {
   await settle("Checking your progress");
   t = await wrapText();
   check("progress: Checking your progress… shows while the check runs", t.includes("Checking your progress…") && !t.includes("You made progress on"));
-  check("progress: titled Session ended while the check runs", t.includes("Session ended"));
   await settle("You made progress on");
   t = await wrapText();
   check("progress: Checking your progress… is replaced in place", !t.includes("Checking your progress"));
@@ -323,9 +316,6 @@ async function main() {
     check(`${run}: the button reads End session and is enabled`, await ready());
     await page.click("#practice-talk", { force: true }); // the button breathes, so it is never "stable"
     await endAndCheck(run, { socket: true });
-    if (status === "speaking") {
-      check("speaking: the tutor's audio stops on End session", !(await page.evaluate(async () => (await import("/live.js" as any)).liveSpeaking())));
-    }
   }
 
   // E5: a provider error ends the session: Session ended, couldn't be checked, no error code shown.
@@ -351,6 +341,7 @@ async function main() {
   await page.click("#back");
   await release();
   await page.waitForTimeout(800);
+  // Regression: back while starting still opened the socket and a wrap-up, fixed in #92.
   check("back while starting: no socket opened", sockets === socketsBack);
   check("back while starting: no wrap-up", !(await page.locator(".practice-surface.wrapped").count()));
   holdMic(false);

@@ -1,6 +1,6 @@
 // Turn logic + the deterministic mastery rules (server-owned, not left to the model's whim).
 // `understand` is the session-aware E2 step used by /api/turn. `runTurn` is the full
-// non-streaming path used by the replay harness.
+// non-streaming path, kept dormant with the turn loop (docs/MVP.md).
 
 import { getE2, getE3 } from "./adapters/index";
 import * as store from "./assets/store";
@@ -268,7 +268,7 @@ export async function converse(input: {
   };
 }
 
-// Full pipeline (E2 + buffered E3) — kept for the replay harness / end-to-end verification.
+// Full pipeline (E2 + buffered E3) — kept dormant with the turn loop (docs/MVP.md).
 export async function runTurn(input: {
   audioBase64: string;
   mimeType: string;

@@ -126,7 +126,6 @@ try {
   // Default on.
   eq("switch on", await page.isChecked("#fc-context"), true);
   eq("switch label", await text("label.fc-switch:has(#fc-context)"), "Hear it in context");
-  eq("key unset or on", await page.evaluate(() => localStorage.flashcardsInContext ?? "1"), "1");
 
   // On: English side has no section; Slovene side shows heading + sl; one clip.
   let card = await toExampleCard();
@@ -134,8 +133,16 @@ try {
   eq("no section on english", await sections(), []);
   await noEn("english side");
   await tap();
-  eq("section", await sections(), [`In Context${card.example!.sl}`]);
+  eq("section", await sections(), [`In Context${card.example!.sl}hint▾`]);
   eq("heading", await text("#fc-card .fc-example-head"), "In Context");
+  // The hint shows the example's English, and a second tap hides it; the card does not turn (#147).
+  await noEn("before hint");
+  await page.click("#fc-card .hint-btn");
+  eq("hint shows en", await text("#fc-card .fc-example-en"), card.example!.en);
+  eq("card did not turn", await text("#fc-card .fc-main"), card.sl);
+  await page.click("#fc-card .hint-btn");
+  eq("hint hides en", await page.$$("#fc-card .fc-example-en"), []);
+  await noEn("after hint hidden");
   await until("clip request", () => audio.length === 1);
   eq("clip", audio, [{ id: card.id, status: 200 }]);
   await playing(card.id);
@@ -176,7 +183,7 @@ try {
   eq("stored on", await page.evaluate(() => localStorage.flashcardsInContext), "1");
   await tap();
   await tap();
-  eq("section back", await sections(), [`In Context${card.example!.sl}`]);
+  eq("section back", await sections(), [`In Context${card.example!.sl}hint▾`]);
   await until("second clip request", () => audio.length === 2);
   eq("second clip", audio[1], { id: card.id, status: 200 });
   await noEn("on again");

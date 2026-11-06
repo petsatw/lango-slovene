@@ -270,7 +270,6 @@ interface E2Adapter {
   readonly name: string;
   understand(input: { audioBase64: string; mimeType: string;
     systemPrompt: string; history: ConversationTurn[] }): Promise<E2Result>;
-  ping(): Promise<string>;              // cheap credential check (probe:e2); must not log the key
 }
 interface E2Result {
   userVerbatim: string; userSaid: string; tutorReply: string; correction: string;

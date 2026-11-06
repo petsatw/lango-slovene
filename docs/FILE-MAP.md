@@ -101,16 +101,10 @@ Every operator command maps to a file here (or in `server/probes/` / `server/uti
 | Command | File | What it does |
 |---|---|---|
 | `npm run dev` / `start` | `server/server.ts` | run the server (watch / once) |
-| `npm run probe:e2` | `server/probes/e2-probe.ts` | check E2 credentials + latency |
-| `npm run probe:e3` | `server/probes/e3-probe.ts` | check E3 with a real synthesis |
-| `npm run replay` | `server/probes/replay.ts` | real recorded audio → full E2+E3 pipeline, verify output |
-| `npm run test:mastery` | `server/probes/mastery-test.ts` | one clip through the mastery loop, verify objective progress |
-| `npm run test:match` | `server/probes/match-test.ts` | domain finder — keyword layer on the real catalog; `--live` for the Gemini NLU leg |
-| `npm run test:learnable` | `server/probes/learnable-test.ts` | durable mastery rules — unit + temp-file store + `--live` end-to-end |
-| `npm run probe:converse` | `server/probes/converse-probe.ts` | one clip through free conversation; verify reply + per-learnable crediting |
+| `npm run test:match` | `server/probes/match-test.ts` | domain finder — keyword layer on the real catalog |
+| `npm run test:learnable` | `server/probes/learnable-test.ts` | durable mastery rules — unit + temp-file store |
 | `npm run test:live-match` | `server/probes/live-match-test.ts` | live-mode crediting on plain inputs — transcriber hints, the verdict rule, the lesson score |
 | `npm run test:retention` | `server/probes/retention-test.ts` | the record writers + the retention sweep against a temp asset dir — what a declining session leaves behind |
-| `npm run probe:live-credit` | `server/probes/live-credit-probe.ts` | grade a RECORDED live session and print both evidence channels; writes nothing. No args lists the sessions |
 | `npm run build:seed-assets` | `server/scripts/build-seed-assets.ts` | pre-build the seed's teacher-voice line audio for the starter pack (operator-run; bills) |
 | `npm run build:dialogue-assets` | `server/scripts/build-dialogue-assets.ts` | pregenerate a domain's **rehearsal-dialogue** audio (per-speaker voice; `deliverySL` drives synthesis), flip each level to `audio:ready`; `--level <n>`, `--regen` (operator-run; bills). Also emits each node's `slowSL` chunked-slow clip |
 | `npm run build:backchannels` | `server/scripts/build-backchannels.ts` | pregenerate a voice profile's **backchannels** (`"Mhm."`) — declared on `voices.json`, not on any tree; `[<profile>] [--regen]` (operator-run; bills) |
