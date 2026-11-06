@@ -102,7 +102,8 @@ Three controls sit above the card and stay on screen:
 ### 4.2 The card
 
 - One card fills the screen body and shows one side. A tap anywhere on the card turns it to the other
-  side, and every later tap turns it back. The controls and chips sit outside the card.
+  side, and every later tap turns it back. The two rating chips (§4.3) sit in a footer inside the card's
+  rounded chrome, as controls separate from the tappable face; the settings and Back / Next sit outside it.
 - English side: `en`, large.
 - Slovene side: `sl`, large. Under it, smaller, the `note` when the card has one. With "Hear it in
   context" on, the card ends with the In Context section: the heading "In Context" and, under it, the
@@ -128,9 +129,14 @@ Three controls sit above the card and stay on screen:
   following one, including cards not yet seen, each on the first side as if newly shown; on the first
   card Back does nothing, and on the last card Next does nothing and starts no pass. Neither rates or
   records an event, and a tap on the card still only turns it. A card returned to can be turned and rated again; the rating then advances forward.
-- "Nailed it" and "Oops" appear after the card's first turn and stay until one is tapped.
+- A horizontal swipe on the card face does what Back (swipe right) or Next (swipe left) does, under the
+  same rules: no rating, no event, no wrap, no new pass at the ends. A tap, or a short or mostly vertical
+  movement, only turns the card, and a swipe that starts on `hint` does nothing. Swiping never rates.
+- "Nailed it" and "Needs practice" sit in the card footer. They appear after the card's first turn and
+  stay until one is tapped. The footer's space is reserved, so showing them, turning the card, the In
+  Context section and the hint move nothing outside the card.
 - "Nailed it" calls `POST /api/flashcards/rate` with `result: "nailed"` (§8) and shows the next card.
-- "Oops" calls the same route with `result: "oops"` (§7) and shows the next card.
+- "Needs practice" calls the same route with `result: "oops"` (§7) and shows the next card.
 - Both count the same whichever side the card showed first.
 - The next card shows on the tap. A failed rate call is sent once more, then dropped without a message.
 

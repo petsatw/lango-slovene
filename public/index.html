@@ -84,16 +84,18 @@
       <label class="fc-switch"><input id="fc-context" type="checkbox" role="switch" /> Hear it in context</label>
     </div>
     <div id="fc-area" class="fc-area">
-      <button id="fc-card" class="fc-card" type="button" hidden></button>
+      <div id="fc-card" class="fc-card" hidden>
+        <button id="fc-face" class="fc-face" type="button"></button>
+        <div id="fc-rate" class="fc-rate" hidden>
+          <button id="fc-nailed" class="fc-btn" type="button">Nailed it</button>
+          <button id="fc-oops" class="fc-btn" type="button">Needs practice</button>
+        </div>
+      </div>
       <p id="fc-empty" class="fc-empty" hidden>Everything here is memorised.</p>
     </div>
     <div id="fc-nav" class="dialogue-nav fc-nav" hidden>
       <button id="fc-back" class="dialogue-nav-btn" type="button">Back</button>
       <button id="fc-next" class="dialogue-nav-btn" type="button">Next</button>
-    </div>
-    <div id="fc-rate" class="fc-rate" hidden>
-      <button id="fc-nailed" class="fc-btn" type="button">Nailed it</button>
-      <button id="fc-oops" class="fc-btn" type="button">Oops</button>
     </div>
     <div id="fc-toast" class="fc-toast" role="status" hidden>Shuffled. Going again.</div>
     <audio id="fc-audio" preload="none"></audio>
