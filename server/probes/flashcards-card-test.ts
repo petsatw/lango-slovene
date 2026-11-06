@@ -162,6 +162,38 @@ try {
   eq("back returns to the card before", await cardId(), secondId);
   await page.click("#fc-back");
   eq("back returns to the first card", await cardId(), firstId);
+  // Swipe left / right is Next / Back: no rating, no wrap, the new card on its first side.
+  const swipe = async (dx: number) => {
+    const b = await page.$eval("#fc-face", (e: Element) => { const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+    await page.mouse.move(b.x, b.y);
+    await page.mouse.down();
+    await page.mouse.move(b.x + dx, b.y + 4, { steps: 5 });
+    await page.mouse.up();
+  };
+  await swipe(-150);
+  eq("swipe left is next", await cardId(), secondId);
+  await swipe(150);
+  eq("swipe right is back", await cardId(), firstId);
+  await swipe(150);
+  eq("swipe right on the first card stays", await cardId(), firstId);
+  await swipe(-150); await swipe(-150);
+  eq("swipe left to the last card", await cardId(), lastId);
+  await swipe(-150);
+  eq("swipe left on the last card stays", [await cardId(), await visible("#fc-toast")], [lastId, false]);
+  await swipe(150); await swipe(150);
+  eq("swiped back to the first card", await cardId(), firstId);
+  eq("swipe rated nothing", rates.length, 0);
+
+  // The chips are the card's own footer, outside the turn-over control, labelled for the learner.
+  await tap();
+  eq("chips inside the card", await page.$$eval("#fc-card > #fc-rate #fc-nailed, #fc-card > #fc-rate #fc-oops", (e: Element[]) => e.length), 2);
+  eq("chips not in the face", await page.$$("#fc-face #fc-rate, #fc-face .fc-btn"), []);
+  eq("chip labels", [await text("#fc-nailed"), await text("#fc-oops")], ["Nailed it", "Needs practice"]);
+  eq("chips above Back / Next", await page.evaluate(() => document.getElementById("fc-rate")!.getBoundingClientRect().bottom <= document.getElementById("fc-card")!.getBoundingClientRect().bottom && document.getElementById("fc-card")!.getBoundingClientRect().bottom <= document.getElementById("fc-back")!.getBoundingClientRect().top), true);
+  const navTop = await page.$eval("#fc-back", (e: Element) => e.getBoundingClientRect().top);
+  await tap();
+  eq("turning moves nothing", await page.$eval("#fc-back", (e: Element) => e.getBoundingClientRect().top), navTop);
+  await tap();
   const side = await mainText();
   await tap();
   eq("tap still turns the card", (await mainText()) === side, false);

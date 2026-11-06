@@ -981,7 +981,7 @@ function showFcCard() {
 
 function renderFcCard() {
   const card = fcDeck[fcPos];
-  const el = $("fc-card");
+  const el = $("fc-face");
   el.textContent = "";
   const add = (cls, text, parent = el) => {
     const d = document.createElement("span");
@@ -3036,9 +3036,26 @@ async function init() {
   $("words-overview").addEventListener("click", openWords);
   $("words-flashcards").addEventListener("click", () => openFlashcards("levels"));
   $("words-flashcards-btn").addEventListener("click", () => openFlashcards("words"));
-  $("fc-card").addEventListener("click", turnFcCard);
-  $("fc-back").addEventListener("click", () => { if (fcPos > 0) { fcPos--; showFcCard(); } });
-  $("fc-next").addEventListener("click", () => { if (fcPos < fcDeck.length - 1) { fcPos++; showFcCard(); } });
+  const fcBack = () => { if (fcPos > 0) { fcPos--; showFcCard(); } };
+  const fcNext = () => { if (fcPos < fcDeck.length - 1) { fcPos++; showFcCard(); } };
+  const face = $("fc-face");
+  let swipeFrom = null, swiped = false;
+  face.addEventListener("pointerdown", (e) => {
+    swipeFrom = e.target.closest(".hint-btn") ? null : { x: e.clientX, y: e.clientY };
+    swiped = false;
+  });
+  face.addEventListener("pointerup", (e) => {
+    if (!swipeFrom) return;
+    const dx = e.clientX - swipeFrom.x, dy = e.clientY - swipeFrom.y;
+    swipeFrom = null;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < 2 * Math.abs(dy)) return;
+    swiped = true;
+    if (dx < 0) fcNext(); else fcBack();
+  });
+  face.addEventListener("pointercancel", () => { swipeFrom = null; });
+  face.addEventListener("click", () => { if (swiped) { swiped = false; return; } turnFcCard(); });
+  $("fc-back").addEventListener("click", fcBack);
+  $("fc-next").addEventListener("click", fcNext);
   $("fc-nailed").addEventListener("click", () => rateFcCard("nailed"));
   $("fc-oops").addEventListener("click", () => rateFcCard("oops"));
   for (const b of document.querySelectorAll(".fc-seg-opt")) {
