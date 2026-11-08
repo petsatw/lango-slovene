@@ -2,6 +2,7 @@
 // (docs/features/learner-progress/spec.md).
 //   npx tsx server/probes/learner-progress-test.ts
 import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -57,6 +58,19 @@ try {
   eq("B views", await views("B"), await views("A"));
   eq("B identity unchanged", (await json("B", "GET", "/api/me")).body, { testerCode: null });
 
+  // A tester model is reached through its code, not a disguised browser header.
+  const testerHeaders = { "x-tester-code": "TEST-01", "content-type": "application/json" };
+  eq("tester import", (await fetch(base + "/api/me/progress", {
+    method: "PUT", headers: testerHeaders, body: JSON.stringify(exported),
+  })).status, 200);
+  const testerModel = await (await fetch(base + "/api/me/progress", { headers: testerHeaders })).json();
+  const derived = "t-" + createHash("sha256").update("TEST-01").digest("hex").slice(0, 16);
+  for (const header of [derived, "/" + derived]) {
+    eq("browser header cannot export tester", (await json(header, "GET", "/api/me/progress")).body.flashcards, undefined);
+    await json(header, "PUT", "/api/me/progress", { facts: { marker: "browser" } });
+    eq("browser header cannot replace tester", await (await fetch(base + "/api/me/progress", { headers: testerHeaders })).json(), testerModel);
+  }
+
   // Copy A onto C: C matches A, A is untouched.
   const aFile = JSON.stringify((await json("A", "GET", "/api/me/progress")).body);
   eq("copy status", (await json("C", "POST", "/api/me/progress/copy", { from: "A" })).status, 200);
@@ -77,6 +91,19 @@ try {
   // Junk rows are dropped by the shaper.
   await json("D", "PUT", "/api/me/progress", { learnables: {}, flashcards: { [c1]: { nailed: -1 }, [c2]: { nailed: 2 } }, junk: 1 });
   eq("shaped import", (await progress("D")).flashcards, { [c2]: { nailed: 2 } });
+
+  // A malformed imported learnable must not poison the inspection/learning read paths.
+  await json("D", "PUT", "/api/me/progress", { learnables: {
+    valid: { attempts: 3, successes: 2, firstProducedAt: "2026-11-01T12:00:00Z", lastProducedAt: "2026-11-02T12:00:00Z", junk: 1 },
+    absent: null, scalar: 1, array: [], missing: {}, negative: { attempts: -1, successes: 0 },
+  }, facts: { gender: "f", bad: { toString: null }, count: 1 } });
+  eq("shaped learnables", (await progress("D")).learnables, {
+    valid: { attempts: 3, successes: 2, firstProducedAt: "2026-11-01T12:00:00Z", lastProducedAt: "2026-11-02T12:00:00Z" },
+  });
+  eq("shaped facts", (await progress("D")).facts, { gender: "f" });
+  eq("imported learner remains inspectable", (await json("D", "GET", "/api/learner")).status, 200);
+  await json("D", "PUT", "/api/me/progress", { learnables: "bad" });
+  eq("non-object learnables dropped", (await progress("D")).learnables, {});
 
   console.log("PASS");
   child.kill("SIGKILL");
