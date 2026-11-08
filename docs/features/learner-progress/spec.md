@@ -19,16 +19,19 @@ current learner's own. Returns the saved model.
 
 ## 3. Copy
 
-`POST /api/me/progress/copy` with `{ "from": "<learner-id>" }` replaces the current learner's progress
-with the stored model of `from`, which is left unchanged.
+`POST /api/me/progress/copy` with `{ "from": "<code>" }` replaces the current learner's progress
+with the stored model of `from`, which is left unchanged. `from` is an allowlisted tester code (its
+derived identity is the source) or a stored browser learner id. An allowlisted code takes precedence
+over a browser id with the same value; other values must be filename-safe stored ids. Raw derived
+`t-` ids are not accepted.
 
 | Case | Result |
 |---|---|
-| `from` missing, not a filename-safe id, or a derived `t-` id | `400` |
-| no stored model for `from` | `404`, current learner unchanged |
-| `from` is the current learner | `200`, no change |
+| `from` missing, not a tester code or a filename-safe id, or a derived `t-` id | `400` |
+| no stored model for the source | `404`, current learner unchanged |
+| the source is the current learner | `200`, no change |
 
-Import and copy replace; they never merge. Copy needs only the source id, which is the alpha trust level
+Import and copy replace; they never merge. Copy needs only the source code or id, which is the alpha trust level
 for user-0 and staging.
 
 ## 4. Settings

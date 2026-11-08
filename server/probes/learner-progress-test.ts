@@ -3,20 +3,22 @@
 //   npx tsx server/probes/learner-progress-test.ts
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
 const port = 20000 + Math.floor(Math.random() * 20000);
 const base = `http://127.0.0.1:${port}`;
 const data = mkdtempSync(path.join(tmpdir(), "progress-"));
-const env: NodeJS.ProcessEnv = { ...process.env, PORT: String(port), DATA_DIR: data, TESTER_CODES: "TEST-01" };
+const env: NodeJS.ProcessEnv = { ...process.env, PORT: String(port), DATA_DIR: data, TESTER_CODES: "TEST-01,INVITE/02" };
 delete env.LEARNER_STORE;
 delete env.LEARNERS_DIR;
 const child = spawn(process.execPath, ["--import", "tsx", "server/server.ts"], { env, stdio: "ignore" });
 
 const fail = (m: string): never => { throw new Error(m); };
+let checks = 0;
 const eq = (name: string, got: unknown, want: unknown) => {
+  checks++;
   if (JSON.stringify(got) !== JSON.stringify(want)) fail(`${name}: got ${JSON.stringify(got)}, want ${JSON.stringify(want)}`);
 };
 const call = (who: string, method: string, url: string, body?: string) =>
@@ -80,6 +82,43 @@ try {
   eq("copy onto self", (await json("A", "POST", "/api/me/progress/copy", { from: "A" })).status, 200);
   eq("A unchanged by self copy", JSON.stringify((await json("A", "GET", "/api/me/progress")).body), aFile);
 
+  // Copy by tester code: onto E matches the tester's model, source untouched; onto the tester itself is a no-op.
+  const testerFile = async () => JSON.stringify(await (await fetch(base + "/api/me/progress", { headers: testerHeaders })).json());
+  const testerBefore = await testerFile();
+  const testerPath = path.join(data, "learners", derived + ".json");
+  const testerBytes = readFileSync(testerPath, "utf8");
+  // A browser id equal to an allowlisted code must not shadow the tester source.
+  await json("TEST-01", "PUT", "/api/me/progress", { facts: { marker: "browser collision" } });
+  const browserBefore = (await json("TEST-01", "GET", "/api/me/progress")).body;
+  // Seed a distinct, recent destination stamp: copy must retain it, not the source's.
+  const eSeen = new Date(Date.now() - 60_000).toISOString();
+  writeFileSync(path.join(data, "learners", "E.json"), JSON.stringify({ learnables: {}, facts: {}, lastSeenAt: eSeen }));
+  eq("copy by code", (await json("E", "POST", "/api/me/progress/copy", { from: "TEST-01" })).status, 200);
+  eq("E progress", await progress("E"), a);
+  eq("destination retains lastSeenAt", (await json("E", "GET", "/api/me/progress")).body.lastSeenAt, eSeen);
+  eq("browser collision source untouched", (await json("TEST-01", "GET", "/api/me/progress")).body, browserBefore);
+  eq("tester unchanged by copy", await testerFile(), testerBefore);
+  eq("copy code onto itself", (await fetch(base + "/api/me/progress/copy", {
+    method: "POST", headers: testerHeaders, body: JSON.stringify({ from: "TEST-01" }),
+  })).status, 200);
+  eq("tester unchanged by self copy", await testerFile(), testerBefore);
+  const eBeforeRejects = readFileSync(path.join(data, "learners", "E.json"), "utf8");
+  for (const from of [derived, "/" + derived, "!" + derived, "t/" + derived.slice(1), "", "   ", null, 42, {}, [], "bad/source", ".hidden", "x".repeat(65)]) {
+    eq("invalid copy source " + JSON.stringify(from), (await json("E", "POST", "/api/me/progress/copy", { from })).status, 400);
+  }
+  eq("unknown code", (await json("E", "POST", "/api/me/progress/copy", { from: "NOPE-99" })).status, 404);
+  eq("E unchanged after rejects", await progress("E"), a);
+  eq("rejects do not write destination", readFileSync(path.join(data, "learners", "E.json"), "utf8"), eBeforeRejects);
+  eq("copy and rejects do not write tester source", readFileSync(testerPath, "utf8"), testerBytes);
+
+  // Allowlisted codes resolve before filename-safety checks; unknown unsafe values do not.
+  const unsafeHeaders = { "x-tester-code": "INVITE/02", "content-type": "application/json" };
+  eq("unsafe-code tester import", (await fetch(base + "/api/me/progress", {
+    method: "PUT", headers: unsafeHeaders, body: JSON.stringify({ facts: { marker: "unsafe invite" } }),
+  })).status, 200);
+  eq("copy unsafe allowlisted code", (await json("F", "POST", "/api/me/progress/copy", { from: "INVITE/02" })).status, 200);
+  eq("unsafe invite resolves same identity as header", (await progress("F")).facts, { marker: "unsafe invite" });
+
   // Bad bodies and missing sources change nothing.
   eq("bad json", (await call("B", "PUT", "/api/me/progress", "{nope")).status, 400);
   eq("array body", (await json("B", "PUT", "/api/me/progress", [1])).status, 400);
@@ -105,7 +144,7 @@ try {
   await json("D", "PUT", "/api/me/progress", { learnables: "bad" });
   eq("non-object learnables dropped", (await progress("D")).learnables, {});
 
-  console.log("PASS");
+  console.log(`PASS (${checks} checks)`);
   child.kill("SIGKILL");
   process.exit(0);
 } catch (e: any) {
