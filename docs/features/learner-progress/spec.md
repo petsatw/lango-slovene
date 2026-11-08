@@ -21,7 +21,9 @@ current learner's own. Returns the saved model.
 
 `POST /api/me/progress/copy` with `{ "from": "<code>" }` replaces the current learner's progress
 with the stored model of `from`, which is left unchanged. `from` is an allowlisted tester code (its
-derived identity is the source) or a stored browser learner id.
+derived identity is the source) or a stored browser learner id. An allowlisted code takes precedence
+over a browser id with the same value; other values must be filename-safe stored ids. Raw derived
+`t-` ids are not accepted.
 
 | Case | Result |
 |---|---|
