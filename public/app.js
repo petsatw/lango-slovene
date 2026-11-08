@@ -303,16 +303,19 @@ $("settings-delete").addEventListener("click", async () => {
 const settingsStatus = (text) => { $("settings-status").textContent = text; };
 $("settings-export").addEventListener("click", async () => {
   settingsStatus("");
-  const res = await api("/api/me/progress");
-  if (!res.ok) return settingsStatus("Couldn't export progress.");
-  const url = URL.createObjectURL(await res.blob());
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "vadi-progress.json";
-  document.body.append(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  try {
+    const res = await api("/api/me/progress");
+    if (!res.ok) return settingsStatus("Couldn't export progress.");
+    const url = URL.createObjectURL(await res.blob());
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "vadi-progress.json";
+    document.body.append(a);
+    try { a.click(); } finally {
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+  } catch { settingsStatus("Couldn't export progress."); }
 });
 $("settings-import").addEventListener("click", () => { settingsStatus(""); $("settings-import-file").click(); });
 $("settings-import-file").addEventListener("change", async (e) => {
@@ -322,16 +325,20 @@ $("settings-import-file").addEventListener("change", async (e) => {
   let body;
   try { body = JSON.parse(await file.text()); } catch { return settingsStatus("That file can't be imported."); }
   if (!confirm("Replace progress on this device with this file? This can't be undone.")) return;
-  const res = await api("/api/me/progress", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
-  settingsStatus(res.ok ? "Progress imported" : "That file can't be imported.");
+  try {
+    const res = await api("/api/me/progress", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+    settingsStatus(res.ok ? "Progress imported" : res.status === 400 ? "That file can't be imported." : "Couldn't import progress.");
+  } catch { settingsStatus("Couldn't import progress."); }
 });
 $("settings-copy").addEventListener("click", async () => {
   settingsStatus("");
   const from = $("settings-copy-from").value.trim();
   if (!from) return;
   if (!confirm("Replace progress on this device with progress from that code? This can't be undone. The other code is left as it is.")) return;
-  const res = await api("/api/me/progress/copy", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ from }) });
-  settingsStatus(res.ok ? "Progress copied" : res.status === 404 ? "No progress found for that code." : "That code can't be used here.");
+  try {
+    const res = await api("/api/me/progress/copy", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ from }) });
+    settingsStatus(res.ok ? "Progress copied" : res.status === 404 ? "No progress found for that code." : res.status === 400 ? "That code can't be used here." : "Couldn't copy progress.");
+  } catch { settingsStatus("Couldn't copy progress."); }
 });
 
 // A readable, filesystem-safe run id: <prefix>-<timestamp>-<rand>. One run per tutor session, so leaving
