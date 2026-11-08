@@ -281,6 +281,13 @@
   <main id="settings" class="screen" hidden>
     <h2 class="screen-title">Settings</h2>
     <p class="settings-row">Your code: <b id="settings-code">—</b></p>
+    <button id="settings-export" class="settings-btn" type="button">Export progress</button>
+    <button id="settings-import" class="settings-btn" type="button">Import progress</button>
+    <input id="settings-import-file" type="file" accept="application/json,.json" hidden>
+    <input id="settings-copy-from" class="settings-field" type="text" placeholder="Code from your other device" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <p class="settings-row settings-hint">The code is shown in Settings on the other device.</p>
+    <button id="settings-copy" class="settings-btn" type="button">Copy progress</button>
+    <p id="settings-status" class="settings-row" role="status"></p>
     <button id="settings-improve" class="settings-btn" type="button">Stop using my sessions to improve Vadi</button>
     <button id="settings-history" class="settings-btn" type="button">Learning history</button>
     <button id="settings-delete" class="settings-btn" type="button">Delete my data</button>
