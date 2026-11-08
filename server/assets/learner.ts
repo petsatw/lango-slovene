@@ -159,6 +159,20 @@ export function save(id: string, model: LearnerModel): LearnerModel {
   return store().write(idFrom(id), model);
 }
 
+/** Whether a stored model exists for this id (a file for the file stores, a held entry for memory). */
+export function exists(id: string): boolean {
+  const key = idFrom(id);
+  const kind = store();
+  return kind === memoryStore ? held.has(key) : existsSync(kind === fileStore ? learnerPath() : learnersPath(key));
+}
+
+/** Replace the progress of `id` with `raw` run through the shaper. `lastSeenAt` stays the id's own. */
+export function replaceProgress(id: string, raw: unknown): LearnerModel {
+  const { lastSeenAt } = load(id);
+  const { lastSeenAt: _ignored, ...incoming } = shape(raw);
+  return save(id, { ...incoming, ...(lastSeenAt ? { lastSeenAt } : {}) });
+}
+
 const SEEN_EVERY_MS = 3600_000;
 const touched = new Map<string, number>();
 
