@@ -80,6 +80,20 @@ try {
   eq("copy onto self", (await json("A", "POST", "/api/me/progress/copy", { from: "A" })).status, 200);
   eq("A unchanged by self copy", JSON.stringify((await json("A", "GET", "/api/me/progress")).body), aFile);
 
+  // Copy by tester code: onto E matches the tester's model, source untouched; onto the tester itself is a no-op.
+  const testerFile = async () => JSON.stringify(await (await fetch(base + "/api/me/progress", { headers: testerHeaders })).json());
+  const testerBefore = await testerFile();
+  eq("copy by code", (await json("E", "POST", "/api/me/progress/copy", { from: "TEST-01" })).status, 200);
+  eq("E progress", await progress("E"), a);
+  eq("tester unchanged by copy", await testerFile(), testerBefore);
+  eq("copy code onto itself", (await fetch(base + "/api/me/progress/copy", {
+    method: "POST", headers: testerHeaders, body: JSON.stringify({ from: "TEST-01" }),
+  })).status, 200);
+  eq("tester unchanged by self copy", await testerFile(), testerBefore);
+  eq("raw derived id refused", (await json("E", "POST", "/api/me/progress/copy", { from: derived })).status, 400);
+  eq("unknown code", (await json("E", "POST", "/api/me/progress/copy", { from: "NOPE-99" })).status, 404);
+  eq("E unchanged after rejects", await progress("E"), a);
+
   // Bad bodies and missing sources change nothing.
   eq("bad json", (await call("B", "PUT", "/api/me/progress", "{nope")).status, 400);
   eq("array body", (await json("B", "PUT", "/api/me/progress", [1])).status, 400);
