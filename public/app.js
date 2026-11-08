@@ -230,6 +230,7 @@ function stopAllAudio() { stopDialogueAudio(); $("words-audio").pause(); }
 async function openSettings() {
   showScreen("settings");
   $("settings-code").textContent = "—";
+  $("settings-status").textContent = "";
   const { testerCode } = await (await api("/api/me")).json();
   $("settings-code").textContent = testerCode || learnerId;
 }
@@ -296,6 +297,41 @@ $("settings-delete").addEventListener("click", async () => {
   if (!confirm("Delete all your data? This removes your sessions and your progress, and can't be undone.")) return;
   const res = await api("/api/me", { method: "DELETE" });
   if (res.ok) { learnerStarted = false; openHome(); }
+});
+
+// Move progress between devices (docs/features/learner-progress/spec.md §4).
+const settingsStatus = (text) => { $("settings-status").textContent = text; };
+$("settings-export").addEventListener("click", async () => {
+  settingsStatus("");
+  const res = await api("/api/me/progress");
+  if (!res.ok) return settingsStatus("Couldn't export progress.");
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "vadi-progress.json";
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+$("settings-import").addEventListener("click", () => { settingsStatus(""); $("settings-import-file").click(); });
+$("settings-import-file").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  e.target.value = "";
+  if (!file) return;
+  let body;
+  try { body = JSON.parse(await file.text()); } catch { return settingsStatus("That file can't be imported."); }
+  if (!confirm("Replace progress on this device with this file? This can't be undone.")) return;
+  const res = await api("/api/me/progress", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+  settingsStatus(res.ok ? "Progress imported" : "That file can't be imported.");
+});
+$("settings-copy").addEventListener("click", async () => {
+  settingsStatus("");
+  const from = $("settings-copy-from").value.trim();
+  if (!from) return;
+  if (!confirm("Replace progress on this device with progress from that code? This can't be undone. The other code is left as it is.")) return;
+  const res = await api("/api/me/progress/copy", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ from }) });
+  settingsStatus(res.ok ? "Progress copied" : res.status === 404 ? "No progress found for that code." : "That code can't be used here.");
 });
 
 // A readable, filesystem-safe run id: <prefix>-<timestamp>-<rand>. One run per tutor session, so leaving

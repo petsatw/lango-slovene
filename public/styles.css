@@ -461,6 +461,13 @@ main {
   border: 1px solid #2b2f38; border-radius: 12px;
   padding: 13px 16px; font-size: 16px; cursor: pointer;
 }
+.settings-field {
+  width: 100%; max-width: 520px; margin: 0 0 4px; box-sizing: border-box;
+  background: transparent; color: var(--text);
+  border: 1px solid #2b2f38; border-radius: 12px;
+  padding: 13px 16px; font-size: 16px;
+}
+.settings-hint { color: var(--muted); font-size: 13px; margin-top: 0; }
 .settings-btn:hover { border-color: var(--green); }
 .history-entry { width: 100%; max-width: 520px; margin: 0 0 10px; }
 .history-head, .history-progress { display: block; }

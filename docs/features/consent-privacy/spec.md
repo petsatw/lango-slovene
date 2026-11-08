@@ -49,6 +49,8 @@ learning history, and they control it from Settings.
 
 The Settings screen, opened from the app header, shows:
 - the learner's code ([tester identity](../tester-identity/spec.md#6-code-in-settings))
+- the progress transfer controls: Export progress, Import progress, and Copy progress with a code field
+  ([learner progress](../learner-progress/spec.md#4-settings))
 - the "Stop using my sessions to improve Vadi" button (§2)
 - a link to the Learning history screen ([learning history](../learning-history/spec.md#3-screen))
 - the "Delete my data" button ([data deletion](../data-deletion/spec.md#1-delete-my-data))
