@@ -80,9 +80,17 @@ try {
   await cardModeOpen();
   await page.click('.fc-seg-opt[data-side="sl"]');
   await page.click('.fc-seg-opt[data-side="en"]');
+  // Swiping through the pass records nothing; the exact event sequence below stays unchanged (§4.3).
+  const face = await page.locator("#fc-face").boundingBox();
+  for (const dx of [-150, 150]) {
+    await page.mouse.move(face.x + face.width / 2, face.y + 20);
+    await page.mouse.down();
+    await page.mouse.move(face.x + face.width / 2 + dx, face.y + 20, { steps: 5 });
+    await page.mouse.up();
+  }
   for (let k = 0; k < 3; k++) {
     const card = await shown();
-    await page.click("#fc-card");
+    await page.click("#fc-face");
     await page.click(card.id === "star_sem_let" ? "#fc-nailed" : "#fc-oops");
   }
   await page.waitForSelector("#fc-toast:not([hidden])");
