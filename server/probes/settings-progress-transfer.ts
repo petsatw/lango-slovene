@@ -132,6 +132,26 @@ try {
   check("copy matches source deck", (await deck("DST2")) === srcDeck);
   check("source unchanged", stable((await call("SRC", "GET", "/api/me/progress")).body) === stable(srcModel));
   check("code shown unchanged", (await c.page.textContent("#settings-code")) === "DST2");
+  // Transfer failures stay visible in Settings, including a dropped connection.
+  const pageErrors: string[] = [];
+  c.page.on("pageerror", (e) => pageErrors.push(e.message));
+  for (const action of ["export", "import", "copy"]) {
+    await c.page.route("**/api/me/progress{,/copy}", (route) => route.abort("failed"));
+    if (action === "import") await c.page.setInputFiles("#settings-import-file", file);
+    else await c.page.click(`#settings-${action}`);
+    await c.page.waitForTimeout(300);
+    check(`${action}: network failure shown plainly`, (await status(c.page)) === `Couldn't ${action} progress.`);
+    await c.page.unroute("**/api/me/progress{,/copy}");
+  }
+  check("transfer failures have no unhandled rejection", pageErrors.length === 0);
+  for (const action of ["import", "copy"]) {
+    await c.page.route("**/api/me/progress{,/copy}", (route) => route.fulfill({ status: 500, body: "internal error" }));
+    if (action === "import") await c.page.setInputFiles("#settings-import-file", file);
+    else await c.page.click("#settings-copy");
+    await c.page.waitForTimeout(300);
+    check(`${action}: server failure is not blamed on file or code`, (await status(c.page)) === `Couldn't ${action} progress.`);
+    await c.page.unroute("**/api/me/progress{,/copy}");
+  }
   await browser.close();
 } finally {
   child.kill("SIGKILL");
