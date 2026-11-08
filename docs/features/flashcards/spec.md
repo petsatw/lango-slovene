@@ -130,8 +130,8 @@ Three controls sit above the card and stay on screen:
   card Back does nothing, and on the last card Next does nothing and starts no pass. Neither rates or
   records an event, and a tap on the card still only turns it. A card returned to can be turned and rated again; the rating then advances forward.
 - A horizontal swipe on the card face does what Back (swipe right) or Next (swipe left) does, under the
-  same rules: no rating, no event, no wrap, no new pass at the ends. A tap, or a short or mostly vertical
-  movement, only turns the card, and a swipe that starts on `hint` does nothing. Swiping never rates.
+  same rules: no rating, no event, no wrap, no new pass at the ends. A tap only turns the card; short or
+  mostly vertical movements do not navigate. A swipe that starts on `hint` does nothing. Swiping never rates.
 - "Nailed it" and "Needs practice" sit in the card footer. They appear after the card's first turn and
   stay until one is tapped. The footer's space is reserved, so showing them, turning the card, the In
   Context section and the hint move nothing outside the card.
@@ -256,7 +256,7 @@ export interface LearnerModel {
 - "Nailed it": `nailed += 1`, `lastRatedAt = now`, and `memorisedAt = now` when `nailed >= 5`. Each
   "Nailed it" on a memorised card renews `memorisedAt`, so the card stays out of the due deck for 30
   days from the last one.
-- "Oops": `lastRatedAt = now`.
+- "Needs practice" (`oops`): `lastRatedAt = now`.
 - `memorised` and `due` (§1) are derived on read and never stored.
 - A rating changes only `flashcards` (and `updatedAt`). `learnables`, `facts`, A1 Readiness, the tutor's
   focus set, the live grader and progressed objectives read only mastery.
@@ -291,7 +291,7 @@ Each name and prop is in the `server/events.ts` allowlist and in the
 |---|---|---|
 | `screen_viewed` | `showScreen` runs | `screen` includes `words` and `flashcards` |
 | `flashcards_started` | card mode opens | `domainId`, `from` (`overview`: the "Flashcards" chip; `list`: the "Flashcards" button), `firstSide` (`en`, `sl`), `includeMemorised`, `deckSize` |
-| `flashcard_rated` | the rate call for a "Nailed it" or "Oops" tap settles | `domainId`, `learnableId`, `result` (`nailed`, `oops`), `firstSide`, `memorised` (from the rate response; `null` when the call failed), `hasAudio` |
+| `flashcard_rated` | the rate call for a "Nailed it" or "Needs practice" tap settles | `domainId`, `learnableId`, `result` (`nailed`, `oops`), `firstSide`, `memorised` (from the rate response; `null` when the call failed), `hasAudio` |
 | `flashcards_pass_completed` | the last card of a pass is rated | `domainId`, `pass` (from 1), `cards` |
 | `flashcards_setting_changed` | a control in §4.1 changes | `setting` (`firstSide`, `includeMemorised`, `inContext`), `value` |
 | `flashcards_ended` | card mode closes, by Back or any other screen change | `domainId`, `rated`, `ms` |

@@ -3043,6 +3043,7 @@ async function init() {
   face.addEventListener("pointerdown", (e) => {
     swipeFrom = e.target.closest(".hint-btn") ? null : { x: e.clientX, y: e.clientY };
     swiped = false;
+    if (swipeFrom) face.setPointerCapture(e.pointerId);
   });
   face.addEventListener("pointerup", (e) => {
     if (!swipeFrom) return;
