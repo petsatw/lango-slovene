@@ -499,6 +499,23 @@ app.delete("/api/me/improve", (req, res) => {
   deletion.deleteImprove(learnerOf(req));
   res.status(204).end();
 });
+// Move durable progress between identities (docs/features/learner-progress/spec.md).
+app.get("/api/me/progress", (req, res) => res.json(learner.load(learnerOf(req))));
+app.put("/api/me/progress", (req, res) => {
+  const body = req.body;
+  if (!body || typeof body !== "object" || Array.isArray(body)) return res.status(400).json({ error: "body must be a JSON object" });
+  res.json(learner.replaceProgress(learnerOf(req), body));
+});
+app.post("/api/me/progress/copy", (req, res) => {
+  const current = learnerOf(req);
+  const from = req.body?.from;
+  if (typeof from !== "string" || !from || from.startsWith("t-") || learner.idFrom(from) !== from) {
+    return res.status(400).json({ error: "from must be a stored learner id" });
+  }
+  if (from === current) return res.json(learner.load(current));
+  if (!learner.exists(from)) return res.status(404).json({ error: "no such learner" });
+  res.json(learner.replaceProgress(current, learner.load(from)));
+});
 app.delete("/api/me", (req, res) => {
   deletion.deleteLearner(learnerOf(req));
   res.status(204).end();

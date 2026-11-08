@@ -24,7 +24,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { DATA_DIR } from "./store";
-import type { FlashcardState, LearnerModel } from "../types";
+import type { FlashcardState, LearnableMastery, LearnerModel } from "../types";
 
 /** The id a request that names no learner is served under — the operator at their own machine. */
 export const DEFAULT_LEARNER_ID = "local";
@@ -54,8 +54,8 @@ export function testerCodeFrom(header: unknown): string | null {
 export function resolveId(codeHeader: unknown, learnerHeader: unknown): string {
   const code = testerCodeFrom(codeHeader);
   if (code) return "t-" + createHash("sha256").update(code).digest("hex").slice(0, 16);
-  const supplied = String(learnerHeader ?? "");
-  return idFrom(supplied.startsWith("t-") ? "" : supplied);
+  const supplied = idFrom(learnerHeader);
+  return supplied.startsWith("t-") ? DEFAULT_LEARNER_ID : supplied;
 }
 
 function emptyModel(): LearnerModel {
@@ -82,13 +82,32 @@ function shapeFlashcards(raw: any): Record<string, FlashcardState> | undefined {
   return out;
 }
 
+/** Keep durable counts and optional production dates from object rows. */
+function shapeLearnables(raw: any): Record<string, LearnableMastery> {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  return Object.fromEntries(Object.entries<any>(raw).flatMap(([id, v]) => {
+    if (!v || typeof v !== "object" || Array.isArray(v) ||
+        !Number.isInteger(v.attempts) || v.attempts < 0 ||
+        !Number.isInteger(v.successes) || v.successes < 0) return [];
+    return [[id, {
+      attempts: v.attempts,
+      successes: v.successes,
+      ...(typeof v.firstProducedAt === "string" ? { firstProducedAt: v.firstProducedAt } : {}),
+      ...(typeof v.lastProducedAt === "string" ? { lastProducedAt: v.lastProducedAt } : {}),
+      ...(typeof v.lastAttemptAt === "string" ? { lastAttemptAt: v.lastAttemptAt } : {}),
+    }]];
+  }));
+}
+
 function shape(raw: any): LearnerModel {
   const flashcards = shapeFlashcards(raw?.flashcards);
   return {
-    learnables: raw?.learnables ?? {},
+    learnables: shapeLearnables(raw?.learnables),
     // A model written before facts existed simply has none, which is the same state as a learner who has
     // not been asked yet — so an older file loads as a learner at the start of the course.
-    facts: raw?.facts ?? {},
+    facts: raw?.facts && typeof raw.facts === "object" && !Array.isArray(raw.facts)
+      ? Object.fromEntries(Object.entries(raw.facts).filter((entry): entry is [string, string] => typeof entry[1] === "string"))
+      : {},
     ...(flashcards ? { flashcards } : {}),
     updatedAt: raw?.updatedAt ?? new Date().toISOString(),
     ...(raw?.lastSeenAt ? { lastSeenAt: raw.lastSeenAt } : {}),
@@ -157,6 +176,20 @@ export function load(id: string): LearnerModel {
 
 export function save(id: string, model: LearnerModel): LearnerModel {
   return store().write(idFrom(id), model);
+}
+
+/** Whether a stored model exists for this id (a file for the file stores, a held entry for memory). */
+export function exists(id: string): boolean {
+  const key = idFrom(id);
+  const kind = store();
+  return kind === memoryStore ? held.has(key) : existsSync(kind === fileStore ? learnerPath() : learnersPath(key));
+}
+
+/** Replace the progress of `id` with `raw` run through the shaper. `lastSeenAt` stays the id's own. */
+export function replaceProgress(id: string, raw: unknown): LearnerModel {
+  const { lastSeenAt } = load(id);
+  const { lastSeenAt: _ignored, ...incoming } = shape(raw);
+  return save(id, { ...incoming, ...(lastSeenAt ? { lastSeenAt } : {}) });
 }
 
 const SEEN_EVERY_MS = 3600_000;
