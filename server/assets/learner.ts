@@ -49,11 +49,25 @@ export function testerCodeFrom(header: unknown): string | null {
   return code && allowedCodes().includes(code) ? code : null;
 }
 
+/** The stored identity derived from an allowlisted tester code. */
+function testerIdOf(code: string): string {
+  return "t-" + createHash("sha256").update(code).digest("hex").slice(0, 16);
+}
+
+/** The stored id a pasted copy source names: an allowlisted tester code's identity, or a filename-safe
+ *  browser id; null for anything else, including a raw derived `t-` id. */
+export function copySourceId(from: unknown): string | null {
+  if (typeof from !== "string") return null;
+  const code = testerCodeFrom(from);
+  if (code) return testerIdOf(code);
+  return from && !from.startsWith("t-") && idFrom(from) === from ? from : null;
+}
+
 /** The learner a request is about: derived from an allowlisted code, else the per-browser id. A supplied
  *  id with the derived `t-` prefix is treated as absent, so a derived id is reachable only through its code. */
 export function resolveId(codeHeader: unknown, learnerHeader: unknown): string {
   const code = testerCodeFrom(codeHeader);
-  if (code) return "t-" + createHash("sha256").update(code).digest("hex").slice(0, 16);
+  if (code) return testerIdOf(code);
   const supplied = idFrom(learnerHeader);
   return supplied.startsWith("t-") ? DEFAULT_LEARNER_ID : supplied;
 }

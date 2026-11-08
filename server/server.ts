@@ -508,10 +508,8 @@ app.put("/api/me/progress", (req, res) => {
 });
 app.post("/api/me/progress/copy", (req, res) => {
   const current = learnerOf(req);
-  const from = req.body?.from;
-  if (typeof from !== "string" || !from || from.startsWith("t-") || learner.idFrom(from) !== from) {
-    return res.status(400).json({ error: "from must be a stored learner id" });
-  }
+  const from = learner.copySourceId(req.body?.from);
+  if (!from) return res.status(400).json({ error: "from must be a tester code or a stored learner id" });
   if (from === current) return res.json(learner.load(current));
   if (!learner.exists(from)) return res.status(404).json({ error: "no such learner" });
   res.json(learner.replaceProgress(current, learner.load(from)));
